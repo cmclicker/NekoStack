@@ -6,7 +6,13 @@ NekoStack is **not** a folder template, a boilerplate, or a Bash script generato
 
 ## What this is
 
-A monorepo of ~107 packages spanning every layer a full-stack solo developer needs to build games (NekoBattler, NekoGacha, Leytide), SaaS products (NekoSystems, NekoVibe, retail-ops simulators, EdTech), narrative tools (Mara Kane lore graphs, continuity validators), and AI agent runtimes — without renting infrastructure from a dozen third-party vendors. **Capability ownership across the whole stack is canonically documented in [`BOUNDARIES.md`](BOUNDARIES.md)** — read that before adding new packages or wondering where something lives.
+A monorepo of ~107 packages spanning every layer a full-stack solo developer needs to build games (NekoBattler, NekoGacha, Leytide), SaaS products (NekoSystems, NekoVibe, retail-ops simulators, EdTech), narrative tools (Mara Kane lore graphs, continuity validators), and AI agent runtimes — without renting infrastructure from a dozen third-party vendors.
+
+**Four top-level governing documents:**
+- [`BOUNDARIES.md`](BOUNDARIES.md) — canonical capability-to-package map (read first when adding / splitting packages).
+- [`ARTIFACTS.md`](ARTIFACTS.md) — taxonomy for the 11 non-code asset folders (`references/`, `starters/`, `snippets/`, `configs/`, `checklists/`, `playbooks/`, `examples/`, `prompts/`, `standards/`, `decisions/`, `manifests/`).
+- [`DEPENDENCY-GRAPH.md`](DEPENDENCY-GRAPH.md) — build-order DAG + impact analysis.
+- [`ROADMAP.md`](ROADMAP.md) — phased multi-year vertical-slice development plan.
 
 Each package is its own product surface. Each one is opinionated, schema-first where possible, designed for the specific shape of the projects that consume it. Where third-party tools cover similar territory (Auth.js, Zod, Sentry, Prisma, Refine, etc.), each NekoStack package explicitly documents what it does differently and why.
 
