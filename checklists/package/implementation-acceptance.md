@@ -64,7 +64,7 @@ Per [`standards/package-development.md`](../../standards/package-development.md)
 - [ ] `docs/SCOPE.md` — what it owns + what it explicitly does NOT own (and which package does).
 - [ ] `docs/INVARIANTS.md` — numbered rules that constrain every future phase.
 - [ ] `docs/ROADMAP.md` — phase plan, with each phase listing what it includes AND explicitly does NOT include.
-- [ ] Contract docs (zero or more, named for the contract they own — e.g., `IR_CONTRACT.md`, `API_SHAPE.md`, `ERROR_CODES.md`, `ABSENCE_SEMANTICS.md`).
+- [ ] Contract docs — **at least one is required when the package exposes behavior downstream packages depend on** (`IR_CONTRACT.md`, `API_SHAPE.md`, `ERROR_CODES.md`, `ABSENCE_SEMANTICS.md`, etc.). Pure-internal utility packages may omit; if so, the PR description states why.
 
 ## Process (blocking)
 
