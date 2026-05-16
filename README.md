@@ -31,12 +31,17 @@ Individual packages can still be published to npm as standalone products. Monore
 
 ## Layout
 
+NekoStack has two top-level layers: the **built stack** (`packages/`, governed by [`BOUNDARIES.md`](BOUNDARIES.md)) and the **reusable asset library** (everything else, governed by [`ARTIFACTS.md`](ARTIFACTS.md)).
+
 ```
 NekoStack/
 ├── package.json              # workspaces config
 ├── turbo.json                # turbo task graph
 ├── tsconfig.base.json        # shared TS config
-├── packages/
+├── BOUNDARIES.md             # capability → package ownership (built stack)
+├── ARTIFACTS.md              # artifact kind → folder ownership (asset library)
+│
+├── packages/                 # the built stack — code that runs/validates/renders/exposes APIs
 │   ├── schema/               # @nekostack/schema
 │   ├── cli/                  # @nekostack/cli
 │   ├── codex/                # @nekostack/codex
@@ -44,10 +49,27 @@ NekoStack/
 │   ├── auth/                 # @nekostack/auth
 │   ├── telemetry/            # @nekostack/telemetry
 │   ├── ui/                   # @nekostack/ui
-│   └── ...                   # ~80 packages total
+│   └── ...                   # ~107 packages total
 ├── apps/                     # optional demo / admin / docs apps
+│
+├── starters/                 # scaffold-ready starting structures (consumed by packages/templates)
+├── references/               # doctrine + learning notes (engineering handbook)
+├── snippets/                 # small reusable code/config atoms
+├── configs/                  # canonical drop-in tool configs (eslint/prettier/tsconfig/etc.)
+├── checklists/               # repeatable verification lists
+├── playbooks/                # operating procedures
+├── examples/                 # completed working examples of packages composing
+├── prompts/                  # reusable LLM/agent instructions
+├── standards/                # mandatory conventions NekoStack itself follows
+├── decisions/                # ADR records (the docs; runtime engine is packages/decision)
+├── manifests/                # machine-readable indexes for tools/agents
+├── schemas/                  # cross-cutting schema sources
 └── docs/                     # cross-cutting design docs
 ```
+
+Asset folders shard by tooling/domain at the first level (`references/node/`, `starters/react/`, `checklists/release/`). See [`ARTIFACTS.md`](ARTIFACTS.md) for the full taxonomy, decision rules, and the package-vs-artifact rule.
+
+> Note: `packages/templates` is the **template engine** (code). Starter content lives in `starters/`. The two are not the same thing — see ARTIFACTS.md for the distinction.
 
 ## Package index
 

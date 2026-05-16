@@ -8,6 +8,12 @@
 
 This document is organized **by capability**, not by package. Each capability has exactly one owning package (or, in a small number of cases, a clearly-declared sub-ownership where two packages cooperate). When a row has no owner, that is a **visible gap** and must be resolved before the stack can be called complete.
 
+## Scope
+
+This document governs `packages/` only — code that runs, validates, transforms, renders, or exposes an API. It does **not** govern the reusable asset layer (`references/`, `starters/`, `snippets/`, `checklists/`, `configs/`, `playbooks/`, `examples/`, `prompts/`, `standards/`, `decisions/`, `manifests/`). That layer has its own taxonomy in [`ARTIFACTS.md`](ARTIFACTS.md).
+
+The two documents are siblings, not parent/child. If you are unsure whether a thing belongs in a package or an asset folder, the rule is: **if it runs, BOUNDARIES wins; otherwise, ARTIFACTS wins.** See `ARTIFACTS.md` for the full decision flow.
+
 ## How to use this document
 
 - **Adding a new package?** Find the capabilities it owns here. If those capabilities already have an owner, you have a conflict to resolve before proceeding. If a new package's capabilities are already absorbed into an existing one's table, the new package shouldn't exist.
@@ -724,7 +730,7 @@ Symmetric to export.
 | Performance benchmarks | `bench` | |
 | Property-based / fuzz testing | `fuzz` | |
 | Service mocking | `mock` | |
-| Project templates | `templates` | |
+| Project template engine (load / render / apply / validate) | `templates` | starter *content* lives in top-level `starters/` — see `ARTIFACTS.md` |
 | Demo seed data | `seed` | |
 | Dev environment (devcontainer/docker-compose) | `env` | |
 | Runtime config validation | `config` | (uses `schema`) |
