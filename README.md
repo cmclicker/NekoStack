@@ -6,7 +6,7 @@ NekoStack is **not** a folder template, a boilerplate, or a Bash script generato
 
 ## What this is
 
-A monorepo of ~80 packages spanning every layer a full-stack solo developer needs to build games (NekoBattler, NekoGacha, Leytide), SaaS products (NekoSystems, NekoVibe, retail-ops simulators, EdTech), narrative tools (Mara Kane lore graphs, continuity validators), and AI agent runtimes — without renting infrastructure from a dozen third-party vendors.
+A monorepo of ~107 packages spanning every layer a full-stack solo developer needs to build games (NekoBattler, NekoGacha, Leytide), SaaS products (NekoSystems, NekoVibe, retail-ops simulators, EdTech), narrative tools (Mara Kane lore graphs, continuity validators), and AI agent runtimes — without renting infrastructure from a dozen third-party vendors. **Capability ownership across the whole stack is canonically documented in [`BOUNDARIES.md`](BOUNDARIES.md)** — read that before adding new packages or wondering where something lives.
 
 Each package is its own product surface. Each one is opinionated, schema-first where possible, designed for the specific shape of the projects that consume it. Where third-party tools cover similar territory (Auth.js, Zod, Sentry, Prisma, Refine, etc.), each NekoStack package explicitly documents what it does differently and why.
 
@@ -53,6 +53,17 @@ NekoStack/
 
 Each package has its own README documenting purpose, scope, competitors, design philosophy, architecture sketch, roadmap, and product potential. The list below groups them by build tier — the order in which they're likely to be useful, not the order they must be built.
 
+For the **canonical "which package owns which capability"** map, see [`BOUNDARIES.md`](BOUNDARIES.md). Per-package READMEs restate the relevant rows from BOUNDARIES.md in their own `Boundary` section; if they disagree, BOUNDARIES.md wins.
+
+### Meta / control plane (the layer that organizes the rest)
+- [@nekostack/path](packages/path/README.md) — Portfolio + roadmap + active-work + next-action resolver
+- [@nekostack/governance](packages/governance/README.md) — Policy rules, lifecycle gates, definition-of-done, LLM behavior constraints
+- [@nekostack/workspace](packages/workspace/README.md) — Multi-project context, repo discovery, package dependency graph
+- [@nekostack/decision](packages/decision/README.md) — Architectural + product decision records (ADRs)
+- [@nekostack/review](packages/review/README.md) — Review request lifecycle, approval state, follow-up tracking
+- [@nekostack/session](packages/session/README.md) — Dev session records, handoff summaries, resume-context
+- [@nekostack/registry](packages/registry/README.md) — Package metadata + canonical resource lookup + capability-to-package map
+
 ### Foundation primitives (build early, used by almost everything else)
 - [@nekostack/schema](packages/schema/README.md) — Define types once, generate Zod validators + JSON Schema + OpenAPI + TS types
 - [@nekostack/cli](packages/cli/README.md) — Unified command-line tool for scaffolding, validation, code generation
@@ -69,6 +80,11 @@ Each package has its own README documenting purpose, scope, competitors, design 
 - [@nekostack/api](packages/api/README.md) — Contract-first API: define once, generate server + clients + docs
 - [@nekostack/ui](packages/ui/README.md) — Component library + design system primitives
 
+### Identity / access (lifted out of auth)
+- [@nekostack/tenant](packages/tenant/README.md) — Tenant identity, lifecycle, isolation patterns (distinct from auth)
+- [@nekostack/permissions](packages/permissions/README.md) — Permission catalog, role definitions, RBAC/ABAC primitives
+- [@nekostack/secrets](packages/secrets/README.md) — Secret loading, masking, rotation, leak detection
+
 ### Project unblockers (specific products need these now)
 - [@nekostack/realtime](packages/realtime/README.md) — WebSocket / SSE / sync layer for multiplayer + live UI
 - [@nekostack/assets](packages/assets/README.md) — Game asset pipeline: sprites, atlases, hot-reload
@@ -78,7 +94,8 @@ Each package has its own README documenting purpose, scope, competitors, design 
 ### SaaS layer
 - [@nekostack/entitlements](packages/entitlements/README.md) — Plans, feature gating, usage metering
 - [@nekostack/billing](packages/billing/README.md) — Stripe integration, invoicing, subscription lifecycle
-- [@nekostack/export](packages/export/README.md) — Versioned data export, GDPR DSAR, import validation
+- [@nekostack/export](packages/export/README.md) — Versioned data export, GDPR DSAR
+- [@nekostack/import](packages/import/README.md) — Symmetric import: validation, migration, conflict resolution
 - [@nekostack/admin](packages/admin/README.md) — Admin dashboard starter
 - [@nekostack/flags](packages/flags/README.md) — Feature flags (rollout/AB-test, separate from entitlements)
 - [@nekostack/notify](packages/notify/README.md) — Unified notification routing (email + push + in-app + SMS)
@@ -86,9 +103,15 @@ Each package has its own README documenting purpose, scope, competitors, design 
 - [@nekostack/audit](packages/audit/README.md) — Tamper-evident audit log infrastructure
 - [@nekostack/webhooks](packages/webhooks/README.md) — Webhook receiver + dispatcher with verification
 
+### Compliance / data governance
+- [@nekostack/compliance](packages/compliance/README.md) — GDPR/HIPAA/SOC2 profiles, evidence, retention, consent
+- [@nekostack/backup](packages/backup/README.md) — Backup creation, restore points, point-in-time recovery
+
 ### Background processing
-- [@nekostack/jobs](packages/jobs/README.md) — Background job queue + scheduler
-- [@nekostack/flow](packages/flow/README.md) — Long-running workflow orchestration
+- [@nekostack/queue](packages/queue/README.md) — Job queue substrate (retries, DLQ, dedup, locking, priority)
+- [@nekostack/jobs](packages/jobs/README.md) — Scheduled + ad-hoc job execution (uses queue)
+- [@nekostack/flow](packages/flow/README.md) — Long-running stateful workflow orchestration
+- [@nekostack/time](packages/time/README.md) — Date/RRULE/calendar/cadence primitives
 
 ### Data layer
 - [@nekostack/events](packages/events/README.md) — Event sourcing / CQRS scaffolding
@@ -98,11 +121,13 @@ Each package has its own README documenting purpose, scope, competitors, design 
 - [@nekostack/fetch](packages/fetch/README.md) — Typed HTTP client with retry / circuit-breaker
 
 ### Security
-- [@nekostack/secure](packages/secure/README.md) — Security headers, CSRF, CORS middleware
+- [@nekostack/secure](packages/secure/README.md) — Security headers, CSRF, CORS, redaction
 - [@nekostack/limits](packages/limits/README.md) — Rate limiting + abuse detection
-- [@nekostack/crypto](packages/crypto/README.md) — Safe encryption-usage patterns
+- [@nekostack/crypto](packages/crypto/README.md) — Safe encryption-usage patterns (wraps libsodium etc.)
 
 ### Observability
+- [@nekostack/log](packages/log/README.md) — Structured logger (distinct from telemetry/audit/trace)
+- [@nekostack/metrics](packages/metrics/README.md) — Counter/gauge/histogram primitives + SLO definitions
 - [@nekostack/errors](packages/errors/README.md) — Error tracking, grouping, alerting
 - [@nekostack/health](packages/health/README.md) — Health probes + readiness/liveness
 - [@nekostack/trace](packages/trace/README.md) — Distributed tracing (OpenTelemetry-compatible)
@@ -131,14 +156,20 @@ Each package has its own README documenting purpose, scope, competitors, design 
 - [@nekostack/canvas](packages/canvas/README.md) — Canvas 2D primitives + scene management
 - [@nekostack/icons](packages/icons/README.md) — Icon system + SVG sprite pipeline
 - [@nekostack/md](packages/md/README.md) — Markdown processing with custom plugins
+- [@nekostack/a11y](packages/a11y/README.md) — Accessibility utilities: focus, keyboard, ARIA, contrast
 
 ### AI / LLM
-- [@nekostack/prompts](packages/prompts/README.md) — Prompt template management + versioning
+- [@nekostack/prompts](packages/prompts/README.md) — Prompt template management + versioning + provider abstraction
 - [@nekostack/rag](packages/rag/README.md) — Retrieval-augmented generation infrastructure
 - [@nekostack/eval](packages/eval/README.md) — LLM evaluation framework
 - [@nekostack/tools](packages/tools/README.md) — Agent function/tool registry
 - [@nekostack/memory](packages/memory/README.md) — Agent conversation memory + persistence
 - [@nekostack/chat](packages/chat/README.md) — Chat interface infrastructure
+
+### LLM-workflow safety
+- [@nekostack/sandbox](packages/sandbox/README.md) — Sandboxed command/script execution for agent tool calls
+- [@nekostack/changeset](packages/changeset/README.md) — Dry-run / plan-apply / patch / rollback for LLM-driven edits
+- [@nekostack/provenance](packages/provenance/README.md) — Generated-artifact lineage, prompt-to-output trace
 
 ### Content / narrative
 - [@nekostack/cms](packages/cms/README.md) — Headless content management
@@ -146,6 +177,14 @@ Each package has its own README documenting purpose, scope, competitors, design 
 - [@nekostack/story](packages/story/README.md) — Branching dialog + narrative scripting
 - [@nekostack/validator](packages/validator/README.md) — Cross-reference + continuity validation
 - [@nekostack/media](packages/media/README.md) — Image processing: resize, format, responsive
+- [@nekostack/taxonomy](packages/taxonomy/README.md) — Tags, categories, hierarchies, aliases
+
+### Utility primitives
+- [@nekostack/id](packages/id/README.md) — ID generation (UUID/ULID/nanoid/branded/deterministic/slug)
+- [@nekostack/random](packages/random/README.md) — Deterministic PRNG, seeded streams, weighted random, shuffle bags
+- [@nekostack/math](packages/math/README.md) — Curves, probability tables, interpolation, statistics
+- [@nekostack/graph](packages/graph/README.md) — Generic graph primitives (DAG, traversal, cycle detection, topo sort)
+- [@nekostack/actions](packages/actions/README.md) — Unified action/command registry across CLI + UI + agents
 
 ### Cross-platform / shell
 - [@nekostack/shell](packages/shell/README.md) — Tauri/Electron native wrapper patterns
