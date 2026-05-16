@@ -229,6 +229,89 @@ Silent merge replacement is forbidden. Auth schemas, in particular, must not be 
 
 Other composition operators (`extend`, `pick`, `omit`, `partial`, `required`) cannot produce field-type conflicts and need no conflict policy.
 
+### Transform semantics
+
+Transforms create two distinct types — the *input* the validator accepts and the *output* it returns:
+
+```ts
+const ParsedAge = s.string().transform(v => Number(v));
+//                ^^^^^^^^^^                  ^^^^^^
+//                input: string               output: number
+```
+
+NekoStack exposes both explicitly:
+
+```ts
+s.input<typeof ParsedAge>    // string
+s.output<typeof ParsedAge>   // number
+s.infer<typeof ParsedAge>    // alias to output (Zod-compatible default)
+```
+
+`s.infer` aliasing to **output** matches Zod ergonomics and what most consumers want ("the validated/parsed type"). For form bindings and API request shapes, `s.input` is the right type. The IR's `TransformNode` carries both annotations so generators can emit either side correctly.
+
+JSON Schema and OpenAPI outputs describe the **input** type (the wire format). The transformation only happens at runtime, so non-runtime outputs cannot represent it — semantic-loss metadata flags this.
+
+### Union policy
+
+Two union forms with different semantics:
+
+```ts
+s.union([A, B, C])                          // plain union
+s.discriminatedUnion("kind", [A, B, C])     // discriminated by 'kind' field
+```
+
+Rules:
+
+- Plain unions are allowed but **discouraged for object variants**. Validation tries each branch in order and aggregates errors.
+- Object unions SHOULD use `discriminatedUnion`. Generated OpenAPI emits `oneOf` with `discriminator` metadata, producing cleaner client codegen and clearer error reporting.
+- **Issue reporting for unions:** the runtime returns issues from the *best-matching* branch (the branch that progressed furthest before failing). For `discriminatedUnion`, the discriminator-matched branch's issues are returned exclusively — no ambiguity about which variant the user intended.
+
+The IR's `UnionNode` tracks whether the union is discriminated and, if so, the discriminator field. Generators consume this to emit correct OpenAPI / JSON Schema.
+
+### Validate vs parse
+
+The runtime exposes two distinct operations:
+
+```ts
+validate(schema, input)   // read-only check; returns Result<input, Issue[]>; no mutation, no defaults, no transforms
+parse(schema, input)      // validates + applies defaults + runs transforms; returns Result<output, Issue[]>
+```
+
+- **`validate`** answers "does this input conform?" It does not mutate, default, or coerce. Returns the input unchanged on success, typed at the **input** shape.
+- **`parse`** answers "what is the normalized output?" It applies defaults, runs transforms, returns the **output** shape. Most consumers want `parse`.
+
+Use the right one:
+- **Config loading at boot** — `parse` (apply defaults so the config object is fully populated).
+- **API request bodies** — `parse` (canonical shape for downstream code).
+- **Form initialization** — `parse` (form starts pre-populated with defaults).
+- **Observability/audit inspection** — `validate` (don't mutate the value being recorded).
+- **Permission/entitlement decision input checks** — `validate` (input is data; don't transform it).
+
+Generators emit code that supports both. Consumers pick.
+
+### Coercion policy
+
+**No implicit coercion.** By default:
+
+```ts
+const Age = s.number();
+parse(Age, "42");  // ❌ Issue { code: "invalid_type", expected: "number", received: "string" }
+```
+
+Explicit coercion is opt-in via a separate constructor (not a chainable method on the base type):
+
+```ts
+s.number().coerceFromString();       // accepts "42" → 42
+s.boolean().coerceFromString();      // accepts "true"/"false" → boolean (rejects "1"/"yes" — too forgiving)
+s.isoDateTime().coerceFromString();  // accepts ISO 8601 strings → normalized
+```
+
+Why no `s.coerce.number()` like Zod:
+
+- Silent coercion is a security smell. `"true"`, `"1"`, `"yes"` all becoming `true` without explicit opt-in causes real bugs.
+- Coerced types must be representable in non-runtime outputs as the coerced shape (not the original). JSON Schema describes the wire format expected; if the wire format is "string coercible to number," that's a different schema and we surface it explicitly.
+- Coercion never leaks into JSON Schema / OpenAPI as native behavior. It's runtime-only with semantic-loss metadata when the output schema differs from the runtime acceptance.
+
 ### Error model
 
 Validation errors are structured `Issue` records — never raw strings, never raw Zod errors:
@@ -276,21 +359,34 @@ Every generated file includes a deterministic header:
  * schemaId: com.nekostack.auth.User
  * schemaVersion: 1.0.0
  * sourceHash: sha256:7f3e2a9b...
+ * irHash:     sha256:c4a2e810...
  * generator: zod@0.4.1
  * DO NOT EDIT MANUALLY.
  */
 ```
 
+**Two hashes, distinguishing two different changes:**
+
+- **`sourceHash`** changes when the source file changes — including whitespace, comments, reorderings, anything textual.
+- **`irHash`** changes only when the normalized IR changes — i.e., the actual schema semantics.
+
+This distinction matters for review hygiene. CI can categorize a PR:
+
+- *Source changed, IR identical* — comment / whitespace / reorder only. Regeneration not required (header `sourceHash` is updated; output bytes don't change).
+- *Source changed, IR changed* — real schema change. Regeneration required; reviewers must inspect generated diffs.
+- *Generated output's `irHash` doesn't match current IR* — stale. CI fails.
+
 Rules:
 
 - **Committed to git.** Generated files are tracked, not gitignored. Makes review possible, prevents "works on my machine" drift.
-- **Deterministic.** Same schema source + same generator version → byte-identical output.
-- **Freshness check.** `neko schema check` rehashes sources, verifies generated artifacts match. CI fails on stale output.
-- **Incremental.** Only schemas with changed sources are regenerated.
+- **Never manually edited.** CI verifies both `sourceHash` and `irHash` against current source. Manual edits would be silently overwritten by the next `neko schema generate`.
+- **Deterministic.** Same IR + same generator version → byte-identical output.
+- **Freshness check.** `neko schema check` rehashes sources, recomputes IR, verifies generated artifacts match on both `sourceHash` and `irHash`. CI fails on stale output.
+- **Incremental.** Only schemas with changed `irHash` need regeneration (source-only changes update the header but produce identical bytes elsewhere — still rewritten so the header is fresh).
 - **Outputs separated.** TypeScript `.d.ts`, Zod `.ts`, JSON Schema `.json`, OpenAPI `.openapi.json` are distinct files. Allows each output to be consumed in isolation.
-- **Headers describe lineage.** Source path, schema ID, version, source hash, generator version — all readable from the file itself.
+- **Headers describe lineage.** Source path, schema ID, version, both hashes, generator version — all readable from the file itself.
 
-A companion spec doc (deferred) will detail header format, the exact hash algorithm, and the `neko schema check` exit-code contract.
+A companion spec doc (deferred to v1.0) will detail header format, the exact hash algorithm (canonical JSON serialization → SHA-256), and the `neko schema check` exit-code contract.
 
 ### Dependency policy
 
@@ -443,8 +539,27 @@ Revised after the design-audit pass. Migrations pushed from v0.5 to v0.8+ becaus
 ### v0.7 — Registry-lite
 - Local schema registry (lookup by id + version).
 - Schema diffing between two versions.
-- Breaking-change detection.
+- Breaking-change detection per the matrix below.
 - `neko schema check` (freshness) and `neko schema diff` (changes).
+
+**Breaking-change matrix** (v0.7 implementation target):
+
+| Change | Compatibility |
+|---|---|
+| Add optional field | non-breaking |
+| Add required field | **breaking** (clients sending old shape now fail) |
+| Remove field | **breaking** for consumers that read it |
+| Make required → optional | non-breaking for producers; breaking for consumers expecting field |
+| Add nullable (widen) | usually non-breaking for consumers |
+| Remove nullable (narrow) | **breaking** for producers that emitted null |
+| Widen enum (add value) | **breaking** for clients (must handle new value) |
+| Narrow enum (remove value) | **breaking** for producers |
+| Change scalar type (string → number) | **breaking** |
+| Add runtime-only refinement | **breaking** for runtime consumers; invisible to JSON Schema/OpenAPI outputs |
+| Rename field | **breaking** in all directions unless explicitly aliased |
+| Add discriminated-union branch | non-breaking for consumers using fallback; breaking otherwise |
+
+`neko schema diff <a> <b>` prints the change list with these annotations. CI in consuming projects can fail on any `breaking` change without a deliberate `--accept-breaking` flag.
 
 ### v0.8+ — Migrations
 - Migration registry with version graph.
@@ -501,10 +616,32 @@ That commercial product would be a separate offering (e.g., `@nekostack/schema-c
 
 **Estimated effort to v1.0:** 6–12 weeks of focused work; more realistically 4–8 months at solo-dev cadence. Revised up from the original 4–8 / 3–6 because the IR + semantic-loss + identity + parity-test work added scope.
 
+## Still-open implementation decisions
+
+The Implementation contracts section pins the load-bearing decisions. The list below names what is **not yet** decided — labeled honestly rather than pretending everything is closed. Each item is a real choice that will need to land before or during the relevant phase.
+
+- **Transform vs default precedence.** When a field has both a `default` and a `transform`, does the default apply first (then transform sees the defaulted value) or transform see the raw input first? Decision deferred to v0.6 when concrete edge cases surface.
+- **Async refinements.** `s.string().refineAsync(async fn => ...)` — useful for cross-record uniqueness checks (e.g., username availability). Pollutes `validate`/`parse` signatures with Promises if added. Deferred; possibly v0.6 or post-v1.
+- **Discriminator value types.** Discriminated-union discriminators are presumed to be string literals (`s.literal("kind")`). Should we allow number literals too? Implications for OpenAPI emission TBD.
+- **Cross-package schema-id collision policy.** If `@nekostack/auth` and a consuming project both define `com.nekostack.auth.User@1.0.0`, what happens? Reject at registry-load time, prefer the package version, or require explicit aliasing? Decision deferred to v0.7.
+- **Workspace vs package vs hosted registry resolution.** Registry-lite (v0.7) is local-only. The path to a future hosted registry (a commercial offering above this package) needs a lookup-precedence rule. Deferred.
+- **Per-tenant schema overlays.** Some SaaS consumers may want tenant-specific schema extensions (extra fields per tenant). Out of scope for v1; possibly Phase-9 / `@nekostack/entitlements`-adjacent.
+- **Migration replay direction.** Forward-only or bidirectional? Affects whether down-migrations are required. Deferred to v0.8.
+- **Generator plugin contract.** Third-party generators (e.g., a future Prisma generator, GraphQL SDL emitter) need a stable contract. Deferred until v1.0 / post-v1.
+- **Performance budgets.** No explicit perf targets yet. Will be set against Zod / TypeBox baselines once v0.1 is implementable.
+- **Recursive schema cycle handling.** Direct self-reference is clear. Mutually recursive cycles (`A → B → A`) need explicit policy: lazy resolution always, eager-with-detection, or fail-on-construction? Deferred to when `s.lazy()` is implemented.
+- **JSON Schema `format` extensibility.** Custom format keywords (e.g., `tenant-slug`) — should they emit as `format: "x-tenant-slug"`, as `pattern` with an x-extension, or be rejected? Deferred to v0.3.
+
+Items here should graduate into the Implementation contracts section once decided. The list itself is the artifact: hiding open questions is worse than naming them.
+
 ## Status
 
 - **Current:** Empty placeholder. Design pass complete; implementation not started.
 - **Owner:** Cody (solo dev project).
 - **Priority tier:** Foundation primitive. **Among the first three packages to actually implement** because every other serious NekoStack module inherits its contracts.
 - **Estimated learning return:** Very high. Schema-system design, type-level TypeScript, code-gen architecture, JSON Schema semantics, OpenAPI 3.1 internals, semantic-loss management, deterministic output discipline — all in one project.
-- **Source thinking:** See [`references/schema/design-audit-2026-05.md`](../../references/schema/design-audit-2026-05.md) for the engineering audit that drove this README's current shape. Future significant design changes should generate a similar audit document and link from here.
+- **Source thinking:**
+  - Initial audit: [`references/schema/design-audit-2026-05.md`](../../references/schema/design-audit-2026-05.md) — drove the IR / semantic-loss / identity / strict-by-default / migration-deferral additions.
+  - Follow-up audit: [`references/schema/design-audit-2026-05-followup.md`](../../references/schema/design-audit-2026-05-followup.md) — drove the Transform input/output split, Union policy, validate-vs-parse, coercion policy, IR hash, breaking-change matrix, and the Still-open section.
+
+  Future significant design changes should generate a similar audit document and link from here. The pattern is: audit → revise → preserve source thinking → label open decisions → repeat as design matures.
