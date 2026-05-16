@@ -8,7 +8,7 @@
 |---|---|
 | **Build tier** | SaaS layer — build before any product reaches production-with-paying-customers |
 | **Depends on** | `schema` (exporter schemas), `codex` (Codex entities have natural exporter shape), `audit` (every export audited), `auth` (permission-gated), `cli` (export subcommands), `compliance` (retention + redaction policies) |
-| **Used by** | NekoVibe (account export), NekoSystems (agent / workflow export), retail-ops, EdTech, Mara Kane (narrative bible snapshots), any product handling user data |
+| **Used by** | NekoVibe (account export), NekoSystems (tenant / workflow data export), retail-ops, EdTech, Mara Kane (narrative bible snapshots), any product handling user data |
 | **Status** | Empty placeholder — not started |
 | **Est. to v1.0** | 8–12 weeks focused |
 | **Sellable?** | Strong OSS (niche is empty); plausible commercial as part of hosted compliance + export product (OneTrust competitor at SMB price) |
@@ -105,7 +105,7 @@ The right framing: **a versioned export framework** specifically for "export the
 - `@nekostack/cli` — `neko export` subcommands.
 
 **Used by:**
-- Any product that operates on user data: NekoVibe (account export), NekoSystems (agent / workflow export), retail-ops (operational data export), EdTech (progress export), Mara Kane (narrative bible snapshots).
+- Any product that operates on user data: NekoVibe (account export), NekoSystems (tenant / workflow data export), retail-ops (operational data export), EdTech (progress export), Mara Kane (narrative bible snapshots).
 
 ## Design philosophy
 

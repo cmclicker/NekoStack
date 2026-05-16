@@ -8,7 +8,7 @@
 |---|---|
 | **Build tier** | AI / LLM |
 | **Depends on** | `schema`, `rag` (semantic memory via embeddings), `storage`, `prompts` (memory feeds into prompts), `audit` (memory mutations), `time` (expiry) |
-| **Used by** | NekoSystems (agent persistence), `chat` (conversation history), `session` (developer-session memory is *different* — uses us conceptually but holds dev-side records) |
+| **Used by** | NekoSystems (LLM-feature persistence for tenant agents), `chat` (conversation history), `session` (developer-session memory is *different* — uses us conceptually but holds dev-side records) |
 | **Status** | Empty placeholder — not started |
 | **Est. to v1.0** | 8–14 weeks focused |
 | **Sellable?** | Strong — agent memory is a young, important space |
@@ -128,7 +128,7 @@ packages/memory/
 
 ## Product potential
 
-**Internal:** Critical for NekoSystems agents.
+**Internal:** Critical for any agentic features (NekoSystems tenant-facing agents, narrative tools, coding assistants).
 **Open source release:** Strong — agent memory is a young space.
 **Commercial:** Real — Mem0 commercializes; room for OSS-friendly competitor.
 

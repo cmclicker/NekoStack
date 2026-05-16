@@ -8,7 +8,7 @@
 |---|---|
 | **Build tier** | Frontend depth — content substrate |
 | **Depends on** | `schema` (frontmatter shapes); external: unified / remark / rehype |
-| **Used by** | `docs` (doc generation), `wiki` (page rendering), `editor` (markdown round-trip), `cms` (markdown content), Mara Kane (narrative drafts), NekoSystems (agent docs) |
+| **Used by** | `docs` (doc generation), `wiki` (page rendering), `editor` (markdown round-trip), `cms` (markdown content), Mara Kane (narrative drafts), NekoSystems (tenant-facing docs + knowledge content) |
 | **Status** | Empty placeholder — not started |
 | **Est. to v1.0** | 4–8 weeks focused |
 | **Sellable?** | Low — unified/remark dominate; integration angle |

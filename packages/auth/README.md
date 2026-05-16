@@ -106,7 +106,7 @@ The right framing: `@nekostack/auth` **uses** Auth.js (or another provider) for 
 **Used by:**
 - Every API endpoint that needs auth (most of them).
 - **NekoVibe** — actor/tenant/permission gating on profile + economy + leaderboard mutations.
-- **NekoSystems** — agent platform authorization.
+- **NekoSystems** — multi-tenant Business-OS SaaS authorization.
 - **Leytide** — server-side player action authorization.
 - **NekoBattler** — admin/balance-edit gating, replay-share permissions.
 - Future Business-OS / retail-ops SaaS — multi-tenant authorization.

@@ -1,6 +1,6 @@
 # @nekostack/wiki
 
-> Wiki engine: knowledge pages, cross-linking, history, hierarchy. The page-rendering layer for game lore (NekoBattler wiki), narrative codex browsing (Mara Kane), agent knowledge bases (NekoSystems).
+> Wiki engine: knowledge pages, cross-linking, history, hierarchy. The page-rendering layer for game lore (NekoBattler wiki), narrative codex browsing (Mara Kane), tenant knowledge bases (NekoSystems).
 
 ## Quick reference
 
@@ -8,14 +8,14 @@
 |---|---|
 | **Build tier** | Content / narrative |
 | **Depends on** | `schema`, `cms` (content lifecycle), `md`, `codex` (entity references), `search`, `ui`, `audit` |
-| **Used by** | NekoBattler (champion wiki — already partially exists), Mara Kane (narrative codex browsing), NekoSystems (agent knowledge), Leytide (in-game help), any product with reference content |
+| **Used by** | NekoBattler (champion wiki — already partially exists), Mara Kane (narrative codex browsing), NekoSystems (tenant knowledge / customer-facing docs), Leytide (in-game help), any product with reference content |
 | **Status** | Empty placeholder — not started |
 | **Est. to v1.0** | 10–16 weeks focused |
 | **Sellable?** | Modest — Confluence / Notion dominate; game-wiki niche less crowded |
 
 ## Why this exists
 
-Wikis are everywhere in game projects. NekoBattler already has wiki pages for champions. Mara Kane's lore is wiki-shaped. NekoSystems agent knowledge bases are wiki-shaped. Without a shared engine, each reinvents page rendering, cross-linking, search, history.
+Wikis are everywhere in content-rich projects. NekoBattler already has wiki pages for champions. Mara Kane's lore is wiki-shaped. NekoSystems tenant knowledge bases (FAQs, runbooks, customer-facing docs) are wiki-shaped. Without a shared engine, each reinvents page rendering, cross-linking, search, history.
 
 ## Scope
 

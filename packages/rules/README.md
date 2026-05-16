@@ -114,7 +114,7 @@ The right framing: this is **game-engine combat trigger ordering, generalized.**
 - **NekoBattler** — combat trigger resolution, ability stacking, trait interactions.
 - **NekoGacha** — banner rules, pity calculations, drop rate modifiers.
 - A future card autobattler / Hearthstone-Battlegrounds-style mode.
-- **NekoSystems** — business contract evaluation, agent policy gates.
+- **NekoSystems** — business contract evaluation, workflow policy gates.
 - **NekoVibe** — puzzle validation rules (cross-puzzle cross-reference).
 - Form validation cascades, business workflow gates, content moderation — anything where "if X then Y unless Z" composes.
 

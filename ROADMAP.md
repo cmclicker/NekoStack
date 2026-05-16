@@ -158,7 +158,7 @@ NekoBattler migration. Builds the substrate for autobattler / card / Battlegroun
 
 ## Phase 6 — LLM Workflow (~2-3 calendar months)
 
-NekoSystems migration to first-class stack consumer. Modern agent-shape products.
+LLM-workflow primitives. Used by any product wanting agent-driven features — customer-support agents inside NekoSystems / Business-OS SaaS, narrative co-author tools, coding assistants, future agentic apps.
 
 | Package | Why now | Approximate effort |
 |---|---|---|
@@ -172,9 +172,9 @@ NekoSystems migration to first-class stack consumer. Modern agent-shape products
 | `memory` | Agent conversation memory | 8–14 weeks |
 | `chat` | Chat interface infrastructure | 10–16 weeks |
 
-**Done when:** NekoSystems agents fully migrated. New agent projects start with stack import, no inline LLM client.
+**Done when:** Stack supports LLM-using products end-to-end. Any product wanting agentic features (in-SaaS customer support, narrative co-author, coding assistant, RAG over content) imports from the stack rather than writing inline LLM clients.
 
-**Unlocks:** Agent products. Coding-assistant-style tools. RAG-driven applications.
+**Unlocks:** Agentic features inside SaaS products. Coding-assistant-style tools. RAG-driven applications. Standalone agent products.
 
 ---
 
@@ -255,7 +255,7 @@ The phases above are organized so each delivers a product:
 - Phase 2 — NekoVibe
 - Phase 5 — NekoBattler
 - Phase 4 — first SaaS commercial
-- Phase 6 — NekoSystems agents
+- Phase 6 — LLM workflow capabilities (agentic features inside NekoSystems and other products)
 - Phase 7 — Mara Kane
 - Phase 8 — portfolio control plane (the meta-product)
 

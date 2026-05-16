@@ -8,7 +8,7 @@
 |---|---|
 | **Build tier** | AI / LLM |
 | **Depends on** | `schema`, `prompts`, `tools`, `memory`, `ui`, `realtime` (streaming), `audit` |
-| **Used by** | NekoSystems (agent chat UIs), customer-support chat, in-app help, narrative co-author UIs |
+| **Used by** | NekoSystems (tenant-facing chat surfaces, customer-support agents), in-app help, narrative co-author UIs |
 | **Status** | Empty placeholder — not started |
 | **Est. to v1.0** | 10–16 weeks focused |
 | **Sellable?** | Modest — Vercel AI SDK dominates UI; chat UI niche |

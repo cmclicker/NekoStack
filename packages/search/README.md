@@ -21,7 +21,7 @@ Every content-heavy NekoStack project ends up needing search:
 - **Mara Kane** lore — characters across 20 books, factions, locations, timelines. The author needs to find "every mention of Penny Lane after chapter 14."
 - **NekoVibe** puzzle archive — past puzzles by date, by tier, by completion stats.
 - **NekoCodex** entity browser — query entities by tag, kind, relationship.
-- **NekoSystems** agent knowledge — find all prompts mentioning a particular concept.
+- **NekoSystems** tenant content search — search across business documents, workflows, policies.
 - **NekoLife** activity catalog — find activities by domain, cadence, priority, time-of-day.
 
 The default answers — Postgres LIKE, ad-hoc JavaScript array filters, "I'll just remember where it is" — fall apart past a few hundred items. The next default — adopt Elasticsearch — is a hammer for a thumbtack. Elasticsearch is a wonderful tool and a wonderful operational burden.
@@ -109,7 +109,7 @@ The right framing: `@nekostack/search` is **a thin TS layer over SQLite FTS5** (
 - **Mara Kane** — full-text search across drafts + narrative bible.
 - **NekoVibe** — past-puzzle archive browsing.
 - **Leytide** — in-game item/quest/NPC discovery.
-- **NekoSystems** — agent knowledge-base search.
+- **NekoSystems** — tenant content + knowledge-base search.
 - **NekoLife** — activity catalog filtering.
 
 ## Design philosophy

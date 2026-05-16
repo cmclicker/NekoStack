@@ -8,7 +8,7 @@
 |---|---|
 | **Build tier** | SaaS layer |
 | **Depends on** | `schema` (notification types), `email` (email channel), `audit` (notification dispatch audited), `time` (digest scheduling), `auth` (per-user prefs), `tenant` (tenant-scoped templates) |
-| **Used by** | every product surface that notifies users: NekoVibe (puzzle reminders, achievement unlocks), Leytide (friend invites, party invites), NekoSystems (agent completion), `billing` (receipts, dunning), every SaaS |
+| **Used by** | every product surface that notifies users: NekoVibe (puzzle reminders, achievement unlocks), Leytide (friend invites, party invites), NekoSystems (tenant + workflow notifications), `billing` (receipts, dunning), every SaaS |
 | **Status** | Empty placeholder — not started |
 | **Est. to v1.0** | 8–12 weeks focused |
 | **Sellable?** | Plausible OSS — unified notification routers are surprisingly absent; commercial as part of broader SaaS platform |

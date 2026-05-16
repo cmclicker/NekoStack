@@ -8,7 +8,7 @@
 |---|---|
 | **Build tier** | Background processing — workflow layer |
 | **Depends on** | `schema` (state shape), `queue` (durable execution substrate), `audit` (state transitions), `events` (event-sourced state), `errors`, `time` (workflow timeouts) |
-| **Used by** | `billing` (subscription lifecycle), `compliance` (DSAR multi-step workflow), `governance` (multi-step approval flows), agent workflows in `NekoSystems`, account-deletion workflow, any process that spans hours/days/multiple steps |
+| **Used by** | `billing` (subscription lifecycle), `compliance` (DSAR multi-step workflow), `governance` (multi-step approval flows), business workflows in `NekoSystems`, account-deletion workflow, any process that spans hours/days/multiple steps |
 | **Status** | Empty placeholder — not started |
 | **Est. to v1.0** | 12–20 weeks focused |
 | **Sellable?** | Plausible — Temporal / Inngest territory; library-level durable execution is undersupplied |

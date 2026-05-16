@@ -8,7 +8,7 @@
 |---|---|
 | **Build tier** | Project unblocker — Leytide multiplayer can't proceed without it |
 | **Depends on** | `schema` (typed messages), `auth` (per-message authorization), `telemetry` (connection events); optional Redis/NATS for multi-process backplane; optional Yjs for CRDT collab |
-| **Used by** | Leytide (multiplayer + presence + chat), NekoVibe (live leaderboards + completion notifications), NekoBattler (spectator/replay mode), NekoSystems (agent dashboards) |
+| **Used by** | Leytide (multiplayer + presence + chat), NekoVibe (live leaderboards + completion notifications), NekoBattler (spectator/replay mode), NekoSystems (live tenant + workflow dashboards) |
 | **Status** | Empty placeholder — not started |
 | **Est. to v1.0** | 16–32 weeks focused (real-time correctness is genuinely hard) |
 | **Sellable?** | Plausible OSS + commercial (Pusher / Ably / Liveblocks territory at self-hostable price point) |
@@ -19,7 +19,7 @@ HTTP request-response works until it doesn't. The moment your product needs:
 
 - Multiplayer game state (Leytide combat, Battlegrounds-style auto-battler matches).
 - Live leaderboards that update as players complete daily puzzles (NekoVibe).
-- Real-time admin dashboards (NekoSystems agent run status, ops health).
+- Real-time admin dashboards (NekoSystems tenant operations, ops health).
 - Collaborative editing of shared documents (worldbuilding tools, narrative drafts).
 - Presence indicators ("who else is online in this room").
 - Push-driven notifications that don't require client polling.
@@ -116,7 +116,7 @@ The right framing: a **typed channels + auth + replay** layer over raw WebSocket
 - **NekoVibe** — live leaderboard updates, "X just completed today's puzzle" notifications.
 - **Leytide** — multiplayer chat, party state, world events, instance presence.
 - **NekoBattler** — live spectator mode for shareable replays.
-- **NekoSystems** — agent run status dashboards, live tool call telemetry.
+- **NekoSystems** — live tenant + workflow dashboards, live operations telemetry.
 - Future Business-OS / retail-ops — live KPI dashboards, multi-user inventory operations.
 
 ## Design philosophy

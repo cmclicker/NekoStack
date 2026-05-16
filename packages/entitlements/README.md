@@ -8,7 +8,7 @@
 |---|---|
 | **Build tier** | SaaS layer — critical for every monetized product |
 | **Depends on** | `schema` (plan/feature definitions), `auth` (decisions feed AccessDecision), `telemetry` (usage events), `audit` (denial records), `tenant` (per-tenant plan binding) |
-| **Used by** | `billing` (drives entitlement state on plan change); NekoVibe (Plus tier), NekoSystems (agent-count limits), future retail-ops / EdTech / business SaaS |
+| **Used by** | `billing` (drives entitlement state on plan change); NekoVibe (Plus tier), NekoSystems (per-tenant plan + feature gating), future retail-ops / EdTech / business SaaS |
 | **Status** | Empty placeholder — not started |
 | **Est. to v1.0** | 8–12 weeks focused |
 | **Sellable?** | **Strong commercial potential** — Stigg / LaunchDarkly Subscriptions territory; schema-typed audit-integrated entitlements with hosted tier is a real play |
@@ -106,7 +106,7 @@ The right framing: **the logic spine of plan-based feature gating, with billing 
 
 **Used by:**
 - `@nekostack/billing` — plan changes drive entitlement state.
-- Every SaaS-shaped product: NekoVibe (Plus tier), NekoSystems (agent-count limits), retail-ops, EdTech, future products.
+- Every SaaS-shaped product: NekoVibe (Plus tier), NekoSystems (per-tenant plan + feature gating), retail-ops, EdTech, future products.
 - `@nekostack/api` — entitlement decoration on endpoints.
 
 ## Design philosophy

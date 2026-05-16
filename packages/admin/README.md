@@ -8,7 +8,7 @@
 |---|---|
 | **Build tier** | SaaS layer — build *after* underlying packages (auth, audit, flags, entitlements) so it has data to surface |
 | **Depends on** | `ui`, `table`, `auth` (admin role gating + user data), `audit`, `flags`, `entitlements`, `health`, `jobs`, `tenant` |
-| **Used by** | every product with admin surface area: NekoVibe (user / cosmetic / abuse admin), NekoSystems (agent / workflow), Leytide (GM admin), retail-ops, future products |
+| **Used by** | every product with admin surface area: NekoVibe (user / cosmetic / abuse admin), NekoSystems (tenant / workflow / billing admin), Leytide (GM admin), retail-ops, future products |
 | **Status** | Empty placeholder — not started |
 | **Est. to v1.0** | 12–20 weeks focused |
 | **Sellable?** | Unlikely independent traction (Refine/React Admin/Tremor crowded); this is the package where **using Refine is a legitimate retreat** if it becomes a slog |
@@ -107,7 +107,7 @@ The right framing: **Refine is the closest legitimate alternative.** Building ou
 - `@nekostack/jobs` — job monitoring surface.
 
 **Used by:**
-- Every product with administrative surface area: NekoVibe (user / cosmetic / abuse admin), NekoSystems (agent / workflow admin), retail-ops (operations admin), Leytide (GM admin), future products.
+- Every product with administrative surface area: NekoVibe (user / cosmetic / abuse admin), NekoSystems (tenant / workflow / billing admin), retail-ops (operations admin), Leytide (GM admin), future products.
 
 ## Design philosophy
 

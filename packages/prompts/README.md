@@ -8,7 +8,7 @@
 |---|---|
 | **Build tier** | AI / LLM |
 | **Depends on** | `schema` (output validation), `audit` (LLM invocations), `provenance` (generated-output tracking), `governance` (LLM behavior constraints), `telemetry` (cost + latency), `secrets` (provider API keys) |
-| **Used by** | NekoSystems (CrewAI agents already use prompts heavily), every product touching LLMs, `tools` (provider routing), `chat`, `rag` (RAG prompts), `eval` (prompt regression tests) |
+| **Used by** | NekoSystems (LLM-driven features inside the Business-OS SaaS — customer support, workflow assistants), every product touching LLMs, `tools` (provider routing), `chat`, `rag` (RAG prompts), `eval` (prompt regression tests) |
 | **Status** | Empty placeholder — not started |
 | **Est. to v1.0** | 8–14 weeks focused |
 | **Sellable?** | **Strong** — prompt-ops tooling is undersupplied; commercial as part of LLM-platform offering |

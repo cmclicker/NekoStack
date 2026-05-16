@@ -239,8 +239,8 @@ NekoStack packages are consumed by these sibling projects:
 - **NekoBattler** — Auto-battler
 - **NekoGacha** — Gacha collection game
 - **Leytide** — Browser MMORPG
-- **NekoSystems** — CrewAI agent command center
-- **NekoLite** — Lightweight SaaS sibling
+- **NekoSystems** — Multi-tenant Business-OS SaaS (enterprise tier of NekoPlatform). *Note: the repo currently contains CrewAI-based planning/R&D tooling — that's the workspace state, not the product.*
+- **NekoLite** — Multi-tenant Business-OS SaaS (SMB / lightweight tier of NekoPlatform)
 - **NekoLife** — Personal Life Bootcamp Framework
 - **NekoLabs** — Dev tools web app
 - **Mara Kane** — 20-book narrative series

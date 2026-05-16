@@ -8,7 +8,7 @@
 |---|---|
 | **Build tier** | AI / LLM |
 | **Depends on** | `schema`, `codex` (entity graph as a retrieval source), `search` (text-search complement), `storage` (embedding store), `prompts` (context fed into prompts), `eval` (retrieval evals) |
-| **Used by** | NekoSystems (agent retrieval over docs), `chat` (RAG-augmented conversations), narrative tools (lore retrieval), any LLM-using project needing context beyond context-window |
+| **Used by** | NekoSystems (RAG over tenant content for customer-support agents + business workflows), `chat` (RAG-augmented conversations), narrative tools (lore retrieval), any LLM-using project needing context beyond context-window |
 | **Status** | Empty placeholder — not started |
 | **Est. to v1.0** | 12–20 weeks focused |
 | **Sellable?** | Strong — RAG-ops tooling is hot |
@@ -135,7 +135,7 @@ packages/rag/
 
 ## Product potential
 
-**Internal:** Powers NekoSystems agent context, narrative-tool lore retrieval.
+**Internal:** Powers NekoSystems tenant-content retrieval for in-SaaS agents, narrative-tool lore retrieval.
 **Open source release:** Strong — TS-native RAG library is undersupplied.
 **Commercial:** Real — RAG-ops is hot (LlamaIndex commercial offerings).
 

@@ -8,7 +8,7 @@
 |---|---|
 | **Build tier** | AI / LLM |
 | **Depends on** | `schema` (tool input/output), `prompts` (tools registered with prompts), `sandbox` (safe execution), `audit` (tool call audit), `provenance`, `permissions` (tool authorization), `governance` (forbidden tools) |
-| **Used by** | NekoSystems (CrewAI tool registry — already exists), `chat` (tool-using conversations), any agentic application |
+| **Used by** | NekoSystems (agentic features inside the Business-OS SaaS), `chat` (tool-using conversations), any agentic application |
 | **Status** | Empty placeholder — not started |
 | **Est. to v1.0** | 8–14 weeks focused |
 | **Sellable?** | Strong — agent tool-use is a major commercial space |
@@ -71,7 +71,7 @@ Modern LLMs do tool-calling: "search for X", "open this file", "execute this com
 |---|---|---|
 | **LangChain Tools** | Comprehensive. | Heavyweight. |
 | **OpenAI / Anthropic tool-calling APIs** | Substrate. | We unify across providers. |
-| **CrewAI tools** | Mature for crews. | NekoSystems uses; we generalize. |
+| **CrewAI tools** | Mature for crews. | Crew-framework-specific; we generalize. |
 | **Custom per-product** | Common. | Reinvented. |
 
 ## How this fits the NekoStack

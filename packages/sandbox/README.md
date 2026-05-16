@@ -8,7 +8,7 @@
 |---|---|
 | **Build tier** | LLM-workflow safety |
 | **Depends on** | `schema`, `tools` (we execute tool calls), `permissions` (tool authorization), `governance` (forbidden actions), `audit`, `changeset` (dry-run integration) |
-| **Used by** | `tools` (every tool execution), NekoSystems (agent tool execution), Claude Code-style assistant tooling |
+| **Used by** | `tools` (every tool execution), NekoSystems (LLM tool execution for tenant-facing features), Claude Code-style assistant tooling |
 | **Status** | Empty placeholder — not started |
 | **Est. to v1.0** | 8–14 weeks focused |
 | **Sellable?** | Strong — agent-safety tooling is hot |
