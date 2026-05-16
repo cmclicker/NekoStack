@@ -2,9 +2,9 @@
 
 Authoritative source for "what ships when." The full design rationale lives in the package [`README.md`](../README.md); this file is the operational checklist.
 
-## v0.1 — Core IR + builders ← *current candidate*
+## v0.1 — Core IR + builders
 
-Status: **candidate** (PR open, not merged).
+Status: **shipped** ([#1](https://github.com/cmclicker/NekoStack/pull/1), merged 2026-05-16). First package accepted under [`standards/package-development.md`](../../../standards/package-development.md).
 
 Includes:
 - IR types for every `SchemaNode` kind (only seven have v0.1 builders)
@@ -21,7 +21,7 @@ Includes:
 
 Explicitly out of scope (see [`SCOPE.md`](./SCOPE.md)): generators, parse/validate engine, registry, diff, migrations, CLI.
 
-## v0.2 — TypeScript + Zod generation
+## v0.2 — TypeScript + Zod generation ← *active target*
 
 - TS generator (`.d.ts`)
 - Zod generator (Zod 3.x target)
