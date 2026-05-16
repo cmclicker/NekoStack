@@ -18,6 +18,12 @@ Examples:
 
 Each standard is a rule. Violating it is a defect. Standards are short — long content is doctrine and lives in `references/`.
 
+## Active standards
+
+The real index. Examples above are illustrative; the entries below are the standards that currently exist and bind the repo today. Update this section every time a standard lands.
+
+- [`package-development.md`](package-development.md) — Every concrete package phase passes three audits (scope / contract / boundary) and owns five local artifacts (README + SCOPE + INVARIANTS + ROADMAP + contract docs). Operational form: [`checklists/package/implementation-acceptance.md`](../checklists/package/implementation-acceptance.md). Reference implementation: [`packages/schema/`](../packages/schema/).
+
 ## What does NOT live here
 
 | Type | Where it goes | Why |

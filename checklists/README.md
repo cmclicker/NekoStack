@@ -22,6 +22,12 @@ Format inside each checklist:
 - Items grouped by phase if the checklist has multiple stages.
 - No narrative — that's `playbooks/`.
 
+## Active checklists
+
+The real index. Examples above are illustrative; the entries below are the checklists that currently exist and govern the repo today. Update this section every time a checklist lands.
+
+- [`package/implementation-acceptance.md`](package/implementation-acceptance.md) — Walked before merging any package phase (v0.1 candidate, v0.2 candidate, …). Binding rule: [`standards/package-development.md`](../standards/package-development.md). Reference walk: [`packages/schema/`](../packages/schema/) v0.1.
+
 ## What does NOT live here
 
 | Type | Where it goes | Why |
