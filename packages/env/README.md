@@ -2,6 +2,17 @@
 
 > One command to get any NekoStack project running locally. Devcontainers, docker-compose, port allocation, service dependencies, and tear-down — all declarative.
 
+## Quick reference
+
+| | |
+|---|---|
+| **Build tier** | Foundation primitive — mid-priority (projects survive without it briefly) |
+| **Depends on** | Docker (external), `cli` (subcommand integration), `config` (port + env discovery) |
+| **Used by** | every developer working on any NekoStack project, daily; CI smoke tests; onboarding flows |
+| **Status** | Empty placeholder — not started |
+| **Est. to v1.0** | 3–6 weeks focused |
+| **Sellable?** | Plausible MIT release (Tilt-but-simpler niche); solo-dev-friendly orchestration is undersupplied |
+
 ## Why this exists
 
 Every NekoStack project has the same problem: getting it running locally is a multi-step ritual. Start Postgres on the right port. Start Redis. Configure env vars. Apply database migrations. Generate Prisma clients. Build packages in the right order. Start the API. Start the web frontend. Make sure they can talk to each other.
@@ -57,6 +68,30 @@ Building this yourself rather than using docker-compose directly is justified be
 - CI environment orchestration (GitHub Actions workflows). Different problem.
 - Cloud sandbox environments (Gitpod, Codespaces). Could be supported via devcontainer output, but the cloud-specific config lives elsewhere.
 - Native package installation (Homebrew, apt). We assume Docker + Node are present.
+
+## Boundary
+
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §45 for the full capability map.
+
+### Owns
+- Declarative `neko-env.yaml` spec per project
+- `neko env up / down / restart / status / logs` lifecycle
+- Container service driver (Docker)
+- Native process service driver
+- Healthcheck dependency gates (TCP / HTTP / command-based)
+- Port allocation + collision detection
+- Multiplexed log streaming with per-service color/prefix
+- Devcontainer.json generation for VS Code
+
+### Does NOT own
+| Capability | Lives in |
+|---|---|
+| Production orchestration (Kubernetes / cloud) | `deploy` |
+| CI environment definition (GitHub Actions YAML) | `deploy` |
+| App runtime config (typed config object) | `config` |
+| Cloud sandbox specifics (Gitpod / Codespaces) | external (devcontainer output is enough) |
+| Native package installation (Homebrew / apt) | external (we assume prereqs) |
+| Container image building | external (Dockerfile or BuildKit) |
 
 ## Competitors and adjacent tools
 

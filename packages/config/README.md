@@ -2,6 +2,17 @@
 
 > Runtime configuration as a typed schema. Validate env vars at boot, separate secrets from config, fail fast with a readable error when something's missing.
 
+## Quick reference
+
+| | |
+|---|---|
+| **Build tier** | Foundation primitive — build after `schema` |
+| **Depends on** | `schema` (config schema DSL); coordinates with `secrets` (for the Secret type) |
+| **Used by** | every backend app at boot; `api`, `auth`, `telemetry`, `jobs`, `billing`, every service-level package |
+| **Status** | Empty placeholder — not started |
+| **Est. to v1.0** | 1–2 weeks focused |
+| **Sellable?** | Modest — niche is crowded but integration angle is unique; MIT release as part of stack |
+
 ## Why this exists
 
 Configuration is the most universally-mishandled part of every web project. The standard pattern looks like:
@@ -42,6 +53,28 @@ Building this yourself rather than using `dotenv`, `zod-env`, or `envalid` is ju
 - Feature flags. Different concept, lives in `@nekostack/flags`.
 - Per-tenant config (multi-tenant runtime config). That's `@nekostack/entitlements` territory.
 - Pure config-file formats (TOML, YAML). We standardize on env + dotenv for runtime config.
+
+## Boundary
+
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §33, §45 for the full capability map.
+
+### Owns
+- `defineConfig()` DSL on top of `@nekostack/schema`
+- `.env` / `.env.local` / `.env.<NODE_ENV>` precedence + OS env merge
+- Boot-time validation with structured errors
+- Typed accessor (`config.db.url`, etc.) — no scattered `process.env.X`
+- Per-field source attribution (`neko config check` diagnostics)
+- Dev-mode reload on `.env.local` change
+
+### Does NOT own
+| Capability | Lives in |
+|---|---|
+| Secret loading / masking / rotation / leak detection | `secrets` |
+| Vault / AWS SM / 1Password adapters | `secrets` (source adapters) |
+| Feature flags (different concept) | `flags` |
+| Per-tenant runtime config | `tenant` + `entitlements` |
+| Devcontainer / docker-compose for local dev | `env` |
+| Plain dotenv file parsing | external (dotenv used internally) |
 
 ## Competitors and adjacent tools
 

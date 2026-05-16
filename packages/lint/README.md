@@ -2,6 +2,17 @@
 
 > Custom ESLint rules that enforce NekoStack architectural conventions. Catches the things type-checking and Prettier don't — the design patterns, the load-bearing casts, the "every service has a spec file" invariants.
 
+## Quick reference
+
+| | |
+|---|---|
+| **Build tier** | Foundation primitive — build early so conventions are enforced from day one |
+| **Depends on** | ESLint (external), `@typescript-eslint/utils`, knowledge of `schema` / `config` / `api` / `auth` conventions |
+| **Used by** | every package's CI; every consuming project's `eslint.config.js`; IDE integrations |
+| **Status** | Empty placeholder — not started |
+| **Est. to v1.0** | 4–8 weeks (per-rule effort small; cumulative across ~25–30 rules is the cost) |
+| **Sellable?** | Niche — primarily useful to NekoStack consumers; MIT release as part of stack |
+
 ## Why this exists
 
 Type checking catches type errors. Prettier catches formatting. ESLint's default rules catch generic JavaScript footguns. None of them catch the **architectural conventions** that make a stack legible:
@@ -36,6 +47,28 @@ Building this yourself rather than relying on generic ESLint plugins is justifie
 - Prettier-style formatting. Different tool.
 - Type checking. `tsc` already does that.
 - Runtime enforcement. Lint rules are static.
+
+## Boundary
+
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §3, §45 for the full capability map.
+
+### Owns
+- Custom ESLint rules enforcing NekoStack architectural patterns
+- Shareable configs (`@nekostack/eslint-config/base`, `/typescript`, `/react`, `/nest`, `/strict`)
+- Auto-fixers where mechanical fix is safe
+- Rule documentation auto-generated from rule metadata
+- Static enforcement of package-boundary rules (which package can import which)
+
+### Does NOT own
+| Capability | Lives in |
+|---|---|
+| Generic JS/TS rules | external (`@typescript-eslint`, `eslint-plugin-react`, etc. — we extend these) |
+| Prettier-style formatting | external (Prettier) |
+| Type checking | external (`tsc`) |
+| Runtime policy enforcement (lifecycle gates, kill-switches) | `governance` (static vs runtime) |
+| Test framework | external (Vitest) |
+| Architectural conformance at runtime | `governance` |
+| Workspace dependency graph | `workspace` (lint consumes the graph) |
 
 ## Competitors and adjacent tools
 

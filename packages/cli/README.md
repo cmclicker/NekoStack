@@ -2,6 +2,17 @@
 
 > The single command you type 50 times a day across every NekoStack project. Scaffolds modules, validates schemas, regenerates code, runs sims, lints architecture, exports content graphs.
 
+## Quick reference
+
+| | |
+|---|---|
+| **Build tier** | Foundation primitive — build shortly after `schema` |
+| **Depends on** | `schema` (for command input validation); plugin contracts with `codex`, `lint`, `sim`, `migrate`, `assets`, every other package that contributes subcommands |
+| **Used by** | every developer, every day; CI pipelines (via `--json` mode); `templates` invokes `neko init`; `actions` consumes the command catalog |
+| **Status** | Empty placeholder — not started |
+| **Est. to v1.0** | 2–4 weeks focused |
+| **Sellable?** | Low — plumbing. MIT release as part of stack; unlikely to gain independent traction |
+
 ## Why this exists
 
 Every NekoStack project has the same recurring chores:
@@ -37,6 +48,31 @@ Building this yourself rather than using a generic CLI framework is justified be
 - The actual schema generators — those live in `@nekostack/schema`. The CLI is a shell.
 - Linting rules themselves — those live in `@nekostack/lint`. The CLI invokes them.
 - A REPL or interactive shell mode. Not needed.
+
+## Boundary
+
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §45 for the full capability map.
+
+### Owns
+- CLI binary (`neko`) + argv parsing substrate
+- Plugin registration contract (every package can contribute subcommands)
+- Output formatters (pretty + `--json`)
+- Interactive prompt wrappers (clack-based)
+- Built-in commands: `init`, `new`, `help`, `version`
+- Subcommand discovery + auto-generated help
+- Destructive-operation confirmation pattern
+
+### Does NOT own
+| Capability | Lives in |
+|---|---|
+| Project bootstrap template content | `templates` (invoked by `neko init`) |
+| Schema generators | `schema` (invoked by `neko schema generate`) |
+| Codex export logic | `codex` (invoked by `neko codex export`) |
+| Lint rules + rule execution | `lint` (invoked by `neko lint`) |
+| Sim execution | `sim` (invoked by `neko sim run`) |
+| Unified action/command catalog across CLI + UI + agents | `actions` (we are the CLI surface; `actions` is the cross-surface registry) |
+| Argv parsing primitives | external (commander or yargs) |
+| Interactive prompts UI | external (clack) |
 
 ## Competitors and adjacent tools
 

@@ -2,6 +2,17 @@
 
 > Define a type once. Generate Zod validators, JSON Schema, OpenAPI, and TypeScript types from it. Stop the cross-layer drift.
 
+## Quick reference
+
+| | |
+|---|---|
+| **Build tier** | Foundation primitive — build first |
+| **Depends on** | (none — foundational) |
+| **Used by** | `api`, `cli`, `codex`, `auth`, `form`, `config`, `events`, `telemetry`, `validator`, `id`, `entitlements`, `lint` (rule authoring), and effectively everything else |
+| **Status** | Empty placeholder — not started |
+| **Est. to v1.0** | 4–8 weeks focused / 3–6 months at solo-dev cadence |
+| **Sellable?** | Strong: OSS-friendly, commercial managed-schema-registry tier plausible (Speakeasy-adjacent) |
+
 ## Why this exists
 
 Every non-trivial app ends up defining the same data shape in multiple places:
@@ -37,6 +48,31 @@ Building this yourself rather than adopting Zod or TypeBox is justified because:
 - GraphQL SDL output. Could be added as a generator later, not in v1.
 - Runtime *validation library implementation* — we generate Zod schemas, we don't reimplement Zod's runtime.
 - Form rendering. That's `@nekostack/form`'s job; it consumes our schemas.
+
+## Boundary
+
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §7 for the full capability map.
+
+### Owns
+- Schema DSL (object / array / union / enum / literal / refinement / recursive)
+- TypeScript type inference (`s.infer<T>`)
+- Generators: TS types, Zod validators, JSON Schema (2020-12), OpenAPI 3.1 components
+- Schema composition (extend / omit / pick / partial / merge)
+- Schema versioning + per-version migration registration
+- Runtime validation execution (via generated Zod)
+- Structured `Issue` / error-format shape
+
+### Does NOT own
+| Capability | Lives in |
+|---|---|
+| Form input validation UI + state | `form` (consumes our schemas) |
+| API request/response boundary validation | `api` (consumes our schemas) |
+| Cross-reference / continuity validation | `validator` |
+| Database schema definition + DDL | `migrate` (works with us for versioning) |
+| Branded ID types (UUID/ULID/branded primitives) | `id` (uses us as substrate) |
+| ESLint rule authoring | `lint` |
+| GraphQL SDL output | external (not in v1; could be a future generator) |
+| Runtime validation library implementation | external (Zod — we generate, we don't reimplement) |
 
 ## Competitors and adjacent tools
 

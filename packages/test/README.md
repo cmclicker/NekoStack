@@ -2,6 +2,17 @@
 
 > Factories, deterministic seed harnesses, golden-file assertions, and snapshot UX that doesn't suck. The testing infrastructure Vitest assumes you'll write yourself.
 
+## Quick reference
+
+| | |
+|---|---|
+| **Build tier** | Foundation primitive — build alongside `schema` (co-dependent) |
+| **Depends on** | Vitest (external), `schema` (factory schemas), `@faker-js/faker` (primitive generators); coordinates with `random` for deterministic RNG |
+| **Used by** | every package's test suite; every consuming project's test suite |
+| **Status** | Empty placeholder — not started |
+| **Est. to v1.0** | 3–5 weeks focused |
+| **Sellable?** | Plausible — the factory + golden-file + schema-integration combo is undersupplied in the JS ecosystem |
+
 ## Why this exists
 
 Vitest and Jest give you `describe`, `it`, `expect`, and a runner. They don't give you:
@@ -36,6 +47,31 @@ Building this yourself rather than gluing together `@faker-js/faker`, `fishery`,
 - E2E browser testing. Playwright is the right tool.
 - Visual regression. Use Playwright + a service.
 - Mocking individual functions. Vitest's `vi.mock` is fine. Service-level mocking belongs in `@nekostack/mock`.
+
+## Boundary
+
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §45 for the full capability map.
+
+### Owns
+- Schema-driven factory API (`factory(Schema).build()`)
+- Trait composition + sequence helpers
+- Deterministic seeded factories (failures print seed for reproducibility)
+- Golden-file matcher (`toMatchGolden`)
+- Custom matchers for NekoStack-specific types
+- Fake clock helpers
+- Test fixture loaders
+
+### Does NOT own
+| Capability | Lives in |
+|---|---|
+| Test runner | external (Vitest) |
+| Deterministic PRNG primitives | `random` (we use it; we don't define it) |
+| Faker-style data generators | external (`@faker-js/faker` — wrapped) |
+| E2E browser testing | external (Playwright) |
+| Property-based / fuzz testing | `fuzz` |
+| Service mocking | `mock` |
+| Visual regression testing | TBD (folded into `test` sub-module later) |
+| Performance benchmarks | `bench` |
 
 ## Competitors and adjacent tools
 
