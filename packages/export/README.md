@@ -1,6 +1,17 @@
 # @nekostack/export
 
-> Versioned data export, GDPR DSAR (data subject access request) scaffold, point-in-time backups, import validation. The "give me my data" layer every product needs eventually and never thinks about until they're asked for it.
+> Versioned data export, GDPR DSAR (data subject access request) scaffold. The "give me my data" layer every product needs eventually and never thinks about until they're asked for it. Distinct from `backup` (operational disaster-recovery) and `saves` (per-game).
+
+## Quick reference
+
+| | |
+|---|---|
+| **Build tier** | SaaS layer — build before any product reaches production-with-paying-customers |
+| **Depends on** | `schema` (exporter schemas), `codex` (Codex entities have natural exporter shape), `audit` (every export audited), `auth` (permission-gated), `cli` (export subcommands), `compliance` (retention + redaction policies) |
+| **Used by** | NekoVibe (account export), NekoSystems (agent / workflow export), retail-ops, EdTech, Mara Kane (narrative bible snapshots), any product handling user data |
+| **Status** | Empty placeholder — not started |
+| **Est. to v1.0** | 8–12 weeks focused |
+| **Sellable?** | Strong OSS (niche is empty); plausible commercial as part of hosted compliance + export product (OneTrust competitor at SMB price) |
 
 ## Why this exists
 
@@ -43,6 +54,33 @@ Building this yourself rather than using something like Airbyte / Singer is just
 - Cross-system ETL. We export *out of* a NekoStack product; we don't replicate between systems.
 - Encryption at rest. Could integrate with `@nekostack/crypto` for export-archive encryption later.
 - Long-term retention storage. We produce archives; storing them is your problem.
+
+## Boundary
+
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §27 for the full capability map.
+
+### Owns
+- Per-domain exporter definitions
+- DSAR multi-domain orchestration ("all data for user X")
+- Streaming output (no full-buffer in memory)
+- Versioned archive format with manifest
+- Output formats (JSON / NDJSON / CSV / Parquet)
+- Tenant-scoped exports
+- ZIP / tar packaging
+- Schema version metadata on archives
+
+### Does NOT own
+| Capability | Lives in |
+|---|---|
+| Importing previously-exported archives | `import` (symmetric package) |
+| Operational backup / disaster recovery / point-in-time | `backup` |
+| Per-game save data | `saves` |
+| Real-time data streaming (Kafka, etc.) | out of scope (batch only) |
+| Cross-system ETL (Airbyte-style) | out of scope (we export *out of* a product) |
+| Encryption-at-rest for archives | future (would integrate with `crypto`) |
+| Long-term retention storage | `compliance` (retention policy) + `backup` (storage) |
+| Compliance evidence collection | `compliance` |
+| Audit log of export operations | `audit` (we emit) |
 
 ## Competitors and adjacent tools
 

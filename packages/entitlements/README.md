@@ -2,6 +2,17 @@
 
 > Plans, feature gates, usage metering, soft and hard limits, upgrade prompts. The "what is this user / tenant allowed to do under their current plan" layer.
 
+## Quick reference
+
+| | |
+|---|---|
+| **Build tier** | SaaS layer — critical for every monetized product |
+| **Depends on** | `schema` (plan/feature definitions), `auth` (decisions feed AccessDecision), `telemetry` (usage events), `audit` (denial records), `tenant` (per-tenant plan binding) |
+| **Used by** | `billing` (drives entitlement state on plan change); NekoVibe (Plus tier), NekoSystems (agent-count limits), future retail-ops / EdTech / business SaaS |
+| **Status** | Empty placeholder — not started |
+| **Est. to v1.0** | 8–12 weeks focused |
+| **Sellable?** | **Strong commercial potential** — Stigg / LaunchDarkly Subscriptions territory; schema-typed audit-integrated entitlements with hosted tier is a real play |
+
 ## Why this exists
 
 Authorization (`@nekostack/auth`) answers: "given this user's roles and permissions, is this action allowed?" Entitlements answers a different question: "given this tenant's current plan and usage, is this action allowed?" The two are related but distinct:
@@ -45,6 +56,32 @@ Building this yourself rather than adopting Stigg, LaunchDarkly Subscriptions, o
 - Subscription lifecycle (trial start, dunning, cancellation). `@nekostack/billing` handles those.
 - Feature flags (rollout / AB). Different abstraction; lives in `@nekostack/flags`.
 - Per-user (vs per-tenant) entitlements. Could be added; v1 is tenant-scoped.
+
+## Boundary
+
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §11 for the full capability map.
+
+### Owns
+- `definePlan()` declarative plan schema
+- Feature catalog (typed strings like `agent.create`)
+- Usage counters with period windows (daily / monthly / lifetime)
+- Soft / hard limit policies + grandfathering
+- Plan migration logic
+- Upgrade-prompt metadata (which plan unlocks this, diff vs current)
+- Entitlement decision input feeding `auth.AccessDecision`
+
+### Does NOT own
+| Capability | Lives in |
+|---|---|
+| Payment processing / Stripe integration | `billing` |
+| Subscription lifecycle (trial / cancel / dunning) | `billing` |
+| Feature flags (rollout / A/B testing, not plan-based) | `flags` |
+| Rate / abuse limiting (request-level) | `limits` |
+| Role-based permissions (not plan-based) | `permissions` |
+| Audit log storage | `audit` |
+| Multi-tenant context | `tenant` |
+| Per-user (vs per-tenant) entitlements | TBD (could be added; v1 is tenant-scoped) |
+| Usage event ingestion infrastructure | `telemetry` (we emit) |
 
 ## Competitors and adjacent tools
 

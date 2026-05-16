@@ -2,6 +2,17 @@
 
 > WebSocket / Server-Sent Events / sync layer for multiplayer games, live leaderboards, real-time dashboards, and collaborative UI. The transport NekoStack picks up when HTTP request-response stops being the right shape.
 
+## Quick reference
+
+| | |
+|---|---|
+| **Build tier** | Project unblocker — Leytide multiplayer can't proceed without it |
+| **Depends on** | `schema` (typed messages), `auth` (per-message authorization), `telemetry` (connection events); optional Redis/NATS for multi-process backplane; optional Yjs for CRDT collab |
+| **Used by** | Leytide (multiplayer + presence + chat), NekoVibe (live leaderboards + completion notifications), NekoBattler (spectator/replay mode), NekoSystems (agent dashboards) |
+| **Status** | Empty placeholder — not started |
+| **Est. to v1.0** | 16–32 weeks focused (real-time correctness is genuinely hard) |
+| **Sellable?** | Plausible OSS + commercial (Pusher / Ably / Liveblocks territory at self-hostable price point) |
+
 ## Why this exists
 
 HTTP request-response works until it doesn't. The moment your product needs:
@@ -47,6 +58,34 @@ Building this yourself rather than using Socket.io, Pusher, Ably, or Liveblocks 
 - Voice / video. Use a specialized service (LiveKit, Daily).
 - MMORPG-scale spatial state replication. Leytide can use this for chat/UI, but bespoke game-engine networking for spatial state is its own package eventually (`@nekostack/netcode` perhaps; not in v1).
 - Real-time CDN edge functions. Different domain.
+
+## Boundary
+
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §31 for the full capability map.
+
+### Owns
+- WebSocket server with auth handshake
+- SSE fallback transport
+- Typed channel abstraction with schema validation
+- Presence (who's connected, who's in which room)
+- Broadcast / multicast (per room) / unicast (per connection)
+- Reconnect with sequence-numbered message replay
+- Backpressure handling
+- Pub/sub backplane adapters (in-memory / Redis / NATS)
+- CRDT primitives for collaborative state (Yjs adapter — opt-in)
+- Typed client SDK with React hooks (`useChannel`, `usePresence`)
+
+### Does NOT own
+| Capability | Lives in |
+|---|---|
+| HTTP API endpoints | `api` |
+| Webhook reception / dispatch | `webhooks` |
+| WebRTC peer-to-peer | external (different use case) |
+| Voice / video | external (LiveKit, Daily, etc.) |
+| MMORPG-scale spatial state replication / netcode | future game-side package; not generic enough for v1 |
+| Real-time CDN edge functions | external (Cloudflare / Fastly) |
+| Per-message authorization decisions | `auth` (we call into it; auth decides) |
+| Yjs / CRDT primitives themselves | external (Yjs — we provide the transport adapter) |
 
 ## Competitors and adjacent tools
 

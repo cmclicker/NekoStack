@@ -2,6 +2,17 @@
 
 > Full-text + faceted + fuzzy search for content-heavy projects. Wiki, codex, puzzle archives, narrative continuity, agent knowledge bases — anything searchable, here.
 
+## Quick reference
+
+| | |
+|---|---|
+| **Build tier** | Project unblocker — content-heavy projects hit search needs past ~hundreds of items |
+| **Depends on** | `schema` (index schemas), `codex` (first-class indexing of Codex entities), `taxonomy` (faceted filters by tag); SQLite (via `better-sqlite3` or `@libsql/client`) |
+| **Used by** | NekoBattler wiki, Mara Kane lore lookups, NekoVibe puzzle archive, Leytide world discovery, NekoSystems knowledge base, NekoLife activity catalog |
+| **Status** | Empty placeholder — not started |
+| **Est. to v1.0** | 8–12 weeks focused |
+| **Sellable?** | Strong OSS (embedded niche between MiniSearch and Meilisearch is empty); not a strong commercial direction (Algolia/Meilisearch dominate) |
+
 ## Why this exists
 
 Every content-heavy NekoStack project ends up needing search:
@@ -42,6 +53,34 @@ Building this yourself rather than running Elasticsearch, Meilisearch, or Typese
 - Semantic / vector search. That's `@nekostack/rag` — the embedding-based retrieval layer.
 - Real-time index updates from a stream of changes — could come, but not in v1.
 - Geospatial queries. Different domain.
+
+## Boundary
+
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §29 for the full capability map.
+
+### Owns
+- Typed index definitions against `schema`
+- Tokenizers (whitespace, n-gram, edge-n-gram, stem)
+- Inverted index storage (SQLite FTS5 default; memory backend optional)
+- BM25 scoring with field-weight tuning
+- Faceted filtering with pre-computed counts
+- Fuzzy matching (Levenshtein)
+- Query DSL (string, boolean, field-scoped)
+- Snippet + highlight extraction
+- Codex entity adapter (auto-index `codex` entities)
+
+### Does NOT own
+| Capability | Lives in |
+|---|---|
+| Semantic / vector search | `rag` (different retrieval shape) |
+| Embedding generation | `rag` |
+| RAG context-pack assembly | `rag` |
+| Generic graph traversal | `graph` |
+| Codex entity definitions | `codex` |
+| Tag / category hierarchies | `taxonomy` (we consume tag facets) |
+| Distributed multi-node search clusters | out of scope |
+| Geospatial queries | out of scope |
+| Real-time index updates from change streams | out of scope (v1) |
 
 ## Competitors and adjacent tools
 

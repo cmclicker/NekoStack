@@ -2,6 +2,17 @@
 
 > Admin dashboard starter. Drop-in surfaces for users, audit log, feature flags, entitlements, content moderation, system health. The internal-facing UI every product needs and no product wants to build twice.
 
+## Quick reference
+
+| | |
+|---|---|
+| **Build tier** | SaaS layer — build *after* underlying packages (auth, audit, flags, entitlements) so it has data to surface |
+| **Depends on** | `ui`, `table`, `auth` (admin role gating + user data), `audit`, `flags`, `entitlements`, `health`, `jobs`, `tenant` |
+| **Used by** | every product with admin surface area: NekoVibe (user / cosmetic / abuse admin), NekoSystems (agent / workflow), Leytide (GM admin), retail-ops, future products |
+| **Status** | Empty placeholder — not started |
+| **Est. to v1.0** | 12–20 weeks focused |
+| **Sellable?** | Unlikely independent traction (Refine/React Admin/Tremor crowded); this is the package where **using Refine is a legitimate retreat** if it becomes a slog |
+
 ## Why this exists
 
 Every product, once it has any users, needs an admin surface. The basic needs:
@@ -39,6 +50,34 @@ But: if at any point this becomes a slog and Refine fits, **using Refine is a le
 - Marketing / analytics dashboards aimed at executives. Different shape; could come later.
 - A no-code admin builder (drag-and-drop). Out of scope.
 - Direct SQL query interface. Use `@nekostack/audit` or actual DB tools.
+
+## Boundary
+
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §13 (admin sections across SaaS / observability tiers).
+
+### Owns
+- Admin shell (layout / nav / auth-gate)
+- Pre-built surfaces: Users, Audit, Flags, Entitlements, Moderation, Health, Jobs, Tenants
+- Auto-wiring from NekoStack packages (auth/audit/flags/entitlements feed UI)
+- Role-gated UI (admin / sub-admin / compliance read-only)
+- Table primitives consumption (virtualized rows, bulk actions)
+- Impersonation flow (time-limited tokens + visible banner + audit)
+- Custom-surface registration API
+
+### Does NOT own
+| Capability | Lives in |
+|---|---|
+| Customer-facing UI | consuming products |
+| Component primitives (Button / Input / Dialog / etc.) | `ui` |
+| Data tables themselves | `table` |
+| Marketing / executive analytics dashboards | future (different shape) |
+| No-code drag-and-drop admin builder | out of scope |
+| Direct SQL query interface | out of scope (use audit or DB tools) |
+| User authentication flow | `auth` |
+| Audit log storage | `audit` |
+| Flag toggle backend | `flags` |
+| Entitlement state | `entitlements` |
+| Customer support tooling | TBD (`support` package later) |
 
 ## Competitors and adjacent tools
 

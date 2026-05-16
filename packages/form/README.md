@@ -2,6 +2,17 @@
 
 > Declarative form schema + state + validation + UX. Drives forms from `@nekostack/schema` definitions. The "30% of every web app" layer that nobody gets quite right.
 
+## Quick reference
+
+| | |
+|---|---|
+| **Build tier** | Project unblocker — forms are ubiquitous; daily friction without it |
+| **Depends on** | `schema` (form schemas reuse this), `ui` (bindings produce props for UI components), `a11y` (accessible-error patterns) |
+| **Used by** | every UI surface taking input: profile editors, settings, content authoring, agent prompt editors, retail-ops data entry, narrative metadata, puzzle authoring, admin |
+| **Status** | Empty placeholder — not started |
+| **Est. to v1.0** | 8–14 weeks focused |
+| **Sellable?** | Plausible MIT (schema-first niche undersupplied); form-builder SaaS (Typeform/Tally) is different shape and not our direction |
+
 ## Why this exists
 
 Forms are the most universal piece of UI. They are also the most universally-mishandled. Every project re-invents:
@@ -48,6 +59,33 @@ Building this yourself rather than adopting React Hook Form + Zod resolver is ju
 - The validation primitives. Those come from `@nekostack/schema`.
 - Server-side form-action endpoints. Use `@nekostack/api`.
 - Drag-and-drop form builders (the editor UI for non-developers). Could be a future product.
+
+## Boundary
+
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §36, §7 for the full capability map.
+
+### Owns
+- Form definition built on `schema`
+- Form state machine (pristine / dirty / touched / submitting / submitted / failed)
+- Sync validation (schema-driven)
+- Async validation (debounced field-level checks with cancellation)
+- Field bindings (props for inputs)
+- Structured-error mapping to fields
+- Conditional fields (show-when)
+- Field arrays (repeatable groups)
+- Multi-step wizards with branching
+- Optimistic submission
+
+### Does NOT own
+| Capability | Lives in |
+|---|---|
+| Visual input components themselves | `ui` (we produce binding props) |
+| Validation primitives (Zod-equivalent runtime) | `schema` (we use generated validators) |
+| Server-side form-action endpoints | `api` |
+| Accessibility patterns (errors, focus on invalid) | `a11y` (we consume helpers) |
+| Drag-and-drop form-builder UI | out of scope (future product, not stack) |
+| Theme tokens for form styling | `theme` |
+| Localization of validation messages | `locale` |
 
 ## Competitors and adjacent tools
 

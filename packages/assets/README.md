@@ -2,6 +2,17 @@
 
 > Game asset pipeline: sprite atlases, audio sprite sheets, animation sequences, content validation, hot-reload in dev, hashed/optimized output in prod. Every NekoStack game project's asset story in one place.
 
+## Quick reference
+
+| | |
+|---|---|
+| **Build tier** | Project unblocker — NekoBattler's 565-champion roster and Leytide's world content cannot scale without it |
+| **Depends on** | `schema` (manifest format), `codex` (entity reference validation), `cli`; external substrates: `sharp`, `ffmpeg`, atlas packers, Aseprite CLI |
+| **Used by** | NekoBattler, NekoGacha, Leytide, NekoVibe (game icons + share-card art), future game projects |
+| **Status** | Empty placeholder — not started |
+| **Est. to v1.0** | 12–20 weeks focused |
+| **Sellable?** | Plausible OSS — engine-agnostic asset pipelines are rare; commercial CDN-pipeline angle dominated by Cloudinary/Imgix so not a near-term focus |
+
 ## Why this exists
 
 Games have content that isn't code: sprites, sound effects, music, animations, particle textures, fonts, JSON content files, level data. Without a deliberate pipeline, every game project ends up with:
@@ -42,6 +53,35 @@ Building this yourself rather than using Phaser's asset pipeline, PixiJS-Asset, 
 - 3D model pipelines (glTF, FBX). Out of v1 scope; could be a sibling package.
 - Streaming video. Different domain.
 - Asset DRM / watermarking. Out of scope.
+
+## Boundary
+
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §43 for the full capability map.
+
+### Owns
+- Asset manifest format (declarative inputs + processing rules)
+- Sprite atlas packing (multiple bin-packing algorithms)
+- Audio sprite generation (concatenated file + JSON timing map)
+- Sprite sequence / animation frame extraction
+- Format conversion (PNG → AVIF/WebP, WAV → OGG/Opus)
+- Content validation against `codex` entity schemas
+- Build-time content hashing for cache-busting
+- Dev-time hot-reload server
+- Runtime asset loader (progressive load + retries)
+- Engine adapters (Canvas, PixiJS, Three.js, custom)
+
+### Does NOT own
+| Capability | Lives in |
+|---|---|
+| Authoring assets (Aseprite, Photoshop, Audacity) | external (we ingest, never create) |
+| Image processing primitives | external (`sharp` — we orchestrate) |
+| Audio transcoding primitives | external (`ffmpeg` — we orchestrate) |
+| Atlas packing algorithms themselves | external (TexturePacker or free alternatives) |
+| Image processing for non-game web (resize / responsive / WebP) | `media` (UI-facing media, distinct from game assets) |
+| 3D model pipelines (glTF, FBX) | out of scope (v1) |
+| Streaming video | out of scope |
+| Save data | `saves` |
+| Audio playback engine | `audio` (we build sprites; audio plays them) |
 
 ## Competitors and adjacent tools
 

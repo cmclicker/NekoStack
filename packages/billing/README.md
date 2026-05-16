@@ -2,6 +2,17 @@
 
 > Stripe integration, subscription lifecycle, invoicing, dunning, receipts. The payment-money layer. Distinct from entitlements (which is the *logic* layer that billing feeds into).
 
+## Quick reference
+
+| | |
+|---|---|
+| **Build tier** | SaaS layer — build when first product is ready to monetize, not before |
+| **Depends on** | `schema` (billing event shapes), `entitlements` (plan state sync), `telemetry` (billing events), `audit` (every action audited), `webhooks` (Stripe webhook receiver), `email` (receipts + dunning); Stripe SDK |
+| **Used by** | NekoVibe Plus (when monetized), NekoSystems tier, future retail-ops / EdTech subscriptions |
+| **Status** | Empty placeholder — not started |
+| **Est. to v1.0** | 8–16 weeks focused |
+| **Sellable?** | Marginal as a library (Stripe + LemonSqueezy + Paddle dominate); plausible as part of a broader hosted offering |
+
 ## Why this exists
 
 The moment any NekoStack product accepts money, you need:
@@ -47,6 +58,35 @@ Building this yourself rather than using LemonSqueezy, Paddle, or Lago is justif
 - Merchant-of-record functionality. We assume direct Stripe integration; not LemonSqueezy-style.
 - Sales-tax calculation for non-Stripe-Tax jurisdictions. If you operate outside Stripe Tax coverage, you need additional tooling.
 - Quoting / sales-rep workflows. Different shape.
+
+## Boundary
+
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §12 for the full capability map.
+
+### Owns
+- Stripe customer / subscription / price / payment-method management
+- Stripe webhook reception (via `webhooks` substrate) with verification + idempotency
+- Subscription lifecycle (create / upgrade / downgrade / cancel / reactivate)
+- Trial start / end / extension
+- Stripe Tax integration
+- Proration on plan changes
+- Refunds / credit notes
+- Invoice retrieval + PDF download
+- Customer portal redirect helpers
+- Reconciliation job (Stripe ↔ local state drift detection)
+- Plan price-id ↔ NekoStack plan mapping
+
+### Does NOT own
+| Capability | Lives in |
+|---|---|
+| Plan logic + feature gating + usage limits | `entitlements` |
+| Webhook receiver infrastructure | `webhooks` (we register handlers) |
+| Email templating / sending | `email` |
+| Direct ACH / wire / crypto payments | external (Stripe handles cards + bank) |
+| Merchant-of-record functionality (LemonSqueezy-style) | external (out of scope) |
+| Sales-rep / quoting workflows | out of scope |
+| Sales-tax for non-Stripe-Tax jurisdictions | TBD (additional tooling required) |
+| Audit log storage | `audit` |
 
 ## Competitors and adjacent tools
 
