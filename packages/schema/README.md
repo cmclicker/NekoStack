@@ -74,6 +74,13 @@ Building this rather than adopting Zod is justified because:
 | GraphQL SDL output | external (not in v1; could be future generator) |
 | Runtime validation library *implementation* | external (Zod — we generate, we don't reimplement) |
 | Schema **migration execution** at scale | future package or v0.8+ here, gated on production need |
+| Global CLI runtime, plugin discovery, terminal UX, workspace command orchestration | `cli` |
+
+### CLI ownership note
+
+`@nekostack/schema` may expose schema-specific CLI command **handlers**, but it does not own the global CLI runtime. Global command routing, plugin discovery, terminal UX, and workspace command orchestration belong to `@nekostack/cli`.
+
+Concretely: the `src/cli/` subdirectory in this package exports handler functions for `schema generate`, `schema check`, `schema diff`. These are registered with `@nekostack/cli` as plugin commands per its plugin contract. We do not own the `neko` binary, the argv parser, the interactive prompt UX, the help system, or any cross-package command orchestration — those are CLI-package concerns. This prevents future scope creep while keeping `schema generate / check / diff` available to users.
 
 ---
 

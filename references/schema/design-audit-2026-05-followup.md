@@ -188,3 +188,15 @@ The first version was a *strategic brief*. This version is an *engineering desig
 | Test completeness | Not yet |
 
 The next step should be to turn this into a **file-by-file implementation contract**, starting with `packages/schema/src/ir/nodes.ts`.
+
+---
+
+## Final scope-clarification pass (2026-05-16)
+
+Following the followup-audit incorporation, one tightening remained:
+
+> `@nekostack/schema` may expose schema-specific CLI command handlers, but it does not own the global CLI runtime. Global command routing, plugin discovery, terminal UX, and workspace command orchestration belong to `@nekostack/cli`.
+
+This was added to the README's Boundary section as a "CLI ownership note" + a corresponding row in the "Does NOT own" table. Prevents future scope creep where someone implementing `@nekostack/schema` might inadvertently build their own argv parser, terminal output formatter, or workspace-aware command resolver — duplicating what `@nekostack/cli` should own.
+
+The handler/runtime distinction is explicit: this package owns the *functions* invoked by `schema generate / check / diff`; `@nekostack/cli` owns the *binary, plugin contract, and surrounding UX* that exposes them to the user.
