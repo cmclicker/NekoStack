@@ -1,6 +1,17 @@
 # @nekostack/telemetry
 
-> Typed event schemas, structured ingestion, time-series query, privacy-aware logging. Observability that you author, not that you rent.
+> Typed event schemas, structured ingestion, time-series query, privacy-aware logging. The product-analytics layer. Distinct from `log` (runtime debug), `audit` (compliance-grade), `trace` (request spans), `metrics` (counters), and `events` (event sourcing source-of-truth).
+
+## Quick reference
+
+| | |
+|---|---|
+| **Build tier** | Force multiplier — build early, observability is a habit not a retrofit |
+| **Depends on** | `schema` (event schemas), `lint` (enforces all events in `*.events.ts` registered to catalog), `secure` (PII scrubbing primitives) |
+| **Used by** | `auth` (access-decision events), `audit` (subset), `rules` (fire events), `entitlements` (usage events), every product surface |
+| **Status** | Empty placeholder — not started |
+| **Est. to v1.0** | 6–12 weeks focused |
+| **Sellable?** | Plausible OSS (typed-event-catalog niche undersupplied); commercial "self-hosted typed-events analytics" at sub-PostHog pricing tier |
 
 ## Why this exists
 
@@ -42,6 +53,33 @@ Building this yourself rather than using Segment / PostHog / Sentry is justified
 - APM-style distributed tracing — that's `@nekostack/trace`. Telemetry is for events; trace is for spans.
 - Frontend session replay (Hotjar-style) — different shape.
 - Marketing analytics dashboards. We provide the data; visualization is consumer-side.
+
+## Boundary
+
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §16 for the full capability map. Critical clarification: telemetry, log, audit, trace, metrics, and events are all distinct.
+
+### Owns
+- Typed event catalog + centralized registry
+- Schema-validated event emission
+- Per-field PII tagging (`pii: 'scrub' | 'hash' | 'safe'`)
+- Sinks: console (pretty), NDJSON file, SQLite, OTLP, custom
+- Query API (filter + time-bucket aggregation)
+- Head-based sampling
+- Replay recorded events into a local environment
+
+### Does NOT own
+| Capability | Lives in |
+|---|---|
+| Structured runtime debug logging | `log` |
+| Counter / gauge / histogram primitives | `metrics` |
+| Distributed tracing spans + propagation | `trace` |
+| Compliance-grade tamper-evident audit log | `audit` (we emit a subset; audit stores) |
+| Event sourcing as source-of-truth state | `events` (we are observability; events are authoritative) |
+| Error tracking + grouping | `errors` |
+| Health probes | `health` |
+| Performance benchmarks | `bench` |
+| PII detection / scrubbing primitives | `secure` (we tag fields; secure scrubs at egress) |
+| Frontend session replay (Hotjar-style) | out of scope |
 
 ## Competitors and adjacent tools
 

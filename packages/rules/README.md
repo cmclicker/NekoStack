@@ -2,6 +2,17 @@
 
 > A deterministic rule engine with explicit trigger ordering, conflict resolution, and replay. Game combat, business rules, and content validation share the same shape — this is the spine.
 
+## Quick reference
+
+| | |
+|---|---|
+| **Build tier** | Force multiplier — critical for NekoBattler combat and any card/board game |
+| **Depends on** | `schema` (rule validation), `telemetry` (rule-fire events optional), `random` (deterministic RNG for stochastic conditions) |
+| **Used by** | NekoBattler combat, NekoGacha banner rules + pity, future card autobattler mode, NekoSystems policy gates, NekoVibe puzzle-validation, business workflows |
+| **Status** | Empty placeholder — not started |
+| **Est. to v1.0** | 8–12 weeks focused |
+| **Sellable?** | Strong: deterministic-replayable rule engines in JS are surprisingly absent; OSS + hosted authoring-tool angle both viable |
+
 ## Why this exists
 
 A *rule* is a piece of logic that fires when a condition is true and produces a deterministic effect. Auto-battler combat is rules. Card-game stacks are rules. Hearthstone trigger resolution is rules. Business contract evaluation is rules. Form validation is rules. Promotion eligibility is rules. The first time you implement trigger ordering correctly, you understand half of what makes Hearthstone hard.
@@ -51,6 +62,34 @@ Building this yourself rather than using `nools`, `json-rules-engine`, or a forw
 - Probabilistic rules (statistical predicates). Use `@nekostack/sim` for stochastic simulation.
 - A graphical rule editor. Could be a future companion package; not core.
 - Forward-chaining inference at scale (thousands of rules with deep chains). The shape is right but the optimization work for that scale is post-1.0.
+
+## Boundary
+
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §43 for the full capability map.
+
+### Owns
+- Rule definition DSL (when / then / priority / timing-band / metadata)
+- Rule storage and indexing for fast lookup
+- Event-driven evaluation (`engine.fire(event)`)
+- Trigger ordering (priority → timing-band → source → stable tiebreaker)
+- Resolution queue (effects emit further events, queue resolves in order)
+- Replay-from-seed determinism
+- Trace output (every fire recorded)
+- Conflict resolution policies (priority-only, priority-then-source, owner-first, etc.)
+- Composable matcher predicates
+
+### Does NOT own
+| Capability | Lives in |
+|---|---|
+| Stochastic / probabilistic simulation | `sim` (uses rules as one component) |
+| Long-running stateful workflows / sagas | `flow` |
+| Forward-chaining inference at scale | out of scope (v1) |
+| LLM-driven decision rules | `prompts` + `tools` (LLM) or `ai` (game AI) |
+| Authorization rules | `permissions` + `auth` |
+| Form validation rules | `form` (uses `schema`) |
+| Specific game semantics (combat / cards / abilities) | consuming games (NekoBattler etc. — they use us as substrate) |
+| Distributed rule evaluation across machines | out of scope |
+| Graphical rule editor UI | future companion (not core) |
 
 ## Competitors and adjacent tools
 

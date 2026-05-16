@@ -2,6 +2,17 @@
 
 > Define the API contract once. Generate the server stubs, client SDKs, validation middleware, and docs from it. End the "TypeScript types in three places" problem at the API boundary.
 
+## Quick reference
+
+| | |
+|---|---|
+| **Build tier** | Force multiplier — build after `schema` |
+| **Depends on** | `schema` (request/response shapes), `auth` (permission decoration), `telemetry` (request events), `cli` (codegen subcommands) |
+| **Used by** | every backend with an HTTP API: NekoVibe, NekoSystems (FastAPI adapter would be a stretch goal), Leytide server, future SaaS |
+| **Status** | Empty placeholder — not started |
+| **Est. to v1.0** | 12–20 weeks focused |
+| **Sellable?** | Strong: contract-first multi-adapter niche undersupplied (ts-rest is single-adapter, Stainless is commercial-only); managed-SDK + breaking-change CI is a real Stainless-adjacent commercial direction |
+
 ## Why this exists
 
 The endpoint-and-its-types-drift problem is universal:
@@ -44,6 +55,32 @@ Building this yourself rather than adopting tRPC, ts-rest, or Hono RPC is justif
 - Webhook receiver primitives — that's `@nekostack/webhooks`.
 - gRPC. Could be a future codegen target; not in v1.
 - GraphQL. Different paradigm; out of scope.
+
+## Boundary
+
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §32 for the full capability map.
+
+### Owns
+- `defineEndpoint()` contract DSL (method / path / params / query / body / responses)
+- Server adapters: Nest, Express, Fastify, Next.js Route Handlers, Hono
+- Typed client SDK generation (fetch + React Query hooks)
+- OpenAPI 3.1 component + path emission
+- API versioning conventions
+- Breaking-change diff between two contracts
+- Request body / query / param validation middleware
+
+### Does NOT own
+| Capability | Lives in |
+|---|---|
+| Login / session flow | `auth` |
+| Webhook reception + dispatch | `webhooks` |
+| HTTP client (retry / backoff / circuit-breaker) | `fetch` |
+| Real-time / WebSocket / SSE transport | `realtime` |
+| Rate limiting at the request layer | `limits` |
+| Permission decoration on endpoints | `auth` (we provide the decoration hook; permissions live there) |
+| gRPC | out of scope (could be a future codegen target) |
+| GraphQL | out of scope (different paradigm) |
+| Request-level telemetry events | `telemetry` (we emit; telemetry stores) |
 
 ## Competitors and adjacent tools
 

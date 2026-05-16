@@ -2,6 +2,17 @@
 
 > A graph-based content registry with typed entities and typed relationships. The shared knowledge layer behind games, narrative work, business systems, and AI agents.
 
+## Quick reference
+
+| | |
+|---|---|
+| **Build tier** | Force multiplier — strategically most important package in the stack |
+| **Depends on** | `schema` (entity definitions), `cli` (CLI subcommands), `graph` (substrate for traversal/cycle detection), optionally `storage` (binary asset refs) |
+| **Used by** | NekoBattler (champions/abilities/traits), Mara Kane (lore graph), NekoVibe (puzzle metadata), NekoGacha (collection), Leytide (world entities), NekoSystems (business entities), NekoLife (activities) — every content-heavy project |
+| **Status** | Empty placeholder — not started |
+| **Est. to v1.0** | 8–16 weeks focused |
+| **Sellable?** | Strong: OSS embedded-graph niche is genuinely undersupplied; commercial worldbuilding-SaaS angle (World Anvil but graph-typed) plausible |
+
 ## Why this exists
 
 Every content-heavy project ends up rediscovering the same problem: you have *things* (characters, items, abilities, factions, locations, lessons, business units, workflows) and *relationships between them* (depends_on, counters, belongs_to, foreshadows, teaches). The naive solution is to invent your own ad-hoc structures in each project — typically nested JSON or fields-on-rows in a relational schema. Then you discover, painfully, that:
@@ -39,6 +50,37 @@ Building this yourself rather than using Neo4j or a knowledge graph database is 
 - Full-text search on entity properties — that's `@nekostack/search`. Codex indexes by id and relationship, not free-form text.
 - Real-time collaboration on entity editing — out of initial scope; could come later.
 - Visualization rendering. Codex exports to formats; rendering happens in `@nekostack/canvas` or external tools (Graphviz, Obsidian Canvas, etc.).
+
+## Boundary
+
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §39, §48 for the full capability map.
+
+### Owns
+- `defineKind()` typed entity kinds with schemas
+- Typed relationships with cardinality (one/many)
+- Reference integrity enforcement at write-time
+- Query API (lookup, traverse, filter, path queries)
+- Storage adapters (in-memory / SQLite / JSON flat-file)
+- Manifest format for ingesting non-Codex-native projects (Codex-indexed mode)
+- Export formats (JSON, DOT, Cypher-like)
+- Versioned entity schemas + migrations
+- Stable cross-project IDs (`<namespace>:<kind>:<slug>`)
+
+### Does NOT own
+| Capability | Lives in |
+|---|---|
+| Generic graph primitives (DAG, traversal algorithms) | `graph` (substrate we use) |
+| Full-text search on entity properties | `search` |
+| Vector / semantic retrieval | `rag` |
+| Real-time collaborative editing of the graph | `realtime` (Yjs CRDT module) |
+| Schema DSL itself | `schema` |
+| Content lifecycle (draft/review/published) | `cms` |
+| Wiki page rendering | `wiki` |
+| Narrative scripting / branching dialog | `story` |
+| Continuity / contradiction validation | `validator` |
+| Tag / taxonomy hierarchies | `taxonomy` |
+| Visualization rendering | `canvas` or external (Graphviz, Obsidian Canvas) |
+| Distributed multi-node graph queries | out of scope |
 
 ## Competitors and adjacent tools
 

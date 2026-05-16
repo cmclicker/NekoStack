@@ -1,6 +1,17 @@
 # @nekostack/auth
 
-> The policy / tenant / role / permission / entitlement / audit layer. Sits on top of provider-based authentication (Auth.js, Clerk, Supabase) and owns the AccessDecision shape, not the crypto.
+> The policy layer. Sits on top of provider-based authentication (Auth.js, Clerk, Supabase) and owns the AccessDecision shape, not the crypto. Composes inputs from `tenant`, `permissions`, `entitlements`, and `limits` into a single decision.
+
+## Quick reference
+
+| | |
+|---|---|
+| **Build tier** | Force multiplier — build early, almost everything else depends on it |
+| **Depends on** | `schema`, `telemetry`, `audit`, `tenant`, `permissions`, `entitlements`, `limits`, `crypto` (wrappers); provider libs (Auth.js / Clerk / Supabase / Firebase) |
+| **Used by** | every API endpoint with auth; NekoVibe, NekoSystems, Leytide server, NekoBattler admin, future Business-OS, retail-ops, EdTech, all multi-tenant SaaS |
+| **Status** | Empty placeholder — not started |
+| **Est. to v1.0** | 12–24 weeks focused |
+| **Sellable?** | **High commercial potential** — Permit.io / Aserto / Cerbos territory; schema-typed audit-integrated authz with hosted tier is a real commercial play |
 
 ## Why this exists
 
@@ -39,6 +50,34 @@ Building this yourself rather than wholesale adopting an authz platform like Cas
 - 2FA / passkey *crypto*. We orchestrate the flow (challenge, verify, enrollment state) but defer to libraries for the cryptographic primitives.
 - Identity verification (KYC). Different problem space.
 - Federation between independent identity systems. Out of initial scope.
+
+## Boundary
+
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §8 for the full capability map.
+
+### Owns
+- Provider adapter contract (Auth.js / Clerk / Supabase / Firebase / local-dev)
+- Login flow normalization
+- Session shape
+- AuthContext composition (gathers inputs from tenant/permissions/entitlements/limits)
+- AccessDecision orchestration + shape
+- Framework middleware (Nest guards, Express middleware, Next.js handlers, Fastify hooks)
+- User profile + account model (folded in unless they grow distinct)
+
+### Does NOT own
+| Capability | Lives in |
+|---|---|
+| Tenant identity / lifecycle / isolation | `tenant` |
+| Permission catalog + role definitions / RBAC primitives | `permissions` |
+| Plan-based feature gating | `entitlements` |
+| Rate-limit-based gating | `limits` |
+| Audit log storage + query (we emit; audit stores) | `audit` |
+| Password hashing | external (bcrypt / argon2 via provider) |
+| OAuth protocol internals | external (Auth.js / Clerk) |
+| JWT signing internals | external (provider libs) |
+| 2FA / passkey crypto primitives | external (provider libs) |
+| Cryptographic primitive wrappers (encryption helpers) | `crypto` |
+| Login UI | `ui` (we provide policy backbone, not screens) |
 
 ## Competitors and adjacent tools
 

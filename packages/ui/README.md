@@ -1,6 +1,17 @@
 # @nekostack/ui
 
-> The component library + design-system primitives every NekoStack frontend builds on. Headless where possible, themed via `@nekostack/theme`, accessible by default.
+> The component library + design-system primitives every NekoStack frontend builds on. Headless where possible, themed via `@nekostack/theme`, accessible by default via `@nekostack/a11y`.
+
+## Quick reference
+
+| | |
+|---|---|
+| **Build tier** | Force multiplier — build after `theme`, `icons`, `a11y`, `motion` |
+| **Depends on** | `theme` (tokens), `icons` (iconography), `motion` (animations), `a11y` (accessibility primitives); optional substrate: Radix UI / React Aria |
+| **Used by** | NekoVibe (replaces current `packages/ui` over time), NekoBattler (combat HUD, wiki, profile), Leytide (every surface), NekoSystems (agent dashboards), future products |
+| **Status** | Empty placeholder — not started |
+| **Est. to v1.0** | 12–24 weeks focused (per-component small; cumulative ~30 components is large) |
+| **Sellable?** | Plausible MIT (solo-dev-optimized angle); UI library market crowded so independent commercial traction unlikely |
 
 ## Why this exists
 
@@ -36,6 +47,38 @@ Building this yourself rather than adopting shadcn/ui, Radix, MUI, or Mantine is
 - Icons — `@nekostack/icons`.
 - Theme management — `@nekostack/theme`.
 - The kitchen sink. We avoid 50-prop components; prefer composition.
+
+## Boundary
+
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §36 for the full capability map.
+
+### Owns
+- Headless component primitives (Slot, Portal, FocusTrap, VisuallyHidden, useControllable, useId)
+- Styled defaults consuming `theme` tokens
+- Common components: Button, Input, Textarea, Select, Combobox, Checkbox, RadioGroup, Switch, Slider
+- Overlays: Dialog, Drawer, Popover, Tooltip
+- Feedback: Toast, Skeleton, Spinner, Progress
+- Navigation: Tabs, Accordion, Breadcrumb
+- Data display: Avatar, Badge, Card
+- Layout primitives (Stack, Inline, Grid, Container, Divider) — layout sub-module
+- Form bindings consuming `form` state
+
+### Does NOT own
+| Capability | Lives in |
+|---|---|
+| Theme tokens + dark mode + a11y variants | `theme` |
+| Animation + transition primitives | `motion` |
+| Accessibility utilities (focus / ARIA / keyboard / contrast) | `a11y` |
+| Charting / data viz | `chart` |
+| Data grids (sort / filter / virtualize / edit) | `table` |
+| Spatial UI / maps | `map` |
+| Canvas 2D scene management | `canvas` |
+| Icon system + SVG sprite pipeline | `icons` |
+| Markdown rendering | `md` |
+| Rich text editing | `editor` |
+| Form state management + validation | `form` (we consume bindings) |
+| Routing / navigation | external framework router (Next.js, Solid Router, etc.) |
+| Domain widgets (LeaderboardTable, CombatLog, PuzzleBoard) | consuming products |
 
 ## Competitors and adjacent tools
 
