@@ -1,0 +1,29 @@
+{
+  "name": "nekostack",
+  "version": "0.0.0",
+  "private": true,
+  "description": "The NekoStack — a hand-crafted full-stack utility suite covering schema, contracts, auth, telemetry, UI, game systems, AI tooling, and everything between.",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "packageManager": "npm@11.6.1",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "clean": "turbo run clean && rimraf node_modules .turbo",
+    "format": "prettier --write \"**/*.{ts,tsx,md,json}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,md,json}\""
+  },
+  "devDependencies": {
+    "turbo": "^2.9.7",
+    "typescript": "^5.7.2",
+    "prettier": "^3.4.2",
+    "rimraf": "^6.0.1"
+  }
+}
