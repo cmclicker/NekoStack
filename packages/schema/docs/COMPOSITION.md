@@ -180,7 +180,7 @@ All operators preserve the v0.1 absence-semantics contract end-to-end. The per-o
 | `required()` | Affected fields' keys both become `"required"`; TInput/TOutput narrow via `Exclude<…, undefined>` |
 | `merge` (`"left"`) | Left's keys win for overlaps |
 | `merge` (`"right"`) | Right's keys win for overlaps |
-| `merge` (`"throw"`) | TS intersection (`S & Other`); overlap with incompatible types surfaces as `never` |
+| `merge` (`"throw"`) | TS intersection (`S & Other`); preserves disjoint/compatible merges, but runtime conflict detection is the load-bearing guarantee |
 | `override` | Replacement field's keys fully replace the base field's |
 
 `s.input<typeof Composed>` and `s.output<typeof Composed>` produce the right shapes per the v0.1 contract — type-level tests in [`../tests/composition.test-d.ts`](../tests/composition.test-d.ts) cover every operator.
