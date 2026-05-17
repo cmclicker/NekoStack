@@ -20,7 +20,7 @@ The user-facing surface is NekoStack-native:
 
 - `parse(schema, input): TOutput` — full pipeline; applies defaults, runs portable refinements, enforces unknown-key policy; throws on failure.
 - `safeParse(schema, input): Result<TOutput>` — same pipeline as `parse`; returns the v0.1 `Result<T>` instead of throwing.
-- `validate(schema, input): Result<TInput>` — pure structural check; does **not** apply defaults, does **not** run transforms (Invariant corollary v0.6). Returns the issues that would block a `parse`.
+- `validate(schema, input): Result<TInput>` — pure structural check; does **not** apply defaults, does **not** run transforms, does **not** execute runtime-only refinements (Invariant corollary v0.6). Returns the structural issues that would block parsing **before** normalization and default application — not necessarily every issue a full `parse` would surface.
 
 Users do not need to import Zod, Ajv, or any generated validator file to perform runtime validation. The peer-dep optionality of Zod (`peerDependenciesMeta.zod.optional: true`) is removed: Zod becomes a regular runtime dependency of `@nekostack/schema` because it is the v0.6 internal engine, not a user-supplied substrate.
 
@@ -182,7 +182,8 @@ packages/schema/tests/
 ├── runtime-issue-normalize.test.ts # ZodError → Issue mapping table
 ├── runtime-default-semantics.test.ts # parse fills defaults; validate does not
 ├── runtime-compile-cache.test.ts  # same SchemaNode → same compiled Zod (WeakMap)
-└── semantic-parity.test.ts        # the four-way parity matrix (NekoStack / Ajv / Redocly / IR walk)
+├── semantic-parity.test.ts        # the four-way parity matrix (Decision #19): NekoStack / generated-Zod / Ajv / IR-walker oracle
+└── openapi-spec-validity.test.ts  # Decision #19a: emitted OpenAPI components stay spec-valid under Redocly
 ```
 
 ## Dependency delta
@@ -211,13 +212,40 @@ Twenty decisions. The plan PR exists to resolve them. Highest-stakes flagged.
 
 ### Engine + caching
 
-6. **Internal engine is Zod 3.x.** Compiled via the v0.2 `generateZod` *as IR-walker logic*, not as string generation — the runtime engine reuses the per-node case logic that produces Zod calls, then executes the resulting Zod schema. (No `eval` of the v0.2 string output; that would be a security and source-map nightmare. The v0.2 generator can be refactored to emit Zod values directly, and the string-generator becomes a thin wrapper that converts the value to source.)
+6. **Internal engine is Zod 3.x. Shared semantic mapping, two consumers, no value-to-source conversion.**
+
+   v0.6 extracts the shared IR traversal and modifier-ordering logic out of the v0.2 Zod generator into an internal Zod compilation module. The module has **two consumers** that share the semantic mapping but produce different artifact types:
+
+   - **`generateZod(node): string`** — emits deterministic TypeScript source text (the v0.2 generator's existing job). All v0.2 snapshots remain byte-identical.
+   - **`compileZodSchema(node): ZodSchema`** (alias `irToZodSchema`) — returns a live `ZodSchema` value for runtime `parse` / `safeParse` / `validate`.
+
+   **Source generation and runtime compilation share the per-node semantic mapping — they do NOT share output objects.** The source generator must not stringify a live `ZodSchema` value, and the runtime compiler must not parse generated source. A live Zod object is not a reliable source-code AST; reverse-engineering one back into text would require chasing private fields and would break the moment Zod's internals shift. Two independent consumers of one shared mapping is the correct factoring; matches the v0.4 `emitSchemaFragment` extraction pattern in spirit.
+
+   No `eval` of generated source anywhere. Security, source maps, and bundler behavior all stay clean.
 
 7. **Compiled Zod schemas are cached on a `WeakMap<SchemaNode, ZodSchema>`.** Same `SchemaNode` instance → same compiled Zod. Different instances with byte-identical IR do not share — explicit dedup via `irHash` (v0.2) is a v0.7 registry concern, not a runtime one.
 
-8. **`validate` uses a defaults-stripped variant of the IR.** A `stripDefaultsForValidate(node)` helper walks the IR, drops `modifiers.default`, leaves everything else (`optional` / `nullable` / `nullish`) intact. The stripped IR is compiled to a separate cached Zod schema. **Important:** this is narrower than v0.5's `partial()`-strip, which also flips `optional`. The validate-time strip does NOT flip anything — a `default("x")` field becomes a plain required field for the purpose of structural validation. Required fields that are still absent → `missing_required`. (Decision #15 in v0.5 already established `default` ⇒ input-optional / output-required; stripping `default` alone for the validate path leaves a plain required input.)
+8. **`validate` compiles against a validate-specific IR variant.** A `stripDefaultsForValidate(node)` helper walks the IR and, for each default-bearing field:
+   - drops `modifiers.default`
+   - sets `modifiers.optional = true` for the validate-only IR variant
+   - leaves `nullable` / `nullish` and every other field untouched
 
-   *Open question:* should the strip also flip a stripped-default field to `optional`? That would match v0.1's "input-optional" semantics — a default-bearing field accepts absence. Defaulting to **yes, flip to optional** in v0.6 keeps `validate(User, {})` from rejecting on a missing `name` whose default `User` would have filled. The strip therefore drops `default` AND sets `optional` on that field — but ONLY when there was a default to drop, and ONLY for the validate path. This is the more useful behavior for "is the input structurally acceptable?" Document this as Decision #8a; revisit if a real consumer reports the opposite preference.
+   The variant IR is compiled to a separate Zod schema and cached on its own `WeakMap` slot. `validate` does not fill the default value in the returned `data`; `parse` / `safeParse` do.
+
+   **Rationale.** `validate` returns `Result<s.input<S>>`, not `s.output<S>`. Per v0.1 (Invariant 4 + the absence-semantics table), `default(v)` means **input-optional + output-required** — a missing default-bearing field is a valid input. So `validate` must accept the absence, and it must NOT silently fill the default (that's parse's job). The combined "strip default + flip to optional" is the only rule consistent with both halves of the absence-semantics contract for the validate path.
+
+   **Locked example:**
+
+   ```ts
+   const User = s.object({ name: s.string().default("anon") });
+
+   validate(User, {}).success === true;     // valid: name is input-optional
+   validate(User, {}).data    === {};       // no fill; validate returns the input
+   parse(User, {})            === { name: "anon" };  // fill applies
+   safeParse(User, {})        === { success: true, data: { name: "anon" } };
+   ```
+
+   **Why this is narrower than v0.5's `partial()`-strip.** `partial()` strips defaults AND flips fields to optional permanently, in both the IR and the type. The v0.6 validate-time variant flips to optional **only inside the validate-compile cache** — the original `SchemaNode` is unchanged, `parse` still sees a default-bearing field, and the type-level shape that callers see (`s.input<S>`) is unaffected because input keys are already optional for default-bearing fields per v0.1.
 
 9. **Compile happens lazily on first call per `SchemaNode`.** No precompilation at schema construction (which would change the v0.1 builder semantics).
 
@@ -249,7 +277,7 @@ Twenty decisions. The plan PR exists to resolve them. Highest-stakes flagged.
 | `invalid_string` (format: email/url/uuid/regex) | `invalid_format` | |
 | `invalid_date` | `invalid_type` | DateNode has no v0.6 builder; falls through |
 | `custom` | `custom_refinement_failed` | |
-| anything not listed above | `custom_refinement_failed` | last-resort; logged in test as "unmapped Zod code" |
+| anything not listed above | `custom_refinement_failed` | last-resort; **must** populate `metadata.source = "zod"` and `metadata.zodCode = <original code>` so traceability is preserved. Tests assert the metadata is present for the fallback path. |
 
 13. **`Issue.expected` / `Issue.received` are populated when Zod provides them.** Verbatim from Zod, no re-serialization. `Issue.schemaId` / `Issue.schemaVersion` come from `schema.node.metadata` if present, regardless of which generator/runtime produced them.
 
@@ -269,15 +297,20 @@ Twenty decisions. The plan PR exists to resolve them. Highest-stakes flagged.
 
 ### Semantic parity
 
-19. **Semantic-parity matrix covers every fixture used elsewhere in the test suite.** For each composed / hand-written schema in `tests/fixtures/`, the same input is validated four ways:
-    - NekoStack runtime (`safeParse`)
-    - Ajv 2020 against `generateJsonSchema(node)`
-    - Redocly against `generateOpenApiSchemaComponent(node)` composed into a synthetic document
-    - A trivial IR-walker test harness (`tests/helpers/ir-walk-validator.ts`) that handles only string / number / boolean / literal / enum / required-object — a "lowest common denominator" oracle that proves the IR has unambiguous semantics for the simple cases
+19. **Semantic-parity matrix — four runtime input oracles.** For each composed / hand-written schema in `tests/fixtures/`, the same input is validated four ways and all four must agree on accept/reject:
 
-    All four must agree on accept/reject for every fixture. Disagreement = bug, and the resolution rule is: **the IR is canonical**; the diverging engine is wrong. If Zod and Ajv disagree, the v0.2 / v0.3 generator that mis-translated is at fault.
+    1. **NekoStack runtime** — `safeParse(schema, input)`.
+    2. **Generated-Zod execution** — `generateZod(node)` emitted to source, the source compiled, the resulting Zod schema executed against the same input. This is the cross-check that proves the runtime compiler (Decision #6) and the source generator produce semantically equivalent validators.
+    3. **Ajv 2020** — against `generateJsonSchema(node)`. The cross-format check; Ajv is the actively-maintained JSON Schema 2020-12 validator.
+    4. **IR-walker oracle** — a deliberately small `tests/helpers/ir-walk-validator.ts` that handles only the subset of node kinds covered by v0.6 (string / number / boolean / literal / enum / object with required + optional + default + the three unknown-key policies). Lowest-common-denominator validator that proves the IR has unambiguous semantics for the simple cases independently of any external library.
 
-20. **Semantic-parity tests are required for merge.** This is the load-bearing v0.6 test category — it's the proof that runtime validation actually completes the v0.1 promise.
+    Disagreement = bug, and the resolution rule is: **the IR is canonical**; the diverging engine is wrong. If Zod and Ajv disagree, the v0.2 / v0.3 generator that mis-translated is at fault.
+
+    **Redocly is NOT in this matrix.** Redocly validates the structural validity of OpenAPI documents and components — it is not a runtime input validator and cannot rule on whether `{...}` matches a component schema. It stays as a separate test category (see Decision #19a).
+
+19a. **OpenAPI spec-validity check (separate from #19).** For each fixture, the OpenAPI component emitted by `generateOpenApiSchemaComponent(node)` must compose into a valid OpenAPI 3.1 document under `@redocly/openapi-core` (already configured in v0.4). This is the v0.4 round-trip check carried forward — it proves the OpenAPI generator's output stays spec-valid as the runtime work changes adjacent files. It does **not** participate in accept/reject parity for inputs.
+
+20. **Semantic-parity tests (Decision #19) are required for merge.** This is the load-bearing v0.6 test category — it's the proof that runtime validation actually completes the v0.1 promise across NekoStack runtime + the generators' compiled equivalents.
 
 ## Invariants — phase-specific risk
 
@@ -293,7 +326,7 @@ All 8 invariants still apply. v0.6 invariant corollaries (some pre-existing in [
 - **`runtime-parse.test.ts`** — positive paths (each builder kind), throw-on-failure for `parse`, Result-on-failure for `safeParse`, no-mutation of input.
 - **`runtime-validate.test.ts`** — `validate` over the same fixtures as parse; asserts (a) no defaults applied, (b) optional / nullable / nullish flags respected per v0.1 absence semantics, (c) `Result.data` matches `s.input<S>` shape.
 - **`runtime-unknown-keys.test.ts`** — strict throws / Result-issues with `code: "unknown_key"`; passthrough preserves the unknown key in the output; stripUnknown drops it. Each tested across all three entry points (`parse`, `safeParse`, `validate`).
-- **`runtime-issue-normalize.test.ts`** — every row of the Decision #12 table proven by a fixture; an "unmapped Zod code" guard asserts the fallback works without crashing.
+- **`runtime-issue-normalize.test.ts`** — every row of the Decision #12 table proven by a fixture; the "unmapped Zod code" guard asserts (a) the fallback path does not crash, AND (b) the emitted `Issue.metadata` carries `source: "zod"` + `zodCode: <original>` so the original code is recoverable downstream.
 - **`runtime-default-semantics.test.ts`** — the load-bearing test for `validate` vs `parse`: same default-bearing schema, same empty input, `parse` returns the default-filled output, `validate` returns the input shape unchanged.
 - **`runtime-compile-cache.test.ts`** — repeated `parse(sameSchema, ...)` shares the compiled Zod (proven via a private hook exposing the cache, or via test-side instrumentation).
 - **`semantic-parity.test.ts`** — the four-way matrix from Decision #19. Failure surfaces "which engines disagree" so the diagnosis is immediate.
@@ -364,13 +397,27 @@ Risk areas:
 
 - **v0.6-plan, initial draft** — 20 decisions, plan-only PR. First phase planned under the four-audit gate in `standards/package-development.md` (thesis-fit is the new first gate). Thesis-fit section authored using the reviewer-supplied framing: "v0.6 makes runtime validation a NekoStack workflow. Zod may execute behind the curtain, but the user-facing contract is `@nekostack/schema`."
 
+- **v0.6-plan, round-2 amendment** — four corrections after the first audit pass. Decision count grows to 21 (the new #19a).
+  - **Decision #6 rewritten.** The original phrasing implied the v0.2 string generator could become a wrapper that stringifies a live `ZodSchema` value — wrong abstraction; a live Zod object is not a reliable source-code AST. New phrasing: shared internal Zod-compilation module with **two consumers** (`generateZod(node): string` and `compileZodSchema(node): ZodSchema`), shared semantic mapping, no value-to-source conversion in either direction. Matches the v0.4 `emitSchemaFragment` extraction pattern.
+  - **Decision #8a made definitive.** The "open question" framing is removed. The validate-time IR variant **strips `default` AND sets `optional = true`** for the affected fields, ONLY inside the validate-compile cache (the original `SchemaNode` is unchanged). Rationale locked: `validate` returns `Result<s.input<S>>`; v0.1's `default(v)` is input-optional + output-required; the combined strip is the only rule that respects both halves. Worked example added showing `validate(User, {}) → { success: true, data: {} }` vs `parse(User, {}) → { name: "anon" }`.
+  - **Decision #19 corrected.** Redocly is not a runtime input oracle — it validates OpenAPI document/component structure, not arbitrary inputs against the component schema. The four-way matrix is now: NekoStack runtime / generated-Zod execution (proves the runtime compiler matches the source generator) / Ajv 2020 against generated JSON Schema / IR-walker oracle. The OpenAPI spec-validity check (the carried-forward v0.4 Redocly round-trip) becomes the separate **Decision #19a** with its own test file (`openapi-spec-validity.test.ts`).
+  - **Wording cleanup on `validate`.** Removed the overclaim that `validate` returns "the issues that would block a `parse`" — `validate` skips runtime-only refinements (per the v0.6 invariant corollary), so it cannot universally return every `parse`-blocking issue. New phrasing: "structural issues that would block parsing before normalization and default application — not necessarily every issue a full `parse` would surface."
+  - **Decision #12 fallback row tightened.** Unmapped Zod codes still map to `custom_refinement_failed`, but **must** populate `metadata.source = "zod"` and `metadata.zodCode = <original>` so the original code is recoverable downstream. The `runtime-issue-normalize.test.ts` description updated to assert this.
+
+  Knock-on changes:
+  - Internal file delta now includes the shared Zod-compilation module (the existing `src/generators/zod.ts` refactor is implicit in Sequencing #1).
+  - `tests/` listing now includes both `semantic-parity.test.ts` AND `openapi-spec-validity.test.ts`.
+  - Decision count grows from 20 to 21 (the new #19a sits between #19 and #20).
+
 ## Action requested from reviewer
 
-- **Thesis-fit audit (new):** does the `## Thesis-fit` section answer the four questions clearly? In particular, is the "Zod-backed for v0.6, swap-safe for later" framing the right level of commitment, or should the doctrine bind harder ("pure IR-walker by v1.0")?
-- **Decision #6** (refactor v0.2 generator to expose `irToZodSchema` value-producer) is the highest-risk implementation item — flag if the boundary should land differently (e.g., a separate `compileForRuntime(node)` function that doesn't refactor the existing generator at all).
-- **Decision #8a** — the validate-time strip flips a stripped-default field to `optional`. Flag if the opposite ("validate keeps the field required even after stripping its default") is the more defensible reading of the v0.6 invariant corollary.
-- **Decision #12** — the Zod → IssueCode mapping table. This is the one consumer-facing contract that's hardest to change later; review for fidelity to the v0.1 vocabulary intent.
-- **Decision #19** — the four-way semantic-parity matrix as the load-bearing v0.6 test category. Flag if the fourth oracle (a trivial IR-walker) is overkill or under-spec.
-- Confirm the **Zod runtime-dep promotion** (peer-optional → regular) is the right call. The alternative is to keep it as a hard peer (non-optional) and continue requiring the consumer to install it — that breaks the thesis but reduces NekoStack's transitive footprint.
+Post-round-2 amendment, the remaining open items are narrower:
+
+- **Thesis-fit audit (new gate):** confirm the `## Thesis-fit` section reads cleanly under the four-question rubric, especially the "Zod-backed for v0.6, swap-safe for later" commitment level.
+- **Decision #6 (round-2):** the two-consumer shared-mapping framing replaces the prior "value → source" implication. Confirm the shape — `generateZod(node): string` + `compileZodSchema(node): ZodSchema`, sharing the per-node semantic mapping, with no cross-conversion — is the right factoring.
+- **Decision #8a (now definitive):** the validate-time variant strips `default` AND sets `optional = true`, only inside the validate-compile cache, with the locked example. Confirm this matches the v0.1 absence-semantics reading and is not a quiet behavior change for any consumer the audit anticipates.
+- **Decision #12 (round-2):** the unmapped-Zod-code fallback now requires `metadata.source = "zod"` and `metadata.zodCode = <original>`. Confirm the metadata key names are the ones we want consumers to depend on long-term.
+- **Decision #19 + #19a (round-2):** the four-way runtime matrix excludes Redocly (correct — Redocly is not a runtime input oracle) and replaces it with generated-Zod execution as the cross-check between the runtime compiler and the source generator. Redocly stays as the v0.4 spec-validity carry-forward in its own test file. Confirm the four-oracle composition + the separate spec-validity check are the right shape.
+- **Zod runtime-dep promotion** (peer-optional → regular): unchanged from round-1. Confirm, or flag if you'd prefer a hard non-optional peer instead (trades thesis-fit for a smaller transitive footprint).
 
 Once approved, implementation opens on `feat/schema-v0.6-candidate`.
