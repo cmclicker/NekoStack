@@ -157,18 +157,18 @@ export type RequiredByShape<S extends RawShape, M extends Mask<S>> = Identity<{
 // ---- merge ----
 
 /**
- * Throw-shape: TS-level intersection of both shapes. For overlapping keys
- * with the same field-schema type, intersection collapses cleanly. For
- * overlapping keys with *different* schema types, intersection produces
- * `never` for that field — surfacing the collision at compile time when
- * statically detectable. Runtime still throws regardless when conflict
- * resolution wasn't explicit.
+ * Throw-shape: TS-level intersection of both shapes (`Identity<S & Other>`).
+ * Preserves disjoint merges; lets TypeScript surface some conflicts through
+ * normal intersection behavior where possible. **Runtime conflict detection
+ * is the load-bearing guarantee** — consumers MUST NOT rely on
+ * `MergeThrowShape` as the sole conflict detector. Use explicit
+ * `conflict: "left" | "right"` on `merge` when intentionally resolving
+ * overlaps; let the runtime throw catch the unintended ones.
  *
  * (Original design used a per-key conditional that mapped all overlapping
  * keys to `never`. That broke variance for `ObjectSchema<{...}>` vs.
  * `ObjectSchema<RawShape>` because `RawShape` overlaps with every key. The
- * intersection form preserves variance while keeping the conflict-surfacing
- * behavior for genuinely incompatible schemas.)
+ * intersection form preserves variance.)
  */
 export type MergeThrowShape<S extends RawShape, Other extends RawShape> =
   Identity<S & Other>;

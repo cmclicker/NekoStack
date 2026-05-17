@@ -138,7 +138,7 @@ merge(other, { conflict: "left",  unknownKeys?: ... }) // → ObjectSchema<Merge
 merge(other, { conflict: "right", unknownKeys?: ... }) // → ObjectSchema<MergeRightShape<S, Other>>
 ```
 
-`MergeThrowShape<S, Other>` is `Identity<S & Other>` — for genuinely incompatible field types it surfaces `never` at compile time (a small bonus on top of the runtime throw); for compatible or disjoint fields it composes cleanly.
+`MergeThrowShape<S, Other>` is `Identity<S & Other>`. It preserves disjoint merges and lets TypeScript surface some conflicts through normal intersection behavior where possible, but **runtime conflict detection is the load-bearing guarantee**. Consumers must not rely on `MergeThrowShape` as the sole conflict detector — call `merge` with explicit `conflict: "left"` / `"right"` when you intend to resolve overlaps, and let the runtime throw catch the unintended ones.
 
 `MergeLeftShape` / `MergeRightShape` resolve overlaps by picking the corresponding side's field type.
 
