@@ -87,6 +87,19 @@ function emitTypeExpression(node: SchemaNode, mode: Mode): string {
 // ---------- bare types ----------
 
 function emitBareType(node: SchemaNode, mode: Mode): string {
+  // Runtime refinements are unsupported in v0.2 generators (Invariant 7).
+  // The TS generator doesn't *use* refinement values, but a node carrying a
+  // runtime refinement still represents validation the IR intends to enforce;
+  // silently emitting the type without it would imply runtime semantics this
+  // package can't (yet) guarantee. Fail loudly to match the Zod generator.
+  for (const r of node.refinements ?? []) {
+    if (r.kind === "runtime") {
+      throw new UnsupportedNodeKindError({
+        kind: "runtimeRefinement",
+        generator: "typescript",
+      });
+    }
+  }
   switch (node.kind) {
     case "string":
       return "string";
@@ -123,9 +136,19 @@ function emitObjectType(node: ObjectNode, mode: Mode): string {
   const lines = entries.map(([key, field]) => {
     const { keyMark, typeExpr } = emitObjectField(field, mode);
     const fieldDoc = emitFieldDocComment(field);
-    return `${fieldDoc}  ${key}${keyMark}: ${typeExpr};`;
+    const safeKey = formatPropertyKey(key);
+    return `${fieldDoc}  ${safeKey}${keyMark}: ${typeExpr};`;
   });
   return `{\n${lines.join("\n")}\n}`;
+}
+
+/**
+ * Emit an object property key. Identifier-safe keys go bare; anything else
+ * (hyphens, spaces, leading digits, reserved characters) is quoted via
+ * JSON.stringify so the generated type alias is valid TS for any IR-valid key.
+ */
+function formatPropertyKey(key: string): string {
+  return /^[A-Za-z_$][A-Za-z0-9_$]*$/.test(key) ? key : JSON.stringify(key);
 }
 
 function emitObjectField(

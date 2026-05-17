@@ -163,4 +163,54 @@ describe("generateZod — UnsupportedNodeKindError on unhandled IR kinds", () =>
     } as unknown as Parameters<typeof generateZod>[0];
     expect(() => generateZod(node)).toThrow(UnsupportedNodeKindError);
   });
+
+  it("runtime refinement throws (fail loudly, not silent skip)", () => {
+    // Hand-craft IR with a runtime refinement; builders don't produce these
+    // yet but the IR allows them and v0.2 generators must reject them.
+    const node = {
+      kind: "string",
+      refinements: [
+        { kind: "runtime", code: "invalid_tenant_slug" },
+      ],
+    } as unknown as Parameters<typeof generateZod>[0];
+    try {
+      generateZod(node);
+      throw new Error("expected throw");
+    } catch (e) {
+      expect(e).toBeInstanceOf(UnsupportedNodeKindError);
+      const err = e as UnsupportedNodeKindError;
+      expect(err.code).toBe("UNSUPPORTED_NODE_KIND");
+      expect(err.kind).toBe("runtimeRefinement");
+      expect(err.generator).toBe("zod");
+    }
+  });
+});
+
+describe("generateZod — numeric enum edge cases", () => {
+  it("single-value numeric enum collapses to z.literal (z.union of 1 is invalid)", () => {
+    const node = {
+      kind: "enum",
+      values: [42],
+    } as unknown as Parameters<typeof generateZod>[0];
+    const out = generateZod(node);
+    expect(out).toContain("z.literal(42)");
+    expect(out).not.toContain("z.union(");
+  });
+
+  it("two-value numeric enum still emits z.union of literals", () => {
+    const node = {
+      kind: "enum",
+      values: [1, 2],
+    } as unknown as Parameters<typeof generateZod>[0];
+    const out = generateZod(node);
+    expect(out).toContain("z.union([z.literal(1), z.literal(2)])");
+  });
+
+  it("empty enum throws (defensive — builder rejects this earlier)", () => {
+    const node = {
+      kind: "enum",
+      values: [],
+    } as unknown as Parameters<typeof generateZod>[0];
+    expect(() => generateZod(node)).toThrow(/empty enum/i);
+  });
 });

@@ -91,15 +91,25 @@ function emitBase(node: SchemaNode, depth: number): string {
 }
 
 function emitEnum(node: EnumNode): string {
-  // z.enum is string-only in Zod 3. For string enums, use z.enum. For numeric
-  // enums (or mixed), fall back to a union of z.literal — equivalent runtime
-  // semantics, slightly different inferred type.
+  // Defensive: empty enums should be rejected at the builder level
+  // (s.enum throws), but if one ever reaches here it would emit invalid
+  // Zod. Fail loudly instead.
+  if (node.values.length === 0) {
+    throw new Error("Cannot emit Zod for an empty enum");
+  }
+  // z.enum is string-only in Zod 3. For string enums, use z.enum.
   const allStrings = node.values.every((v) => typeof v === "string");
   if (allStrings) {
     const list = (node.values as readonly string[])
       .map((v) => JSON.stringify(v))
       .join(", ");
     return `z.enum([${list}] as const)`;
+  }
+  // Numeric or mixed enum. A union of one literal is invalid in Zod
+  // (z.union requires >= 2 options), so collapse a single-value enum to
+  // z.literal directly.
+  if (node.values.length === 1) {
+    return `z.literal(${formatJson(node.values[0])})`;
   }
   const parts = node.values.map((v) => `z.literal(${formatJson(v)})`);
   return `z.union([${parts.join(", ")}])`;
@@ -141,7 +151,16 @@ function applyPortableRefinements(
 ): string {
   let out = expr;
   for (const r of refinements) {
-    if (r.kind !== "portable") continue; // runtime refinements not in v0.2
+    if (r.kind === "runtime") {
+      // Fail loudly per Invariant 7. Runtime refinements are unsupported in
+      // v0.2 generators — silently dropping them would emit a chain that
+      // accepts inputs the IR intends to reject.
+      throw new UnsupportedNodeKindError({
+        kind: "runtimeRefinement",
+        generator: "zod",
+      });
+    }
+    if (r.kind !== "portable") continue;
     const p = r as PortableRefinement;
     out += emitPortableRefinement(p);
   }

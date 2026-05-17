@@ -188,4 +188,64 @@ describe("generateTypeScript — UnsupportedNodeKindError on unhandled IR kinds"
     } as unknown as Parameters<typeof generateTypeScript>[0];
     expect(() => generateTypeScript(node)).toThrow(UnsupportedNodeKindError);
   });
+
+  it("runtime refinement throws (fail loudly, not silent skip)", () => {
+    // Same contract as the Zod generator: runtime refinements are
+    // unsupported in v0.2 and must throw, not silently emit the bare type.
+    const node = {
+      kind: "string",
+      refinements: [
+        { kind: "runtime", code: "invalid_tenant_slug" },
+      ],
+    } as unknown as Parameters<typeof generateTypeScript>[0];
+    try {
+      generateTypeScript(node);
+      throw new Error("expected throw");
+    } catch (e) {
+      expect(e).toBeInstanceOf(UnsupportedNodeKindError);
+      const err = e as UnsupportedNodeKindError;
+      expect(err.code).toBe("UNSUPPORTED_NODE_KIND");
+      expect(err.kind).toBe("runtimeRefinement");
+      expect(err.generator).toBe("typescript");
+    }
+  });
+});
+
+describe("generateTypeScript — unsafe object keys are JSON-quoted", () => {
+  // Object keys can be arbitrary strings; the IR doesn't restrict them.
+  // The generator must quote anything that isn't a TS identifier.
+  it("hyphenated key", async () => {
+    const node = s
+      .object({ "user-id": s.string() })
+      .id("com.x.HyphenKey").node;
+    await expect(generateTypeScript(node)).toMatchFileSnapshot(
+      snapshotPath("unsafe-key-hyphen"),
+    );
+  });
+
+  it("key with space", async () => {
+    const node = s
+      .object({ "first name": s.string() })
+      .id("com.x.SpaceKey").node;
+    await expect(generateTypeScript(node)).toMatchFileSnapshot(
+      snapshotPath("unsafe-key-space"),
+    );
+  });
+
+  it("numeric-leading key", async () => {
+    const node = s.object({ "123": s.string() }).id("com.x.NumKey").node;
+    await expect(generateTypeScript(node)).toMatchFileSnapshot(
+      snapshotPath("unsafe-key-numeric"),
+    );
+  });
+
+  it("identifier-safe keys remain bare (no quotes)", () => {
+    const out = generateTypeScript(
+      s.object({ id: s.string(), userName: s.string() }).id("com.x.Safe").node,
+    );
+    expect(out).toMatch(/^\s+id:\s+string;/m);
+    expect(out).toMatch(/^\s+userName:\s+string;/m);
+    expect(out).not.toMatch(/"id":/);
+    expect(out).not.toMatch(/"userName":/);
+  });
 });
