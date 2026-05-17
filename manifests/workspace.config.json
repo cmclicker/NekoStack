@@ -1,0 +1,19 @@
+{
+  "$comment": "Hand-edited control-plane config. Drives scripts/generate-status.mjs. Edit this file (and the per-package ROADMAP/CHANGELOG) to update what STATUS.md shows.",
+  "active_workstream": "@nekostack/schema",
+  "doctrine": "PRODUCT_THESIS.md",
+  "packages": [
+    {
+      "name": "@nekostack/schema",
+      "dir": "packages/schema",
+      "tag_prefix": "schema-v",
+      "roadmap": "packages/schema/docs/ROADMAP.md",
+      "changelog": "packages/schema/CHANGELOG.md"
+    }
+  ],
+  "next_actions": [
+    "Open the v0.6 phase-plan PR for @nekostack/schema under thesis-fit rules.",
+    "Reframe packages/schema/docs/USAGE.md per the internal-engine rule before v0.6 lands.",
+    "Apply the thesis-fit audit gate to the next package phase that goes through review."
+  ]
+}
