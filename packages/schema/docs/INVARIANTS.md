@@ -25,6 +25,8 @@ Doctrine that constrains every future phase. If a change violates one, it must b
 These derive from the eight invariants above and apply at specific phases.
 
 - **v0.2 (TS + Zod generators):** Generators must take a `SchemaNode` argument. A function signature of `generateZod(schema: StringSchema)` violates Invariant 1.
+- **v0.2 corollary — fail loudly:** Generators throw `UnsupportedNodeKindError` with stable `code` / `kind` / `generator` fields on any IR node kind without a v0.2 generator (date, union, recursiveRef, transform). They MUST NOT silently emit no-op or partial output, and tests MUST assert on the error fields rather than on message text (Invariant 7).
+- **v0.2 corollary — generated Zod modifier order:** The Zod generator applies modifiers in the fixed order documented in [`ZOD_MODIFIER_ORDERING.md`](./ZOD_MODIFIER_ORDERING.md): base → portable refinements → describe → nullable/optional/nullish → default LAST. This is how the v0.1 absence-semantics table is preserved through to Zod's runtime (Invariant 3).
 - **v0.3 (JSON Schema):** A runtime-only refinement (Invariant 7) MUST emit `x-nekostack-runtime-refinement: true` rather than be omitted silently.
 - **v0.5 (composition):** `merge()` with conflicting fields throws by default. Silent merge replacement violates Invariant 5's spirit (deliberateness).
 - **v0.6 (runtime):** `validate(schema, input)` may not apply defaults or run transforms. `parse(schema, input)` does both. Anything else violates Invariant 3.
