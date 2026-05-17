@@ -16,7 +16,7 @@ export class UnsupportedNodeKindError extends Error {
   constructor(args: { kind: string; generator: "typescript" | "zod" | "jsonSchema" }) {
     super(
       `Generator '${args.generator}' does not support IR node kind '${args.kind}' in this phase. ` +
-        `See packages/schema/docs/PHASE_PLAN_v0.2.md for the supported set.`,
+        `See packages/schema/docs/ for the active generator contracts.`,
     );
     this.name = "UnsupportedNodeKindError";
     this.kind = args.kind;

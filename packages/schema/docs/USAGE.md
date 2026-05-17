@@ -111,7 +111,7 @@ Every output file starts with a deterministic JSDoc block — full spec in [`HEA
  * schemaVersion:    1.0.0
  * irHash:           sha256:7f3e2a9b...
  * generator:        typescript
- * generatorVersion: @nekostack/schema@0.2.0
+ * generatorVersion: @nekostack/schema@0.3.0
  *
  * DO NOT EDIT MANUALLY.
  */

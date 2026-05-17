@@ -10,6 +10,7 @@ import type {
 import { irHash } from "../ir/hash.js";
 import { UnsupportedNodeKindError } from "./errors.js";
 import { GENERATOR_VERSION } from "./version.js";
+import { JSON_SCHEMA_EXTENSIONS } from "./json-schema-meta.js";
 import type { JsonSchemaGeneratorOptions } from "./types.js";
 
 /**
@@ -57,7 +58,7 @@ export function generateJsonSchema(
  */
 function emitProvenance(node: SchemaNode): Record<string, JsonValue> {
   return {
-    "x-nekostack": {
+    [JSON_SCHEMA_EXTENSIONS.provenance]: {
       generator: "jsonSchema",
       generatorVersion: GENERATOR_VERSION,
       irHash: `sha256:${irHash(node)}`,
@@ -209,7 +210,7 @@ function emitObject(
       break;
     case "stripUnknown":
       out.additionalProperties = true;
-      out["x-nekostack-strip"] = true;
+      out[JSON_SCHEMA_EXTENSIONS.strip] = true;
       break;
   }
 
@@ -366,7 +367,7 @@ function applyDefault(out: Record<string, JsonValue>, node: SchemaNode): void {
   const def = node.modifiers?.default;
   if (def === undefined) return;
   out.default = def.value;
-  out["x-nekostack-default-applied-by"] = "runtime";
+  out[JSON_SCHEMA_EXTENSIONS.defaultAppliedBy] = "runtime";
 }
 
 // ---------- helpers ----------

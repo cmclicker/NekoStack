@@ -80,7 +80,7 @@ Every committed generated artifact has the deterministic header:
  * schemaVersion:    1.0.0
  * irHash:           sha256:<64-char-hex>
  * generator:        typescript | zod
- * generatorVersion: @nekostack/schema@0.2.0
+ * generatorVersion: @nekostack/schema@0.3.0
  *
  * DO NOT EDIT MANUALLY.
  */
