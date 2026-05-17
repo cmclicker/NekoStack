@@ -211,6 +211,65 @@ describe("generateTypeScript — UnsupportedNodeKindError on unhandled IR kinds"
   });
 });
 
+describe("generateTypeScript — array element parenthesization", () => {
+  // The PR #7 re-audit surfaced this: an object-then-union array element
+  // (e.g. `s.array(s.object({...}).optional())`) starts with `{` but still
+  // needs parens, otherwise `{...} | undefined[]` parses as "object or
+  // array of undefined". Detect via a real top-level-union scan, not a
+  // startsWith heuristic.
+
+  const arr = (schema: ReturnType<typeof s.object>) =>
+    s.array(schema).id("com.x.Arr").node;
+
+  it("array of plain object — bare {}[] (no parens)", () => {
+    const out = generateTypeScript(arr(s.object({ id: s.string() })));
+    expect(out).toMatch(/^\s*\}\[\];$/m);
+    expect(out).not.toContain("})[]");
+  });
+
+  it("array of optional object — parenthesized", () => {
+    const out = generateTypeScript(
+      s.array(s.object({ id: s.string() }).optional()).id("com.x.AoO").node,
+    );
+    expect(out).toContain("} | undefined)[]");
+    expect(out).not.toContain("} | undefined[];");
+  });
+
+  it("array of nullable object — parenthesized", () => {
+    const out = generateTypeScript(
+      s.array(s.object({ id: s.string() }).nullable()).id("com.x.AnO").node,
+    );
+    expect(out).toContain("} | null)[]");
+    expect(out).not.toContain("} | null[];");
+  });
+
+  it("array of nullish object — parenthesized", () => {
+    const out = generateTypeScript(
+      s.array(s.object({ id: s.string() }).nullish()).id("com.x.AnshO").node,
+    );
+    expect(out).toContain("} | null | undefined)[]");
+    expect(out).not.toContain("} | null | undefined[];");
+  });
+
+  it("array of plain string — bare string[] (no parens)", () => {
+    const out = generateTypeScript(
+      s.array(s.string()).id("com.x.AS").node,
+    );
+    expect(out).toContain("string[]");
+    expect(out).not.toContain("(string)[]");
+  });
+
+  it("array of literal with a pipe inside the value — bare (no parens)", () => {
+    // s.literal("a|b") emits `"a|b"`. The scanner must NOT mistake the
+    // literal pipe inside quotes for a top-level union.
+    const out = generateTypeScript(
+      s.array(s.literal("a|b")).id("com.x.LP").node,
+    );
+    expect(out).toContain('"a|b"[]');
+    expect(out).not.toContain('"a|b")[]');
+  });
+});
+
 describe("generateTypeScript — nested object indentation grows per depth", () => {
   // The PR #7 dogfood pass surfaced this: nested object bodies were emitted
   // with the same indent as the outer body, producing readable-but-poor

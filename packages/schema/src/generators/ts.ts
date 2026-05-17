@@ -133,12 +133,45 @@ function emitBareType(node: SchemaNode, mode: Mode, depth: number): string {
 
 function emitArrayType(node: ArrayNode, mode: Mode, depth: number): string {
   const elementExpr = emitTypeExpression(node.element, mode, depth);
-  // Parenthesize when the element type contains a top-level union (` | `),
-  // so the [] binds correctly. Inline object types contain newlines + spaces
-  // but no top-level union — we detect that explicitly to avoid wrapping
-  // `{ ... }[]` in spurious parens.
-  const hasTopLevelUnion = / \| /.test(elementExpr) && !elementExpr.startsWith("{");
-  return hasTopLevelUnion ? `(${elementExpr})[]` : `${elementExpr}[]`;
+  // Parenthesize when the element type contains a *top-level* union so `[]`
+  // binds correctly. A naive `startsWith("{")` shortcut is wrong: an
+  // object-then-union element like `{...} | undefined` (produced by
+  // `s.array(s.object({...}).optional())`) starts with `{` but still needs
+  // parens, otherwise we emit `{...} | undefined[]` which parses as
+  // "object or array of undefined" — not what the IR means.
+  return hasTopLevelUnion(elementExpr)
+    ? `(${elementExpr})[]`
+    : `${elementExpr}[]`;
+}
+
+/**
+ * True if `expr` contains a `|` outside of all braces, parens, brackets,
+ * and string literals. This is the structural check that distinguishes
+ * `string | undefined` (top-level union → needs parens for `[]`) from
+ * `{ foo: "a | b" }` (no top-level union → bare `[]` is fine).
+ */
+function hasTopLevelUnion(expr: string): boolean {
+  let depth = 0;
+  let inString = false;
+  let escape = false;
+  for (let i = 0; i < expr.length; i++) {
+    const ch = expr[i]!;
+    if (escape) {
+      escape = false;
+      continue;
+    }
+    if (inString) {
+      if (ch === "\\") escape = true;
+      else if (ch === '"') inString = false;
+      continue;
+    }
+    if (ch === '"') inString = true;
+    else if (ch === "{" || ch === "(" || ch === "[") depth++;
+    else if (ch === "}" || ch === ")" || ch === "]")
+      depth = Math.max(0, depth - 1);
+    else if (ch === "|" && depth === 0) return true;
+  }
+  return false;
 }
 
 /**
