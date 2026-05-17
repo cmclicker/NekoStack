@@ -1,6 +1,8 @@
 # NekoStack — Reusable Artifact Taxonomy
 
 > The canonical map of "which top-level folder owns which kind of reusable asset." Read this **first** before adding a new doc, snippet, starter, or checklist — and especially before creating a new top-level folder.
+>
+> For *why* an asset belongs to NekoStack at all (vs. being teaching material someone else maintains), see [`PRODUCT_THESIS.md`](PRODUCT_THESIS.md). This document answers *what kind*; the thesis answers *whether*.
 
 ## Purpose
 

@@ -4,12 +4,13 @@
 
 ## The rule
 
-A NekoStack package is a **contract**, not just code. Before any phase of a package is merged, it must satisfy three audits and own five local artifacts.
+A NekoStack package is a **contract**, not just code. Before any phase of a package is merged, it must satisfy four audits and own five local artifacts.
 
-### 1. The three audits (required for every phase / version bump)
+### 1. The four audits (required for every phase / version bump)
 
-Every phase landing must answer all three. Failing any one blocks merge.
+Every phase landing must answer all four. Failing any one blocks merge.
 
+- **Thesis-fit audit.** Does the phase answer the four questions in [`PRODUCT_THESIS.md`](../PRODUCT_THESIS.md) — which workflow it absorbs, what the user-facing verb is, what the internal engine is and why it's justified, which BOUNDARIES rows it touches? Phase plan PRs include a `## Thesis-fit` section; this audit checks it before the others.
 - **Scope audit.** Does the change implement only what the phase scope listed? Anything beyond it is rejected, even if the extra work is "nice to have." A bug fix doesn't include surrounding refactors; a v0.N candidate doesn't ship v0.N+1 features.
 - **Contract audit.** Does the public API, the types, and the documented invariants behave as the docs say? "Tests pass" is necessary, not sufficient — tests prove the implementation matches the tests, not that the tests captured the right invariants.
 - **Boundary audit.** Does the package import only from external deps and other packages it is explicitly allowed to depend on per [`BOUNDARIES.md`](../BOUNDARIES.md)? Cross-package imports without a documented dependency edge are rejected.
@@ -36,7 +37,7 @@ Every package exposes a single entry point (`src/index.ts`). Its surface is inte
 
 ### 4. The "candidate before complete" pattern
 
-A package version is a candidate until the three audits have passed and reviewers have accepted. **Do not push package implementations directly to `main`.** Open a draft PR, run the audits, address findings, then promote to ready-for-review.
+A package version is a candidate until the four audits have passed and reviewers have accepted. **Do not push package implementations directly to `main`.** Open a draft PR, run the audits, address findings, then promote to ready-for-review.
 
 The PR description must include:
 - Scope statement: what this phase includes.
@@ -99,6 +100,7 @@ The deeper reason: the cost of accepting an under-audited package is paid by eve
 
 ## See also
 
+- [`PRODUCT_THESIS.md`](../PRODUCT_THESIS.md) — the doctrine the thesis-fit audit applies.
 - [`BOUNDARIES.md`](../BOUNDARIES.md) — capability ownership.
 - [`ARTIFACTS.md`](../ARTIFACTS.md) — asset taxonomy.
 - [`checklists/package/implementation-acceptance.md`](../checklists/package/implementation-acceptance.md) — the operational checklist.
