@@ -163,6 +163,24 @@ describe("generateOpenApiSchemaComponent — determinism", () => {
   });
 });
 
+describe("generateOpenApiSchemaComponent — options contract is closed in v0.4", () => {
+  // OpenApiGeneratorOptions is `Record<string, never>` — explicit no-options
+  // contract. Callers passing arbitrary fields must fail at compile time.
+  // The `@ts-expect-error` directive REQUIRES the next line to error, so
+  // this assertion itself catches the regression if we ever weaken the type
+  // (e.g. accidentally widening back to an empty interface).
+  it("rejects unknown options at compile time", () => {
+    const node = s.string().id("com.x.Y").version("1.0.0").node;
+    // @ts-expect-error v0.4 accepts no OpenAPI generator options yet
+    generateOpenApiSchemaComponent(node, { discriminator: true });
+    // @ts-expect-error v0.4 accepts no OpenAPI generator options yet
+    generateOpenApiSchemaComponent(node, { idBase: "https://x" });
+    // The empty-options call is the only valid form today.
+    expect(() => generateOpenApiSchemaComponent(node)).not.toThrow();
+    expect(() => generateOpenApiSchemaComponent(node, {})).not.toThrow();
+  });
+});
+
 describe("generateOpenApiSchemaComponent — UnsupportedNodeKindError reports 'openApi'", () => {
   it("date throws with generator: 'openApi'", () => {
     const node = { kind: "date", variant: "isoDateTime" } as unknown as Parameters<

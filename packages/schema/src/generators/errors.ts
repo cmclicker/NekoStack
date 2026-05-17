@@ -1,12 +1,21 @@
 /**
- * Stable, machine-readable error thrown when a generator encounters an IR
- * node kind it cannot represent.
+ * Stable, machine-readable error thrown when a generator encounters IR it
+ * cannot represent — either an unsupported node kind or a refinement whose
+ * absence would change validation behavior (per Invariant 7).
  *
  * Tests assert on `code` / `kind` / `generator` — never on `message`, which
  * is for humans and can change without breaking the contract.
  *
- * v0.2 generators throw this for: `date`, `union`, `recursiveRef`,
- * `transform`, and any runtime-only refinement encountered while walking IR.
+ * Current `kind` values:
+ *   - IR node kinds without generator support: `date`, `union`,
+ *     `recursiveRef`, `transform`.
+ *   - Refinement-level: `runtimeRefinement` (all generators);
+ *     `regexFlags` (JSON Schema / OpenAPI — `pattern` has no flag support).
+ *
+ * Current `generator` values: `typescript`, `zod`, `jsonSchema`, `openApi`.
+ * Both unions extend over time as new generators or new throw cases land;
+ * see the active generator docs in `packages/schema/docs/` for the
+ * authoritative per-generator throw contract.
  */
 export class UnsupportedNodeKindError extends Error {
   readonly code = "UNSUPPORTED_NODE_KIND" as const;

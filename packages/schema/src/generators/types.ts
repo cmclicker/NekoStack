@@ -51,16 +51,20 @@ export interface JsonSchemaGeneratorOptions {
   idBase?: string;
 }
 
-/** Options accepted by `generateOpenApiSchemaComponent`. */
-export interface OpenApiGeneratorOptions {
-  /**
-   * Reserved for v0.4+ extensions (e.g., a future `discriminator` option
-   * when union builders ship). v0.4 ships with no options consumed; kept
-   * here as a typed extension point so adding the first option later is
-   * non-breaking.
-   */
-  // (no fields yet)
-}
+/**
+ * Options accepted by `generateOpenApiSchemaComponent`.
+ *
+ * v0.4 accepts **no options**. The `Record<string, never>` form is a
+ * deliberate, enforceable contract: callers passing arbitrary fields fail
+ * at compile time. An empty interface would be too permissive — TS allows
+ * structurally-empty objects to receive extra properties in some contexts.
+ *
+ * The named type is preserved as a typed extension point so adding the
+ * first option later (likely a `discriminator` option when union builders
+ * ship) is non-breaking — `Record<string, never>` widens to a richer
+ * interface without removing the export.
+ */
+export type OpenApiGeneratorOptions = Record<string, never>;
 
 /** Union of all generator option types — exported for ergonomics. */
 export type GeneratorOptions =

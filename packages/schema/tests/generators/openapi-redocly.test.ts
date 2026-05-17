@@ -21,11 +21,21 @@ interface BundleProblem {
   message?: string;
 }
 
-/** Compose a minimal valid OpenAPI 3.1 document containing the emitted component. */
+/**
+ * Compose a minimal valid OpenAPI 3.1 document containing the emitted
+ * component.
+ *
+ * Includes `jsonSchemaDialect` set to draft 2020-12 to match the OpenAPI
+ * generator's contract that component schemas inherit the document-level
+ * dialect (see `src/generators/openapi.ts`). OpenAPI 3.1 doesn't strictly
+ * require this — it's the default — but stating it makes the test match
+ * the contract text directly.
+ */
 function syntheticDoc(componentJson: string, name = "Subject"): string {
   const component = JSON.parse(componentJson) as Record<string, unknown>;
   const doc = {
     openapi: "3.1.0",
+    jsonSchemaDialect: "https://json-schema.org/draft/2020-12/schema",
     info: { title: "NekoStack schema-fixture", version: "0.0.0" },
     paths: {},
     components: {
