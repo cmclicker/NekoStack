@@ -38,7 +38,21 @@ export interface ZodGeneratorOptions {
   constName?: string;
 }
 
+/** Options accepted by `generateJsonSchema`. */
+export interface JsonSchemaGeneratorOptions {
+  /**
+   * Optional URL base for `$id`. When provided, emitted IDs take the form
+   * `${idBase}/${metadata.id}/${metadata.version}` instead of the default
+   * URN form (`urn:nekostack:schema:<id>:<version>`).
+   *
+   * Use only when you actually host the schemas at that URL — JSON Schema
+   * tooling treats URL-shaped `$id` as resolvable in some contexts.
+   */
+  idBase?: string;
+}
+
 /** Union of all generator option types — exported for ergonomics. */
 export type GeneratorOptions =
   | TypeScriptGeneratorOptions
-  | ZodGeneratorOptions;
+  | ZodGeneratorOptions
+  | JsonSchemaGeneratorOptions;

@@ -1,0 +1,16 @@
+{
+  "$id": "urn:nekostack:schema:com.x.Color:1.0.0",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "enum": [
+    "red",
+    "green",
+    "blue"
+  ],
+  "x-nekostack": {
+    "generator": "jsonSchema",
+    "generatorVersion": "@nekostack/schema@0.2.0",
+    "irHash": "sha256:c531f8d8ad2aecd4a48d830201d15b512432d1bfb706957c4c81135e1772e133",
+    "schemaId": "com.x.Color",
+    "schemaVersion": "1.0.0"
+  }
+}

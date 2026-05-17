@@ -1,0 +1,43 @@
+{
+  "$id": "urn:nekostack:schema:com.x.User:1.0.0",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Authenticated user",
+  "properties": {
+    "bio": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "handle": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "name": {
+      "type": "string"
+    },
+    "nickname": {
+      "type": "string"
+    },
+    "role": {
+      "default": "member",
+      "type": "string",
+      "x-nekostack-default-applied-by": "runtime"
+    }
+  },
+  "required": [
+    "name",
+    "bio"
+  ],
+  "type": "object",
+  "x-nekostack": {
+    "generator": "jsonSchema",
+    "generatorVersion": "@nekostack/schema@0.2.0",
+    "irHash": "sha256:1537b19d43b999bf16530841e63652c98d77b81b8df4a8d0bc0644585869135e",
+    "schemaId": "com.x.User",
+    "schemaVersion": "1.0.0"
+  }
+}

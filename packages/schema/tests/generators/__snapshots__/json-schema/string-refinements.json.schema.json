@@ -1,0 +1,16 @@
+{
+  "$id": "urn:nekostack:schema:com.x.Tag:1.0.0",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "format": "email",
+  "maxLength": 50,
+  "minLength": 3,
+  "pattern": "^NEKO_",
+  "type": "string",
+  "x-nekostack": {
+    "generator": "jsonSchema",
+    "generatorVersion": "@nekostack/schema@0.2.0",
+    "irHash": "sha256:434e349f075abe15c508a3f5b69e7632310a77ebd79b9158abb9649a75be1877",
+    "schemaId": "com.x.Tag",
+    "schemaVersion": "1.0.0"
+  }
+}
