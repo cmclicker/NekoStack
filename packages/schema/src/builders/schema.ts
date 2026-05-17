@@ -107,6 +107,23 @@ export abstract class Schema<
    * Subclasses override to construct the correct concrete class. The base
    * class itself never produces instances (it's abstract), but optional /
    * nullable etc. drop down to `BaseSchema` to surface the right type params.
+   *
+   * **Subclass invariant (load-bearing for v0.5 composition):** `clone(node)`
+   * MUST be a pure IR-replacement operation — return a new instance of the
+   * same concrete subclass with the new `node` and otherwise identical
+   * subclass state. It must NOT mutate `this`, must NOT carry over the old
+   * `node`, and must preserve any subclass-specific bookkeeping the
+   * subclass already passes through its constructor (e.g.
+   * `ArraySchema`'s `elementSchema`, `ObjectSchema`'s `shape`).
+   *
+   * v0.5 composition (`ObjectSchema.partial` / `.required`) reaches into
+   * field-level `clone` via a cast to swap a field's modifiers without
+   * losing subclass identity (`StringSchema.partial()` still yields a
+   * `StringSchema`-shaped instance). Any future Schema subclass that
+   * doesn't honor this invariant — e.g., a `clone` that drops a
+   * subclass-private field — will silently break composition for that
+   * kind of schema. New subclasses ship with a composition-roundtrip
+   * test, or document the divergence explicitly.
    */
   protected abstract clone(node: SchemaNode): this;
 

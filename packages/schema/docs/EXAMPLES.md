@@ -83,7 +83,7 @@ Every committed generated artifact has the deterministic header:
  * schemaVersion:    1.0.0
  * irHash:           sha256:<64-char-hex>
  * generator:        typescript | zod
- * generatorVersion: @nekostack/schema@0.4.0
+ * generatorVersion: @nekostack/schema@0.5.0
  *
  * DO NOT EDIT MANUALLY.
  */
@@ -91,9 +91,29 @@ Every committed generated artifact has the deterministic header:
 
 Same IR → same `irHash` across runs and across generators. Re-running the regenerate test on an unchanged schema produces byte-identical output. This is what makes v0.7's freshness check possible.
 
+## Composition example (v0.5)
+
+The example schemas above can be composed:
+
+```ts
+import { Tenant } from "../examples/tenant.schema.js";
+
+// Create-form input: client doesn't send the server-assigned id.
+const TenantCreateInput = Tenant.omit({ id: true });
+
+// PATCH/update shape: every field optional, defaults stripped.
+const TenantPatch = Tenant.partial();
+
+// Safe-to-expose subset (e.g., for a tenant directory listing).
+const TenantPublic = Tenant.pick({ id: true, slug: true, name: true });
+```
+
+All four generators handle composed schemas via the shared `emitSchemaFragment` — output is byte-identical to a hand-written equivalent. See [`COMPOSITION.md`](./COMPOSITION.md) for the full operator contract.
+
 ## What these examples deliberately don't show (yet)
 
 - **Full OpenAPI documents** (paths, operations, responses, security schemes) — `@nekostack/api`'s concern. v0.4 ships component schemas only.
+- **Composed-schema example artifacts under `examples/generated/`** — could add `tenant-patch.zod.ts` etc. in a future dogfood pass if the example surface grows enough to warrant it. v0.5 stays focused on the operator contract; ad-hoc consumer-side composition doesn't need its own snapshotted output here.
 - **Composition** — `Tenant.extend({ ... })`, `pick({ id: true })`, etc. (v0.5).
 - **Runtime parse/validate** via this package — for now, import the generated Zod and call `.parse()` / `.safeParse()` on it.
 - **A `neko schema` CLI** — until v0.7, regenerate via the vitest snapshot mechanism shown at the top.

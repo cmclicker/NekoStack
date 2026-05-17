@@ -1,5 +1,5 @@
 // =============================================================================
-// Public API — @nekostack/schema v0.4
+// Public API — @nekostack/schema v0.5
 //
 // Surface is intentionally narrow. Anything not re-exported here is package-
 // internal and may change without a major version bump. See docs/SCOPE.md.
@@ -80,3 +80,11 @@ export {
 
 // ---- Type helpers (also reachable via s.infer / s.input / s.output) ----
 export type { Infer, Input, Output } from "./types.js";
+
+// ---- Composition (v0.5) ----
+// Composition operators are methods on ObjectSchema; no new top-level
+// functions. These public types are the constraint / options shapes —
+// internal `*Shape` helpers (PickShape, MergeLeftShape, etc.) stay
+// package-internal until a downstream consumer needs to write generic
+// helpers over composed shapes.
+export type { Mask, OverrideMask, MergeOptions } from "./types.js";
