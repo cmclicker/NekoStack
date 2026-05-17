@@ -18,7 +18,9 @@
     "typecheck": "turbo run typecheck",
     "clean": "turbo run clean && rimraf node_modules .turbo",
     "format": "prettier --write \"**/*.{ts,tsx,md,json}\"",
-    "format:check": "prettier --check \"**/*.{ts,tsx,md,json}\""
+    "format:check": "prettier --check \"**/*.{ts,tsx,md,json}\"",
+    "status:generate": "node scripts/generate-status.mjs generate",
+    "status:check": "node scripts/generate-status.mjs check"
   },
   "devDependencies": {
     "turbo": "^2.9.7",
