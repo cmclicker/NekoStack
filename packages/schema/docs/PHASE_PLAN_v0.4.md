@@ -16,7 +16,7 @@ The plan deliberately keeps v0.4 narrow so it can ship in days, not weeks.
 
 ## Phase scope
 
-1. **`generateOpenApiComponent(node, options?) → string`** — emits a single **OpenAPI 3.1 component schema** as canonical JSON. The output is the value that would live under `components.schemas.<Name>` in a full OpenAPI document — not the document itself. Consumers compose it into their own document.
+1. **`generateOpenApiSchemaComponent(node, options?) → string`** — emits a single **OpenAPI 3.1 component schema** as canonical JSON. The output is the value that would live under `components.schemas.<Name>` in a full OpenAPI document — not the document itself. Consumers compose it into their own document.
 2. **Round-trip validation via `@redocly/openapi-core`** — every emitted schema is loaded into a synthetic OpenAPI 3.1 document, run through Redocly's validator, and asserted clean.
 3. **OpenAPI-aware provenance** — same `x-nekostack` extension block as v0.3, with `generator: "openApi"`. OpenAPI Specification Extensions permit any `x-*` keys, so this is portable across all OpenAPI 3.1 tooling.
 4. **Format mapping alignment** — JSON Schema's `format: "uri"` vs OpenAPI's preference, etc. Codify the small differences in a new contract doc.
@@ -39,7 +39,7 @@ The plan deliberately keeps v0.4 narrow so it can ship in days, not weeks.
 To be added to `src/index.ts`:
 
 ```ts
-export { generateOpenApiComponent } from "./generators/openapi.js";
+export { generateOpenApiSchemaComponent } from "./generators/openapi.js";
 export type { OpenApiGeneratorOptions } from "./generators/types.js";
 ```
 
@@ -50,9 +50,11 @@ Two new exports — one value, one type. The existing `UnsupportedNodeKindError`
 ```
 packages/schema/src/
 └── generators/
-    ├── openapi.ts             # the generator
-    ├── openapi-meta.ts        # OpenAPI-specific extension constants (if any beyond x-nekostack)
-    └── errors.ts              # extended: generator includes "openApi"
+    ├── schema-fragment.ts     # NEW. emitSchemaFragment(node, { target: "jsonSchema" | "openApi31" }) — shared per Decision #3.
+    ├── json-schema.ts         # REFACTORED. Now a thin root wrapper that calls emitSchemaFragment.
+    ├── openapi.ts             # NEW. Thin component-schema wrapper that calls emitSchemaFragment.
+    ├── openapi-meta.ts        # OpenAPI-specific extension constants (if any beyond x-nekostack). Create only if needed.
+    └── errors.ts              # extended: generator union includes "openApi"
 ```
 
 Tests:
@@ -87,14 +89,40 @@ Twelve decisions. Several inherit from v0.3 cleanly; OpenAPI-specific ones are f
 
 ### Output shape
 
-1. **Output unit: component-schema fragment, not full document.** `generateOpenApiComponent(node)` returns the value that would slot under `components.schemas.<Name>`. Consumers compose. Rationale: full-document generation (paths, operations) belongs to `@nekostack/api`. v0.4 stays a schema generator.
+1. **Output unit: component-schema fragment, not full document.** `generateOpenApiSchemaComponent(node)` returns the value that would slot under `components.schemas.<Name>`. Consumers compose. Rationale: full-document generation (paths, operations) belongs to `@nekostack/api`. v0.4 stays a schema generator.
 
-2. **Function name.** `generateOpenApiComponent` (verbose but accurate) over `generateOpenApi` (implies full document). Naming follows the v0.3 precedent of being specific about what comes out.
+2. **Function name.** `generateOpenApiSchemaComponent`. OpenAPI's `components` object includes **schemas, responses, parameters, requestBodies, examples, headers, securitySchemes, links, callbacks, and pathItems** — a bare `generateOpenApiComponent` would imply we emit any of those. The `SchemaComponent` qualifier makes the actual output unit unambiguous: schema-shaped value at `components.schemas.<Name>`, nothing else.
 
-3. **Reuse vs parallel implementation.** OpenAPI 3.1 schemas are JSON Schema draft 2020-12 with a few extra optional keywords. Two options:
-   - **Option A (preferred):** parallel implementation that shares no code with `json-schema.ts`. Each generator is straightforward; sharing creates coupling and conditional branching that becomes a tax.
-   - **Option B:** factor `json-schema.ts` into a shared core + thin OpenAPI wrapper.
-   - Recommendation: **A** for v0.4. Revisit only if `openapi.ts` ends up >70% identical to `json-schema.ts`.
+3. **Reuse via a shared internal schema-fragment emitter.** v0.4 extracts the IR-to-fragment translation out of [`src/generators/json-schema.ts`](../src/generators/json-schema.ts) into a new internal module that both generators consume. They keep separate root wrappers, but they MUST NOT duplicate the absence-semantics translation, the object-policy translation, the portable-refinement table, the `stripUnknown` extension behavior, or the runtime-refinement / regex-flags throw paths.
+
+   **Rationale.** OpenAPI 3.1 explicitly aligns its Schema Object with JSON Schema draft 2020-12 — the spec calls it a superset. Duplicating the v0.3 mapping in a parallel `openapi.ts` would create a real drift vector: v0.3 absence-semantics behavior + v0.4 absence-semantics behavior could disagree on any future change, and bug fixes would have to land twice. v0.2's dogfood pass already taught us that generator-quality issues surface when generators are exercised against realistic schemas; the second-generator exposure would just be hidden if both lived in parallel files.
+
+   **Concrete structure** (subject to refinement during implementation):
+
+   ```
+   src/generators/
+   ├── schema-fragment.ts   # NEW. emitSchemaFragment(node, { target: "jsonSchema" | "openApi31" }) → Record<string, JsonValue>
+   ├── json-schema.ts       # REFACTORED. Becomes a thin root wrapper: $schema + $id + x-nekostack provenance, calls emitSchemaFragment.
+   └── openapi.ts           # NEW. Thin component wrapper: no $schema, no $id, x-nekostack provenance with generator: "openApi", calls emitSchemaFragment.
+   ```
+
+   **What the shared fragment owns:**
+   - Primitive type mapping
+   - Array + object body mapping
+   - Absence-semantics translation (`required` array, `type: ["base", "null"]`, default-as-annotation)
+   - Object-policy translation (`strict` / `passthrough` / `stripUnknown` including the `x-nekostack-strip` extension)
+   - Portable refinement → keyword mapping
+   - Runtime-refinement throw
+   - Regex-with-flags throw
+   - Canonical key sort
+
+   **What each wrapper owns:**
+   - Root document structure
+   - `$schema` (JSON Schema only) / no `$schema` (OpenAPI component)
+   - `$id` strategy (URN/URL for JSON Schema; omit for OpenAPI component)
+   - Provenance object's `generator` field value
+
+   **Test impact:** the v0.3 JSON Schema tests must continue to pass byte-identically after the refactor — that's a hard gate. The implementation PR must include that proof in its description.
 
 ### Format + identity (mostly inherited from v0.3)
 
@@ -131,7 +159,11 @@ Twelve decisions. Several inherit from v0.3 cleanly; OpenAPI-specific ones are f
     2. Run Redocly's validator on the document.
     3. Assert zero validation errors.
 
-    Alternative considered: `swagger-parser` (older, less actively maintained); the spec authors' own `openapi-types` (types only, no validator). Redocly is the closest to an authoritative validator that's actively maintained and tree-shakeable. **Recommendation: `@redocly/openapi-core`.**
+    The OpenAPI Specification itself is authoritative; Redocly is an actively maintained validation tool that catches spec/tooling issues beyond raw JSON validity.
+
+    Alternative considered: `swagger-parser` (older, less actively maintained); the spec authors' own `openapi-types` (types only, no validator). **Recommendation: `@redocly/openapi-core`.**
+
+    **Fallback clause:** if `@redocly/openapi-core`'s programmatic API turns out to be unstable or impractical to invoke from a vitest harness, the implementation PR may switch to spawning the Redocly CLI from tests instead. The validation requirement does not change: compose the emitted component into a synthetic OpenAPI 3.1 document and assert clean. Only the invocation surface differs.
 
 ## Invariants — phase-specific risk
 
@@ -151,13 +183,13 @@ All 8 invariants still apply. New v0.4 corollary to add to `INVARIANTS.md`:
 | Section | v0.4 strategy |
 |---|---|
 | **Scope** | Implementation PR titled `feat(schema): v0.4 candidate — OpenAPI 3.1 component generation`. Links this plan + ROADMAP v0.4 heading. |
-| **Public API** | Two new exports (`generateOpenApiComponent`, `OpenApiGeneratorOptions`). Each justified in implementation PR body. |
+| **Public API** | Two new exports (`generateOpenApiSchemaComponent`, `OpenApiGeneratorOptions`). Each justified in implementation PR body. |
 | **Boundary** | No `@nekostack/*` imports. New devDep on `@redocly/openapi-core` declared. |
 | **Contracts** | New contract doc `docs/OPENAPI_MAPPING.md` ships with the implementation PR. `INVARIANTS.md` extended with the Redocly-pass corollary. |
 | **Immutability + determinism** | Generator is a pure function of IR. Canonical JSON. Determinism test. |
 | **Tests** | Snapshots + Redocly round-trips + throw tests + example regenerate. |
 | **Validation commands** | Same five (`test`, `typecheck`, `build`, `pack --dry-run`, `ls`). |
-| **Local artifacts** | `docs/OPENAPI_MAPPING.md` (new contract doc). `docs/USAGE.md` extended with a `generateOpenApiComponent` section. `docs/EXAMPLES.md` extended with OpenAPI links. `docs/ROADMAP.md` v0.4 → candidate. |
+| **Local artifacts** | `docs/OPENAPI_MAPPING.md` (new contract doc). `docs/USAGE.md` extended with a `generateOpenApiSchemaComponent` section. `docs/EXAMPLES.md` extended with OpenAPI links. `docs/ROADMAP.md` v0.4 → candidate. |
 | **Process** | Draft PR on `feat/schema-v0.4-candidate`. Ready-for-review only after self-audit walks the checklist clean. |
 | **Milestone process (post-merge)** | Tag, release, CHANGELOG entry per `packages/schema/CHANGELOG.md`'s rule. `GENERATOR_VERSION` bumped to `@nekostack/schema@0.4.0`; snapshots regenerated. |
 
@@ -166,12 +198,12 @@ All 8 invariants still apply. New v0.4 corollary to add to `INVARIANTS.md`:
 Implementation lands on `feat/schema-v0.4-candidate` as reviewable commits:
 
 1. Error class extension: `UnsupportedNodeKindError`'s `generator` field accepts `"openApi"`.
-2. `openapi.ts` generator — primitives, refinements, absence modifiers, object policy. Cleanly mirrors `json-schema.ts` (Decision #3 Option A: parallel implementation, no shared core).
-3. `openapi-meta.ts` if any OpenAPI-specific extension keys are needed beyond `x-nekostack`. (Likely empty in v0.4; create the file only if used.)
-4. Throw paths (runtime refinements, regex flags, unsupported IR kinds).
-5. Snapshot tests.
+2. **Refactor `json-schema.ts` to extract `emitSchemaFragment` into `schema-fragment.ts`** (Decision #3). v0.3 JSON Schema tests must continue to pass byte-identically — no snapshot changes from this step. The refactor is a pure code-motion exercise; behavior is preserved.
+3. `openapi.ts` generator — thin component-schema wrapper that calls `emitSchemaFragment({ target: "openApi31" })`. Adds OpenAPI-specific concerns (no `$schema`, no `$id`, provenance `generator: "openApi"`).
+4. `openapi-meta.ts` if any OpenAPI-specific extension keys are needed beyond `x-nekostack`. (Likely empty in v0.4; create only if used.)
+5. Snapshot tests for `generateOpenApiSchemaComponent`.
 6. Redocly round-trip test harness + tests.
-7. `docs/OPENAPI_MAPPING.md` (new contract doc).
+7. `docs/OPENAPI_MAPPING.md` (new contract doc — focuses on the JSON-Schema vs OpenAPI deltas, not the full mapping table which lives in `JSON_SCHEMA_MAPPING.md`).
 8. Example regenerate test extended with three new OpenAPI artifacts.
 9. `docs/USAGE.md` + `docs/EXAMPLES.md` extended.
 10. `docs/ROADMAP.md` v0.4 → candidate.
@@ -181,10 +213,12 @@ Implementation lands on `feat/schema-v0.4-candidate` as reviewable commits:
 
 ## Estimate
 
-**2–4 focused days.** Smaller than v0.3 because:
+**3–5 focused days.** Slightly larger than the original estimate because the v0.3 refactor (step 2 — extract `emitSchemaFragment`) adds real work, but the refactor pays for itself by preventing two-generator drift on every future change.
+
 - OpenAPI 3.1 component schemas are draft 2020-12 — most of the v0.3 generator's output is already valid.
 - No new absence-semantics work; inherits directly from v0.3.
 - No new contract surface (the throw / metadata / object-policy rules all carry over).
+- The refactor is pure code motion — v0.3 JSON Schema tests are the gate. If any v0.3 snapshot diff appears after step 2 and before the `GENERATOR_VERSION` bump in step 12, the refactor is wrong.
 
 Risk areas:
 - Redocly's validator may flag schema-level constructs that JSON Schema accepts but OpenAPI rejects (e.g., schema `$id` in component position). Catch these early via the round-trip tests.
@@ -201,10 +235,23 @@ Deferred to later phases or future plan PRs:
 - Cross-schema `$ref` extraction — v0.7 registry-lite.
 - Plugin contract for third-party OpenAPI extensions — post-v1.0.
 
+## Decision history
+
+- **v0.4-plan, initial draft** — 12 decisions, plan-only PR.
+- **v0.4-plan, post-review amendment** — three corrections per the OpenAPI audit:
+  - **#2 (function name)** changed from `generateOpenApiComponent` to `generateOpenApiSchemaComponent`. Bare "Component" is ambiguous because OpenAPI's `components` includes schemas, responses, parameters, requestBodies, examples, headers, securitySchemes, links, callbacks, and pathItems. The `SchemaComponent` qualifier locks the output unit unambiguously.
+  - **#3 (implementation strategy)** flipped from parallel implementation to **shared internal schema-fragment emitter**. OpenAPI 3.1 Schema Objects are explicitly aligned with JSON Schema draft 2020-12 (spec calls it a superset). Duplicating the v0.3 mapping in a parallel `openapi.ts` would create a real drift vector — bug fixes would have to land twice, behavior could diverge silently. The shared fragment owns the IR-to-fragment translation; the wrappers own root identity, `$schema` / `$id` decisions, and provenance `generator` values. v0.3 JSON Schema tests are the hard gate proving the refactor preserves behavior.
+  - **#12 (Redocly framing)** corrected. The OpenAPI Specification is authoritative; Redocly is an actively maintained validation tool. Added a fallback clause: if `@redocly/openapi-core`'s programmatic API proves impractical to invoke from vitest, tests may spawn the Redocly CLI instead — but the validation requirement (compose into a synthetic OpenAPI 3.1 doc; assert clean) doesn't change.
+
+Knock-on changes:
+- Internal-file-delta diagram updated to add `schema-fragment.ts` and mark `json-schema.ts` as refactored.
+- Sequencing list gained a refactor step (step 2 is now extract-`emitSchemaFragment`; v0.3 snapshots must remain byte-identical through that step).
+- Estimate revised: 2–4 days → 3–5 days (refactor adds real work).
+- `docs/OPENAPI_MAPPING.md` reframed to focus on JSON-Schema-vs-OpenAPI deltas rather than re-document the full mapping table (which lives in `JSON_SCHEMA_MAPPING.md`).
+
 ## Action requested from reviewer
 
-- Approve / push back on the 12 decisions. Highest-stakes: **#1** (component fragment vs full doc), **#3** (parallel implementation vs shared core), **#5** (omit `$id` in component position), **#12** (Redocly choice).
-- Flag any in-scope item that should be removed or any deferred item that should pull forward.
-- Confirm `@redocly/openapi-core` is the right validator choice.
+- Final ack on the amended decisions, especially the shared-fragment direction (Decision #3).
+- Flag any further in-scope item that should be removed or any deferred item that should pull forward.
 
 Once approved, implementation opens on `feat/schema-v0.4-candidate`.
