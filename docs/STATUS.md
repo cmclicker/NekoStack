@@ -23,7 +23,7 @@
 
 ## Validation snapshot
 
-Test counts come from each package's most recent CHANGELOG entry. Re-run the package's `test` script to refresh.
+Test counts come from each package's most recent CHANGELOG entry. After validating a release, update the package CHANGELOG and run `npm run status:generate`.
 
 - **@nekostack/schema:** 342 tests recorded (latest: schema-v0.5.0)
 

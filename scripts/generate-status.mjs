@@ -5,8 +5,9 @@
 // `npm run status:check`.
 //
 // Implemented as plain .mjs (no devDep, no transpile) — small, inspectable,
-// no moving parts. If this script grows past ~300 lines or needs shared types
-// with a package, promote it under @nekostack/registry (see manifests/README.md).
+// no moving parts. Promote into @nekostack/registry when this needs shared
+// types with a package, multiple consumers, or domain logic that belongs to
+// a package's boundary — not because of line count. See scripts/README.md.
 
 import { execFileSync } from "node:child_process";
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
@@ -226,7 +227,7 @@ function renderStatusMd(manifest) {
 
   lines.push("## Validation snapshot");
   lines.push("");
-  lines.push("Test counts come from each package's most recent CHANGELOG entry. Re-run the package's `test` script to refresh.");
+  lines.push("Test counts come from each package's most recent CHANGELOG entry. After validating a release, update the package CHANGELOG and run `npm run status:generate`.");
   lines.push("");
   for (const pkg of manifest.packages) {
     if (pkg.test_count == null) {
