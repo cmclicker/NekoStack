@@ -1,6 +1,4 @@
 {
-  "$id": "urn:nekostack:schema:com.nekostack.audit.AuditEvent:1.0.0",
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "additionalProperties": false,
   "description": "A single audit log entry recording a notable action.",
   "properties": {
@@ -70,7 +68,7 @@
   ],
   "type": "object",
   "x-nekostack": {
-    "generator": "jsonSchema",
+    "generator": "openApi",
     "generatorVersion": "@nekostack/schema@0.4.0",
     "irHash": "sha256:bf0aa787125c09f239d5bdba22b5821c371898926aeb3bc128be79ef48bbd08b",
     "schemaId": "com.nekostack.audit.AuditEvent",

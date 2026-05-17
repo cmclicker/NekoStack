@@ -33,7 +33,7 @@
   "type": "object",
   "x-nekostack": {
     "generator": "openApi",
-    "generatorVersion": "@nekostack/schema@0.3.0",
+    "generatorVersion": "@nekostack/schema@0.4.0",
     "irHash": "sha256:1537b19d43b999bf16530841e63652c98d77b81b8df4a8d0bc0644585869135e",
     "schemaId": "com.x.User",
     "schemaVersion": "1.0.0"

@@ -100,6 +100,28 @@ Important properties:
 
 Optional consumer dep: `ajv` (any version that supports draft 2020-12 — import via `ajv/dist/2020.js`). Not required to *generate*, only to *validate*.
 
+## Generating an OpenAPI 3.1 component schema
+
+```ts
+import { generateOpenApiSchemaComponent } from "@nekostack/schema";
+import { Tenant } from "./tenant.schema.js";
+
+const component = generateOpenApiSchemaComponent(Tenant.node);
+// Returns: canonical JSON for the value at `components.schemas.Tenant` in
+// an OpenAPI 3.1 document. Compose into your own document.
+```
+
+The output is a **component schema fragment**, not a full OpenAPI document. Paths / operations / responses / security schemes / etc. are not in scope for `@nekostack/schema` — they belong to a future `@nekostack/api` package.
+
+Differences from `generateJsonSchema`:
+- **No `$schema`** — OpenAPI 3.1 documents declare the schema dialect at the document root via `jsonSchemaDialect`; components inherit it.
+- **No `$id`** — component identity is the position in the document (`#/components/schemas/<Name>`).
+- **`x-nekostack.generator: "openApi"`** — distinguishes the artifact from JSON Schema output.
+
+Everything else (absence semantics, object policy, refinement mapping, throw behavior on runtime refinements + regex with flags, `x-nekostack-strip` / `x-nekostack-default-applied-by`) is **identical to JSON Schema** because both generators share the same internal fragment emitter. See [`OPENAPI_MAPPING.md`](./OPENAPI_MAPPING.md) for the delta table and [`JSON_SCHEMA_MAPPING.md`](./JSON_SCHEMA_MAPPING.md) for the full mapping.
+
+Optional consumer dep: `@redocly/openapi-core` (or any OpenAPI 3.1 validator) if you want to validate the composed document.
+
 ## Generated-file headers
 
 Every output file starts with a deterministic JSDoc block — full spec in [`HEADER_FORMAT.md`](./HEADER_FORMAT.md):
@@ -111,7 +133,7 @@ Every output file starts with a deterministic JSDoc block — full spec in [`HEA
  * schemaVersion:    1.0.0
  * irHash:           sha256:7f3e2a9b...
  * generator:        typescript
- * generatorVersion: @nekostack/schema@0.3.0
+ * generatorVersion: @nekostack/schema@0.4.0
  *
  * DO NOT EDIT MANUALLY.
  */
@@ -140,7 +162,7 @@ Same IR → same hash, every time. Semantic change → different hash. This is t
 There is no `neko schema generate` command in v0.2. The intended workflow until v0.7:
 
 1. Author the schema in `your-package/schemas/foo.schema.ts`.
-2. Write a script (or a vitest snapshot test — see this package's [`tests/examples/regenerate.test.ts`](../tests/examples/regenerate.test.ts) for a worked example) that calls `generateTypeScript` / `generateZod` / `generateJsonSchema` and writes the result to disk.
+2. Write a script (or a vitest snapshot test — see this package's [`tests/examples/regenerate.test.ts`](../tests/examples/regenerate.test.ts) for a worked example) that calls `generateTypeScript` / `generateZod` / `generateJsonSchema` / `generateOpenApiSchemaComponent` and writes the result to disk.
 3. Commit both the source schema and the generated files.
 4. Review diffs as ordinary code review.
 
@@ -159,7 +181,7 @@ try {
   if (e instanceof UnsupportedNodeKindError) {
     // e.code      === "UNSUPPORTED_NODE_KIND"
     // e.kind      === "date" | "union" | "recursiveRef" | "transform" | "runtimeRefinement" | "regexFlags"
-    // e.generator === "typescript" | "zod" | "jsonSchema"
+    // e.generator === "typescript" | "zod" | "jsonSchema" | "openApi"
   }
 }
 ```
@@ -168,11 +190,12 @@ Runtime-only refinements (custom predicates added via a future `.refine(fn)` bui
 
 For the JSON Schema generator specifically, regex with non-empty flags also throws (`kind: "regexFlags"`) — JSON Schema `pattern` has no flag support, and emitting source-only would silently drop case-insensitivity / unicode / etc.
 
-## What v0.2 / v0.3 don't do (cross-reference to scope)
+## What's still deferred (cross-reference to scope)
 
 | Want | Wait for | Why |
 |---|---|---|
-| OpenAPI 3.1 components | v0.4 | After JSON Schema |
+| Full OpenAPI document (paths/operations/responses/security/etc.) | `@nekostack/api` package | Schema package generates component schemas only |
+| OpenAPI 3.0 target (`nullable: true` form) | future generator option | v0.4 ships 3.1 only |
 | Composition (`extend`, `pick`, `partial`, `merge`) | v0.5 | Composition operators |
 | Runtime `parse(schema, input)` / `validate(...)` | v0.6 | The schema package's own runtime; today, use the generated Zod |
 | `neko schema generate / check / diff` CLI | v0.7 | Registry-lite phase |

@@ -1,6 +1,4 @@
 {
-  "$id": "urn:nekostack:schema:com.nekostack.entitlements.Entitlement:1.0.0",
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "additionalProperties": false,
   "description": "A single feature entitlement granted to a tenant.",
   "properties": {
@@ -56,7 +54,7 @@
   ],
   "type": "object",
   "x-nekostack": {
-    "generator": "jsonSchema",
+    "generator": "openApi",
     "generatorVersion": "@nekostack/schema@0.4.0",
     "irHash": "sha256:62f8ab291e2dfa4b4450138c1dffbac2737de55d62392a162be4ed36afe09cf1",
     "schemaId": "com.nekostack.entitlements.Entitlement",

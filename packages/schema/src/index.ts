@@ -1,5 +1,5 @@
 // =============================================================================
-// Public API — @nekostack/schema v0.3
+// Public API — @nekostack/schema v0.4
 //
 // Surface is intentionally narrow. Anything not re-exported here is package-
 // internal and may change without a major version bump. See docs/SCOPE.md.
@@ -51,9 +51,11 @@ export { irHash } from "./ir/hash.js";
 export { generateTypeScript } from "./generators/ts.js";
 export { generateZod } from "./generators/zod.js";
 export { generateJsonSchema } from "./generators/json-schema.js";
+export { generateOpenApiSchemaComponent } from "./generators/openapi.js";
 export type {
   GeneratorOptions,
   JsonSchemaGeneratorOptions,
+  OpenApiGeneratorOptions,
   TypeScriptGeneratorOptions,
   ZodGeneratorOptions,
 } from "./generators/types.js";

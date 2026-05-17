@@ -48,12 +48,18 @@ Status: **shipped** ([#10](https://github.com/cmclicker/NekoStack/pull/10), merg
 - Ajv2020 self-conformance + execution test suite (uses `ajv/dist/2020.js`, the draft-2020-12 class — NOT the default draft-07 import).
 - Three new example artifacts (`tenant.json.schema.json`, `audit-event.json.schema.json`, `entitlement.json.schema.json`) validated by the existing regenerate test.
 
-## v0.4 — OpenAPI 3.1 generation ← *active target*
+## v0.4 — OpenAPI 3.1 generation ← *candidate*
 
-- OpenAPI 3.1 component schemas
-- Integration fixtures for `@nekostack/api`
-- Nullable / required mapping per the absence-semantics table
-- Round-trip tests with `@redocly/openapi-core`
+Status: **candidate** ([#13](https://github.com/cmclicker/NekoStack/pull/13)). Implementation follows the merged plan in [`PHASE_PLAN_v0.4.md`](./PHASE_PLAN_v0.4.md).
+
+- `generateOpenApiSchemaComponent(node, options?)` — single OpenAPI 3.1 Schema Component (the value at `components.schemas.<Name>`). Not a full OpenAPI document — that belongs to a future `@nekostack/api` package.
+- **Shared internal `emitSchemaFragment`** ([`schema-fragment.ts`](../src/generators/schema-fragment.ts)) extracted from the v0.3 JSON Schema generator. Both generators consume it; the wrappers only differ on root structure, `$schema` / `$id` decisions, and provenance `generator` name. Eliminates the JSON-Schema-vs-OpenAPI drift vector at the source.
+- No `$schema` and no `$id` in component-position output (OpenAPI 3.1 documents declare the dialect at the document root via `jsonSchemaDialect`; component identity is the position in the document).
+- Provenance via `x-nekostack` extension with `generator: "openApi"`; `irHash` is identical across both generators for the same node (proven by test).
+- Absence semantics, object policy, refinement mapping, `stripUnknown` extension, runtime-refinement and regex-with-flags throws — all inherited unchanged from v0.3 via the shared fragment.
+- Three new example artifacts (`tenant.openapi.json`, `audit-event.openapi.json`, `entitlement.openapi.json`) validated by the existing regenerate test.
+- New contract doc [`OPENAPI_MAPPING.md`](./OPENAPI_MAPPING.md) — records only the deltas from `JSON_SCHEMA_MAPPING.md`, not a duplicate mapping table.
+- Redocly round-trip tests via `@redocly/openapi-core` validate every emitted component composed into a synthetic OpenAPI 3.1 document. Fallback per the v0.4 plan: tests may spawn the Redocly CLI if the programmatic API proves impractical.
 
 ## v0.5 — Composition
 
