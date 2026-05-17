@@ -6,9 +6,40 @@ This package is workspace-internal (`private: true`, version `0.0.0`). The miles
 
 ---
 
+## schema-v0.2.1 — 2026-05-16
+
+[Tag](https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.2.1) · merge commit [`17cd182`](https://github.com/cmclicker/NekoStack/commit/17cd182). Patch release on the v0.2 line — proof artifacts + generator output polish from the dogfood pass.
+
+### Shipped
+
+- **v0.2 dogfood examples** — three realistic schemas (`Tenant`, `AuditEvent`, `Entitlement`) under [`examples/`](examples/) with committed generated artifacts under [`examples/generated/`](examples/generated/). The committed files double as snapshots for [`tests/examples/regenerate.test.ts`](tests/examples/regenerate.test.ts), so example drift fails CI.
+- **Author-facing docs** — [`docs/USAGE.md`](docs/USAGE.md) and [`docs/EXAMPLES.md`](docs/EXAMPLES.md).
+- **TS generator: nested object indentation** — nested object types now indent per depth (was: collapsed to outer-field column).
+- **TS generator: array-of-object element parens** — replaced unsafe `startsWith("{")` heuristic with a structural top-level-union scanner. Closes the semantic hole where `s.array(s.object({...}).optional())` could emit `{...} | undefined[]` (parsed as "object OR array of undefined") instead of the correct `({...} | undefined)[]`.
+
+### Test count
+
+- 144 → 163 (+19 since v0.2.0): 9 regenerate-test cases, 4 nested-indent assertions, 6 array-paren assertions.
+
+### Why this was its own release
+
+The dogfood polish changed generator behavior (real bug fix in the array-paren case, presentational change in the nested-indent case). Folding it under `schema-v0.2.0` would have understated the change and made the tagged release diverge from main. A patch tag preserves honesty without bumping the minor version.
+
+### No public API change
+
+- No new exports.
+- No new dependency.
+- `src/index.ts` unchanged from v0.2.0.
+
+### Still deferred
+
+Same as v0.2.0 (see below).
+
+---
+
 ## schema-v0.2.0 — 2026-05-16
 
-[Tag](https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.2.0) · merge commit [`eee079c`](https://github.com/cmclicker/NekoStack/commit/eee079c) · dogfood polish landed in [`17cd182`](https://github.com/cmclicker/NekoStack/commit/17cd182).
+[Tag](https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.2.0) · merge commit [`eee079c`](https://github.com/cmclicker/NekoStack/commit/eee079c).
 
 ### Shipped
 
@@ -21,9 +52,6 @@ This package is workspace-internal (`private: true`, version `0.0.0`). The miles
 - **Snapshot tests** for generator output (`vitest` `toMatchFileSnapshot`, external `.snap` files).
 - **Zod-execution tests** — load generated code into a real Zod runtime, validate fixtures.
 - **Zod-modifier-composition tests** — the eight-row matrix from Decision #8 (optional / nullable / nullish / default and combinations).
-- **v0.2 dogfood examples** — three realistic schemas (`Tenant`, `AuditEvent`, `Entitlement`) under [`examples/`](examples/) with committed generated artifacts under [`examples/generated/`](examples/generated/). The committed files double as snapshots for [`tests/examples/regenerate.test.ts`](tests/examples/regenerate.test.ts), so example drift fails CI.
-- **Author-facing docs** — [`docs/USAGE.md`](docs/USAGE.md) and [`docs/EXAMPLES.md`](docs/EXAMPLES.md).
-- **TS generator output polish** — nested object types indent per depth; array-of-object element parens use a structural top-level-union scanner.
 
 ### Dependency changes
 
@@ -31,7 +59,7 @@ This package is workspace-internal (`private: true`, version `0.0.0`). The miles
 
 ### Test count
 
-- 44 → 163 (+119 net).
+- 44 → 144 (+100 net at the tag commit; v0.2.1 took it to 163).
 
 ### Still deferred
 
@@ -86,10 +114,13 @@ This package is workspace-internal (`private: true`, version `0.0.0`). The miles
 For every shipped schema milestone:
 
 1. Merge the implementation PR.
-2. Merge the ROADMAP status PR (`candidate` → `shipped`; advance the next phase to `active target`).
-3. Tag the implementation merge commit: `git tag -a schema-vX.Y.Z <sha> -m "..."` + `git push origin schema-vX.Y.Z`.
-4. Create a GitHub release pointing at the tag.
-5. Add a new section at the top of this file.
-6. Keep `docs/` and `README.md` current — never duplicate them under `docs/v0.x/`.
+2. Merge the dogfood / proof PR if one exists (examples, generator polish surfaced during dogfooding, regenerate snapshots).
+3. Merge the ROADMAP status PR (`candidate` → `shipped`; advance the next phase to `active target`).
+4. Tag the **final** commit on the milestone — i.e. the dogfood merge if there is one, otherwise the implementation merge. Use `git tag -a schema-vX.Y.Z <sha> -m "..."` + `git push origin schema-vX.Y.Z`.
+5. Create a GitHub release pointing at the tag.
+6. Add a new section at the top of this file.
+7. Keep `docs/` and `README.md` current — never duplicate them under `docs/v0.x/`.
+
+Behavior-changing dogfood polish that lands AFTER the implementation has already been tagged gets its own patch milestone (`schema-v0.2.1`-style) — see the v0.2 line in this changelog for the working precedent. Folding it back into the implementation tag would make the tagged release diverge from main and understate the change.
 
 The git history is the implementation truth; tags + releases + this changelog are the milestone-visible truth.
