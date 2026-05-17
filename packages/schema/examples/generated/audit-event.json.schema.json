@@ -1,0 +1,79 @@
+{
+  "$id": "urn:nekostack:schema:com.nekostack.audit.AuditEvent:1.0.0",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "A single audit log entry recording a notable action.",
+  "properties": {
+    "actorId": {
+      "format": "uuid",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "correlationId": {
+      "format": "uuid",
+      "type": "string"
+    },
+    "id": {
+      "format": "uuid",
+      "type": "string"
+    },
+    "occurredAt": {
+      "type": "string"
+    },
+    "payload": {
+      "additionalProperties": true,
+      "properties": {},
+      "type": "object"
+    },
+    "severity": {
+      "default": "info",
+      "enum": [
+        "info",
+        "warning",
+        "error"
+      ],
+      "x-nekostack-default-applied-by": "runtime"
+    },
+    "targetId": {
+      "type": "string"
+    },
+    "targetType": {
+      "type": "string"
+    },
+    "tenantId": {
+      "format": "uuid",
+      "type": "string"
+    },
+    "type": {
+      "enum": [
+        "user.created",
+        "user.updated",
+        "user.deleted",
+        "tenant.created",
+        "tenant.deleted",
+        "auth.login.succeeded",
+        "auth.login.failed"
+      ]
+    }
+  },
+  "required": [
+    "id",
+    "type",
+    "occurredAt",
+    "actorId",
+    "tenantId",
+    "targetType",
+    "targetId",
+    "payload"
+  ],
+  "type": "object",
+  "x-nekostack": {
+    "generator": "jsonSchema",
+    "generatorVersion": "@nekostack/schema@0.3.0",
+    "irHash": "sha256:bf0aa787125c09f239d5bdba22b5821c371898926aeb3bc128be79ef48bbd08b",
+    "schemaId": "com.nekostack.audit.AuditEvent",
+    "schemaVersion": "1.0.0"
+  }
+}

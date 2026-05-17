@@ -1,0 +1,70 @@
+{
+  "$id": "urn:nekostack:schema:com.nekostack.tenant.Tenant:1.0.0",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "A NekoStack workspace tenant.",
+  "properties": {
+    "billingEmail": {
+      "format": "email",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "id": {
+      "format": "uuid",
+      "type": "string"
+    },
+    "metadata": {
+      "additionalProperties": false,
+      "properties": {
+        "createdBy": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "createdBy"
+      ],
+      "type": "object"
+    },
+    "name": {
+      "maxLength": 120,
+      "minLength": 1,
+      "type": "string"
+    },
+    "plan": {
+      "default": "free",
+      "enum": [
+        "free",
+        "pro",
+        "enterprise"
+      ],
+      "x-nekostack-default-applied-by": "runtime"
+    },
+    "slug": {
+      "maxLength": 50,
+      "minLength": 2,
+      "pattern": "^[a-z0-9-]+$",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "slug",
+    "name",
+    "billingEmail",
+    "metadata"
+  ],
+  "type": "object",
+  "x-nekostack": {
+    "generator": "jsonSchema",
+    "generatorVersion": "@nekostack/schema@0.3.0",
+    "irHash": "sha256:cb71390d52e09501f4e56d6bfe5e491465ebeae143ec66419eac5f0d1f3c99cf",
+    "schemaId": "com.nekostack.tenant.Tenant",
+    "schemaVersion": "1.0.0"
+  }
+}

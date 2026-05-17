@@ -18,6 +18,7 @@ npx vitest run tests/examples/regenerate.test.ts -u
 **Generated:**
 - [`../examples/generated/tenant.types.ts`](../examples/generated/tenant.types.ts) — TS output type
 - [`../examples/generated/tenant.zod.ts`](../examples/generated/tenant.zod.ts) — Zod 3.x validator
+- [`../examples/generated/tenant.json.schema.json`](../examples/generated/tenant.json.schema.json) — JSON Schema draft 2020-12 (URN `$id`)
 
 **What it demonstrates:**
 - Schema metadata (`.id()`, `.version()`, `.describe()`) in the generated header.
@@ -34,6 +35,7 @@ npx vitest run tests/examples/regenerate.test.ts -u
 **Generated:**
 - [`../examples/generated/audit-event.both.ts`](../examples/generated/audit-event.both.ts) — TS, **`mode: "both"`**, emits `AuditEventInput` + `AuditEventOutput` side-by-side
 - [`../examples/generated/audit-event.zod.ts`](../examples/generated/audit-event.zod.ts) — Zod 3.x validator
+- [`../examples/generated/audit-event.json.schema.json`](../examples/generated/audit-event.json.schema.json) — JSON Schema draft 2020-12 (input-validation; default fields omitted from `required`, `x-nekostack-default-applied-by: "runtime"` on `severity`)
 
 **Why this is the headline example:**
 
@@ -58,6 +60,7 @@ The Input accepts missing `severity` (the default fills it in). The Output is fu
 **Generated:**
 - [`../examples/generated/entitlement.types.ts`](../examples/generated/entitlement.types.ts) — TS output type
 - [`../examples/generated/entitlement.zod.ts`](../examples/generated/entitlement.zod.ts) — Zod 3.x validator
+- [`../examples/generated/entitlement.json.schema.json`](../examples/generated/entitlement.json.schema.json) — JSON Schema draft 2020-12
 
 **What it demonstrates:**
 - Boolean with default (`enabled: true`).
@@ -77,7 +80,7 @@ Every committed generated artifact has the deterministic header:
  * schemaVersion:    1.0.0
  * irHash:           sha256:<64-char-hex>
  * generator:        typescript | zod
- * generatorVersion: @nekostack/schema@0.2.0
+ * generatorVersion: @nekostack/schema@0.3.0
  *
  * DO NOT EDIT MANUALLY.
  */
@@ -87,7 +90,6 @@ Same IR → same `irHash` across runs and across generators. Re-running the rege
 
 ## What these examples deliberately don't show (yet)
 
-- **JSON Schema** output (v0.3).
 - **OpenAPI 3.1** component output (v0.4).
 - **Composition** — `Tenant.extend({ ... })`, `pick({ id: true })`, etc. (v0.5).
 - **Runtime parse/validate** via this package — for now, import the generated Zod and call `.parse()` / `.safeParse()` on it.

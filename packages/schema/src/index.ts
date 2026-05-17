@@ -1,5 +1,5 @@
 // =============================================================================
-// Public API — @nekostack/schema v0.2
+// Public API — @nekostack/schema v0.3
 //
 // Surface is intentionally narrow. Anything not re-exported here is package-
 // internal and may change without a major version bump. See docs/SCOPE.md.
@@ -50,8 +50,10 @@ export { irHash } from "./ir/hash.js";
 // a downstream concern. See docs/PHASE_PLAN_v0.2.md for scope + non-scope.
 export { generateTypeScript } from "./generators/ts.js";
 export { generateZod } from "./generators/zod.js";
+export { generateJsonSchema } from "./generators/json-schema.js";
 export type {
   GeneratorOptions,
+  JsonSchemaGeneratorOptions,
   TypeScriptGeneratorOptions,
   ZodGeneratorOptions,
 } from "./generators/types.js";

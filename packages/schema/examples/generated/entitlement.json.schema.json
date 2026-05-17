@@ -1,0 +1,65 @@
+{
+  "$id": "urn:nekostack:schema:com.nekostack.entitlements.Entitlement:1.0.0",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "A single feature entitlement granted to a tenant.",
+  "properties": {
+    "enabled": {
+      "default": true,
+      "type": "boolean",
+      "x-nekostack-default-applied-by": "runtime"
+    },
+    "expiresAt": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "feature": {
+      "pattern": "^[a-z][a-z0-9_.]+$",
+      "type": "string"
+    },
+    "id": {
+      "format": "uuid",
+      "type": "string"
+    },
+    "legacyTier": {
+      "deprecated": true,
+      "type": "string"
+    },
+    "quota": {
+      "minimum": 0,
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "tags": {
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 20,
+      "type": "array"
+    },
+    "tenantId": {
+      "format": "uuid",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "tenantId",
+    "feature",
+    "quota",
+    "expiresAt",
+    "tags"
+  ],
+  "type": "object",
+  "x-nekostack": {
+    "generator": "jsonSchema",
+    "generatorVersion": "@nekostack/schema@0.3.0",
+    "irHash": "sha256:62f8ab291e2dfa4b4450138c1dffbac2737de55d62392a162be4ed36afe09cf1",
+    "schemaId": "com.nekostack.entitlements.Entitlement",
+    "schemaVersion": "1.0.0"
+  }
+}

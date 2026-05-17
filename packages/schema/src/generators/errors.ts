@@ -11,12 +11,12 @@
 export class UnsupportedNodeKindError extends Error {
   readonly code = "UNSUPPORTED_NODE_KIND" as const;
   readonly kind: string;
-  readonly generator: "typescript" | "zod";
+  readonly generator: "typescript" | "zod" | "jsonSchema";
 
-  constructor(args: { kind: string; generator: "typescript" | "zod" }) {
+  constructor(args: { kind: string; generator: "typescript" | "zod" | "jsonSchema" }) {
     super(
       `Generator '${args.generator}' does not support IR node kind '${args.kind}' in this phase. ` +
-        `See packages/schema/docs/PHASE_PLAN_v0.2.md for the supported set.`,
+        `See packages/schema/docs/ for the active generator contracts.`,
     );
     this.name = "UnsupportedNodeKindError";
     this.kind = args.kind;
