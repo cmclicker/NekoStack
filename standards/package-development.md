@@ -4,7 +4,7 @@
 
 ## The rule
 
-A NekoStack package is a **contract**, not just code. Before any phase of a package is merged, it must satisfy three audits and own five local artifacts.
+A NekoStack package is a **contract**, not just code. Before any phase of a package is merged, it must satisfy four audits and own five local artifacts.
 
 ### 1. The four audits (required for every phase / version bump)
 
@@ -37,7 +37,7 @@ Every package exposes a single entry point (`src/index.ts`). Its surface is inte
 
 ### 4. The "candidate before complete" pattern
 
-A package version is a candidate until the three audits have passed and reviewers have accepted. **Do not push package implementations directly to `main`.** Open a draft PR, run the audits, address findings, then promote to ready-for-review.
+A package version is a candidate until the four audits have passed and reviewers have accepted. **Do not push package implementations directly to `main`.** Open a draft PR, run the audits, address findings, then promote to ready-for-review.
 
 The PR description must include:
 - Scope statement: what this phase includes.
