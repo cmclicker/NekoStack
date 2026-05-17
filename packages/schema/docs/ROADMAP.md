@@ -21,9 +21,9 @@ Includes:
 
 Explicitly out of scope (see [`SCOPE.md`](./SCOPE.md)): generators, parse/validate engine, registry, diff, migrations, CLI.
 
-## v0.2 — TypeScript + Zod generation ← *candidate*
+## v0.2 — TypeScript + Zod generators
 
-Status: **candidate** ([#5](https://github.com/cmclicker/NekoStack/pull/5)). Implementation follows the merged plan in [`PHASE_PLAN_v0.2.md`](./PHASE_PLAN_v0.2.md).
+Status: **shipped** ([#5](https://github.com/cmclicker/NekoStack/pull/5), merged 2026-05-16). Plan: [`PHASE_PLAN_v0.2.md`](./PHASE_PLAN_v0.2.md). Second package phase accepted under [`standards/package-development.md`](../../../standards/package-development.md).
 
 - `generateTypeScript(node, options?)` — type-alias generator supporting `mode: "input" | "output" | "both"` (default `"output"`).
 - `generateZod(node, options?)` — Zod 3.x generator with fixed modifier ordering per [`ZOD_MODIFIER_ORDERING.md`](./ZOD_MODIFIER_ORDERING.md).
@@ -34,7 +34,7 @@ Status: **candidate** ([#5](https://github.com/cmclicker/NekoStack/pull/5)). Imp
 - Zod-execution tests (generated validator runs in a real Zod runtime and matches absence-semantics fixtures).
 - Zod-modifier-composition tests (the eight-row matrix from Decision #8).
 
-## v0.3 — JSON Schema generation
+## v0.3 — JSON Schema generation ← *active target*
 
 - JSON Schema draft 2020-12 output
 - `$id` / `$defs` / `$ref` per identity rules
