@@ -211,6 +211,41 @@ describe("ObjectSchema.merge — combines, with explicit conflict + unknownKeys"
   });
 });
 
+describe("composition drops top-level metadata for every operator (Decision #11)", () => {
+  // Universal contract: composed schemas must NOT carry id/version/
+  // description/deprecated from the receiver. Implementation routes every
+  // operator through composedObject() — this table proves it for all seven.
+  const Tagged = s
+    .object({ id: s.string(), name: s.string(), tag: s.string() })
+    .id("com.x.Source")
+    .version("1.2.3")
+    .describe("source schema")
+    .deprecated();
+  const Other = s
+    .object({ extra: s.string() })
+    .id("com.x.Other")
+    .version("9.9.9");
+
+  const cases: Array<[string, () => { node: { metadata?: unknown } }]> = [
+    ["extend", () => Tagged.extend({ added: s.string() })],
+    ["pick", () => Tagged.pick({ id: true })],
+    ["omit", () => Tagged.omit({ tag: true })],
+    ["partial()", () => Tagged.partial()],
+    ["partial({ id: true })", () => Tagged.partial({ id: true })],
+    ["required()", () => Tagged.required()],
+    ["required({ id: true })", () => Tagged.required({ id: true })],
+    ["merge (disjoint)", () => Tagged.merge(Other)],
+    ["override", () => Tagged.override({ id: s.number() })],
+  ];
+
+  for (const [name, op] of cases) {
+    it(`${name} drops top-level metadata`, () => {
+      const result = op();
+      expect(result.node.metadata).toBeUndefined();
+    });
+  }
+});
+
 describe("ObjectSchema.override — replaces existing keys, throws on missing", () => {
   const Base = s.object({ id: s.string(), name: s.string() });
 

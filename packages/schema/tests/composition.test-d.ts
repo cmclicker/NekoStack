@@ -1,5 +1,9 @@
 import { describe, expectTypeOf, it } from "vitest";
 import { s } from "../src/index.js";
+import type {
+  InferObjectOutput,
+  MergeThrowShape,
+} from "../src/types.js";
 
 const Base = s.object({
   id: s.string(),
@@ -127,5 +131,23 @@ describe("override: type inference (Decision #2 + #15)", () => {
     const O = Base.override({ id: s.number() });
     type T = s.infer<typeof O>;
     expectTypeOf<T>().toEqualTypeOf<{ id: number; name: string; age: number }>();
+  });
+});
+
+describe("MergeThrowShape: disjoint composition works (Decision #3)", () => {
+  // `MergeThrowShape` is `Identity<S & Other>`. For disjoint shapes (the
+  // common safe case) the inferred output composes cleanly. The intended
+  // "incompatible field collapses to never" behavior on overlapping
+  // conflicting types is asserted ONLY at runtime — the strong type-level
+  // proof requires plumbing past method-overload disambiguation that fights
+  // vitest's expectTypeOf API with the `never` operand. The runtime throw
+  // is the load-bearing guarantee (see composition.test.ts merge tests).
+  it("disjoint shapes compose cleanly without never", () => {
+    type Aid = { id: ReturnType<typeof s.string> };
+    type Bname = { name: ReturnType<typeof s.number> };
+    type Merged = MergeThrowShape<Aid, Bname>;
+    type Output = InferObjectOutput<Merged>;
+    expectTypeOf<Output["id"]>().toEqualTypeOf<string>();
+    expectTypeOf<Output["name"]>().toEqualTypeOf<number>();
   });
 });
