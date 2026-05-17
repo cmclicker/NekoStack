@@ -49,34 +49,91 @@ Each returns a **new `ObjectSchema`** (no mutation of the receiver). The compose
 
 ## Public API delta
 
-To be added on `ObjectSchema` (no new top-level exports):
+To be added on `ObjectSchema` (no new top-level exports). All composed-shape names use the `Shape` suffix to avoid shadowing TypeScript's built-in `Pick` / `Omit` / `Partial` / `Required` utility types — that shadowing made earlier audit reads harder than they needed to be.
 
 ```ts
 class ObjectSchema<S extends RawShape> {
   // ... existing ...
-  extend<E extends RawShape>(extension: E): ObjectSchema<Extend<S, E>>;
-  pick<K extends Mask<S>>(keys: K): ObjectSchema<Pick<S, K>>;
-  omit<K extends Mask<S>>(keys: K): ObjectSchema<Omit<S, K>>;
-  partial(): ObjectSchema<Partial<S>>;
-  partial<K extends Mask<S>>(keys: K): ObjectSchema<PartialBy<S, K>>;
-  required(): ObjectSchema<Required<S>>;
-  required<K extends Mask<S>>(keys: K): ObjectSchema<RequiredBy<S, K>>;
+
+  extend<E extends RawShape>(extension: E): ObjectSchema<ExtendShape<S, E>>;
+
+  pick<M extends Mask<S>>(keys: M): ObjectSchema<PickShape<S, M>>;
+  omit<M extends Mask<S>>(keys: M): ObjectSchema<OmitShape<S, M>>;
+
+  partial(): ObjectSchema<PartialShape<S>>;
+  partial<M extends Mask<S>>(keys: M): ObjectSchema<PartialByShape<S, M>>;
+
+  required(): ObjectSchema<RequiredShape<S>>;
+  required<M extends Mask<S>>(keys: M): ObjectSchema<RequiredByShape<S, M>>;
+
+  // `merge` overloads encode the conflict-resolution decision at the type
+  // level — the resulting field types depend on which side wins. The
+  // default (no options or `conflict: "throw"`) returns the THROW-shape
+  // type, which surfaces the conflict at compile time when statically
+  // detectable; at runtime, it still throws on actual conflicts.
   merge<Other extends RawShape>(
     other: ObjectSchema<Other>,
-    options?: MergeOptions,
-  ): ObjectSchema<Merge<S, Other>>;
-  override<O extends Partial<S>>(overrides: O): ObjectSchema<Override<S, O>>;
+  ): ObjectSchema<MergeThrowShape<S, Other>>;
+  merge<Other extends RawShape>(
+    other: ObjectSchema<Other>,
+    options: { conflict: "throw" } & MergeOptions,
+  ): ObjectSchema<MergeThrowShape<S, Other>>;
+  merge<Other extends RawShape>(
+    other: ObjectSchema<Other>,
+    options: { conflict: "left" } & MergeOptions,
+  ): ObjectSchema<MergeLeftShape<S, Other>>;
+  merge<Other extends RawShape>(
+    other: ObjectSchema<Other>,
+    options: { conflict: "right" } & MergeOptions,
+  ): ObjectSchema<MergeRightShape<S, Other>>;
+
+  override<O extends OverrideMask<S>>(
+    overrides: O,
+  ): ObjectSchema<OverrideShape<S, O>>;
 }
 
+/** A `{ key: true }` subset mask over an existing shape. */
 export type Mask<S extends RawShape> = { [K in keyof S]?: true };
-export type MergeOptions = { conflict?: "throw" | "left" | "right" };
+
+/**
+ * Constraint shape for `override`: keys must be a SUBSET of `keyof S`, but
+ * VALUES may be any new `AnySchema` (override exists precisely to replace
+ * a field's schema with a different one — e.g., `override({ id: s.number() })`
+ * on a schema where `id` was originally `s.string()`). Distinct from a
+ * `Partial<S>` constraint, which would force values to keep the old field
+ * types and defeat the purpose.
+ */
+export type OverrideMask<S extends RawShape> = {
+  [K in keyof S]?: AnySchema;
+};
+
+/** Options for `merge`. Both knobs default to `"throw"` (Decisions #3 + #13). */
+export type MergeOptions = {
+  /**
+   * How to resolve field-level conflicts (same key, different schema).
+   * Default: `"throw"`.
+   */
+  conflict?: "throw" | "left" | "right";
+
+  /**
+   * How to resolve object-level `unknownKeys` policy mismatches. JSON Schema /
+   * OpenAPI consumers care about this — strict-vs-passthrough is a real
+   * validation semantics change, not cosmetic. Default: `"throw"`.
+   *
+   * - If both objects use the same policy, no option needed — that policy is kept.
+   * - If policies differ and this option is omitted (or `"throw"`), merge throws.
+   * - `"left"` / `"right"` selects which operand's policy wins.
+   */
+  unknownKeys?: "throw" | "left" | "right";
+};
 ```
 
-(`Extend`, `Pick`, `Omit`, etc. are TS-level helpers in `src/types.ts` — they shadow the global TS utility types within this package's type module, but are not re-exported with those names from `src/index.ts` to avoid confusion. They're spelled internally as `ExtendShape`, `PickShape`, etc.)
+All `*Shape` helpers live in `src/types.ts` (or a new `src/types/composition.ts` if the file grows). Their names deliberately do NOT collide with TypeScript's built-in `Pick` / `Omit` / `Partial` / `Required`. The package may re-export some of them publicly later (when downstream packages start writing generic helpers over composed shapes), but v0.5 keeps them internal to minimize the public surface.
 
-Two new public type exports:
-- `Mask<S>` — the `{ key: true }` mask shape used by `pick`/`omit`/`partial`/`required`.
-- `MergeOptions` — the `conflict` policy.
+Three new public type exports:
+- `Mask<S>` — the `{ key: true }` subset shape used by `pick` / `omit` / `partial` / `required`.
+- `OverrideMask<S>` — the constraint used by `override` (keys must be in `keyof S`; values may be any `AnySchema`, not the original field types).
+- `MergeOptions` — the merge resolution knobs (`conflict` + `unknownKeys`).
 
 ## Internal file delta
 
@@ -128,13 +185,17 @@ Sixteen decisions. The plan PR exists to resolve them. Highest-stakes flagged.
 
 ### Modifier semantics
 
-6. **`partial()` strips `optional` flags that exist + sets `optional` on all fields.** Idempotent — calling twice has no effect. Pure mapped-over-fields.
+**Symmetric rule for presence-changing operators:** both `partial()` and `required()` strip `default` on the affected fields. The two operators are inverses; the rule has to be symmetric or the v0.1 absence-semantics contract breaks.
 
-7. **`partial({ key: true })` (granular form) only touches the named keys; others unchanged.** Same for `required({ key: true })`.
+The reason: in v0.1, `default(v)` means **input-optional + output-required** (the runtime fills the missing value before downstream code sees the field). If `partial()` preserved `default`, the field's output key would stay `required` while we claim to be making it optional — a direct contradiction. A `partial`-form schema also should NOT silently inject default values into a PATCH/update payload, which is the most common reason to call `partial()` in the first place. Better to strip defaults and let the consumer re-add them explicitly when they actually want the fill-behavior back.
 
-8. **`required()` strips BOTH `optional` AND `default` from every field.** Rationale: "required" means input must include the field; a default-bearing field accepts missing input, so defaults conflict with required semantics. Documented loss: if you need to preserve defaults across composition, don't use `required` — re-author with the default-bearing field explicit. **This is the most debatable decision; please weigh in.**
+6. **`partial()` sets the affected fields to input-optional + output-optional**, AND strips `default`. Idempotent — calling twice has no effect.
 
-9. **`partial()` does NOT touch `default`.** A field with `{ optional: true, default: "x" }` stays the same after `partial()` (already optional). A field with `{ default: "x" }` and no explicit `optional` also stays the same (`.default()` already sets `optional: true`).
+7. **`partial({ key: true })` (granular form) only touches the named keys**; others unchanged. Same for `required({ key: true })`.
+
+8. **`required()` sets the affected fields to input-required + output-required**, AND strips `default`. Symmetric to `partial`. Documented loss: defaults are removed; if you need to preserve them, don't use `required` / `partial` — re-author or compose with field-level edits.
+
+9. **`partial()` and `required()` are symmetric on `default` — both strip it.** (Previous draft said `partial()` left `default` alone; that contradicted Decision #15. Corrected.) If a future variant needs to preserve defaults, ship it as an explicit opt-in (e.g., `partial({ preserveDefaults: true })`) rather than blurring the default behavior.
 
 10. **`nullable` / `nullish` are NOT touched by `partial` or `required`.** These are about value type (can be null?), not field presence. Composition operators only move the absence flag.
 
@@ -149,8 +210,14 @@ Sixteen decisions. The plan PR exists to resolve them. Highest-stakes flagged.
 13. **Object `unknownKeys` policy:**
     - Single-object operators (`pick` / `omit` / `partial` / `required`): preserve the base's policy.
     - `extend`: preserve the base's policy.
-    - `merge`: take the **left** operand's policy. The right operand's policy is dropped silently (the alternative is throw-on-mismatch, which feels too strict; the left-wins choice mirrors how most ORM-style composes resolve this).
     - `override`: preserve the base's policy.
+    - `merge`: **same fail-loudly discipline as field conflicts** — silently dropping the right operand's policy was a real-validation-semantics drop (strict vs passthrough changes which inputs validate). The `unknownKeys` knob on `MergeOptions` covers it:
+      - If both operands use the same policy → keep that policy. No option needed.
+      - If policies differ and the option is omitted (or set to `"throw"`) → **throw**.
+      - `"left"` → left policy wins; right policy is recorded as deliberately dropped.
+      - `"right"` → right policy wins; left policy is recorded as deliberately dropped.
+
+    **Why fail-loudly here.** The rest of v0.5 throws on field conflicts (Decision #3), unknown pick/omit keys (Decision #5), missing override keys (Decision #2), and key collisions in extend (Decision #1). Silent `unknownKeys` drift would be the one place composition silently changes validation semantics. That's exactly the failure mode v0.5 is designed to prevent.
 
 14. **Object-level refinements:** v0.1 doesn't support object-level refinements (only field-level). The Schema base class has `refinements`, but ObjectSchema in practice doesn't accumulate them. If a future feature adds object-level refinements (e.g., cross-field validators), composition needs to revisit them. v0.5 documents "object-level refinements are passed through from the base for pick/omit/partial/required/extend; dropped from the right operand of merge."
 
@@ -159,13 +226,20 @@ Sixteen decisions. The plan PR exists to resolve them. Highest-stakes flagged.
 15. **All seven operators preserve the v0.1 absence-semantics contract.** Specifically:
     - `extend(E)`: each E field's `TInputKey` / `TOutputKey` carries through.
     - `pick` / `omit`: each surviving field's flags carry through.
-    - `partial()`: each field's `TInputKey` and `TOutputKey` become `"optional"`.
-    - `required()`: each field's `TInputKey` and `TOutputKey` become `"required"` (since default is stripped, this is consistent).
-    - `merge` with `"left"`: left wins, including key flags.
-    - `merge` with `"right"`: right wins, including key flags.
-    - `override`: replacement field's flags fully replace the base field's.
+    - `partial()`: each affected field's `TInputKey` AND `TOutputKey` become `"optional"`. Default is stripped (Decision #6), so both keys move together — no input/output asymmetry remains.
+    - `required()`: each affected field's `TInputKey` AND `TOutputKey` become `"required"`. Default is stripped (Decision #8), keeping the symmetry with `partial()`.
+    - `merge` with default / `"throw"`: result type is `MergeThrowShape<S, Other>` — fields that are statically detectable as conflicting surface as `never` at the type level so consumers see the problem before the runtime throw.
+    - `merge` with `"left"`: `MergeLeftShape<S, Other>` — left's field type wins for any overlap.
+    - `merge` with `"right"`: `MergeRightShape<S, Other>` — right's field type wins for any overlap.
+    - `override`: replacement field's flags fully replace the base field's; new field type may differ from old (e.g., `override({ id: s.number() })` on a previously-string `id`).
 
-    The shared `Identity` prettify helper still applies; `s.input<typeof Composed>` and `s.output<typeof Composed>` must produce the right shapes per the v0.1 contract. Type-level tests are mandatory.
+    The shared `Identity` prettify helper still applies; `s.input<typeof Composed>` and `s.output<typeof Composed>` must produce the right shapes per the v0.1 contract. **Type-level tests are mandatory** for at least:
+    - default-bearing field through `partial()` → output now optional (default stripped)
+    - default-bearing field through `required()` → output now required (default stripped)
+    - `override` replacing a key with a different schema type
+    - `override` on unknown key → TS error
+    - `merge` with `"left"` / `"right"` producing the correct overlap field types
+    - `pick` / `omit` on unknown key → TS error
 
 ### Generator parity
 
@@ -182,7 +256,14 @@ All 8 invariants still apply. New v0.5 corollaries to add to `INVARIANTS.md`:
 
 - **Runtime behavior tests** (`composition.test.ts`) — each operator produces the expected IR shape; idempotence where claimed; immutability of inputs.
 - **Type-level inference tests** (`composition.test-d.ts`) — `expectTypeOf` assertions for each operator against the v0.1 absence-semantics matrix; verifies input/output split survives composition.
-- **Conflict matrix tests** (`composition-conflict.test.ts`) — every throw case asserted (extend collision, override missing key, merge conflict default, pick unknown key, omit unknown key); positive cases for the explicit `"left"` / `"right"` resolution.
+- **Conflict matrix tests** (`composition-conflict.test.ts`) — every throw case asserted:
+  - `extend` collision → throw
+  - `override` missing key → throw
+  - `merge` field conflict with default options → throw
+  - `merge` `unknownKeys` mismatch with default options → throw
+  - `merge` `unknownKeys` mismatch with explicit `"left"` / `"right"` → no throw, expected policy wins
+  - `pick` / `omit` on key not in base → throw
+  Plus the positive resolutions: `merge` `conflict: "left"`/`"right"` produces the expected fields; `merge` `unknownKeys: "left"`/`"right"` produces the expected object policy.
 - **Generator parity tests** — for at least one composed schema (e.g., `User.extend({ tag: s.string() })`), emit via all four generators and assert the output is structurally what an equivalent hand-written `s.object({...})` would produce.
 - **No snapshot churn for v0.1–v0.4.** Composition is additive; existing tests must remain byte-identical.
 
@@ -191,7 +272,7 @@ All 8 invariants still apply. New v0.5 corollaries to add to `INVARIANTS.md`:
 | Section | v0.5 strategy |
 |---|---|
 | **Scope** | Implementation PR titled `feat(schema): v0.5 candidate — composition operators`. Links this plan + ROADMAP v0.5 heading. |
-| **Public API** | Two new public types (`Mask`, `MergeOptions`); seven new methods on `ObjectSchema`. No top-level exports beyond the two types. |
+| **Public API** | Three new public types (`Mask`, `OverrideMask`, `MergeOptions`); seven new methods on `ObjectSchema` (with merge overloaded per `conflict` value). No top-level exports beyond the three types. |
 | **Boundary** | No `@nekostack/*` imports. No new external deps. |
 | **Contracts** | New contract doc `docs/COMPOSITION.md` codifies the conflict-handling, modifier semantics, metadata-drop rule, and inference contract. `INVARIANTS.md` extended with two v0.5 corollaries. |
 | **Immutability + determinism** | All operators return new `ObjectSchema` instances; receiver and arguments are not mutated. Tested. |
@@ -240,10 +321,26 @@ Risk areas:
 - Object-level refinements + composition — deferred until object-level refinements exist.
 - A "composition history" trace (e.g., `metadata.derivedFrom`) — could be useful for registry diffing in v0.7+; not needed for v0.5.
 
+## Decision history
+
+- **v0.5-plan, initial draft** — 16 decisions, plan-only PR. `OpenApiGeneratorOptions`-style empty-options sketch.
+- **v0.5-plan, post-review amendment** — three corrections per the composition audit:
+  - **#9 reversed** (`partial()` strips `default` symmetrically with `required()`). The previous wording said `partial()` left `default` untouched, which contradicted Decision #15 — a default-bearing field is input-optional / output-required, so a `partial()` schema that preserves it would still be output-required (not actually partial). Symmetric strip is the only self-consistent choice and avoids silently injecting defaults into PATCH/update payloads.
+  - **Public API sketch rewritten** to:
+    - Replace `override<O extends Partial<S>>` with `override<O extends OverrideMask<S>>`. `override` exists precisely to replace a field's schema with a different one (e.g., `override({ id: s.number() })` on a string `id`); `Partial<S>` would force values to keep the old field types.
+    - Encode `merge`'s conflict-resolution at the type level via overloads — `MergeThrowShape` / `MergeLeftShape` / `MergeRightShape` resolve at compile time based on `options.conflict`.
+    - Drop shadowing of TS built-in utility types throughout the sketch (`Pick`, `Omit`, `Partial`, `Required` → `PickShape`, `OmitShape`, `PartialShape`, `RequiredShape`). Internal helper-name visibility was misleading the audit reads.
+  - **#13 changed** from silent-left-wins to fail-loudly with explicit `unknownKeys` resolution on `MergeOptions`. The original wording violated the rest of v0.5's discipline — `unknownKeys` is a real validation-semantics policy (strict vs passthrough changes what inputs validate), so silently dropping the right operand's policy was exactly the failure mode the rest of v0.5 is built to prevent.
+
+Knock-on changes:
+- Public-type count is now **three** (`Mask`, `OverrideMask`, `MergeOptions`), not two.
+- Conflict-matrix tests expanded to cover `unknownKeys` mismatch (default-throws + explicit-left + explicit-right).
+- Type-level test list expanded with `override` differing schema type, `override` unknown key, `merge` overlap field types per `conflict` value, and `pick`/`omit` unknown key at the TS level.
+
 ## Action requested from reviewer
 
-- Approve / push back on the 16 decisions, especially **#1** (extend throws on conflict), **#3** (merge default = throw), **#8** (required strips default), **#11** (composed schemas drop metadata).
-- Flag any in-scope item that should be removed or any non-scope item that should pull forward.
-- Confirm the "ObjectSchema methods only, no top-level functions" surface is right.
+- Final ack on the amended decisions, especially the new fail-loudly `unknownKeys` policy (Decision #13) and the symmetric `partial`/`required` strip (Decisions #6 / #8 / #9).
+- Confirm the rewritten API sketch (overrides, merge overloads, `OverrideMask`) reads cleanly.
+- Flag any further in-scope item that should be removed or any non-scope item that should pull forward.
 
 Once approved, implementation opens on `feat/schema-v0.5-candidate`.
