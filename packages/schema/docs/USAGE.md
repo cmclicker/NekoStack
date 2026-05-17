@@ -74,6 +74,32 @@ Modifier ordering is fixed; see [`ZOD_MODIFIER_ORDERING.md`](./ZOD_MODIFIER_ORDE
 
 Consumer needs Zod installed (`zod ^3.22.0` is declared as an optional peer dependency).
 
+## Generating a JSON Schema
+
+```ts
+import { generateJsonSchema } from "@nekostack/schema";
+import { Tenant } from "./tenant.schema.js";
+
+const json = generateJsonSchema(Tenant.node);
+// Returns: a complete draft-2020-12 JSON document as a string.
+```
+
+Default `$id` is URN-shaped (`urn:nekostack:schema:<id>:<version>`). For URL-shaped IDs (when you actually host schemas at a real URL), pass `idBase`:
+
+```ts
+generateJsonSchema(Tenant.node, { idBase: "https://schemas.example.com" });
+// $id: "https://schemas.example.com/com.nekostack.tenant.Tenant/1.0.0"
+```
+
+Important properties:
+
+- **Models accepted input.** JSON Schema treats `default` as annotation, not behavior — validators don't fill defaults. The output represents what the wire input is allowed to look like; the runtime (or generated Zod) is responsible for applying defaults.
+- **`stripUnknown` is encoded as `additionalProperties: true` + `x-nekostack-strip: true`.** JSON Schema can't express mutation; the runtime strips. The extension key tells NekoStack-aware consumers to do that.
+- **Throws on semantic-loss cases.** Runtime refinements (custom predicates) and regex with non-empty flags throw `UnsupportedNodeKindError` rather than emit JSON Schema that changes validation behavior. See [`JSON_SCHEMA_MAPPING.md`](./JSON_SCHEMA_MAPPING.md) for the full contract.
+- **Provenance under `x-nekostack`.** JSON has no comment syntax, so the v0.2-style header is moved into a single `x-nekostack: { generator, generatorVersion, irHash, schemaId, schemaVersion }` object.
+
+Optional consumer dep: `ajv` (any version that supports draft 2020-12 — import via `ajv/dist/2020.js`). Not required to *generate*, only to *validate*.
+
 ## Generated-file headers
 
 Every output file starts with a deterministic JSDoc block — full spec in [`HEADER_FORMAT.md`](./HEADER_FORMAT.md):
@@ -114,7 +140,7 @@ Same IR → same hash, every time. Semantic change → different hash. This is t
 There is no `neko schema generate` command in v0.2. The intended workflow until v0.7:
 
 1. Author the schema in `your-package/schemas/foo.schema.ts`.
-2. Write a script (or a vitest snapshot test — see this package's [`tests/examples/regenerate.test.ts`](../tests/examples/regenerate.test.ts) for a worked example) that calls `generateTypeScript` / `generateZod` and writes the result to disk.
+2. Write a script (or a vitest snapshot test — see this package's [`tests/examples/regenerate.test.ts`](../tests/examples/regenerate.test.ts) for a worked example) that calls `generateTypeScript` / `generateZod` / `generateJsonSchema` and writes the result to disk.
 3. Commit both the source schema and the generated files.
 4. Review diffs as ordinary code review.
 
@@ -122,7 +148,7 @@ Once v0.7 ships, the CLI will replace the hand-written script + add freshness CI
 
 ## Handling unsupported IR
 
-A `SchemaNode` whose kind isn't generator-ready in v0.2 throws `UnsupportedNodeKindError` with a stable shape:
+A `SchemaNode` whose kind isn't generator-ready throws `UnsupportedNodeKindError` with a stable shape. v0.3 extends the set with two new `kind` values: `"runtimeRefinement"` (from any generator) and `"regexFlags"` (JSON Schema only — regex with non-empty flags).
 
 ```ts
 import { UnsupportedNodeKindError } from "@nekostack/schema";
@@ -132,24 +158,27 @@ try {
 } catch (e) {
   if (e instanceof UnsupportedNodeKindError) {
     // e.code      === "UNSUPPORTED_NODE_KIND"
-    // e.kind      === "date" | "union" | "recursiveRef" | "transform" | "runtimeRefinement"
-    // e.generator === "typescript" | "zod"
+    // e.kind      === "date" | "union" | "recursiveRef" | "transform" | "runtimeRefinement" | "regexFlags"
+    // e.generator === "typescript" | "zod" | "jsonSchema"
   }
 }
 ```
 
 Runtime-only refinements (custom predicates added via a future `.refine(fn)` builder) also throw, intentionally. Generators that can't honor the validation must not silently emit code that omits it.
 
-## What v0.2 doesn't do (cross-reference to scope)
+For the JSON Schema generator specifically, regex with non-empty flags also throws (`kind: "regexFlags"`) — JSON Schema `pattern` has no flag support, and emitting source-only would silently drop case-insensitivity / unicode / etc.
+
+## What v0.2 / v0.3 don't do (cross-reference to scope)
 
 | Want | Wait for | Why |
 |---|---|---|
-| JSON Schema output | v0.3 | Next phase |
 | OpenAPI 3.1 components | v0.4 | After JSON Schema |
 | Composition (`extend`, `pick`, `partial`, `merge`) | v0.5 | Composition operators |
 | Runtime `parse(schema, input)` / `validate(...)` | v0.6 | The schema package's own runtime; today, use the generated Zod |
 | `neko schema generate / check / diff` CLI | v0.7 | Registry-lite phase |
 | `sourceHash` in headers | v0.7 | Needs CLI to walk source files |
+| `$defs` extraction / cross-package `$ref` | v0.7 (registry-lite) | No IR construct in v0.3 needs it |
+| Output-shape JSON Schema (default-applied, all fields required) | deferred | JSON Schema can't represent the input/output split as a single document |
 | Migrations between schema versions | v0.8+ | Bigger scope |
 | Date types (`isoDateTime` etc.) | future | IR exists; builders deferred |
 

@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { generateTypeScript, generateZod, irHash } from "../../src/index.js";
+import {
+  generateJsonSchema,
+  generateTypeScript,
+  generateZod,
+  irHash,
+} from "../../src/index.js";
 import { Tenant } from "../../examples/tenant.schema.js";
 import { AuditEvent } from "../../examples/audit-event.schema.js";
 import { Entitlement } from "../../examples/entitlement.schema.js";
@@ -32,6 +37,11 @@ describe("examples/generated/ is in sync with examples/*.schema.ts", () => {
         out("tenant.zod.ts"),
       );
     });
+    it("JSON Schema", async () => {
+      await expect(generateJsonSchema(Tenant.node)).toMatchFileSnapshot(
+        out("tenant.json.schema.json"),
+      );
+    });
   });
 
   describe("AuditEvent — input/output split is the headline feature here", () => {
@@ -45,6 +55,11 @@ describe("examples/generated/ is in sync with examples/*.schema.ts", () => {
         out("audit-event.zod.ts"),
       );
     });
+    it("JSON Schema", async () => {
+      await expect(generateJsonSchema(AuditEvent.node)).toMatchFileSnapshot(
+        out("audit-event.json.schema.json"),
+      );
+    });
   });
 
   describe("Entitlement", () => {
@@ -56,6 +71,11 @@ describe("examples/generated/ is in sync with examples/*.schema.ts", () => {
     it("Zod", async () => {
       await expect(generateZod(Entitlement.node)).toMatchFileSnapshot(
         out("entitlement.zod.ts"),
+      );
+    });
+    it("JSON Schema", async () => {
+      await expect(generateJsonSchema(Entitlement.node)).toMatchFileSnapshot(
+        out("entitlement.json.schema.json"),
       );
     });
   });

@@ -34,13 +34,19 @@ Status: **shipped** ([#5](https://github.com/cmclicker/NekoStack/pull/5), merged
 - Zod-execution tests (generated validator runs in a real Zod runtime and matches absence-semantics fixtures).
 - Zod-modifier-composition tests (the eight-row matrix from Decision #8).
 
-## v0.3 — JSON Schema generation ← *active target*
+## v0.3 — JSON Schema generation ← *candidate*
 
-- JSON Schema draft 2020-12 output
-- `$id` / `$defs` / `$ref` per identity rules
-- Portable constraint mapping (min/max/regex/format/etc.)
-- Semantic-loss metadata for runtime-only refinements
-- JSON Schema test-suite conformance
+Status: **candidate** ([#10](https://github.com/cmclicker/NekoStack/pull/10)). Implementation follows the merged plan in [`PHASE_PLAN_v0.3.md`](./PHASE_PLAN_v0.3.md).
+
+- `generateJsonSchema(node, options?)` — draft 2020-12 output. Canonical JSON (sorted keys, 2-space indent, single trailing newline). Models accepted input only — no `mode` option in v0.3.
+- URN `$id` strategy by default (`urn:nekostack:schema:<id>:<version>`); URL-shaped IDs opt-in via `options.idBase`.
+- Inline schemas only — `$defs` extraction documented as a future strategy but **not implemented** in v0.3 (no IR construct needs it).
+- Absence-semantics translation per [`JSON_SCHEMA_MAPPING.md`](./JSON_SCHEMA_MAPPING.md): optional / nullish / default → omitted from `required`; nullable / nullish → `type: ["base", "null"]`; default emits annotation + `x-nekostack-default-applied-by: "runtime"`.
+- Object policy: `strict` → `additionalProperties: false`; `passthrough` → `true`; `stripUnknown` → `true` + `x-nekostack-strip: true` (JSON Schema cannot strip; runtime does).
+- Portable refinement mapping per [`JSON_SCHEMA_MAPPING.md`](./JSON_SCHEMA_MAPPING.md).
+- Throws `UnsupportedNodeKindError` on unsupported IR kinds, runtime refinements (Decision #11), and regex with non-empty flags (Decision #11a — would silently drop case-insensitivity etc.).
+- Ajv2020 self-conformance + execution test suite (uses `ajv/dist/2020.js`, the draft-2020-12 class — NOT the default draft-07 import).
+- Three new example artifacts (`tenant.json.schema.json`, `audit-event.json.schema.json`, `entitlement.json.schema.json`) validated by the existing regenerate test.
 
 ## v0.4 — OpenAPI 3.1 generation
 
