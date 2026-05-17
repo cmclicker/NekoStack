@@ -11,7 +11,7 @@ Zod modifier order changes input and output typing AND runtime acceptance behavi
 For any IR `SchemaNode`, the emitted chain is constructed in this exact sequence:
 
 1. **Base schema** — `z.string()`, `z.number()`, `z.boolean()`, `z.literal(...)`, `z.enum(...)` / `z.union(...)`, `z.array(...)`, `z.object({...})`.
-2. **Portable refinements** — each entry of `node.refinements` (skipping any `kind: "runtime"`), applied in IR insertion order. Examples: `.min(3)`, `.max(50)`, `.email()`, `.regex(...)`, `.int()`, `.gt()`, `.multipleOf()`.
+2. **Portable refinements** — each `kind: "portable"` entry of `node.refinements`, applied in IR insertion order. Examples: `.min(3)`, `.max(50)`, `.email()`, `.regex(...)`, `.int()`, `.gt()`, `.multipleOf()`. Runtime refinements are **not** skipped silently — they throw (see ["Runtime refinements"](#runtime-refinements) below).
 3. **Description** — `.describe(text)` if `node.metadata.description` is set.
 4. **Nullability** — `.nullable()` if `modifiers.nullable && !modifiers.optional`.
 5. **Optionality** — `.optional()` if `modifiers.optional && !modifiers.nullable`.
@@ -19,6 +19,20 @@ For any IR `SchemaNode`, the emitted chain is constructed in this exact sequence
 7. **Default LAST** — `.default(value)` if `modifiers.default` is set.
 
 Steps 4 / 5 / 6 are mutually exclusive. Step 7 always comes last.
+
+## Runtime refinements
+
+Runtime refinements are **unsupported** in v0.2 generator output. They represent custom predicates only the runtime can evaluate; emitting Zod that omits them would silently accept inputs the IR intends to reject — a direct Invariant 7 violation.
+
+If a node contains any `kind: "runtime"` refinement, `generateZod` throws `UnsupportedNodeKindError` with:
+
+- `code: "UNSUPPORTED_NODE_KIND"`
+- `kind: "runtimeRefinement"`
+- `generator: "zod"`
+
+They are not emitted, not approximated, not skipped. Tests assert on the field shape (not message text). The same rule applies to `generateTypeScript`: a node carrying a runtime refinement represents validation intent the TS-only generator cannot guarantee, so it also throws.
+
+When runtime refinements become representable in some generator (likely never for JSON Schema/OpenAPI; possibly via an opt-in shape for Zod in a later phase), this section gets updated and the implementations relax in lockstep — never one without the other.
 
 ## Object unknown-keys
 
