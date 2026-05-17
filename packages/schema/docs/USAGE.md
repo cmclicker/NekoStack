@@ -122,6 +122,33 @@ Everything else (absence semantics, object policy, refinement mapping, throw beh
 
 Optional consumer dep: `@redocly/openapi-core` (or any OpenAPI 3.1 validator) if you want to validate the composed document.
 
+## Composing existing object schemas
+
+```ts
+import { s } from "@nekostack/schema";
+
+const User = s.object({
+  id: s.string().uuid(),
+  email: s.string().email(),
+  role: s.string().default("member"),
+});
+
+// Common patterns:
+const UserInputForCreate = User.omit({ id: true });           // server fills id
+const UserPatch = User.partial();                              // PATCH/update shape
+const UserPublic = User.pick({ id: true, email: true });       // safe-to-expose subset
+const UserAdmin = User.extend({ permissions: s.array(s.string()) });
+const UserWithNumericId = User.override({ id: s.number() });
+```
+
+Seven operators are available on every `ObjectSchema`: `extend`, `pick`, `omit`, `partial`, `required`, `merge`, `override`. All return a new `ObjectSchema` (no mutation), fail loudly on conflicts / unknown keys / missing keys, drop top-level metadata (re-tag with `.id().version().describe()` if needed), and preserve field-level metadata. See [`COMPOSITION.md`](./COMPOSITION.md) for the full contract — especially:
+
+- **`partial()` and `required()` both strip `default`.** A partial schema should not silently inject defaults into a PATCH payload; a required + default-bearing field is semantically contradictory.
+- **`merge` throws on field conflict AND on `unknownKeys` mismatch by default.** Resolve explicitly via `{ conflict: "left" | "right" }` and `{ unknownKeys: "left" | "right" }`.
+- **`extend` and `override` are asymmetric on purpose** — `extend` rejects existing keys; `override` rejects missing keys. The pair covers add and replace without overlap.
+
+Composition produces a plain `ObjectNode` — no generator changes; the TS / Zod / JSON Schema / OpenAPI generators handle composed schemas identically to hand-written equivalents (asserted by parity tests).
+
 ## Generated-file headers
 
 Every output file starts with a deterministic JSDoc block — full spec in [`HEADER_FORMAT.md`](./HEADER_FORMAT.md):
@@ -133,7 +160,7 @@ Every output file starts with a deterministic JSDoc block — full spec in [`HEA
  * schemaVersion:    1.0.0
  * irHash:           sha256:7f3e2a9b...
  * generator:        typescript
- * generatorVersion: @nekostack/schema@0.4.0
+ * generatorVersion: @nekostack/schema@0.5.0
  *
  * DO NOT EDIT MANUALLY.
  */
@@ -196,7 +223,8 @@ For the JSON Schema generator specifically, regex with non-empty flags also thro
 |---|---|---|
 | Full OpenAPI document (paths/operations/responses/security/etc.) | `@nekostack/api` package | Schema package generates component schemas only |
 | OpenAPI 3.0 target (`nullable: true` form) | future generator option | v0.4 ships 3.1 only |
-| Composition (`extend`, `pick`, `partial`, `merge`) | v0.5 | Composition operators |
+| Deep / recursive composition (nested-field merge) | future | v0.5 ships shallow operators only |
+| Composition history (`metadata.derivedFrom`) | future | Could aid v0.7 diffing; not needed for v0.5 |
 | Runtime `parse(schema, input)` / `validate(...)` | v0.6 | The schema package's own runtime; today, use the generated Zod |
 | `neko schema generate / check / diff` CLI | v0.7 | Registry-lite phase |
 | `sourceHash` in headers | v0.7 | Needs CLI to walk source files |

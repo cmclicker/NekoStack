@@ -61,10 +61,16 @@ Status: **shipped** ([#13](https://github.com/cmclicker/NekoStack/pull/13), merg
 - New contract doc [`OPENAPI_MAPPING.md`](./OPENAPI_MAPPING.md) — records only the deltas from `JSON_SCHEMA_MAPPING.md`, not a duplicate mapping table.
 - Redocly round-trip tests via `@redocly/openapi-core` validate every emitted component composed into a synthetic OpenAPI 3.1 document. Fallback per the v0.4 plan: tests may spawn the Redocly CLI if the programmatic API proves impractical.
 
-## v0.5 — Composition ← *active target*
+## v0.5 — Composition operators ← *candidate*
 
-- `extend`, `pick`, `omit`, `partial`, `required`
-- Conflict-safe `merge` with explicit `override`
+Status: **candidate** ([#16](https://github.com/cmclicker/NekoStack/pull/16)). Implementation follows the merged plan in [`PHASE_PLAN_v0.5.md`](./PHASE_PLAN_v0.5.md). Contract: [`COMPOSITION.md`](./COMPOSITION.md).
+
+- Seven new methods on `ObjectSchema`: `extend`, `pick`, `omit`, `partial`, `required`, `merge`, `override`.
+- Three new public types: `Mask<S>`, `OverrideMask<S>`, `MergeOptions`.
+- **Fail-loudly discipline**: `extend` throws on key collision, `override` throws on missing key, `pick`/`omit` throw on unknown key, `merge` throws by default on field conflict AND `unknownKeys` mismatch.
+- **`partial()` and `required()` are symmetric on `default` — both strip it.** Default-bearing fields are input-optional + output-required; preserving `default` through `partial` would leave output-required, contradicting the partial intent. Stripping keeps the v0.1 absence-semantics contract self-consistent across composition.
+- Composition produces a plain `ObjectNode`; **generators handle composed schemas byte-identically to hand-written equivalents** (asserted by parity tests across all four generators).
+- Composed schemas drop top-level metadata (`id` / `version` / `description` / `deprecated`); callers re-tag explicitly. Field-level metadata is preserved.
 
 ## v0.6 — Runtime validation
 
