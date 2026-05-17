@@ -6,6 +6,47 @@ This package is workspace-internal (`private: true`, version `0.0.0`). The miles
 
 ---
 
+## schema-v0.5.0 — 2026-05-17
+
+[Tag](https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.5.0) · merge commit [`70f19e9`](https://github.com/cmclicker/NekoStack/commit/70f19e9). Composition layer on the v0.1 IR foundation.
+
+### Shipped
+
+- **Seven new methods on `ObjectSchema`** — `extend`, `pick`, `omit`, `partial`, `required`, `merge`, `override`. All return a new `ObjectSchema` (no mutation), drop top-level metadata, preserve field-level metadata, and fail loudly on collisions / unknown keys / missing keys / merge conflicts / `unknownKeys` mismatches.
+- **`extend(E)`** throws on key collision. To replace deliberately, use `override`. To combine with explicit resolution, use `merge`.
+- **`override(O)`** throws on key not in base. Accepts any schema type for the replacement — that's the whole point.
+- **`partial(mask?)` and `required(mask?)`** are symmetric on `default` — both strip it. Rationale: in v0.1, `default(v)` means input-optional + output-required, so preserving `default` through `partial` would leave output required while claiming optional. Symmetric strip is the only self-consistent rule.
+- **`merge(other, options?)`** has three overloads encoding the conflict policy at the type level (`MergeThrowShape` / `MergeLeftShape` / `MergeRightShape`). Throws by default on field conflict AND on `unknownKeys` mismatch. Two independent knobs: `conflict` and `unknownKeys`. `unknownKeys` mismatch is fail-loud because strict-vs-passthrough is a real validation-semantics policy, not cosmetic.
+- **Three new public types**: `Mask<S>`, `OverrideMask<S>`, `MergeOptions`. Internal `*Shape` helpers stay package-internal.
+- **New contract doc** — [`docs/COMPOSITION.md`](docs/COMPOSITION.md).
+- **Two new INVARIANTS corollaries** — composition fail-loudly; composition strips top-level metadata.
+- **`Schema.clone()` JSDoc** now documents the v0.5 subclass invariant: `clone(node)` must be a pure IR-replacement operation. Future Schema subclasses that violate this silently break `partial`/`required`'s field-modifier swapping.
+- **`MergeThrowShape` is `Identity<S & Other>`** — preserves disjoint merges and lets TypeScript surface some conflicts through normal intersection behavior, but **runtime conflict detection is the load-bearing guarantee**.
+- **Generator parity** — composition produces a plain `ObjectNode`; all four generators (TS / Zod / JSON Schema / OpenAPI) handle composed schemas byte-identically to hand-written equivalents (proven by a 7-operator × 4-generator parity matrix).
+- **`GENERATOR_VERSION` bumped to `@nekostack/schema@0.5.0`** — 59 snapshots regenerated.
+
+### Dependency changes
+
+None. Pure-TS work on top of v0.1–v0.4.
+
+### Test count
+
+- 248 → 342 (+94 net).
+
+### Still deferred
+
+- Runtime `parse` / `validate` from this package — v0.6
+- `neko schema generate / check / diff` CLI — v0.7
+- `sourceHash` in headers — v0.7
+- `$defs` extraction + cross-package `$ref` — v0.7 (registry-lite)
+- Deep / recursive composition — future
+- `merge` with `"merge"` mode (recursive type-union) — future
+- Static `s.merge(A, B)` top-level form — future
+- Migrations — v0.8+
+- Zod 4 target — future generator option
+
+---
+
 ## schema-v0.4.0 — 2026-05-17
 
 [Tag](https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.4.0) · merge commit [`c9d15d0`](https://github.com/cmclicker/NekoStack/commit/c9d15d0). Fourth generator on the v0.1 IR foundation.
