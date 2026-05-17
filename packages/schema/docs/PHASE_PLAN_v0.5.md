@@ -68,23 +68,24 @@ class ObjectSchema<S extends RawShape> {
 
   // `merge` overloads encode the conflict-resolution decision at the type
   // level — the resulting field types depend on which side wins. The
-  // default (no options or `conflict: "throw"`) returns the THROW-shape
-  // type, which surfaces the conflict at compile time when statically
-  // detectable; at runtime, it still throws on actual conflicts.
+  // default (no options or `conflict: "throw"` / omitted) returns the
+  // THROW-shape type, which surfaces the conflict at compile time when
+  // statically detectable; at runtime, it still throws on actual conflicts.
+  //
+  // `unknownKeys` is independent of `conflict` and must be usable on its own,
+  // e.g., `A.merge(B, { unknownKeys: "right" })` when only the object policy
+  // differs. The first overload below (`conflict?: "throw"`) covers that case.
   merge<Other extends RawShape>(
     other: ObjectSchema<Other>,
+    options?: MergeOptions & { conflict?: "throw" },
   ): ObjectSchema<MergeThrowShape<S, Other>>;
   merge<Other extends RawShape>(
     other: ObjectSchema<Other>,
-    options: { conflict: "throw" } & MergeOptions,
-  ): ObjectSchema<MergeThrowShape<S, Other>>;
-  merge<Other extends RawShape>(
-    other: ObjectSchema<Other>,
-    options: { conflict: "left" } & MergeOptions,
+    options: MergeOptions & { conflict: "left" },
   ): ObjectSchema<MergeLeftShape<S, Other>>;
   merge<Other extends RawShape>(
     other: ObjectSchema<Other>,
-    options: { conflict: "right" } & MergeOptions,
+    options: MergeOptions & { conflict: "right" },
   ): ObjectSchema<MergeRightShape<S, Other>>;
 
   override<O extends OverrideMask<S>>(
@@ -239,6 +240,9 @@ The reason: in v0.1, `default(v)` means **input-optional + output-required** (th
     - `override` replacing a key with a different schema type
     - `override` on unknown key → TS error
     - `merge` with `"left"` / `"right"` producing the correct overlap field types
+    - `merge` with `{ unknownKeys: "left" }` and no `conflict` → resolves to `MergeThrowShape` (since `conflict` defaults to `"throw"`); proves the overload accepts `unknownKeys` independently
+    - `merge` with `{ unknownKeys: "right" }` and no `conflict` → same overload, same return type
+    - `merge` with `{ conflict: "left", unknownKeys: "right" }` → `MergeLeftShape` (the conflict overload still applies even when both knobs are set)
     - `pick` / `omit` on unknown key → TS error
 
 ### Generator parity
@@ -286,7 +290,7 @@ All 8 invariants still apply. New v0.5 corollaries to add to `INVARIANTS.md`:
 
 Implementation lands on `feat/schema-v0.5-candidate` as reviewable commits:
 
-1. Type helpers in `src/types.ts` (`Mask`, `MergeOptions`, `ExtendShape`, `PickShape`, `OmitShape`, `PartialShape`, `RequiredShape`, `MergeShape`, `OverrideShape`).
+1. Type helpers in `src/types.ts` (or `src/types/composition.ts` if the file grows): `Mask`, `OverrideMask`, `MergeOptions`, `ExtendShape`, `PickShape`, `OmitShape`, `PartialShape`, `PartialByShape`, `RequiredShape`, `RequiredByShape`, `MergeThrowShape`, `MergeLeftShape`, `MergeRightShape`, `OverrideShape`.
 2. `pick` / `omit` methods (simplest; pure shape narrowing) + tests.
 3. `extend` method with throw-on-collision + tests.
 4. `partial` / `required` methods (with granular `(mask?)` forms) + tests + the default-stripping decision documented.
@@ -299,7 +303,7 @@ Implementation lands on `feat/schema-v0.5-candidate` as reviewable commits:
 11. `docs/ROADMAP.md` v0.5 → candidate.
 12. `docs/INVARIANTS.md` extended with the two v0.5 corollaries.
 13. `GENERATOR_VERSION` bump to `@nekostack/schema@0.5.0`; regenerate snapshots.
-14. `src/index.ts` update (only the two new public types).
+14. `src/index.ts` update — the three new public types: `Mask`, `OverrideMask`, `MergeOptions`.
 
 ## Estimate
 
@@ -336,6 +340,12 @@ Knock-on changes:
 - Public-type count is now **three** (`Mask`, `OverrideMask`, `MergeOptions`), not two.
 - Conflict-matrix tests expanded to cover `unknownKeys` mismatch (default-throws + explicit-left + explicit-right).
 - Type-level test list expanded with `override` differing schema type, `override` unknown key, `merge` overlap field types per `conflict` value, and `pick`/`omit` unknown key at the TS level.
+
+- **v0.5-plan, follow-up amendment** — three smaller corrections after the second audit pass:
+  - **`merge` overload sketch rewritten** so `unknownKeys` works without `conflict`. The previous overloads required `conflict` in every options shape, which broke `A.merge(B, { unknownKeys: "right" })` — a valid use case the rest of the plan promises. New form uses `options?: MergeOptions & { conflict?: "throw" }` for the default overload and `MergeOptions & { conflict: "left" | "right" }` for the two explicit ones.
+  - **Type-level test list expanded** with three new `merge`-options cases: `{ unknownKeys: "left" }` alone, `{ unknownKeys: "right" }` alone, and `{ conflict: "left", unknownKeys: "right" }` together.
+  - **Sequencing step 1** updated to list every type helper the amended plan actually requires (`OverrideMask`, `PartialByShape`, `RequiredByShape`, `MergeThrowShape`/`MergeLeftShape`/`MergeRightShape` were missing from the original sequencing line).
+  - **Sequencing step 14** updated from "only the two new public types" to "the three new public types: `Mask`, `OverrideMask`, `MergeOptions`."
 
 ## Action requested from reviewer
 
