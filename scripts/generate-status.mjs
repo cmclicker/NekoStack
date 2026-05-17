@@ -280,13 +280,23 @@ function cmdGenerate() {
   stdout.write(`Wrote ${relative(cwd(), STATUS_PATH).replaceAll("\\", "/")}\n`);
 }
 
+// Normalize line endings before comparing. On Windows with core.autocrlf=true,
+// `git checkout` converts committed LF to CRLF in the working tree, while the
+// generator always writes canonical LF. Comparing the raw bytes would report
+// false drift on those clones. The committed content is LF either way — line
+// endings are not load-bearing for this artifact — so the comparison is what
+// gets normalized, not the write path.
+function normalizeEol(s) {
+  return s.replace(/\r\n/g, "\n");
+}
+
 function cmdCheck() {
   const { manifest, status } = build();
   const drifts = [];
-  if (!existsSync(MANIFEST_PATH) || readText(MANIFEST_PATH) !== manifest) {
+  if (!existsSync(MANIFEST_PATH) || normalizeEol(readText(MANIFEST_PATH)) !== manifest) {
     drifts.push(relative(cwd(), MANIFEST_PATH).replaceAll("\\", "/"));
   }
-  if (!existsSync(STATUS_PATH) || readText(STATUS_PATH) !== status) {
+  if (!existsSync(STATUS_PATH) || normalizeEol(readText(STATUS_PATH)) !== status) {
     drifts.push(relative(cwd(), STATUS_PATH).replaceAll("\\", "/"));
   }
   if (drifts.length === 0) {
