@@ -19,7 +19,7 @@ export type Tenant = {
   plan: "free" | "pro" | "enterprise";
   billingEmail: string | null;
   metadata: {
-  createdBy: string;
-  notes?: string;
-};
+    createdBy: string;
+    notes?: string;
+  };
 };
