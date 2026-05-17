@@ -79,7 +79,7 @@ Status: **shipped** ([#16](https://github.com/cmclicker/NekoStack/pull/16), merg
 - Zod-backed execution; issue normalization
 - **Semantic-parity tests** — same fixture validated four ways, expected failures match
 
-Per the [`PRODUCT_THESIS`](#) (incoming), v0.6 is the phase where NekoStack starts taking runtime-validator workflow space — users no longer have to install or import Zod directly for runtime validation unless they choose to.
+Per the [`PRODUCT_THESIS`](../../../PRODUCT_THESIS.md), v0.6 is the phase where NekoStack starts taking runtime-validator workflow space — users no longer have to install or import Zod directly for runtime validation unless they choose to.
 
 ## v0.7 — Registry-lite
 
