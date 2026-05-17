@@ -53,7 +53,7 @@ export function generateTypeScript(
 
 function emitTypeAlias(node: SchemaNode, mode: Mode, name: string): string {
   const doc = emitTopLevelDocComment(node);
-  const expr = emitTypeExpression(node, mode);
+  const expr = emitTypeExpression(node, mode, /*depth*/ 0);
   return `${doc}export type ${name} = ${expr};`;
 }
 
@@ -72,9 +72,17 @@ function emitTopLevelDocComment(node: SchemaNode): string {
  * current mode. Used at top level and inside array elements — anywhere that
  * is NOT directly an object field. Object fields use {@link emitObjectField}
  * because they handle optionality via the `?` key marker.
+ *
+ * `depth` is the indentation depth of the *containing* construct (0 at top
+ * level, +1 inside each enclosing object). Object types use it to indent
+ * their own bodies one level deeper.
  */
-function emitTypeExpression(node: SchemaNode, mode: Mode): string {
-  let inner = emitBareType(node, mode);
+function emitTypeExpression(
+  node: SchemaNode,
+  mode: Mode,
+  depth: number,
+): string {
+  let inner = emitBareType(node, mode, depth);
   const mods = node.modifiers ?? {};
   if (mods.nullable) inner = `${inner} | null`;
   if (mods.optional) {
@@ -86,7 +94,7 @@ function emitTypeExpression(node: SchemaNode, mode: Mode): string {
 
 // ---------- bare types ----------
 
-function emitBareType(node: SchemaNode, mode: Mode): string {
+function emitBareType(node: SchemaNode, mode: Mode, depth: number): string {
   // Runtime refinements are unsupported in v0.2 generators (Invariant 7).
   // The TS generator doesn't *use* refinement values, but a node carrying a
   // runtime refinement still represents validation the IR intends to enforce;
@@ -112,9 +120,9 @@ function emitBareType(node: SchemaNode, mode: Mode): string {
     case "enum":
       return (node as EnumNode).values.map((v) => formatLiteral(v)).join(" | ");
     case "array":
-      return emitArrayType(node as ArrayNode, mode);
+      return emitArrayType(node as ArrayNode, mode, depth);
     case "object":
-      return emitObjectType(node as ObjectNode, mode);
+      return emitObjectType(node as ObjectNode, mode, depth);
     default:
       throw new UnsupportedNodeKindError({
         kind: (node as { kind: string }).kind,
@@ -123,23 +131,74 @@ function emitBareType(node: SchemaNode, mode: Mode): string {
   }
 }
 
-function emitArrayType(node: ArrayNode, mode: Mode): string {
-  const elementExpr = emitTypeExpression(node.element, mode);
-  // Parenthesize when the element type contains a union (`|`), so the [] binds correctly.
-  const needsParens = /[ |]/.test(elementExpr);
-  return needsParens ? `(${elementExpr})[]` : `${elementExpr}[]`;
+function emitArrayType(node: ArrayNode, mode: Mode, depth: number): string {
+  const elementExpr = emitTypeExpression(node.element, mode, depth);
+  // Parenthesize when the element type contains a *top-level* union so `[]`
+  // binds correctly. A naive `startsWith("{")` shortcut is wrong: an
+  // object-then-union element like `{...} | undefined` (produced by
+  // `s.array(s.object({...}).optional())`) starts with `{` but still needs
+  // parens, otherwise we emit `{...} | undefined[]` which parses as
+  // "object or array of undefined" — not what the IR means.
+  return hasTopLevelUnion(elementExpr)
+    ? `(${elementExpr})[]`
+    : `${elementExpr}[]`;
 }
 
-function emitObjectType(node: ObjectNode, mode: Mode): string {
+/**
+ * True if `expr` contains a `|` outside of all braces, parens, brackets,
+ * and string literals. This is the structural check that distinguishes
+ * `string | undefined` (top-level union → needs parens for `[]`) from
+ * `{ foo: "a | b" }` (no top-level union → bare `[]` is fine).
+ */
+function hasTopLevelUnion(expr: string): boolean {
+  let depth = 0;
+  let inString = false;
+  let escape = false;
+  for (let i = 0; i < expr.length; i++) {
+    const ch = expr[i]!;
+    if (escape) {
+      escape = false;
+      continue;
+    }
+    if (inString) {
+      if (ch === "\\") escape = true;
+      else if (ch === '"') inString = false;
+      continue;
+    }
+    if (ch === '"') inString = true;
+    else if (ch === "{" || ch === "(" || ch === "[") depth++;
+    else if (ch === "}" || ch === ")" || ch === "]")
+      depth = Math.max(0, depth - 1);
+    else if (ch === "|" && depth === 0) return true;
+  }
+  return false;
+}
+
+/**
+ * Emit a TS object body. `depth` is the indentation depth of THIS object:
+ *  - depth 0 ⇒ top-level type alias body: inner fields at 2 spaces, `}` at column 0.
+ *  - depth 1 ⇒ first-level nested object:  inner fields at 4 spaces, `}` at 2 spaces.
+ *  - depth N ⇒ inner fields at 2*(N+1) spaces, `}` at 2*N spaces.
+ *
+ * Each enclosing object passes `depth + 1` to its field's emit, so nesting
+ * grows the indent consistently. Mirrors what the Zod generator already does.
+ */
+function emitObjectType(
+  node: ObjectNode,
+  mode: Mode,
+  depth: number,
+): string {
   const entries = Object.entries(node.fields);
   if (entries.length === 0) return "{}";
+  const fieldIndent = "  ".repeat(depth + 1);
+  const closeIndent = "  ".repeat(depth);
   const lines = entries.map(([key, field]) => {
-    const { keyMark, typeExpr } = emitObjectField(field, mode);
-    const fieldDoc = emitFieldDocComment(field);
+    const { keyMark, typeExpr } = emitObjectField(field, mode, depth + 1);
+    const fieldDoc = emitFieldDocComment(field, fieldIndent);
     const safeKey = formatPropertyKey(key);
-    return `${fieldDoc}  ${safeKey}${keyMark}: ${typeExpr};`;
+    return `${fieldDoc}${fieldIndent}${safeKey}${keyMark}: ${typeExpr};`;
   });
-  return `{\n${lines.join("\n")}\n}`;
+  return `{\n${lines.join("\n")}\n${closeIndent}}`;
 }
 
 /**
@@ -154,9 +213,10 @@ function formatPropertyKey(key: string): string {
 function emitObjectField(
   field: SchemaNode,
   mode: Mode,
+  depth: number,
 ): { keyMark: string; typeExpr: string } {
   const mods = field.modifiers ?? {};
-  let typeExpr = emitBareType(field, mode);
+  let typeExpr = emitBareType(field, mode, depth);
   if (mods.nullable) typeExpr = `${typeExpr} | null`;
 
   // In object-field position, optionality uses the `?` key marker; we do
@@ -173,13 +233,13 @@ function emitObjectField(
   return { keyMark: isOptional ? "?" : "", typeExpr };
 }
 
-function emitFieldDocComment(field: SchemaNode): string {
+function emitFieldDocComment(field: SchemaNode, indent: string): string {
   const lines: string[] = [];
   if (field.metadata?.description) lines.push(field.metadata.description);
   if (field.metadata?.deprecated) lines.push("@deprecated");
   if (lines.length === 0) return "";
-  // Per-field JSDoc is indented to match the field's two-space indent.
-  return `  /**\n${lines.map((l) => `   * ${l}`).join("\n")}\n   */\n`;
+  // Per-field JSDoc matches the field's indent so it lines up with the field.
+  return `${indent}/**\n${lines.map((l) => `${indent} * ${l}`).join("\n")}\n${indent} */\n`;
 }
 
 // ---------- helpers ----------

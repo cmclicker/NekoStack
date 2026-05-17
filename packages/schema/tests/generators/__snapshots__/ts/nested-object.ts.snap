@@ -11,8 +11,8 @@
 
 export type Doc = {
   user: {
-  id: string;
-  tags: string[];
-};
+    id: string;
+    tags: string[];
+  };
   count: number;
 };

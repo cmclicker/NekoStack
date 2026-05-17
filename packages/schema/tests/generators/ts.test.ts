@@ -211,6 +211,129 @@ describe("generateTypeScript — UnsupportedNodeKindError on unhandled IR kinds"
   });
 });
 
+describe("generateTypeScript — array element parenthesization", () => {
+  // The PR #7 re-audit surfaced this: an object-then-union array element
+  // (e.g. `s.array(s.object({...}).optional())`) starts with `{` but still
+  // needs parens, otherwise `{...} | undefined[]` parses as "object or
+  // array of undefined". Detect via a real top-level-union scan, not a
+  // startsWith heuristic.
+
+  const arr = (schema: ReturnType<typeof s.object>) =>
+    s.array(schema).id("com.x.Arr").node;
+
+  it("array of plain object — bare {}[] (no parens)", () => {
+    const out = generateTypeScript(arr(s.object({ id: s.string() })));
+    expect(out).toMatch(/^\s*\}\[\];$/m);
+    expect(out).not.toContain("})[]");
+  });
+
+  it("array of optional object — parenthesized", () => {
+    const out = generateTypeScript(
+      s.array(s.object({ id: s.string() }).optional()).id("com.x.AoO").node,
+    );
+    expect(out).toContain("} | undefined)[]");
+    expect(out).not.toContain("} | undefined[];");
+  });
+
+  it("array of nullable object — parenthesized", () => {
+    const out = generateTypeScript(
+      s.array(s.object({ id: s.string() }).nullable()).id("com.x.AnO").node,
+    );
+    expect(out).toContain("} | null)[]");
+    expect(out).not.toContain("} | null[];");
+  });
+
+  it("array of nullish object — parenthesized", () => {
+    const out = generateTypeScript(
+      s.array(s.object({ id: s.string() }).nullish()).id("com.x.AnshO").node,
+    );
+    expect(out).toContain("} | null | undefined)[]");
+    expect(out).not.toContain("} | null | undefined[];");
+  });
+
+  it("array of plain string — bare string[] (no parens)", () => {
+    const out = generateTypeScript(
+      s.array(s.string()).id("com.x.AS").node,
+    );
+    expect(out).toContain("string[]");
+    expect(out).not.toContain("(string)[]");
+  });
+
+  it("array of literal with a pipe inside the value — bare (no parens)", () => {
+    // s.literal("a|b") emits `"a|b"`. The scanner must NOT mistake the
+    // literal pipe inside quotes for a top-level union.
+    const out = generateTypeScript(
+      s.array(s.literal("a|b")).id("com.x.LP").node,
+    );
+    expect(out).toContain('"a|b"[]');
+    expect(out).not.toContain('"a|b")[]');
+  });
+});
+
+describe("generateTypeScript — nested object indentation grows per depth", () => {
+  // The PR #7 dogfood pass surfaced this: nested object bodies were emitted
+  // with the same indent as the outer body, producing readable-but-poor
+  // generated TS. Threading `depth` through the emit chain fixes it.
+
+  it("two levels deep — inner fields indent at 4 spaces, inner brace at 2", () => {
+    const node = s
+      .object({
+        outer: s.object({ inner: s.string() }),
+      })
+      .id("com.x.D2").node;
+    const out = generateTypeScript(node);
+    // Expect inner field indented one level deeper than outer field.
+    expect(out).toMatch(/^  outer: \{$/m); // outer field at 2
+    expect(out).toMatch(/^    inner: string;$/m); // inner field at 4
+    expect(out).toMatch(/^  \};$/m); // inner brace closes at 2 (aligned with outer field)
+  });
+
+  it("three levels deep — each level indents +2 spaces", () => {
+    const node = s
+      .object({
+        a: s.object({
+          b: s.object({ c: s.string() }),
+        }),
+      })
+      .id("com.x.D3").node;
+    const out = generateTypeScript(node);
+    expect(out).toMatch(/^  a: \{$/m);
+    expect(out).toMatch(/^    b: \{$/m);
+    expect(out).toMatch(/^      c: string;$/m);
+    expect(out).toMatch(/^    \};$/m);
+    expect(out).toMatch(/^  \};$/m);
+  });
+
+  it("array of objects: object body is indented relative to the field", () => {
+    const node = s
+      .object({
+        items: s.array(s.object({ id: s.string() })),
+      })
+      .id("com.x.AoO").node;
+    const out = generateTypeScript(node);
+    // Field at depth 1; the object body inside the array is also at depth 1
+    // (the array is structurally transparent for indent purposes).
+    expect(out).toMatch(/^  items: \{$/m);
+    expect(out).toMatch(/^    id: string;$/m);
+    expect(out).toMatch(/^  \}\[\];$/m);
+  });
+
+  it("per-field JSDoc indents with the field", () => {
+    const node = s
+      .object({
+        outer: s.object({
+          inner: s.string().describe("the inner field"),
+        }),
+      })
+      .id("com.x.Doc").node;
+    const out = generateTypeScript(node);
+    // The JSDoc line `   * the inner field` lives at 4-space + " * " = 5-space leader
+    expect(out).toMatch(/^    \/\*\*$/m);
+    expect(out).toMatch(/^     \* the inner field$/m);
+    expect(out).toMatch(/^     \*\/$/m);
+  });
+});
+
 describe("generateTypeScript — unsafe object keys are JSON-quoted", () => {
   // Object keys can be arbitrary strings; the IR doesn't restrict them.
   // The generator must quote anything that isn't a TS identifier.
