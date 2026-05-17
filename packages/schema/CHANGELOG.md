@@ -6,6 +6,49 @@ This package is workspace-internal (`private: true`, version `0.0.0`). The miles
 
 ---
 
+## schema-v0.4.0 — 2026-05-17
+
+[Tag](https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.4.0) · merge commit [`c9d15d0`](https://github.com/cmclicker/NekoStack/commit/c9d15d0). Fourth generator on the v0.1 IR foundation.
+
+### Shipped
+
+- **`generateOpenApiSchemaComponent(node, options?)`** — emits a single OpenAPI 3.1 Schema Component (the value at `components.schemas.<Name>`). Canonical JSON. Not a full OpenAPI document — that belongs to a future `@nekostack/api`.
+- **Shared `emitSchemaFragment`** — new [`src/generators/schema-fragment.ts`](src/generators/schema-fragment.ts) owns the IR-to-fragment translation. `json-schema.ts` and `openapi.ts` are now thin wrappers differing only on root structure, `$schema` / `$id`, and provenance `generator` value. Eliminates the JSON-Schema-vs-OpenAPI drift vector. Hard gate verified: v0.3 JSON Schema snapshots remained byte-identical through the extraction.
+- **No `$schema`, no `$id`** in component-position output (Decision #5 — component identity is the position in the document).
+- **`x-nekostack` provenance with `generator: "openApi"`** — `irHash` identical to the JSON Schema generator's for the same node (proven by test).
+- **Throw contract** identical to v0.3: runtime refinements + regex-with-non-empty-flags throw `UnsupportedNodeKindError` with `generator: "openApi"`. Same stable `code` / `kind` / `generator` shape from v0.2.
+- **`OpenApiGeneratorOptions = Record<string, never>`** — explicit no-options contract enforced at compile time. `@ts-expect-error`-backed test guards against regression. Widens to a richer interface when the first real option lands (likely `discriminator` with union builders).
+- **`@redocly/openapi-core` round-trip tests** — every emitted component composed into a synthetic OpenAPI 3.1 document (with explicit `jsonSchemaDialect: "https://json-schema.org/draft/2020-12/schema"`) and validated clean. Per the v0.4 plan fallback, can switch to spawning the Redocly CLI if the programmatic API ever proves impractical.
+- **Three new committed example artifacts** under [`examples/generated/`](examples/generated/): `tenant.openapi.json`, `audit-event.openapi.json`, `entitlement.openapi.json`.
+- **New contract doc** — [`docs/OPENAPI_MAPPING.md`](docs/OPENAPI_MAPPING.md). Deliberately delta-only; everything else defers to `JSON_SCHEMA_MAPPING.md`.
+- **Two new INVARIANTS corollaries** — "Redocly round-trip must pass" and "IR-to-fragment translation lives once in `schema-fragment.ts`; parallel implementations are explicitly rejected."
+- **Stale-doc cleanups** — `src/index.ts` generator section phase-neutralized, `UnsupportedNodeKindError` JSDoc generator-neutralized.
+- **`GENERATOR_VERSION` bumped to `@nekostack/schema@0.4.0`** — 56 snapshots regenerated; new artifact provenance lines match this milestone.
+
+### Dependency changes
+
+- New devDep: `@redocly/openapi-core ^1.34.0`. No new runtime dep.
+
+### Test count
+
+- 219 → 248 (+29 net).
+
+### Still deferred
+
+- Composition operators — v0.5
+- Runtime `parse` / `validate` from this package — v0.6
+- `neko schema generate / check / diff` CLI — v0.7
+- `sourceHash` in headers — v0.7
+- `$defs` extraction + cross-package `$ref` — v0.7 (registry-lite)
+- Full OpenAPI documents (paths/operations/etc.) — `@nekostack/api`'s concern
+- OpenAPI 3.0 target — future generator option
+- `discriminator` keyword — needs union builders
+- `example` / `xml` / `externalDocs` — no IR construct uses them
+- Migrations — v0.8+
+- Zod 4 target — future generator option
+
+---
+
 ## schema-v0.3.0 — 2026-05-17
 
 [Tag](https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.3.0) · merge commit [`9c50364`](https://github.com/cmclicker/NekoStack/commit/9c50364). Third generator on the v0.1 IR foundation.
