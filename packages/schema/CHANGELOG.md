@@ -6,6 +6,49 @@ This package is workspace-internal (`private: true`, version `0.0.0`). The miles
 
 ---
 
+## schema-v0.3.0 — 2026-05-17
+
+[Tag](https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.3.0) · merge commit [`9c50364`](https://github.com/cmclicker/NekoStack/commit/9c50364). Third generator on the v0.1 IR foundation.
+
+### Shipped
+
+- **`generateJsonSchema(node, options?)`** — canonical draft 2020-12 output. Sorted keys, 2-space indent, single trailing newline. Same IR + same generator version → byte-identical output. Models accepted input only — no `mode` option in v0.3.
+- **Identity** — URN `$id` by default (`urn:nekostack:schema:<id>:<version>`); URL form via `options.idBase`; anonymous schemas omit `$id`; never emits `$defs` in v0.3 (inline only — strategy documented for future).
+- **Absence semantics** — `optional` / `nullish` / `default` omitted from `required`; `nullable` / `nullish` encode `null` in the type array; `default` emits annotation + `x-nekostack-default-applied-by: "runtime"`.
+- **Object policy** — `strict` → `additionalProperties: false`; `passthrough` → `true`; `stripUnknown` → `true` + `x-nekostack-strip: true` (JSON Schema cannot strip; runtime does).
+- **Refinement mapping** — full table in [`docs/JSON_SCHEMA_MAPPING.md`](docs/JSON_SCHEMA_MAPPING.md).
+- **Throw contract** (Invariant 7) — runtime refinements (`kind: "runtimeRefinement"`) and regex-with-non-empty-flags (`kind: "regexFlags"`) throw `UnsupportedNodeKindError` rather than silently emit a schema that changes validation behavior. Stable `code` / `kind` / `generator` shape unchanged from v0.2; `generator` field union extended to include `"jsonSchema"`.
+- **Provenance via `x-nekostack` extension object** — JSON has no comment syntax, so v0.2's JSDoc header concept moves into a single extension object at the root.
+- **Codified extension keys** — `src/generators/json-schema-meta.ts` exports `JSON_SCHEMA_EXTENSIONS` constants. Any new `x-nekostack-*` key has to land in this file first.
+- **New contract doc** — [`docs/JSON_SCHEMA_MAPPING.md`](docs/JSON_SCHEMA_MAPPING.md).
+- **Three new committed example artifacts** under [`examples/generated/`](examples/generated/): `tenant.json.schema.json`, `audit-event.json.schema.json`, `entitlement.json.schema.json`. Validated by the regenerate test alongside the v0.2 TS/Zod outputs.
+- **`GENERATOR_VERSION` bumped to `@nekostack/schema@0.3.0`** — provenance on every generated artifact (v0.2 and v0.3 outputs alike) now matches this milestone. 50 snapshots regenerated.
+- **`UnsupportedNodeKindError` message** is now phase-neutral (previously pointed at `PHASE_PLAN_v0.2.md`).
+- **`INVARIANTS.md`** extended with the v0.3 corollary on `x-nekostack-*` extensions vs. throw.
+
+### Dependency changes
+
+- New devDeps: `ajv ^8.12.0` (imported only via `ajv/dist/2020.js`, the draft-2020-12 class) and `ajv-formats ^3.0.1` (for `format: "email" / "uri"` execution tests). No new runtime dep.
+
+### Test count
+
+- 163 → 219 (+56 net).
+
+### Still deferred
+
+- OpenAPI 3.1 — v0.4
+- Composition operators — v0.5
+- Runtime `parse` / `validate` from this package — v0.6
+- `neko schema generate / check / diff` CLI — v0.7
+- `sourceHash` in headers — v0.7
+- `$defs` extraction + cross-package `$ref` — v0.7 (registry-lite)
+- Output-shape JSON Schema (default-applied, all-required) — deferred indefinitely (no concrete consumer needs it)
+- Opt-in lossy regex-with-flags mode — deferred (current behavior is throw)
+- Migrations between schema versions — v0.8+
+- Zod 4 target — future generator option
+
+---
+
 ## schema-v0.2.1 — 2026-05-16
 
 [Tag](https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.2.1) · merge commit [`17cd182`](https://github.com/cmclicker/NekoStack/commit/17cd182). Patch release on the v0.2 line — proof artifacts + generator output polish from the dogfood pass.
