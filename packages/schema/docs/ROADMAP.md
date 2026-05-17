@@ -34,9 +34,9 @@ Status: **shipped** ([#5](https://github.com/cmclicker/NekoStack/pull/5), merged
 - Zod-execution tests (generated validator runs in a real Zod runtime and matches absence-semantics fixtures).
 - Zod-modifier-composition tests (the eight-row matrix from Decision #8).
 
-## v0.3 — JSON Schema generation ← *candidate*
+## v0.3 — JSON Schema generation
 
-Status: **candidate** ([#10](https://github.com/cmclicker/NekoStack/pull/10)). Implementation follows the merged plan in [`PHASE_PLAN_v0.3.md`](./PHASE_PLAN_v0.3.md).
+Status: **shipped** ([#10](https://github.com/cmclicker/NekoStack/pull/10), merged 2026-05-17). Plan: [`PHASE_PLAN_v0.3.md`](./PHASE_PLAN_v0.3.md). Tagged as [`schema-v0.3.0`](https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.3.0).
 
 - `generateJsonSchema(node, options?)` — draft 2020-12 output. Canonical JSON (sorted keys, 2-space indent, single trailing newline). Models accepted input only — no `mode` option in v0.3.
 - URN `$id` strategy by default (`urn:nekostack:schema:<id>:<version>`); URL-shaped IDs opt-in via `options.idBase`.
@@ -48,7 +48,7 @@ Status: **candidate** ([#10](https://github.com/cmclicker/NekoStack/pull/10)). I
 - Ajv2020 self-conformance + execution test suite (uses `ajv/dist/2020.js`, the draft-2020-12 class — NOT the default draft-07 import).
 - Three new example artifacts (`tenant.json.schema.json`, `audit-event.json.schema.json`, `entitlement.json.schema.json`) validated by the existing regenerate test.
 
-## v0.4 — OpenAPI 3.1 generation
+## v0.4 — OpenAPI 3.1 generation ← *active target*
 
 - OpenAPI 3.1 component schemas
 - Integration fixtures for `@nekostack/api`
