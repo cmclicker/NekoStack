@@ -11,9 +11,9 @@
 export class UnsupportedNodeKindError extends Error {
   readonly code = "UNSUPPORTED_NODE_KIND" as const;
   readonly kind: string;
-  readonly generator: "typescript" | "zod" | "jsonSchema";
+  readonly generator: "typescript" | "zod" | "jsonSchema" | "openApi";
 
-  constructor(args: { kind: string; generator: "typescript" | "zod" | "jsonSchema" }) {
+  constructor(args: { kind: string; generator: "typescript" | "zod" | "jsonSchema" | "openApi" }) {
     super(
       `Generator '${args.generator}' does not support IR node kind '${args.kind}' in this phase. ` +
         `See packages/schema/docs/ for the active generator contracts.`,

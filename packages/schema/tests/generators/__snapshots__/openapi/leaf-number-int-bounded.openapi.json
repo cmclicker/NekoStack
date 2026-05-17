@@ -1,0 +1,12 @@
+{
+  "maximum": 100,
+  "minimum": 0,
+  "type": "integer",
+  "x-nekostack": {
+    "generator": "openApi",
+    "generatorVersion": "@nekostack/schema@0.3.0",
+    "irHash": "sha256:78d86307fce8d9e6be2680a39d223de5d564433a00744bb949c3b9a37c6b57bd",
+    "schemaId": "com.x.N",
+    "schemaVersion": "1.0.0"
+  }
+}

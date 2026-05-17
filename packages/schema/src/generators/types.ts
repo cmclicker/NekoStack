@@ -51,8 +51,20 @@ export interface JsonSchemaGeneratorOptions {
   idBase?: string;
 }
 
+/** Options accepted by `generateOpenApiSchemaComponent`. */
+export interface OpenApiGeneratorOptions {
+  /**
+   * Reserved for v0.4+ extensions (e.g., a future `discriminator` option
+   * when union builders ship). v0.4 ships with no options consumed; kept
+   * here as a typed extension point so adding the first option later is
+   * non-breaking.
+   */
+  // (no fields yet)
+}
+
 /** Union of all generator option types — exported for ergonomics. */
 export type GeneratorOptions =
   | TypeScriptGeneratorOptions
   | ZodGeneratorOptions
-  | JsonSchemaGeneratorOptions;
+  | JsonSchemaGeneratorOptions
+  | OpenApiGeneratorOptions;
