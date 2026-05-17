@@ -9,9 +9,9 @@
 v0.3 adds one new generator + the IR pieces JSON Schema needs:
 
 1. **`generateJsonSchema(node, options?) → string`** — emits a JSON Schema **draft 2020-12** document for the given `SchemaNode`. Returns canonical JSON (sorted keys, no trailing newline drift).
-2. **Identity / `$id` / `$defs` / `$ref` strategy** — schemas with `metadata.id` get a deterministic `$id`; nested named schemas extract to `$defs`; references resolve through the local registry conceptually (the real registry ships v0.7).
+2. **Identity / `$id` strategy** — schemas with `metadata.id` get a deterministic `$id`. v0.3 emits **inline schemas only**; `$defs` extraction and `$ref` resolution are documented as a future strategy but **not implemented** in v0.3 (no IR construct needs them yet — recursive refs and cross-package refs both ship later).
 3. **Semantic-loss metadata** — when a portable feature has no direct JSON Schema representation (e.g., a runtime refinement), the output emits `x-nekostack-*` extension keys flagging the gap rather than silently dropping it.
-4. **JSON Schema test-suite conformance** — the generator's output is validated against the official [JSON Schema Test Suite](https://github.com/json-schema-org/JSON-Schema-Test-Suite) for draft 2020-12 (or a curated subset relevant to our IR surface).
+4. **Ajv-based self-conformance + execution tests** — generator output is compiled by Ajv's draft-2020-12 class (`ajv/dist/2020.js`) and run against NekoStack fixture matrices. We are not writing a validator; we are validating that our generator's output is itself a valid draft-2020-12 document and that it accepts/rejects fixtures per the IR's intent. (The official JSON Schema Test Suite is for validator conformance — Ajv is that validator, not us.)
 
 ## Explicit non-scope
 
@@ -50,8 +50,8 @@ Tests:
 packages/schema/tests/
 └── generators/
     ├── json-schema.test.ts                 # snapshot tests per fixture
-    ├── json-schema-conformance.test.ts     # validates output via Ajv (or similar)
-    ├── json-schema-execution.test.ts       # validates fixtures via the generated schema
+    ├── json-schema-ajv2020-self.test.ts    # ajv/dist/2020.js .addSchema() — output is valid draft 2020-12
+    ├── json-schema-ajv2020-exec.test.ts    # ajv/dist/2020.js .compile() then run vs. fixtures
     └── __snapshots__/json-schema/          # external .snap files
 ```
 
@@ -68,7 +68,7 @@ These get added to [`tests/examples/regenerate.test.ts`](../tests/examples/regen
 
 ## Dependency delta
 
-- **devDependency** added: `ajv ^8.12.0` (or comparable). Used by `json-schema-conformance.test.ts` to validate that the generator output is itself valid draft-2020-12 JSON Schema, and to run schema-against-fixture execution tests.
+- **devDependency** added: `ajv ^8.12.0`. Tests import the draft-2020-12 class explicitly via `ajv/dist/2020.js` (not the default `ajv` entrypoint, which is draft-07 and is not backwards-compatible with 2020-12). Using the wrong entrypoint would silently configure Ajv for the wrong dialect — failing tests would then be telling us about Ajv's defaults, not our output.
 - No new runtime dependency. JSON Schema output is a JSON string — no validator runs in `generateJsonSchema` itself.
 - No new `@nekostack/*` deps. Boundary stays clean.
 
@@ -79,13 +79,24 @@ Twelve open decisions. The plan PR exists to resolve them — please weigh in in
 ### Format + identity
 
 1. **Draft target.** JSON Schema **draft 2020-12** only in v0.3. (Draft 2019-09 and earlier are out; they're widely supported but the 2020-12 changes around `$defs` / `unevaluatedProperties` are worth getting right from the start.)
-2. **`$id` strategy for schemas with `metadata.id`.**
-   - **Option A (preferred):** `$id: "https://schemas.nekostack.dev/<reverse-dns-id>/<version>"` — embeds version, URL-shaped, future-CDN-friendly.
-   - **Option B:** `$id: "urn:nekostack:<reverse-dns-id>:<version>"` — URN, doesn't imply a hostname.
-   - **Option C:** `$id` = the literal `metadata.id` plus a query-string version — ugly.
-   - Recommendation: **A**, with `https://schemas.nekostack.dev` as the canonical URL prefix (configurable via `JsonSchemaGeneratorOptions.idBase`).
+2. **`$id` strategy for schemas with `metadata.id`.** Default is **URN-shaped**:
+
+   ```
+   urn:nekostack:schema:<metadata.id>:<metadata.version>
+   ```
+
+   URL-shaped IDs are opt-in via `JsonSchemaGeneratorOptions.idBase` — only when a consumer is intentionally hosting schemas at a real URL:
+
+   ```ts
+   generateJsonSchema(node, {
+     idBase: "https://schemas.example.com",
+   });
+   // → $id: "https://schemas.example.com/<metadata.id>/<metadata.version>"
+   ```
+
+   Rationale: a URL-shaped `$id` implies a resolvable public namespace even if JSON Schema doesn't strictly require it to resolve. Until a NekoStack-owned schema host actually exists, defaulting to a `schemas.nekostack.dev` URL is presumptive. URN is a valid URI reference per RFC 8141 and a clean identifier choice for non-hosted schemas.
 3. **`$id` for anonymous schemas (no `metadata.id`).** Don't emit `$id`. Inline. Don't auto-synthesize an id.
-4. **`$defs` extraction.** Currently the IR has no notion of "nested named schemas" because there are no recursive references in v0.1/v0.2. For v0.3, every named subschema referenced from the root via `RecursiveRefNode` would extract to `$defs/<localName>`. **Since v0.1/v0.2 don't ship `RecursiveRefNode` builders, v0.3 effectively never emits `$defs` either.** Plan: declare the strategy, defer the implementation to whenever recursive-ref builders ship. Output a `$defs: {}` block only if non-empty.
+4. **`$defs` extraction — NOT implemented in v0.3.** The IR has no construct that needs extraction yet (no recursive refs, no cross-package refs). Implementing extraction logic + an empty `$defs: {}` block now would be unused scope. v0.3 emits **inline schemas only** and **never** emits a `$defs` key. When recursive-ref builders ship (or registry-backed `$ref` lands in v0.7), the strategy will be: every node referenced via `RecursiveRefNode` extracts to `$defs/<localName>` and gets a `$ref` at the use site. Documented here so the future implementer doesn't have to re-derive it; not built here.
 5. **Cross-package `$ref` (`metadata.id` from another package).** Out of scope for v0.3 — registry-lite is v0.7. v0.3 inlines everything reachable from the root node.
 
 ### Absence semantics translation
@@ -95,7 +106,21 @@ JSON Schema doesn't have a TS-style `?:`. Absence is encoded via an object's `re
 6. **`optional()` mapping.** Field is **omitted from** the parent object's `required` array. No `null` in the field's `type`. Behaviorally matches "missing OK, null rejected, value-type OK."
 7. **`nullable()` mapping.** Field **stays in** the parent's `required` array. The field's `type` becomes `["<base>", "null"]` (draft 2020-12 supports the type-array form). Behaviorally matches "missing rejected, null OK, value-type OK."
 8. **`nullish()` mapping.** Field is **omitted from** `required` AND its `type` includes `"null"`. Behaviorally matches "missing OK, null OK, value-type OK."
-9. **`default()` mapping.** Field is **omitted from** `required` (so input-optional is honored), `default: <value>` is emitted as **JSON Schema annotation** (not behavior — JSON Schema validators don't apply defaults). Add `x-nekostack-default-applied-by: "runtime"` so consumers know the default isn't applied by JSON Schema-level validation. **This is the asymmetry that doesn't survive cleanly to JSON Schema.** The output type *as JSON Schema sees it* matches `s.input<T>` (default-bearing field is optional, value type is the base). To match `s.output<T>` you'd need a separate `mode: "input" | "output"` like the TS generator has. **Recommendation: ship `mode: "input"` only in v0.3** (matches `s.input<T>`, matches how API request schemas typically work, matches the JSON Schema convention that `default` is metadata). Add `mode: "output"` later if a real consumer needs it.
+9. **`default()` mapping — input-validation only.** Field is **omitted from** `required` (so input-optional is honored). `default: <value>` is emitted as a JSON Schema **annotation** — JSON Schema validators do not apply defaults during validation, this is metadata only. The output also carries `x-nekostack-default-applied-by: "runtime"` so consumers know the default has to be applied by something else (the v0.6 runtime or the generated Zod).
+
+   **v0.3 ships no `mode` option.** The JSON Schema models accepted input — the wire shape consumers send and validators check. The output-shape variant (default-applied, all fields required) is not representable as a single JSON Schema and is deferred until a concrete consumer needs it. If/when that lands, it'll be a separate option, not a forced split on every call.
+
+   Worked example for a default-bearing field:
+
+   ```json
+   {
+     "type": "string",
+     "default": "member",
+     "x-nekostack-default-applied-by": "runtime"
+   }
+   ```
+
+   And the parent object's `required` array omits the field.
 
 ### Refinements
 
@@ -106,7 +131,8 @@ JSON Schema doesn't have a TS-style `?:`. Absence is encoded via an object's `re
     | `minLength` | `minLength` |
     | `maxLength` | `maxLength` |
     | `length` | `minLength` + `maxLength` (both set to value) |
-    | `regex` (source + flags) | `pattern` (source only — JSON Schema patterns are ECMAScript-syntax without flags; if the IR carries flags we emit a `x-nekostack-regex-flags` extension and write the pattern unflagged) |
+    | `regex` (source, no flags) | `pattern` (direct mapping) |
+    | `regex` (source + non-empty flags) | **throws** — see Decision #11a |
     | `email` | `format: "email"` |
     | `uuid` | `format: "uuid"` |
     | `url` | `format: "uri"` |
@@ -121,6 +147,17 @@ JSON Schema doesn't have a TS-style `?:`. Absence is encoded via an object's `re
 
 11. **Runtime refinements.** Per Invariant 7 + v0.2 precedent, **throw `UnsupportedNodeKindError({ kind: "runtimeRefinement", generator: "jsonSchema" })`**. Same shape as v0.2. Do **not** silently emit a schema that omits the validation. Document in `docs/JSON_SCHEMA_MAPPING.md` (new — see "Local artifacts" below) that the v0.3 contract is "throw, not skip."
 
+11a. **Regex with non-empty flags throws — for the same reason.** JSON Schema's `pattern` keyword is ECMAScript regex syntax *without flags*. Emitting `pattern: "abc"` for an IR refinement of `/abc/i` would change validation behavior (the IR accepts `"ABC"`; the emitted JSON Schema does not). That's semantic drift, not metadata loss, and Invariant 7 says fail loudly:
+
+   ```ts
+   throw new UnsupportedNodeKindError({
+     kind: "regexFlags",
+     generator: "jsonSchema",
+   });
+   ```
+
+   Tests assert on `code` / `kind` / `generator` per the v0.2 contract. An opt-in lossy mode for regex flags can land later if a real consumer needs it.
+
 ### Object policy + miscellaneous
 
 12. **Unknown-key policy → `additionalProperties`.**
@@ -128,8 +165,10 @@ JSON Schema doesn't have a TS-style `?:`. Absence is encoded via an object's `re
     | IR `unknownKeys` | JSON Schema |
     |---|---|
     | `"strict"` | `additionalProperties: false` |
-    | `"stripUnknown"` | `additionalProperties: false` *plus* `x-nekostack-strip: true` (JSON Schema can't *strip* — only reject; the extension flags that the runtime is expected to strip) |
+    | `"stripUnknown"` | `additionalProperties: true` *plus* `x-nekostack-strip: true` |
     | `"passthrough"` | `additionalProperties: true` |
+
+    **Why `true`, not `false`, for `stripUnknown`:** the IR's `stripUnknown` policy means *input is allowed to carry unknown keys; the runtime strips them; the result is clean*. JSON Schema models accepted input. Emitting `additionalProperties: false` would make a JSON Schema validator **reject** inputs that `stripUnknown` is supposed to **accept** — that's `strict` behavior, not `strip`. The `x-nekostack-strip: true` extension tells NekoStack-aware consumers (runtime, CLI) that the unknown keys must be stripped before downstream code sees them. JSON Schema cannot express mutation, so the strip step lives in the runtime; the schema only describes what's accepted at the boundary.
 
 ## Invariants — phase-specific risk
 
@@ -154,10 +193,12 @@ These touch JSON Schema but only matter once OpenAPI lands:
 ## Test strategy
 
 - **Snapshot tests** per IR fixture (vitest `toMatchFileSnapshot`, external `.snap`). Same pattern as v0.2.
-- **Self-conformance tests** (Ajv) — every generated JSON Schema is itself loaded by Ajv and validated as a valid draft-2020-12 document. Catches "my output looks right but isn't actually valid JSON Schema."
-- **Execution tests** — for each fixture, compile the generated schema with Ajv and run it against expected-pass and expected-fail inputs from the v0.2 absence-semantics matrix. Proves the generated JSON Schema accepts/rejects per the IR's intent (within JSON-Schema's expressive limits).
-- **Unsupported-kind throw tests** — assert on `code` / `kind` / `generator` fields per the v0.2 contract.
+- **Ajv2020 self-conformance tests** — every generated JSON Schema is loaded via Ajv's draft-2020-12 class (`import Ajv2020 from "ajv/dist/2020.js"`) and `addSchema()`-d. Catches "my output looks right but isn't actually valid draft-2020-12 JSON Schema." Using the default `import Ajv from "ajv"` (draft-07) would silently configure for the wrong dialect — don't.
+- **Ajv2020 execution tests** — for each fixture, `compile()` the generated schema and run it against expected-pass and expected-fail inputs from the v0.2 absence-semantics matrix. Proves the generated JSON Schema accepts/rejects per the IR's intent (within JSON Schema's expressive limits).
+- **Unsupported-kind throw tests** — assert on `code` / `kind` / `generator` fields per the v0.2 contract. Includes the new `kind: "regexFlags"` case from Decision #11a.
 - **Example regenerate test** — three new committed JSON Schema artifacts (`tenant.json.schema.json`, `audit-event.json.schema.json`, `entitlement.json.schema.json`) added to the existing `tests/examples/regenerate.test.ts`.
+
+The official [JSON Schema Test Suite](https://github.com/json-schema-org/JSON-Schema-Test-Suite) is **not** in scope. That suite is for validator conformance — Ajv is the validator we delegate to, not something we re-implement.
 
 ## Checklist pre-mapping
 
@@ -180,20 +221,20 @@ Walking [`checklists/package/implementation-acceptance.md`](../../../checklists/
 
 Implementation lands on `feat/schema-v0.3-candidate` as reviewable commits:
 
-1. Error class extension: `UnsupportedNodeKindError`'s `generator` field accepts `"jsonSchema"`.
+1. Error class extension: `UnsupportedNodeKindError`'s `generator` field accepts `"jsonSchema"`. `kind: "regexFlags"` becomes a valid value alongside `"runtimeRefinement"` and the existing IR kind names.
 2. Generator skeleton: handles primitives (string / number / boolean / literal / enum) without refinements or absence modifiers — pure type mapping.
-3. Generator + portable refinements (the mapping table from Decision #10).
-4. Generator + absence modifiers (Decisions #6–#9, `mode: "input"` only) + object policy (Decision #12).
-5. Generator + identity (`$id` per Decision #2) + `$defs` skeleton (Decision #4 — empty in v0.3 absent recursive-ref builders).
-6. Generator + semantic-loss metadata for runtime refinements (Decision #11 throws) and any other gaps.
+3. Generator + portable refinements (the mapping table from Decision #10). Includes the `regex`-with-flags throw (Decision #11a).
+4. Generator + absence modifiers (Decisions #6–#9, **input-validation only — no `mode` option**) + object policy (Decision #12, including the corrected `stripUnknown` mapping).
+5. Generator + identity (URN `$id` per Decision #2, with opt-in URL via `idBase`). No `$defs` work — inline schemas only per Decision #4.
+6. Generator + runtime-refinement throw (Decision #11) and other semantic-loss `x-nekostack-*` extensions where needed.
 7. Snapshot tests.
-8. Ajv self-conformance test harness + tests.
-9. Ajv execution tests against the absence-semantics matrix.
-10. `docs/JSON_SCHEMA_MAPPING.md` (new contract doc).
+8. Ajv2020 self-conformance test harness + tests (`ajv/dist/2020.js`, not the default entrypoint).
+9. Ajv2020 execution tests against the absence-semantics matrix.
+10. `docs/JSON_SCHEMA_MAPPING.md` (new contract doc — encodes Decisions #6–#12 + the corrected `stripUnknown` rationale).
 11. Example regenerate test extended with three new JSON Schema artifacts.
 12. `docs/USAGE.md` + `docs/EXAMPLES.md` extended.
 13. `docs/ROADMAP.md` v0.3 → candidate.
-14. `docs/INVARIANTS.md` extended with the v0.3 corollary.
+14. `docs/INVARIANTS.md` extended with the v0.3 corollary on semantic-loss extension keys.
 15. `src/index.ts` update.
 
 ## Estimate
@@ -213,12 +254,24 @@ Out-of-scope for this plan; deferred to later phases or future plan PRs:
 - Cross-package `$ref` resolution and the registry that backs it (v0.7).
 - The v0.7 CLI's `neko schema generate` behavior for JSON Schema output.
 - Plugin contract for third-party generators (post-v1.0).
-- `mode: "output"` for JSON Schema — defer until a real consumer needs it.
+- An output-shape JSON Schema (default-applied, all fields required) — deferred indefinitely; no concrete consumer needs it yet.
+- An opt-in lossy mode for regex with flags (`pattern` without flags + extension) — only added if a real consumer hits the wall.
+
+## Decision history
+
+- **v0.3-plan, initial draft** — 12 decisions, plan-only PR.
+- **v0.3-plan, post-review amendment** — seven corrections per the JSON Schema audit:
+  - **Ajv entrypoint** explicit — tests must use `ajv/dist/2020.js`, not the default draft-07 path.
+  - **#2 ($id default)** changed from URL-shaped to URN-shaped; URL still available via `idBase` option. URL default presumed a NekoStack-owned schema host that doesn't exist.
+  - **#4 ($defs)** removed from v0.3 implementation scope. No extraction, no empty `$defs: {}` block — inline schemas only. Strategy documented for the future implementer.
+  - **#9 (default)** scope tightened: no `mode` option in v0.3. JSON Schema models accepted input; output-mode deferred until a concrete consumer exists.
+  - **#11a (regex flags) added** — regex refinements with non-empty flags throw `UnsupportedNodeKindError({ kind: "regexFlags" })`. Emitting source-only `pattern` would change validation behavior, which is semantic drift, not metadata loss.
+  - **#12 (stripUnknown)** mapping flipped: `additionalProperties: true` (not `false`) plus `x-nekostack-strip: true`. The `false` form was `strict` semantics in disguise — JSON Schema models accepted input, and `stripUnknown` is supposed to accept inputs with extras.
+  - **Test strategy** dropped "official JSON Schema Test Suite" — that suite is for validator conformance; Ajv is the validator, not us. Replaced with explicit Ajv2020 self-conformance + execution test plan.
 
 ## Action requested from reviewer
 
-- Approve / push back on the 12 decisions above. Highest-stakes ones: #2 (`$id` URI shape), #9 (default + the asymmetry that JSON Schema can't represent), #11 (runtime refinements throw vs. emit-with-warning), #12 (`stripUnknown` representation).
-- Flag any v0.3 scope item that should be removed or any v0.4+ item that should pull forward.
-- Confirm `ajv` is the right dev-dep choice for self-conformance + execution tests (alternatives: `@cfworker/json-schema`, `hyperjump-jsv`, hand-rolled checks — but Ajv is the de-facto standard).
+- Final ack on the amended decisions.
+- Flag any further in-scope item that should be removed or any v0.4+ item that should pull forward.
 
 Once approved, implementation opens on `feat/schema-v0.3-candidate`.
