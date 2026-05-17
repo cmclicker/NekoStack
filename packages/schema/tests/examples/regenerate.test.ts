@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   generateJsonSchema,
+  generateOpenApiSchemaComponent,
   generateTypeScript,
   generateZod,
   irHash,
@@ -42,6 +43,11 @@ describe("examples/generated/ is in sync with examples/*.schema.ts", () => {
         out("tenant.json.schema.json"),
       );
     });
+    it("OpenAPI 3.1 component schema", async () => {
+      await expect(
+        generateOpenApiSchemaComponent(Tenant.node),
+      ).toMatchFileSnapshot(out("tenant.openapi.json"));
+    });
   });
 
   describe("AuditEvent — input/output split is the headline feature here", () => {
@@ -60,6 +66,11 @@ describe("examples/generated/ is in sync with examples/*.schema.ts", () => {
         out("audit-event.json.schema.json"),
       );
     });
+    it("OpenAPI 3.1 component schema", async () => {
+      await expect(
+        generateOpenApiSchemaComponent(AuditEvent.node),
+      ).toMatchFileSnapshot(out("audit-event.openapi.json"));
+    });
   });
 
   describe("Entitlement", () => {
@@ -77,6 +88,11 @@ describe("examples/generated/ is in sync with examples/*.schema.ts", () => {
       await expect(generateJsonSchema(Entitlement.node)).toMatchFileSnapshot(
         out("entitlement.json.schema.json"),
       );
+    });
+    it("OpenAPI 3.1 component schema", async () => {
+      await expect(
+        generateOpenApiSchemaComponent(Entitlement.node),
+      ).toMatchFileSnapshot(out("entitlement.openapi.json"));
     });
   });
 });

@@ -1,9 +1,7 @@
 {
-  "$id": "urn:nekostack:schema:com.x.S:1.0.0",
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "type": "string",
   "x-nekostack": {
-    "generator": "jsonSchema",
+    "generator": "openApi",
     "generatorVersion": "@nekostack/schema@0.4.0",
     "irHash": "sha256:2bf62025a9bc21f8718ed74292d10367bceb52fd427d31bd6c7b38ee7abff7e3",
     "schemaId": "com.x.S",

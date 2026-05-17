@@ -1,5 +1,5 @@
 // =============================================================================
-// Public API — @nekostack/schema v0.3
+// Public API — @nekostack/schema v0.4
 //
 // Surface is intentionally narrow. Anything not re-exported here is package-
 // internal and may change without a major version bump. See docs/SCOPE.md.
@@ -44,16 +44,25 @@ export type {
 export { serializeIR } from "./ir/serialize.js";
 export { irHash } from "./ir/hash.js";
 
-// ---- Generators (v0.2) ----
+// ---- Generators ----
 // Each generator consumes the canonical SchemaNode IR and returns a complete
-// emit-ready file as a string (header + body). File-writing is intentionally
-// a downstream concern. See docs/PHASE_PLAN_v0.2.md for scope + non-scope.
+// emit-ready artifact as a string. File-writing is intentionally a downstream
+// concern.
+//   - generateTypeScript / generateZod emit TS-source artifacts (header
+//     comment + body code).
+//   - generateJsonSchema / generateOpenApiSchemaComponent emit JSON artifacts
+//     (provenance is embedded via the `x-nekostack` extension object — JSON
+//     has no comment syntax).
+// See docs/USAGE.md for per-generator details and docs/{HEADER_FORMAT,
+// JSON_SCHEMA_MAPPING, OPENAPI_MAPPING}.md for the per-format contracts.
 export { generateTypeScript } from "./generators/ts.js";
 export { generateZod } from "./generators/zod.js";
 export { generateJsonSchema } from "./generators/json-schema.js";
+export { generateOpenApiSchemaComponent } from "./generators/openapi.js";
 export type {
   GeneratorOptions,
   JsonSchemaGeneratorOptions,
+  OpenApiGeneratorOptions,
   TypeScriptGeneratorOptions,
   ZodGeneratorOptions,
 } from "./generators/types.js";
