@@ -1,6 +1,8 @@
 # NekoStack — Capability Boundaries
 
 > The canonical map of "which package owns which capability." Read this **first** before adding a new package, splitting an existing one, or wondering where a thing should live.
+>
+> For *why* a capability belongs to NekoStack at all (rather than being left to an external library the user composes themselves), see [`PRODUCT_THESIS.md`](PRODUCT_THESIS.md). This document answers *where*; the thesis answers *whether*.
 
 ## Purpose
 
