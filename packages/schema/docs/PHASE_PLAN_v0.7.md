@@ -196,7 +196,7 @@ export interface GenerateOpts {
 export interface GeneratedArtifact {
   readonly schemaId: string;
   readonly kind: GeneratorKind;
-  readonly suggestedPath: string;     // relative to source dir; see Decision #4
+  readonly suggestedPath: string;     // relative to source dir; see Decision #6
   readonly content: string;
   readonly irHash: string;
   readonly sourceHash: `sha256:${string}`;
@@ -283,7 +283,7 @@ generateJsonSchema(node, { sourceHash });
 generateOpenApiSchemaComponent(node, { sourceHash });
 ```
 
-`sourceHash` is the sha256 of the originating `*.schema.ts` file's bytes, computed via `sourceHashFromText`. The CLI passes it through to the generators. Direct generator calls (e.g., from a vitest-snapshot test) omit it; the emitted header / `x-nekostack` block records `sourceHash: null` (or omits the field — see Decision #8) so old-style direct invocations continue to work.
+`sourceHash` is the sha256 of the originating `*.schema.ts` file's bytes, computed via `sourceHashFromText`. The CLI passes it through to the generators. Direct generator calls (e.g., from a vitest-snapshot test) may omit it; when omitted, TS/Zod emit no `sourceHash:` header line and JSON/OpenAPI omit `x-nekostack.sourceHash`. No `null` is ever written. See Decision #8 for the locked rules.
 
 ### Freshness verdict — two-hash discipline
 
@@ -310,11 +310,13 @@ generateOpenApiSchemaComponent(node, { sourceHash });
 
 ## Public API delta
 
-**Zero new public exports from `packages/schema/src/index.ts`** in v0.7.
+**Zero new public exports from root `packages/schema/src/index.ts`** in v0.7.
 
-The handler functions, registry types, and diff types live behind internal paths (`packages/schema/src/registry/*`) and are imported by `@nekostack/cli` via direct subpath import. This mirrors the engine-swap-safe boundary from v0.6: a v0.8+ rewrite of the registry must not break public consumers.
+The handler functions, registry types, and diff types are exported only from the package-internal integration subpath `@nekostack/schema/cli`. They are not exported from root `@nekostack/schema`. `package.json` gains the `exports` map that wires `"./cli"` to `src/cli-integration.ts` per Decision #10.
 
-The only **visible** schema-package change is the header format: every generated artifact now carries a `sourceHash` line. That's a one-line addition per existing header — no compat break for consumers that already ignore unknown header lines (the documented behavior).
+This mirrors the engine-swap-safe boundary from v0.6: a v0.8+ rewrite of the registry must not break root-public consumers. External consumers (apps importing `@nekostack/schema`) only see the v0.6 runtime surface; the `@nekostack/schema/cli` subpath is documented as internal-only and is intended for `@nekostack/cli` in v0.7.
+
+The only **visible** schema-package change beyond the subpath is the provenance format: TS/Zod artifacts gain a `sourceHash:` JSDoc line; JSON/OpenAPI artifacts gain `x-nekostack.sourceHash`. Both are additive — consumers that ignore unknown header lines or unknown `x-nekostack` fields (the documented behavior) keep working.
 
 ## Internal file delta
 
@@ -445,7 +447,7 @@ Sixteen decisions. Highest-stakes flagged.
 
    | Concern | Behavior |
    |---|---|
-   | Overwrite | `generate` overwrites by default; `--check-only` flag refuses and exits nonzero if the disk version differs |
+   | Overwrite | `generate` overwrites by default. Use `neko schema check` for the no-write preflight. |
    | Missing artifact | `check` treats as **stale** (the four artifact kinds are mandatory in v0.7) |
    | Extra / unexpected artifact in `generated/` | `check` warns on stderr but does NOT fail; v0.7 does not own pruning |
    | "Partial" generation (only some kinds) | Supported via `--kinds ts,zod` flag on `generate`; default is all four |
@@ -541,7 +543,7 @@ Sixteen decisions. Highest-stakes flagged.
     | Add enum value | additive | strictly more accepting |
     | Remove enum value | breaking | inputs with that value now fail |
     | Change literal value | breaking | the only accepted value changed |
-    | Add `default` to existing required field | additive (input) / **breaking output** | input-side: more accepting (now input-optional). Output-side: same — output already had the value, now still does. The default value itself becoming load-bearing is a downstream concern not v0.7's. Row severity: additive. |
+    | Add `default` to existing required field | additive | input becomes more permissive (now input-optional). Output remains required. The default only affects newly-accepted missing-input cases; existing inputs are unaffected. |
     | Remove `default` from a default-bearing field | breaking | field flips to input-required AND output-required loses the fill |
     | Change default value | breaking | downstream observers see a different filled value at output |
     | `optional` → `nullable` (drop optional, add nullable) | breaking | now requires presence; old data lacking the key fails |
@@ -584,7 +586,7 @@ Implementation order. Each numbered step is a separate commit with its own valid
 7. `src/registry/diff.ts` — diff walker + classifier + Decision #12 matrix as a test fixture set. Each row of the table gets a fixture pair; the test asserts on `severity` per pair.
 8. `src/registry/handlers/list.ts` — simplest handler; verifies the handler shape and the `Result<T>` discriminated-union contract.
 9. `src/registry/handlers/diff.ts` — wraps `diffNodes` + computes `worstSeverity` for CLI consumption.
-10. `src/registry/handlers/check.ts` — freshness via the two-hash matrix (Decision #6 of the runtime-side; mirrored in §"Freshness verdict"). Operates on `CommittedArtifact[]` the CLI provides; no filesystem.
+10. `src/registry/handlers/check.ts` — freshness via the two-hash matrix (the locked rule in §"Freshness verdict" derived from Decision #7). Operates on `CommittedArtifact[]` the CLI provides; no filesystem.
 11. `src/registry/handlers/generate.ts` — invokes the v0.2–v0.6 generators with `ProvenanceOptions`. Returns `GeneratedArtifact[]` with `suggestedPath` per Decision #6's artifact-layout convention. No `fs.writeFile`.
 12. `src/registry/handlers/handler-purity.test.ts` — gate test that asserts none of the four handlers call `fs.*`, `import()`, `process.exit`, `console.*`, or `process.stdout.write` / `process.stderr.write`. Spy on those names during a representative handler invocation; fail the test if any spy is called.
 13. `src/cli-integration.ts` — barrel re-export of the v0.7 surface for the `@nekostack/schema/cli` subpath.

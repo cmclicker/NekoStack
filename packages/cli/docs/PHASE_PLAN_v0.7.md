@@ -128,7 +128,7 @@ neko --help                 # lists `schema` (and notes other families are futur
 neko --version              # prints @nekostack/cli version + node version
 ```
 
-`<pattern>` for `generate` / `check` is an optional glob. Defaults to `**/*.schema.ts`. Filters which schema files the corresponding schema-side handler operates on.
+`<pattern>` for `generate` / `check` is an optional glob. Defaults to `**/*.schema.{ts,js}`. A user-supplied `[pattern]` replaces the default — it does not extend it. Filters which schema files the corresponding schema-side handler operates on.
 
 `<a>` and `<b>` for `diff` are each one of:
 - A schema id (`com.x.User`) — resolves to highest version in the registry
@@ -175,7 +175,7 @@ JSON output is one line per invocation (no pretty-printing) so it's pipeable. Sc
 - **Interactive prompts.** No clack, no inquirer, no readline. v0.7 is CI-first.
 - **`--watch` mode** for `check` / `generate`. Defer.
 - **Color output.** v0.7 ships plain ANSI; richer color (chalk-style) deferred. `--no-color` honored via standard `NO_COLOR` env var.
-- **Configuration file (`neko.config.json`).** v0.7 uses convention (workspace root + `**/*.schema.ts`); a config file lands when the first option needs to outlive a single invocation.
+- **Configuration file (`neko.config.json`).** v0.7 uses convention (workspace root + `**/*.schema.{ts,js}`); a config file lands when the first option needs to outlive a single invocation.
 - **Subcommand aliases.** No `neko g` for `neko schema generate`. Keep the verb space wide-open for future families.
 - **i18n.** English messages only. Same posture as v0.6.
 
@@ -294,7 +294,7 @@ Ten decisions. The schema-side master plan locks the primitives (registry, diff,
 
 7. **Pretty default + `--json` opt-in.** Pretty output is unstable across versions (UX-driven); JSON output IS the contract for machine consumers. JSON schema per command is keyed to the schema-side `*Result` shape — when that shape changes, the JSON output changes correspondingly.
 
-8. **CLI is non-interactive in v0.7.** No prompts. Confirmation patterns (e.g., for destructive operations) land when the first genuinely destructive verb does. `generate` is non-destructive in the sense that it writes alongside existing artifacts at paths the master plan's Decision #6 locks; users who want a pre-flight check use `--check-only`.
+8. **CLI is non-interactive in v0.7.** No prompts. Confirmation patterns (e.g., for destructive operations) land when the first genuinely destructive verb does. `generate` writes to disk at the paths the master plan's Decision #6 locks; users who want a no-write preflight invoke `neko schema check` instead. There is no `--check-only` flag on `generate` in v0.7 — `check` and `generate` are the two verbs.
 
 ### Testing
 
