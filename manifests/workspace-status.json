@@ -16,11 +16,16 @@
     {
       "name": "@nekostack/schema",
       "dir": "packages/schema",
-      "latest_release": "schema-v0.5.0",
-      "latest_release_date": "2026-05-17",
-      "active_target": "v0.6 — Runtime validation",
-      "test_count": 342,
+      "latest_release": "schema-v0.6.0",
+      "latest_release_date": "2026-05-18",
+      "active_target": "v0.7 — Registry-lite + CLI",
+      "test_count": 587,
       "milestones": [
+        {
+          "tag": "schema-v0.6.0",
+          "date": "2026-05-18",
+          "summary": "Runtime validation as a NekoStack-owned workflow on the v0.2 source-generator + v0.5 composition foundation."
+        },
         {
           "tag": "schema-v0.5.0",
           "date": "2026-05-17",
@@ -40,18 +45,13 @@
           "tag": "schema-v0.2.1",
           "date": "2026-05-16",
           "summary": "Patch release on the v0.2 line — proof artifacts + generator output polish from the dogfood pass."
-        },
-        {
-          "tag": "schema-v0.2.0",
-          "date": "2026-05-16",
-          "summary": null
         }
       ]
     }
   ],
   "next_actions": [
-    "Open the v0.6 phase-plan PR for @nekostack/schema under thesis-fit rules.",
-    "Reframe packages/schema/docs/USAGE.md per the internal-engine rule before v0.6 lands.",
-    "Apply the thesis-fit audit gate to the next package phase that goes through review."
+    "Open the v0.7 phase-plan PR for @nekostack/schema — Registry-lite + CLI; consumes v0.2 irHash and the new sourceHash for freshness.",
+    "Land the v0.7 CLI runtime in @nekostack/cli; the v0.6 runtime stays the engine behind it.",
+    "Apply the thesis-fit audit gate to the v0.7 phase plan before any implementation PR."
   ]
 }

@@ -5,8 +5,8 @@
 ## Active workstream
 
 - **Package:** @nekostack/schema
-- **Latest release:** [`schema-v0.5.0`](https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.5.0) — 2026-05-17
-- **Active target:** v0.6 — Runtime validation
+- **Latest release:** [`schema-v0.6.0`](https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.6.0) — 2026-05-18
+- **Active target:** v0.7 — Registry-lite + CLI
 - **Doctrine in force:** [NekoStack — Product Thesis](../PRODUCT_THESIS.md)
 
 ## Latest milestones
@@ -15,23 +15,23 @@
 
 | Tag | Date | Summary |
 |---|---|---|
+| [`schema-v0.6.0`](https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.6.0) | 2026-05-18 | Runtime validation as a NekoStack-owned workflow on the v0.2 source-generator + v0.5 composition foundation. |
 | [`schema-v0.5.0`](https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.5.0) | 2026-05-17 | Composition layer on the v0.1 IR foundation. |
 | [`schema-v0.4.0`](https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.4.0) | 2026-05-17 | Fourth generator on the v0.1 IR foundation. |
 | [`schema-v0.3.0`](https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.3.0) | 2026-05-17 | Third generator on the v0.1 IR foundation. |
 | [`schema-v0.2.1`](https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.2.1) | 2026-05-16 | Patch release on the v0.2 line — proof artifacts + generator output polish from the dogfood pass. |
-| [`schema-v0.2.0`](https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.2.0) | 2026-05-16 | — |
 
 ## Validation snapshot
 
 Test counts come from each package's most recent CHANGELOG entry. After validating a release, update the package CHANGELOG and run `npm run status:generate`.
 
-- **@nekostack/schema:** 342 tests recorded (latest: schema-v0.5.0)
+- **@nekostack/schema:** 587 tests recorded (latest: schema-v0.6.0)
 
 ## Next actions
 
-1. Open the v0.6 phase-plan PR for @nekostack/schema under thesis-fit rules.
-2. Reframe packages/schema/docs/USAGE.md per the internal-engine rule before v0.6 lands.
-3. Apply the thesis-fit audit gate to the next package phase that goes through review.
+1. Open the v0.7 phase-plan PR for @nekostack/schema — Registry-lite + CLI; consumes v0.2 irHash and the new sourceHash for freshness.
+2. Land the v0.7 CLI runtime in @nekostack/cli; the v0.6 runtime stays the engine behind it.
+3. Apply the thesis-fit audit gate to the v0.7 phase plan before any implementation PR.
 
 ## How to refresh
 
