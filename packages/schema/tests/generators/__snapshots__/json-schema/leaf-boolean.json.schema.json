@@ -4,7 +4,7 @@
   "type": "boolean",
   "x-nekostack": {
     "generator": "jsonSchema",
-    "generatorVersion": "@nekostack/schema@0.5.0",
+    "generatorVersion": "@nekostack/schema@0.6.0",
     "irHash": "sha256:fe78ab6345796f2f8b701d2619ee1ab1761c9597e1978f725906d7a774d730cb",
     "schemaId": "com.x.B",
     "schemaVersion": "1.0.0"
