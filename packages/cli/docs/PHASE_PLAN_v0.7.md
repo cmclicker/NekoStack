@@ -39,19 +39,33 @@ No interactive prompts in v0.7 — every command is non-interactive and CI-safe 
 
 ### Internal engine
 
-`@nekostack/cli` is a thin dispatch layer. Architecture:
+`@nekostack/cli` is the **filesystem-aware shell** around `@nekostack/schema`'s pure handlers. Architecture:
 
 ```
 neko <argv>
   └─ argv parser (commander)
-      └─ dispatch to schema/<verb>.ts
-          └─ build the *Opts payload
-              └─ call the schema-side *Handler
-                  └─ format the *Result for stdout
-                  └─ choose exit code
+      └─ dispatch to commands/schema/<verb>.ts
+          ├─ resolve workspace root (--root or process.cwd())
+          ├─ glob-walk for *.schema.{ts,js}
+          ├─ load each file via tsx (in-process)            ← CLI-side
+          ├─ read source text for sourceHash inputs         ← CLI-side
+          ├─ read committed artifacts (for `check`)         ← CLI-side
+          ├─ build RegistrySourceEntry[] / CommittedArtifact[]
+          ├─ call the schema-side *Handler                  ← pure, no I/O
+          ├─ format the *Result for stdout (pretty / --json)
+          ├─ write any GeneratedArtifact[] (for `generate`) ← CLI-side
+          └─ choose exit code
 ```
 
-The schema-side handlers (defined in the master plan) are pure functions. The CLI owns argv parsing, filesystem-rooted opts construction, output formatting, and process-exit semantics.
+The CLI owns every interaction with the outside world:
+- Workspace root resolution + glob expansion
+- Schema module loading (the `tsx` strategy locked in Decision #1)
+- All filesystem reads (source text, committed artifacts)
+- All filesystem writes (regenerated artifacts)
+- stdout / stderr (pretty + `--json` formatters)
+- Process exit codes (the locked enum, Decision #3)
+
+The schema-side handlers — `listHandler`, `diffHandler`, `checkHandler`, `generateHandler` — are pure functions imported from `@nekostack/schema/cli` (see master plan Decision #10). They take typed data, return `Result<T>`, never call `fs.*` / `import()` / `process.exit` / `console.*`.
 
 ### BOUNDARIES rows touched
 
@@ -213,49 +227,108 @@ packages/cli/tests/
 
 ## Dependency delta
 
-- **New runtime dep:** `commander ^12.x` (argv parsing). Justification: hand-rolling argv is the wrong tradeoff for a CLI that needs subcommand groups, help text generation, and flag inheritance. Commander is the smallest mainstream library that handles all three cleanly.
-- **New runtime dep:** `@nekostack/schema` (workspace `*`). The CLI imports schema-side handler functions directly. First `@nekostack/*` cross-package dependency in the stack; Invariant 8 (no downstream package imports) applies to *schema*, not *cli* — cli is downstream by design.
-- **New devDeps:** none required beyond what the workspace already provides.
-- The CLI uses Node-built-in modules only for filesystem operations (`node:fs`, `node:path`, `node:url`).
+- **New runtime dep:** `commander ^12.x` — argv parsing. Hand-rolling argv is the wrong tradeoff for a CLI that needs subcommand groups, help text generation, and flag inheritance. Commander is the smallest mainstream library that handles all three cleanly.
+- **New runtime dep:** `tsx ^4.x` — schema module loading. Required to dynamic-import `*.schema.ts` files in-process. See Decision #1 for the locked rationale and alternatives considered.
+- **New runtime dep:** `@nekostack/schema` (workspace `*`). The CLI imports handler functions from the `@nekostack/schema/cli` integration subpath defined in the master plan's Decision #10. First `@nekostack/*` cross-package dependency in the stack; Invariant 8 (no downstream package imports) applies to *schema*, not *cli* — cli is downstream by design.
+- **No new devDeps** beyond what the workspace already provides.
+- The CLI uses Node-built-in modules for filesystem operations (`node:fs`, `node:path`, `node:url`) and for sha256 (`node:crypto`) when needed locally — though most sha256 work goes through the schema-side `sourceHashFromText`.
 
 ## Decisions to lock before coding
 
-Eight decisions, narrower than the schema-side plan because most architectural shape comes from the master plan.
+Ten decisions. The schema-side master plan locks the primitives (registry, diff, sourceHash, handler contracts); these are the CLI-only choices.
 
-1. **`commander` for argv parsing.** Locked. Alternatives considered: hand-rolled (too much CLI UX overhead for v0.7); `yargs` (heavier API surface; commander's chainable-program style is closer to NekoStack's existing builder ergonomics); `clipanion`, `cmd-ts` (less mainstream maintenance).
+### Schema module loading (highest stakes; mirrored from master plan Decision #2)
 
-2. **Bin name `neko`.** Matches the README. No collision check; if a real conflict surfaces, rename to `nekostack` at v1.0.
+1. **`tsx` is the in-process TS loader for `*.schema.ts` files.**
+   - `tsx` is a regular runtime dependency of `@nekostack/cli`.
+   - Loading happens in-process via `tsx`'s ESM loader registration; no per-file child process.
+   - `.schema.ts` and `.schema.js` are both supported. `.schema.mts` and `.schema.cts` are not in v0.7; if a real consumer ships one, it's a one-line glob change.
+   - Schema files execute in-process. **Module-load-time side effects are the user's responsibility.** The CLI does not sandbox; documented in `SCOPE.md`.
+   - **Errors map cleanly to `Issue[]` + exit code 3 (I/O class):**
+     - File not readable → `schema_load_failed` with `metadata.reason: "io_error"`.
+     - TypeScript compile failure (via `tsx`) → `schema_load_failed` with `metadata.reason: "compile_error"` and the underlying error's first line on the `message` field.
+     - Runtime exception inside the schema file → `schema_load_failed` with `metadata.reason: "runtime_error"` and the thrown error's message.
+     - Module loaded but does not export any `Schema` instance → `schema_load_failed` with `metadata.reason: "no_schema_export"`.
+   - **Alternatives considered:**
+     - `jiti` — roughly equivalent. Slightly more permissive of non-standard TS; `tsx` chosen because it follows Node ESM semantics more closely and aligns with the rest of the workspace's TS posture.
+     - Precompiled-JS-only — rejected. The ROADMAP says `*.schema.ts`; forcing users to build before running `neko schema *` breaks the workflow-replacement thesis.
+     - Spawning `tsc --noEmit` per file for type-check only — wrong shape; the CLI needs the *runtime* `Schema` instances to extract `node.metadata.id` / `.version` and to feed `buildRegistry`.
 
-3. **Exit codes per the locked table.** Specifically: 0 success, 1 logical failure (the load-bearing CI signal), 2 argv error, 3 I/O error, 4 integrity error.
+### Schema discovery (highest stakes)
 
-4. **Pretty default + `--json` opt-in.** Pretty output is unstable across versions (UX-driven); JSON output IS the contract for machine consumers. JSON schema per command is keyed to the schema-side `*Result` shape — when that shape changes, the JSON output changes correspondingly.
+2. **The CLI is the only filesystem walker.**
+   - Default root: `process.cwd()`. Overridable with `--root <path>`.
+   - Default pattern: `**/*.schema.{ts,js}`. Overridable with the optional `[pattern]` positional on `generate` and `check`.
+   - Glob library: Node's built-in `fs.glob` (Node 22+, present in the workspace's `.nvmrc`). No external `fast-glob` / `glob` dependency.
+   - Discovery returns paths only; per-file loading happens via the `tsx` loader (Decision #1) and produces `RegistrySourceEntry[]` the CLI hands to the schema-side handlers.
+   - **Anonymous schemas** (no `.id()`) are loaded but flagged on stderr; they appear in `RegistrySourceEntry[]` so the CLI can warn per file, but `buildRegistry` (schema-side) ignores them per master plan Decision #5.
 
-5. **CLI is non-interactive in v0.7.** No prompts. Confirmation patterns (e.g., for destructive operations) land when the first destructive verb does — `generate` is non-destructive (it writes alongside existing artifacts; the file system itself decides).
+### Schema-side handler imports
 
-6. **Schema-handler imports are direct from `@nekostack/schema`'s internal subpath.** No plugin indirection in v0.7. The CLI knows the four handlers exist and calls them. Plugin scaffolding is its own future phase.
+3. **Handler imports go through `@nekostack/schema/cli`, never the root.** Per master plan Decision #10:
 
-7. **CLI tests use an in-process harness, not subprocess spawn.** Locked. Subprocess tests would require building the package first and slow CI substantially; in-process harness imports `buildCli()` + `dispatch(argv)` directly and captures the resulting stdout / stderr / exit code via process-mock helpers. Cross-platform exit-code semantics are still asserted because the harness mirrors the real `process.exit` codepath.
+   ```ts
+   import {
+     listHandler,
+     diffHandler,
+     checkHandler,
+     generateHandler,
+     buildRegistry,
+     sourceHashFromText,
+     type RegistrySourceEntry,
+     type CommittedArtifact,
+     type GeneratedArtifact,
+     type FreshnessVerdict,
+   } from "@nekostack/schema/cli";
+   ```
 
-8. **`--help` text is generated, not hand-written.** Commander generates per-command help from the registered options + descriptions. Locking this prevents drift between code and `--help` output, which is a real risk for hand-written help.
+   The root `@nekostack/schema` import is reserved for the v0.6 runtime surface — even though the CLI doesn't currently use it, the import-path discipline is what keeps the engine-swap-safe boundary real.
+
+### Argv + UX
+
+4. **`commander ^12.x` for argv parsing.** Locked over yargs (heavier API surface) and hand-rolled (too much CLI UX overhead for v0.7). Commander's chainable-program style is closest to NekoStack's existing builder ergonomics. `clipanion`, `cmd-ts` considered; less mainstream maintenance.
+
+5. **Bin name `neko`.** Matches the README. No collision check; if a real conflict surfaces, rename to `nekostack` at v1.0.
+
+6. **Exit codes per the locked table.** 0 success, 1 logical failure (load-bearing CI signal), 2 argv / usage error, 3 I/O error (filesystem read failure, schema load failure), 4 integrity error (the impossible two-hash row from master plan Decision #6).
+
+7. **Pretty default + `--json` opt-in.** Pretty output is unstable across versions (UX-driven); JSON output IS the contract for machine consumers. JSON schema per command is keyed to the schema-side `*Result` shape — when that shape changes, the JSON output changes correspondingly.
+
+8. **CLI is non-interactive in v0.7.** No prompts. Confirmation patterns (e.g., for destructive operations) land when the first genuinely destructive verb does. `generate` is non-destructive in the sense that it writes alongside existing artifacts at paths the master plan's Decision #6 locks; users who want a pre-flight check use `--check-only`.
+
+### Testing
+
+9. **CLI tests use an in-process harness, not subprocess spawn.**
+   - Harness imports `buildCli()` + `dispatch(argv)` directly.
+   - Captures stdout / stderr via standard stream replacement.
+   - Captures intended exit code via `process.exit` mock that throws a sentinel; the harness catches and reads the code.
+   - Cross-platform exit-code semantics are still asserted because the harness mirrors the real `process.exit` codepath.
+   - Subprocess tests deliberately rejected: they would require building the package first and slow CI substantially.
+
+10. **`--help` text is generated, not hand-written.** Commander generates per-command help from the registered options + descriptions. Locking this prevents drift between code and `--help` output, which is a real risk for hand-written help.
 
 ## Sequencing
 
-Implementation order. Begins after the schema-side master plan's steps 1–13 are in place — the CLI cannot test against handlers that don't exist yet.
+Implementation order. Begins after the schema-side master plan's steps 1–20 are in place — the CLI cannot test against handlers that don't exist yet.
 
-14. `packages/cli/package.json` — add `bin` entry, `commander` dep, `@nekostack/schema` workspace dep. `bin/neko` shebang script.
-15. `src/cli.ts` — argv parse, command registration, exit-code wiring. Includes `--help` and `--version`.
-16. `src/exit-codes.ts` — locked enum.
-17. `src/formatters/json.ts` — single-line JSON; verified by `--json` snapshot tests.
-18. `src/formatters/pretty.ts` — terminal output; verified by per-command pretty snapshot tests.
-19. `src/commands/schema/list.ts` — simplest dispatch; proves the wiring.
-20. `src/commands/schema/diff.ts` — `<a>` / `<b>` resolution + dispatch.
-21. `src/commands/schema/check.ts` — exit-1 / exit-4 path.
-22. `src/commands/schema/generate.ts` — last; writes to disk.
-23. `tests/cli-harness.ts` — the in-process invocation harness.
-24. `tests/argv.test.ts` — argv parse + bad-flag → exit 2.
-25. `tests/help.test.ts` — per-command `--help` snapshot.
-26. `tests/commands/schema-*.test.ts` — one test file per subcommand; pretty + `--json` for each.
-27. `packages/cli/docs/SCOPE.md`, `INVARIANTS.md`, `ROADMAP.md` updates — mark v0.7 shipped after merge, set v0.8 active target.
+21. `packages/cli/package.json` — add `bin` entry, `commander` + `tsx` + `@nekostack/schema` (workspace) deps. `bin/neko` shebang script.
+22. `src/loaders/tsx-loader.ts` — register `tsx` ESM hook once per CLI invocation; expose `loadSchemaModule(path): Promise<LoadedSchemaModule>`. Failure cases map to the four `schema_load_failed` reasons per Decision #1.
+23. `src/loaders/walk-workspace.ts` — `loadSchemaFiles(roots, pattern): Promise<RegistrySourceEntry[]>`. Uses Node's `fs.glob` + the tsx loader from step 22.
+24. `src/loaders/read-artifacts.ts` — `loadCommittedArtifacts(generatedDir): Promise<CommittedArtifact[]>` for `check`.
+25. `src/cli.ts` — argv parse, command registration, exit-code wiring. Includes `--help` and `--version`.
+26. `src/exit-codes.ts` — locked enum (Decision #6).
+27. `src/formatters/json.ts` — single-line JSON; verified by `--json` snapshot tests.
+28. `src/formatters/pretty.ts` — terminal output; verified by per-command pretty snapshot tests.
+29. `src/commands/schema/list.ts` — simplest dispatch. Proves the wiring: load files → `buildRegistry` → `listHandler` → format → exit.
+30. `src/commands/schema/diff.ts` — `<a>` / `<b>` resolver (id, id@version, or file path) → `diffHandler` → format.
+31. `src/commands/schema/check.ts` — load files + load committed artifacts → `checkHandler` → exit code per verdict (clean → 0; cosmetic_drift → 0 with stderr; stale → 1; integrity_error → 4).
+32. `src/commands/schema/generate.ts` — load files → `generateHandler` → write each `GeneratedArtifact` to its `suggestedPath`. Last in sequence because it's the only command that writes to disk.
+33. `tests/cli-harness.ts` — in-process invocation harness (Decision #9).
+34. `tests/argv.test.ts` — argv parse + bad-flag → exit 2.
+35. `tests/help.test.ts` — per-command `--help` snapshot.
+36. `tests/commands/schema-*.test.ts` — one test file per subcommand; pretty + `--json` for each.
+37. `tests/loaders/tsx-loader.test.ts` — every Decision #1 error class has a fixture (compile error, runtime exception, no-schema-export, IO error).
+38. `packages/cli/docs/SCOPE.md`, `INVARIANTS.md`, plus a `ROADMAP.md` post-merge update — mark v0.7 shipped after the joint phase merges, set v0.8 active target.
 
 ## Estimate
 
@@ -278,9 +351,17 @@ Risk areas:
 
 ## Decision history
 
-- **v0.7-plan, initial draft** — 8 CLI-side decisions. Filed as a companion to the schema-side master plan ([`../../schema/docs/PHASE_PLAN_v0.7.md`](../../schema/docs/PHASE_PLAN_v0.7.md)).
+- **v0.7-plan, initial draft** — 8 CLI-side decisions. Filed as a companion to the schema-side master plan.
 
-  Key shape choices baked in by the audit before drafting:
+- **v0.7-plan, round-2 amendment** — two new decisions added in response to the first audit pass:
+
+  - **Decision #1 added** (schema module loading via `tsx`) — the initial draft assumed schema files would be magically importable. The audit correctly flagged that a Node CLI cannot dynamic-import `.ts` without a loader. `tsx` is now the locked strategy; `jiti` listed as the considered alternative; precompiled-JS-only explicitly rejected. Every load-failure mode now maps to a specific `Issue` code + exit code 3.
+
+  - **Decision #2 added** (CLI is the only filesystem walker) — the initial draft implied schema-side might walk too. The boundary is now strict: CLI walks, CLI loads, CLI reads / writes; schema-side takes loaded data and returns data. Node's built-in `fs.glob` (22+) chosen over `fast-glob` / `glob` for zero added dependency cost.
+
+  - **Decision #3 amended** (handler imports from `@nekostack/schema/cli`, not the root) — initial draft said "direct from `@nekostack/schema`'s internal subpath" without specifying the shape. Now locked to the formal `package.json` `exports` map from the master plan's Decision #10. Root `@nekostack/schema` stays the v0.6 public surface.
+
+  Key shape choices baked in by the original audit before drafting (still in force):
   - Two parallel plan files; this is the CLI companion.
   - Schema commands only — no plugin scaffolding, no `init`, no `lint`. Plugin system is its own future phase.
   - CLI ROADMAP created in this PR (alongside this plan), marking v0.7 as the active target.
