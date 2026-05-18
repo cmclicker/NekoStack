@@ -6,6 +6,50 @@ This package is workspace-internal (`private: true`, version `0.0.0`). The miles
 
 ---
 
+## schema-v0.6.0 — 2026-05-18
+
+[Tag](https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.6.0) · merge commit [`c55ce95`](https://github.com/cmclicker/NekoStack/commit/c55ce952bc027b98cc1f4d270db4ec5b9e2b758d). Runtime validation as a NekoStack-owned workflow on the v0.2 source-generator + v0.5 composition foundation.
+
+### Shipped
+
+- **Runtime API on the package surface** — `parse(schema, input): s.output<S>` (throws `ParseError`), `safeParse(schema, input): Result<s.output<S>>`, `validate(schema, input): Result<s.input<S>>` (structural check; does NOT fill defaults; portable refinements still run). `ParseError extends Error` with `code: "parse_failed"` and a frozen `readonly issues: Issue[]`.
+- **Engine-swap-safe boundary** — Zod is the internal execution engine. Consumers never import Zod for runtime validation. The public surface carries NekoStack types only (`Result`, `Issue`, `ParseError`), never a `ZodSchema` or `ZodError`. This is the [`PRODUCT_THESIS`](../../PRODUCT_THESIS.md) lens applied to validation.
+- **Decision #6 shared semantic mapping** — `ZodEmitter<T>` / `emit<T>()` is the contract; the v0.2 string generator and the v0.6 value compiler are independent consumers. No `eval`, no source-to-value, no value-to-source. All v0.2 Zod source snapshots remain byte-identical post-extraction.
+- **Decision #7 compile cache** — `WeakMap<SchemaNode, ZodTypeAny>` keyed on node identity; lazy first-call build; byte-identical IR with distinct node identity does NOT share (explicit dedup via `irHash` remains a v0.7 registry concern).
+- **Decision #8 validate-only IR variant** — `stripDefaultsForValidate` drops `modifiers.default` and sets `modifiers.optional = true` at the same level; preserves `nullable` / refinements / metadata / `unknownKeys`. Cached per original-node identity in a separate `WeakMap` so repeated `validate(sameSchema, ...)` calls reuse both the variant and its compiled Zod.
+- **Decision #12 issue normalization** — `ZodError → readonly Issue[]` per a locked mapping table; `unrecognized_keys` splits into one `unknown_key` issue per key. Round-2 fallback: unmapped Zod codes surface as `custom_refinement_failed` with `metadata.source = "zod"` and `metadata.zodCode = <original>` so triage never loses traceability.
+- **Decision #19 four-oracle parity matrix** — NekoStack runtime / generated-Zod execution / Ajv 2020 over generated JSON Schema / small IR-walker. Compare-only contract: accept/reject. All four oracles agree on every fixture (primitives, literal/enum, arrays, object policies, absence semantics, full portable-refinement set).
+- **Decision #19a OpenAPI spec-validity carry-forward** — Redocly validates that every runtime-supported schema still emits a clean OpenAPI 3.1 component. **Not** a runtime data oracle; the round-2 audit correction is permanent.
+- **New contract doc** — [`docs/RUNTIME.md`](docs/RUNTIME.md) covering public API, default semantics, unknown-key policies, the issue normalization table, the engine boundary, the compile + validate-variant caches, semantic parity, unsupported behavior, and non-goals.
+- **Six new INVARIANTS corollaries** — engine-swap-safe public surface, default-semantics split, `Issue[]` as the only public error vocabulary, cache invariance (`SchemaNode` identity), Redocly spec-validity-only role, fail-loud throws for unsupported runtime IR.
+- **Docs sweep** — [`USAGE.md`](docs/USAGE.md), [`EXAMPLES.md`](docs/EXAMPLES.md), [`SCOPE.md`](docs/SCOPE.md), [`INVARIANTS.md`](docs/INVARIANTS.md), [`ROADMAP.md`](docs/ROADMAP.md), and [`BOUNDARIES.md`](../../BOUNDARIES.md) all reframed: runtime validation is the primary workflow, generators are the artifact / interoperability path.
+- **`GENERATOR_VERSION` bumped to `@nekostack/schema@0.6.0`** — 59 snapshots regenerated; only the version field changed, `irHash` values unchanged.
+- **Tooling alignment** — `scripts/generate-status.mjs` `parseActiveTarget` recognizes both `← *active target*` and `← *candidate implementation in progress*` so the status layer tracks candidate state without flagging false drift.
+
+### Dependency changes
+
+- **`zod` promoted from `peerDependenciesMeta.optional: true` to a regular `dependency`.** Range `^3.22.0` unchanged. Consumers no longer install or import Zod manually.
+- `@redocly/openapi-core`, `ajv`, `ajv-formats` remain devDeps (used by the spec-validity and parity tests only).
+- No other dep changes.
+
+### Test count
+
+- 342 → 587 (+245 net).
+
+### Still deferred
+
+- `neko schema generate / check / diff` CLI — v0.7
+- `sourceHash` in headers — v0.7
+- Local schema registry / freshness check — v0.7 (consumes the v0.2 `irHash`)
+- Date / union / recursiveRef / transform IR runtime support
+- Runtime refinement execution (IR shape declared; runtime currently throws `UnsupportedNodeKindError`)
+- Method-style API (`schema.parse(input)`); v0.6 ships free functions only
+- `ValidateError` companion to `ParseError`; `validate` returns `Result` only
+- Locale / i18n of error messages
+- Migrations between schema versions — v0.8+
+
+---
+
 ## schema-v0.5.0 — 2026-05-17
 
 [Tag](https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.5.0) · merge commit [`70f19e9`](https://github.com/cmclicker/NekoStack/commit/70f19e9). Composition layer on the v0.1 IR foundation.

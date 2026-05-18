@@ -72,9 +72,9 @@ Status: **shipped** ([#16](https://github.com/cmclicker/NekoStack/pull/16), merg
 - Composition produces a plain `ObjectNode`; **generators handle composed schemas byte-identically to hand-written equivalents** (asserted by parity tests across all four generators).
 - Composed schemas drop top-level metadata (`id` / `version` / `description` / `deprecated`); callers re-tag explicitly. Field-level metadata is preserved.
 
-## v0.6 — Runtime validation ← *candidate implementation in progress*
+## v0.6 — Runtime validation
 
-Status: **candidate** on branch `feat/schema-v0.6-candidate` (PR [#22](https://github.com/cmclicker/NekoStack/pull/22) — draft). Plan: [`PHASE_PLAN_v0.6.md`](./PHASE_PLAN_v0.6.md). Contract: [`RUNTIME.md`](./RUNTIME.md). Tag is held until the PR merges to `main`; this section is updated to "shipped" at that point.
+Status: **shipped** ([#22](https://github.com/cmclicker/NekoStack/pull/22), merged 2026-05-18). Plan: [`PHASE_PLAN_v0.6.md`](./PHASE_PLAN_v0.6.md). Contract: [`RUNTIME.md`](./RUNTIME.md). Tagged as [`schema-v0.6.0`](https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.6.0).
 
 Ships:
 - `parse(schema, input): s.output<S>` — throws `ParseError`
@@ -100,7 +100,7 @@ Explicitly deferred:
 
 Per the [`PRODUCT_THESIS`](../../../PRODUCT_THESIS.md), v0.6 is the phase where NekoStack starts taking runtime-validator workflow space — users no longer have to install or import Zod directly for runtime validation. Zod stays as the internal execution engine; the user-facing surface is `parse` / `safeParse` / `validate` / `ParseError` from `@nekostack/schema`.
 
-## v0.7 — Registry-lite + CLI
+## v0.7 — Registry-lite + CLI ← *active target*
 
 - Local schema registry (lookup by id + version)
 - Schema diffing + breaking-change detection
