@@ -1,16 +1,18 @@
-# Usage — `@nekostack/schema` v0.2
+# Usage — `@nekostack/schema` v0.6
 
-> What v0.2 lets you do as an author, end-to-end. For the why and the scope boundaries, see [`SCOPE.md`](./SCOPE.md). For the full surface, see [`../README.md`](../README.md).
+> What v0.6 lets you do as an author, end-to-end. For the runtime contract, see [`RUNTIME.md`](./RUNTIME.md). For the why and the scope boundaries, see [`SCOPE.md`](./SCOPE.md). For the full surface, see [`../README.md`](../README.md).
 
-## What v0.2 is good for
+## What v0.6 is good for
 
-v0.2 turns a single schema definition into:
+v0.6 is the phase where `@nekostack/schema` becomes the **runtime-validation workflow**, not just a code generator. From a single schema definition:
 
-1. A **TypeScript type alias** matching the schema's runtime shape (with the v0.1 input/output split honored).
-2. A **Zod 3.x validator** that, when imported into a real Zod runtime, accepts/rejects per the same shape.
-3. A **deterministic header** on every generated file recording schema id, version, IR hash, and generator version.
+1. **Validate input directly** via `parse` / `safeParse` / `validate` — no Zod import in your code.
+2. A **TypeScript type alias** matching the schema's runtime shape (with the v0.1 input/output split honored).
+3. A **Zod 3.x validator** as a portable artifact for interoperability (microservices that don't import `@nekostack/schema`, third-party tools, etc.).
+4. A **JSON Schema draft 2020-12** + **OpenAPI 3.1 component** for cross-language contracts and API documentation.
+5. A **deterministic header** on every generated file recording schema id, version, IR hash, and generator version.
 
-That's it. You can already use it as a contract generator for shared types + runtime validation. You **cannot** yet use it for JSON Schema (v0.3), OpenAPI (v0.4), parse/validate via this package directly (v0.6), or a CLI workflow (v0.7).
+Zod is the internal execution engine for runtime validation. A consumer of `@nekostack/schema` does **not** import Zod for runtime validation; the surface is `parse` / `safeParse` / `validate` from `@nekostack/schema`. See [`RUNTIME.md`](./RUNTIME.md) for the full contract — including default semantics, unknown-key policies, issue normalization, and what the validate-only IR variant does. You **cannot** yet use this package for a CLI workflow (v0.7).
 
 ## Defining a schema
 
@@ -38,6 +40,54 @@ Three things every "real" schema should do, derived from v0.1:
 
 Anonymous schemas (no `.id()`) work — generators emit `schemaId: null` with a visible `// anonymous schema` comment — but they're not registry-addressable.
 
+## Validating input at runtime
+
+```ts
+import { s, parse, safeParse, validate, ParseError } from "@nekostack/schema";
+import { Tenant } from "./tenant.schema.js";
+
+// Throw on failure — the friction-causing default.
+const tenant = parse(Tenant, input);
+//    ^ s.output<typeof Tenant> (defaults filled)
+
+// Return a Result instead of throwing.
+const r = safeParse(Tenant, input);
+if (r.success) {
+  r.data;          // s.output<typeof Tenant>
+} else {
+  r.issues;        // readonly Issue[]
+}
+
+// Structural check only — does NOT fill defaults, does NOT run transforms.
+const v = validate(Tenant, input);
+if (v.success) {
+  v.data;          // s.input<typeof Tenant> (default-bearing fields stay absent)
+}
+
+// ParseError carries the full normalized issue list.
+try {
+  parse(Tenant, input);
+} catch (e) {
+  if (e instanceof ParseError) {
+    for (const i of e.issues) {
+      // i.code         — stable NekoStack IssueCode
+      // i.path         — Zod path, copied
+      // i.expected/received — verbatim from Zod when available
+      // i.schemaId / i.schemaVersion — from schema.metadata when present
+      // i.severity     — always "error" in v0.6
+    }
+  } else {
+    throw e;
+  }
+}
+```
+
+Three things to know:
+
+- **`parse` / `safeParse` fill defaults.** `validate` accepts a missing default-bearing field but does **not** fill it. See [`RUNTIME.md` → Default semantics](./RUNTIME.md#default-semantics).
+- **Unknown keys are rejected by default.** The object policy is `strict`. Use `.passthrough()` to preserve them in the output, `.stripUnknown()` to drop them. Same behavior across `parse`, `safeParse`, and `validate`.
+- **Issues use a stable NekoStack vocabulary.** Consumers see `Issue` / `IssueCode` from `@nekostack/schema`, never a `ZodError`. The Zod engine is internal and may be replaced in a future phase without changing the consumer-facing contract. The full mapping table is in [`RUNTIME.md` → Issue normalization](./RUNTIME.md#issue-normalization).
+
 ## Generating a TypeScript type
 
 ```ts
@@ -60,7 +110,9 @@ The two sides genuinely differ for any schema with a `.default(v)` field — def
 
 `mode: "both"` is the safest default for shared API contracts.
 
-## Generating a Zod validator
+## Generating a Zod validator (as an artifact)
+
+> Since v0.6, generated Zod is an **interoperability artifact**, not your runtime path. Use `parse` / `safeParse` / `validate` for in-process validation; emit Zod source for downstream services or third-party tools that want to consume a portable Zod schema without importing `@nekostack/schema`.
 
 ```ts
 import { generateZod } from "@nekostack/schema";
@@ -70,9 +122,11 @@ const zod = generateZod(Tenant.node);
 // Returns: header + `import { z } from "zod"` + `export const schema = z.object({...}).strict()...`
 ```
 
+The emitted source and the runtime compiler share a single semantic mapping (Decision #6 of the v0.6 plan), so the generated Zod file and `parse(Tenant, input)` agree on accept/reject for every input. The four-oracle parity matrix in [`tests/semantic-parity.test.ts`](../tests/semantic-parity.test.ts) is what asserts that.
+
 Modifier ordering is fixed; see [`ZOD_MODIFIER_ORDERING.md`](./ZOD_MODIFIER_ORDERING.md). The headline rule: **default is always last**, so the v0.1 absence-semantics contract survives translation.
 
-Consumer needs Zod installed (`zod ^3.22.0` is declared as an optional peer dependency).
+Consumer of the generated file needs Zod installed; `@nekostack/schema` already depends on Zod for its own runtime, so no extra setup is needed for in-process validation.
 
 ## Generating a JSON Schema
 
@@ -186,14 +240,15 @@ Same IR → same hash, every time. Semantic change → different hash. This is t
 
 ## Workflow today (no CLI yet)
 
-There is no `neko schema generate` command in v0.2. The intended workflow until v0.7:
+There is no `neko schema generate` command in v0.6. The intended workflow until v0.7:
 
 1. Author the schema in `your-package/schemas/foo.schema.ts`.
-2. Write a script (or a vitest snapshot test — see this package's [`tests/examples/regenerate.test.ts`](../tests/examples/regenerate.test.ts) for a worked example) that calls `generateTypeScript` / `generateZod` / `generateJsonSchema` / `generateOpenApiSchemaComponent` and writes the result to disk.
-3. Commit both the source schema and the generated files.
-4. Review diffs as ordinary code review.
+2. **For runtime validation:** import `parse` / `safeParse` / `validate` from `@nekostack/schema` and call them directly. No generated artifact required.
+3. **For artifact generation** (cross-language contracts, microservice interop, documentation): write a script (or a vitest snapshot test — see this package's [`tests/examples/regenerate.test.ts`](../tests/examples/regenerate.test.ts) for a worked example) that calls `generateTypeScript` / `generateZod` / `generateJsonSchema` / `generateOpenApiSchemaComponent` and writes the result to disk.
+4. Commit both the source schema and any generated files.
+5. Review diffs as ordinary code review.
 
-Once v0.7 ships, the CLI will replace the hand-written script + add freshness CI.
+Once v0.7 ships, the CLI will replace the hand-written generation script + add freshness CI.
 
 ## Handling unsupported IR
 
@@ -225,7 +280,6 @@ For the JSON Schema generator specifically, regex with non-empty flags also thro
 | OpenAPI 3.0 target (`nullable: true` form) | future generator option | v0.4 ships 3.1 only |
 | Deep / recursive composition (nested-field merge) | future | v0.5 ships shallow operators only |
 | Composition history (`metadata.derivedFrom`) | future | Could aid v0.7 diffing; not needed for v0.5 |
-| Runtime `parse(schema, input)` / `validate(...)` | v0.6 | The schema package's own runtime; today, use the generated Zod |
 | `neko schema generate / check / diff` CLI | v0.7 | Registry-lite phase |
 | `sourceHash` in headers | v0.7 | Needs CLI to walk source files |
 | `$defs` extraction / cross-package `$ref` | v0.7 (registry-lite) | No IR construct in v0.3 needs it |

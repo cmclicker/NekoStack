@@ -72,20 +72,40 @@ Status: **shipped** ([#16](https://github.com/cmclicker/NekoStack/pull/16), merg
 - Composition produces a plain `ObjectNode`; **generators handle composed schemas byte-identically to hand-written equivalents** (asserted by parity tests across all four generators).
 - Composed schemas drop top-level metadata (`id` / `version` / `description` / `deprecated`); callers re-tag explicitly. Field-level metadata is preserved.
 
-## v0.6 — Runtime validation ← *active target*
+## v0.6 — Runtime validation ← *candidate implementation in progress*
 
-- `validate(schema, input)` and `parse(schema, input)`
-- Unknown-key enforcement (the IR policy gets teeth here)
-- Zod-backed execution; issue normalization
-- **Semantic-parity tests** — same fixture validated four ways, expected failures match
+Status: **candidate** on branch `feat/schema-v0.6-candidate` (PR [#22](https://github.com/cmclicker/NekoStack/pull/22) — draft). Plan: [`PHASE_PLAN_v0.6.md`](./PHASE_PLAN_v0.6.md). Contract: [`RUNTIME.md`](./RUNTIME.md). Tag is held until the PR merges to `main`; this section is updated to "shipped" at that point.
 
-Per the [`PRODUCT_THESIS`](../../../PRODUCT_THESIS.md), v0.6 is the phase where NekoStack starts taking runtime-validator workflow space — users no longer have to install or import Zod directly for runtime validation unless they choose to.
+Ships:
+- `parse(schema, input): s.output<S>` — throws `ParseError`
+- `safeParse(schema, input): Result<s.output<S>>` — non-throwing Result variant
+- `validate(schema, input): Result<s.input<S>>` — structural check; no default fill, no transforms; portable refinements still run
+- `ParseError extends Error` with `code = "parse_failed"` and a frozen defensive `issues` copy
+- Issue normalization layer translating Zod issue codes into the v0.1 `IssueCode` vocabulary per the Decision #12 table; unmapped codes fall back to `custom_refinement_failed` with `metadata.source = "zod"` and `metadata.zodCode = <original>`
+- Decision #6 shared semantic mapping — the v0.2 source generator and the v0.6 runtime compiler share one `ZodEmitter<T>` / `emit<T>()` interface (no `eval`, no source-to-value parsing, no value-to-source serialization)
+- Decision #7 compile cache — `WeakMap<SchemaNode, ZodTypeAny>` keyed by node identity; lazy first-call build; byte-identical different nodes do not share
+- Decision #8 validate-only IR variant — `stripDefaultsForValidate` produces a new tree with `modifiers.default` dropped and `modifiers.optional = true` set at the same level; cached per original-node identity in a second `WeakMap` so repeated `validate()` calls reuse the variant
+- Decision #19 four-oracle parity matrix — NekoStack runtime / generated-Zod execution / Ajv 2020 over generated JSON Schema / small IR-walker (compare accept/reject only)
+- Decision #19a Redocly carry-forward — OpenAPI spec-validity only, separate from runtime parity
+- Promotion of Zod from `peerDependenciesMeta.optional: true` to a regular `dependency` (Step 11 of the locked plan)
+- `GENERATOR_VERSION` bump to `@nekostack/schema@0.6.0` and v0.2 header snapshot regeneration (Step 12)
+- Public re-exports of `parse` / `safeParse` / `validate` / `ParseError` from `src/index.ts` (Step 13)
 
-## v0.7 — Registry-lite
+Explicitly deferred:
+- Date / union / recursiveRef / transform IR runtime support (still throws `UnsupportedNodeKindError`)
+- Runtime refinement execution (IR shape declared; runtime fails loudly when one appears)
+- Method-style API (`schema.parse(input)`); v0.6 ships the free functions only
+- `ValidateError` companion to `ParseError`; `validate` returns `Result` only
+- Locale / i18n of error messages
+
+Per the [`PRODUCT_THESIS`](../../../PRODUCT_THESIS.md), v0.6 is the phase where NekoStack starts taking runtime-validator workflow space — users no longer have to install or import Zod directly for runtime validation. Zod stays as the internal execution engine; the user-facing surface is `parse` / `safeParse` / `validate` / `ParseError` from `@nekostack/schema`.
+
+## v0.7 — Registry-lite + CLI
 
 - Local schema registry (lookup by id + version)
 - Schema diffing + breaking-change detection
 - `neko schema check` (freshness) + `neko schema diff` — **consume** the existing `irHash` (shipped in v0.2) to detect stale generated artifacts; introduce the new `sourceHash` to detect source-file edits that left the IR unchanged.
+- CLI orchestration lives in `@nekostack/cli`; the v0.6 runtime stays the engine for runtime validation behind it.
 
 ## v0.8+ — Migrations
 

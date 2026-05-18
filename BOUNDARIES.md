@@ -182,7 +182,10 @@ Single source of truth for shape definitions.
 | Schema migration registry | `schema` | (works with `migrate` for data-level migrations) |
 | Branded IDs / typed identifiers | `id` | NEW; uses `schema` as substrate |
 | Cross-package shared type contracts | `schema` | |
-| Runtime validation execution | `schema` | (via generated Zod) |
+| Runtime validation execution | `schema` | (via `@nekostack/schema` runtime — `parse` / `safeParse` / `validate`; Zod is the internal engine, not part of the consumer surface) |
+| Runtime issue normalization (Zod issues → `Issue[]`) | `schema` | v0.6+ — consumer-facing error contract; downstream packages depend on the stable `IssueCode` vocabulary |
+| `ParseError` (thrown by `parse`) | `schema` | v0.6+ — `code = "parse_failed"`, frozen `issues: readonly Issue[]` |
+| `neko schema *` CLI commands | `cli` | v0.7 — consumes the `schema` runtime + `irHash` for freshness checks |
 | Form input validation (UI side) | `form` | consumes `schema` |
 | Server-side request body validation | `api` | consumes `schema` |
 | Content-shape validation (Codex entities, etc.) | `validator` | consumes `schema` |
