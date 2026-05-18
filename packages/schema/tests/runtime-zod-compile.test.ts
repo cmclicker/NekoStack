@@ -14,7 +14,7 @@
  */
 import { describe, expect, it } from "vitest";
 import { z } from "zod";
-import { s } from "../src/index.js";
+import { s, UnsupportedNodeKindError, type SchemaNode } from "../src/index.js";
 import {
   compileZodSchema,
   irToZodSchema,
@@ -170,6 +170,142 @@ describe("compileZodSchema — nested + composed schemas", () => {
     const schema = compileZodSchema(Extended.node);
     expect(schema.safeParse({ id: "x", name: "n" }).success).toBe(true);
     expect(schema.safeParse({ id: "x" }).success).toBe(false);
+  });
+});
+
+describe("compileZodSchema — portable refinements (hardening)", () => {
+  it("string length matches exact length only", () => {
+    const schema = compileZodSchema(s.string().length(3).node);
+    expect(schema.safeParse("abc").success).toBe(true);
+    expect(schema.safeParse("ab").success).toBe(false);
+    expect(schema.safeParse("abcd").success).toBe(false);
+  });
+
+  it("string uuid accepts a v4 uuid, rejects non-uuids", () => {
+    const schema = compileZodSchema(s.string().uuid().node);
+    expect(schema.safeParse("11111111-2222-4333-8444-555555555555").success).toBe(true);
+    expect(schema.safeParse("not-a-uuid").success).toBe(false);
+  });
+
+  it("string url accepts a valid URL, rejects bare strings", () => {
+    const schema = compileZodSchema(s.string().url().node);
+    expect(schema.safeParse("https://example.com").success).toBe(true);
+    expect(schema.safeParse("example").success).toBe(false);
+  });
+
+  it("number gt is strict — boundary is rejected", () => {
+    const schema = compileZodSchema(s.number().gt(0).node);
+    expect(schema.safeParse(1).success).toBe(true);
+    expect(schema.safeParse(0).success).toBe(false);
+    expect(schema.safeParse(-1).success).toBe(false);
+  });
+
+  it("number lt is strict — boundary is rejected", () => {
+    const schema = compileZodSchema(s.number().lt(10).node);
+    expect(schema.safeParse(9).success).toBe(true);
+    expect(schema.safeParse(10).success).toBe(false);
+    expect(schema.safeParse(11).success).toBe(false);
+  });
+
+  it("number multipleOf accepts multiples, rejects non-multiples", () => {
+    const schema = compileZodSchema(s.number().multipleOf(5).node);
+    expect(schema.safeParse(0).success).toBe(true);
+    expect(schema.safeParse(15).success).toBe(true);
+    expect(schema.safeParse(7).success).toBe(false);
+  });
+
+  it("array min/max enforce item counts", () => {
+    const schema = compileZodSchema(s.array(s.string()).min(2).max(4).node);
+    expect(schema.safeParse(["a", "b"]).success).toBe(true);
+    expect(schema.safeParse(["a", "b", "c", "d"]).success).toBe(true);
+    expect(schema.safeParse(["a"]).success).toBe(false);
+    expect(schema.safeParse(["a", "b", "c", "d", "e"]).success).toBe(false);
+  });
+});
+
+describe("compileZodSchema — enum edge cases", () => {
+  it("single non-string enum collapses to z.literal", () => {
+    // Length === 1, non-string — the shared traversal routes through
+    // enumSingleLiteralBase, since z.union requires >= 2 options.
+    const schema = compileZodSchema(s.enum([42]).node);
+    expect(schema.safeParse(42).success).toBe(true);
+    expect(schema.safeParse(43).success).toBe(false);
+    expect(schema.safeParse("42").success).toBe(false);
+  });
+
+  it("numeric enum (>= 2 values) becomes a union of literals", () => {
+    const schema = compileZodSchema(s.enum([1, 2, 3]).node);
+    expect(schema.safeParse(1).success).toBe(true);
+    expect(schema.safeParse(2).success).toBe(true);
+    expect(schema.safeParse(4).success).toBe(false);
+    expect(schema.safeParse("1").success).toBe(false);
+  });
+
+  it("mixed string/numeric enum (hand-crafted IR) becomes a union", () => {
+    // The builder type signature forbids mixed enums, but the IR allows
+    // them — emitEnum routes mixed (not-all-strings, len >= 2) through
+    // enumUnionBase.
+    const node = {
+      kind: "enum",
+      values: ["a", 1, "b"],
+    } as unknown as SchemaNode;
+    const schema = compileZodSchema(node);
+    expect(schema.safeParse("a").success).toBe(true);
+    expect(schema.safeParse(1).success).toBe(true);
+    expect(schema.safeParse("b").success).toBe(true);
+    expect(schema.safeParse("c").success).toBe(false);
+    expect(schema.safeParse(2).success).toBe(false);
+  });
+});
+
+describe("compileZodSchema — metadata", () => {
+  it("describe survives as the compiled Zod schema's description", () => {
+    const schema = compileZodSchema(s.string().describe("a user id").node);
+    expect(schema.description).toBe("a user id");
+    // Behavior is unaffected by metadata.
+    expect(schema.safeParse("x").success).toBe(true);
+  });
+});
+
+describe("compileZodSchema — fail-loud throws (Invariant 7)", () => {
+  it("runtime refinement throws UnsupportedNodeKindError", () => {
+    // Builders don't produce runtime refinements yet, but the IR allows
+    // them. The value consumer must fail loudly — silently dropping one
+    // would compile a validator that accepts inputs the IR intends to
+    // reject.
+    const node = {
+      kind: "string",
+      refinements: [{ kind: "runtime", code: "invalid_tenant_slug" }],
+    } as unknown as SchemaNode;
+    try {
+      compileZodSchema(node);
+      throw new Error("expected throw");
+    } catch (e) {
+      expect(e).toBeInstanceOf(UnsupportedNodeKindError);
+      const err = e as UnsupportedNodeKindError;
+      expect(err.code).toBe("UNSUPPORTED_NODE_KIND");
+      expect(err.kind).toBe("runtimeRefinement");
+      expect(err.generator).toBe("zod");
+    }
+  });
+
+  it.each([
+    ["date", { kind: "date", variant: "isoDateTime" }],
+    ["union", { kind: "union", options: [] }],
+    ["recursiveRef", { kind: "recursiveRef", targetId: "com.x.Y" }],
+    ["transform", { kind: "transform", source: { kind: "string" }, transformId: "t1" }],
+  ])("future IR kind '%s' throws UnsupportedNodeKindError", (kind, raw) => {
+    const node = raw as unknown as SchemaNode;
+    try {
+      compileZodSchema(node);
+      throw new Error("expected throw");
+    } catch (e) {
+      expect(e).toBeInstanceOf(UnsupportedNodeKindError);
+      const err = e as UnsupportedNodeKindError;
+      expect(err.code).toBe("UNSUPPORTED_NODE_KIND");
+      expect(err.kind).toBe(kind);
+      expect(err.generator).toBe("zod");
+    }
   });
 });
 
