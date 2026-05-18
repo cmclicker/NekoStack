@@ -55,8 +55,15 @@ function semverCompare(a, b) {
 }
 
 function parseActiveTarget(roadmapText) {
-  // Match `## <name> ← *active target*` — capture the heading text up to the marker.
-  const re = /^##\s+(.+?)\s+←\s+\*active target\*\s*$/m;
+  // Match a phase heading whose marker indicates it is the current focus.
+  // Two markers are equivalent for active-target purposes:
+  //   `← *active target*`                       — pre-merge state on main
+  //   `← *candidate implementation in progress*` — mid-flight on a candidate branch
+  // The status layer must understand both so a branch can honestly say "not
+  // shipped yet" without `status:check` losing track of which phase is current.
+  // The shipped-state row never carries either marker — it just records the
+  // tag/date — so this regex only picks up the still-being-worked phase.
+  const re = /^##\s+(.+?)\s+←\s+\*(?:active target|candidate implementation in progress)\*\s*$/m;
   const m = roadmapText.match(re);
   return m ? m[1].trim() : null;
 }

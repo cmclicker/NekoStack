@@ -2,7 +2,7 @@
   "const": "admin",
   "x-nekostack": {
     "generator": "openApi",
-    "generatorVersion": "@nekostack/schema@0.5.0",
+    "generatorVersion": "@nekostack/schema@0.6.0",
     "irHash": "sha256:eeb086a5aa4fabd061974807e0324d5100d311a9d66347055b7d592d8b2eb618",
     "schemaId": "com.x.Role",
     "schemaVersion": "1.0.0"

@@ -13,7 +13,7 @@
   "type": "object",
   "x-nekostack": {
     "generator": "jsonSchema",
-    "generatorVersion": "@nekostack/schema@0.5.0",
+    "generatorVersion": "@nekostack/schema@0.6.0",
     "irHash": "sha256:759e7c6e750690660b49c33b3979e5d3f9eb53e38a5cc4d060d350d430e8709a",
     "schemaId": "com.x.O3",
     "schemaVersion": "1.0.0"

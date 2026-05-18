@@ -1,4 +1,4 @@
-# Examples — `@nekostack/schema` v0.2
+# Examples — `@nekostack/schema` v0.6
 
 Three realistic example schemas under [`../examples/`](../examples/), each with its committed generated artifacts under [`../examples/generated/`](../examples/generated/). These files are validated by [`../tests/examples/regenerate.test.ts`](../tests/examples/regenerate.test.ts): if a schema changes and the generated files aren't refreshed, the test fails.
 
@@ -72,6 +72,87 @@ The Input accepts missing `severity` (the default fills it in). The Output is fu
 - Field-level `.deprecated()` flag (`legacyTier`) — surfaces in JSDoc; consumers using a strict TS-aware tool will see the `@deprecated` tag.
 - Mixed required + optional fields in one object.
 
+## Validating input at runtime (v0.6)
+
+Once a schema is defined, `parse` / `safeParse` / `validate` from `@nekostack/schema` are the runtime-validation entry points. The generated Zod file is no longer required to validate input — generators emit artifacts for interoperability and documentation; the runtime API is the in-process path.
+
+### `parse` — throws `ParseError` on failure, fills defaults on success
+
+```ts
+import { parse, ParseError } from "@nekostack/schema";
+import { AuditEvent } from "../examples/audit-event.schema.js";
+
+try {
+  const event = parse(AuditEvent, {
+    id: "evt_01",
+    occurredAt: "2026-05-18T10:00:00Z",
+    actorId: null,
+    action: "tenant.created",
+    payload: { tenantId: "t_1" },
+    // severity omitted — default("info") fills it
+  });
+  event.severity; // "info" (default filled — see audit-event.both.ts for the type-level reason this works)
+} catch (e) {
+  if (e instanceof ParseError) {
+    for (const i of e.issues) console.log(i.code, i.path, i.message);
+  } else {
+    throw e;
+  }
+}
+```
+
+### `safeParse` — returns `Result`, no throw, also fills defaults
+
+```ts
+import { safeParse } from "@nekostack/schema";
+import { Tenant } from "../examples/tenant.schema.js";
+
+const r = safeParse(Tenant, untrustedInput);
+if (r.success) {
+  // r.data: s.output<typeof Tenant>
+} else {
+  // r.issues: readonly Issue[] — every issue uses the NekoStack IssueCode vocabulary
+}
+```
+
+### `validate` — structural check; does **not** fill defaults; refinements still run
+
+```ts
+import { validate } from "@nekostack/schema";
+import { AuditEvent } from "../examples/audit-event.schema.js";
+
+const r = validate(AuditEvent, {
+  id: "evt_01",
+  occurredAt: "2026-05-18T10:00:00Z",
+  actorId: null,
+  action: "tenant.created",
+  payload: { tenantId: "t_1" },
+  // severity absent — accepted, but NOT filled in r.data
+});
+if (r.success) {
+  // r.data shape matches s.input<typeof AuditEvent>
+  // "severity" in r.data === false
+}
+```
+
+The split: `parse` / `safeParse` apply the default and return the fully-populated output; `validate` accepts the absence and returns the input verbatim. See [`RUNTIME.md` → Default semantics](./RUNTIME.md#default-semantics) for the table and the v0.1 rationale.
+
+### Unknown-key policies execute at runtime
+
+```ts
+import { s, parse } from "@nekostack/schema";
+
+const Strict      = s.object({ id: s.string() });                  // default
+const Pass        = s.object({ id: s.string() }).passthrough();
+const Strip       = s.object({ id: s.string() }).stripUnknown();
+
+parse(Strict, { id: "x", extra: 1 });    // throws ParseError([{ code: "unknown_key", path: ["extra"], ... }])
+parse(Pass,   { id: "x", extra: 1 });    // → { id: "x", extra: 1 }
+parse(Strip,  { id: "x", extra: 1 });    // → { id: "x" }
+```
+
+`unrecognized_keys` is split — when an input has two unknown keys, the returned `issues` array contains two `unknown_key` issues, one per key, each with `path: [...originalPath, key]`. See [`RUNTIME.md` → Unknown-key policies](./RUNTIME.md#unknown-key-policies).
+
 ## Reading the generated files
 
 Every committed generated artifact has the deterministic header:
@@ -83,7 +164,7 @@ Every committed generated artifact has the deterministic header:
  * schemaVersion:    1.0.0
  * irHash:           sha256:<64-char-hex>
  * generator:        typescript | zod
- * generatorVersion: @nekostack/schema@0.5.0
+ * generatorVersion: @nekostack/schema@0.6.0
  *
  * DO NOT EDIT MANUALLY.
  */
@@ -114,6 +195,6 @@ All four generators handle composed schemas via the shared `emitSchemaFragment` 
 
 - **Full OpenAPI documents** (paths, operations, responses, security schemes) — `@nekostack/api`'s concern. v0.4 ships component schemas only.
 - **Composed-schema example artifacts under `examples/generated/`** — could add `tenant-patch.zod.ts` etc. in a future dogfood pass if the example surface grows enough to warrant it. v0.5 stays focused on the operator contract; ad-hoc consumer-side composition doesn't need its own snapshotted output here.
-- **Composition** — `Tenant.extend({ ... })`, `pick({ id: true })`, etc. (v0.5).
-- **Runtime parse/validate** via this package — for now, import the generated Zod and call `.parse()` / `.safeParse()` on it.
+- **`Tenant.extend({ ... })`, `pick({ id: true })`, etc.** — v0.5 composition operators; see [`COMPOSITION.md`](./COMPOSITION.md) for the full contract.
+- **Date / union / runtime-refinement schemas** — v0.6's runtime fails loudly (`UnsupportedNodeKindError`) on these IR kinds; builders are deferred to later phases.
 - **A `neko schema` CLI** — until v0.7, regenerate via the vitest snapshot mechanism shown at the top.

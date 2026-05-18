@@ -88,3 +88,15 @@ export type { Infer, Input, Output } from "./types.js";
 // package-internal until a downstream consumer needs to write generic
 // helpers over composed shapes.
 export type { Mask, OverrideMask, MergeOptions } from "./types.js";
+
+// ---- Runtime validation (v0.6) ----
+// Three free-function entry points + one error class. See `docs/RUNTIME.md`
+// for the full contract — default semantics, unknown-key policies, issue
+// normalization, the validate-only IR variant, and the engine-swap-safe
+// invariant that keeps Zod internal. The compile cache, the
+// validate-variant cache, the Zod source-vs-runtime semantic mapping, and
+// the `ZodError → Issue[]` normalizer are intentionally NOT re-exported:
+// they are implementation surface that v0.7+ may rework without a major
+// version bump.
+export { parse, safeParse, validate } from "./runtime/parse.js";
+export { ParseError } from "./runtime/errors.js";

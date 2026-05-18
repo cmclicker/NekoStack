@@ -57,7 +57,7 @@
   "type": "object",
   "x-nekostack": {
     "generator": "jsonSchema",
-    "generatorVersion": "@nekostack/schema@0.5.0",
+    "generatorVersion": "@nekostack/schema@0.6.0",
     "irHash": "sha256:62f8ab291e2dfa4b4450138c1dffbac2737de55d62392a162be4ed36afe09cf1",
     "schemaId": "com.nekostack.entitlements.Entitlement",
     "schemaVersion": "1.0.0"
