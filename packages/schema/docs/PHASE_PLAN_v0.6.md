@@ -65,7 +65,7 @@ The downstream phases also need v0.6 directly:
 - **`@nekostack/api`** v0.x — request-body validation is `safeParse(RequestSchema, req.body)`; the issue vocabulary maps cleanly to API error responses.
 - **`@nekostack/form`** v0.x — form-field validation uses the same Issue vocabulary so server-side and client-side errors render through the same path.
 - **`@nekostack/validator`** v0.x — content-shape validation calls `validate` repeatedly across record sets; the no-defaults / no-transforms semantics matters because validator is checking what's there, not normalizing it.
-- **v0.6 semantic-parity tests** — same fixture validated four ways (NekoStack runtime, Ajv against the generated JSON Schema, Redocly against the generated OpenAPI component, hand-walked through the IR for a sanity bound). All four must agree on accept/reject for every fixture. This is the test that proves "the IR is the contract" beyond generator-output equivalence.
+- **v0.6 semantic-parity tests** — same fixture validated four runtime ways: NekoStack runtime, generated-Zod execution, Ajv against generated JSON Schema, and a small IR-walker oracle. All four must agree on accept/reject for every fixture. This is the test that proves "the IR is the contract" beyond generator-output equivalence. Redocly remains a separate OpenAPI spec-validity check (Decision #19a), not a runtime input oracle.
 
 ## Phase scope
 
@@ -191,12 +191,13 @@ packages/schema/tests/
 - **`zod`** promoted from `peerDependencies` (optional) to `dependencies`. Version range stays `^3.22.0`; the v0.2 generator and the v0.6 runtime both target Zod 3.x.
 - `peerDependencies` entry removed; `peerDependenciesMeta.zod` removed.
 - No new dev dependencies.
-- Ajv and `@redocly/openapi-core` stay as devDeps — they're test-side validators for the semantic-parity matrix, not user-visible.
+- **Ajv** stays as a devDep — runtime semantic-parity validator (Decision #19, oracle #3 against generated JSON Schema). Not user-visible.
+- **`@redocly/openapi-core`** stays as a devDep — OpenAPI spec-validity validator only (Decision #19a). Used to compose emitted components into a synthetic OpenAPI 3.1 document and assert structural validity; **not** a runtime input oracle. Not user-visible.
 - No `@nekostack/*` imports (Invariant 8).
 
 ## Decisions to lock before coding
 
-Twenty decisions. The plan PR exists to resolve them. Highest-stakes flagged.
+Twenty-one decisions (numbered #1–#20 plus the inserted #8a and #19a from the round-2 amendment). The plan PR exists to resolve them. Highest-stakes flagged.
 
 ### API shape (highest stakes)
 
@@ -341,7 +342,7 @@ Estimated test count delta: **+90–110 tests** (342 → ~430–450).
 | **Thesis-fit** | The `## Thesis-fit` section above is the answer. The four questions are answered explicitly; the workflow absorbed, user-facing verb, internal engine, and BOUNDARIES rows touched are each named. |
 | **Scope** | Implementation PR titled `feat(schema): v0.6 candidate — runtime validation`. Links this plan + ROADMAP v0.6 heading. |
 | **Public API** | Three new functions (`parse`, `safeParse`, `validate`) + one error class (`ParseError`). No new types beyond what's already exported (`Issue` / `IssueCode` / `Result` are v0.1). |
-| **Boundary** | No `@nekostack/*` imports. Zod promoted to regular dep — this is the v0.6 engine ownership. Ajv / Redocly stay devDep (test-side validators). |
+| **Boundary** | No `@nekostack/*` imports. Zod promoted to regular dep — this is the v0.6 engine ownership. Ajv stays devDep (runtime semantic-parity validator per Decision #19); `@redocly/openapi-core` stays devDep (OpenAPI spec-validity only, Decision #19a — not a runtime input oracle). |
 | **Contracts** | New contract doc `docs/RUNTIME.md` codifies the parse vs validate semantics, the issue-normalization table (Decision #12), and the cache invariance rule. `INVARIANTS.md` extended with three new v0.6 corollaries (issue normalization is the contract; cache invariance; engine swap-safe). `SCOPE.md` updated — "Runtime validation library implementation" row moves from "external (Zod — we will *generate*, not reimplement)" to "external Zod is the v0.6 internal engine; user-facing surface is `parse` / `safeParse` / `validate` from this package." `BOUNDARIES.md` updated per the Thesis-fit "BOUNDARIES rows touched" section. |
 | **Immutability + determinism** | `parse` does not mutate input. Cache is keyed on `SchemaNode` identity. Compiled Zod is constructed from a deep-frozen IR (Invariant 6). |
 | **Tests** | Seven new test files; ~90–110 new tests; four-way semantic-parity matrix is the load-bearing one. |
@@ -361,7 +362,8 @@ Implementation lands on `feat/schema-v0.6-candidate` as reviewable commits:
 5. `src/runtime/errors.ts` — `ParseError`.
 6. `src/runtime/parse.ts` — `parse` / `safeParse` / `validate` entry points.
 7. Tests in order: `runtime-issue-normalize` → `runtime-parse` → `runtime-validate` → `runtime-unknown-keys` → `runtime-default-semantics` → `runtime-compile-cache`.
-8. `semantic-parity.test.ts` — the four-way matrix; runs Ajv and Redocly already configured from v0.3 / v0.4.
+8. `semantic-parity.test.ts` — Decision #19's four-way runtime matrix: NekoStack runtime / generated-Zod execution / Ajv 2020 against generated JSON Schema / IR-walker oracle. Ajv is configured from v0.3.
+8a. `openapi-spec-validity.test.ts` — Decision #19a: emitted OpenAPI components compose into a synthetic OpenAPI 3.1 document and pass `@redocly/openapi-core` structural validation. Carried forward from v0.4; runs Redocly only here.
 9. `docs/RUNTIME.md` — contract doc.
 10. `docs/USAGE.md` + `docs/EXAMPLES.md` extended.
 11. `docs/SCOPE.md` row updated; `docs/INVARIANTS.md` corollaries added; `docs/ROADMAP.md` v0.6 → candidate.
