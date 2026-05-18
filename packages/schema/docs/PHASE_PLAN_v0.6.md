@@ -345,7 +345,7 @@ Estimated test count delta: **+90–110 tests** (342 → ~430–450).
 | **Boundary** | No `@nekostack/*` imports. Zod promoted to regular dep — this is the v0.6 engine ownership. Ajv stays devDep (runtime semantic-parity validator per Decision #19); `@redocly/openapi-core` stays devDep (OpenAPI spec-validity only, Decision #19a — not a runtime input oracle). |
 | **Contracts** | New contract doc `docs/RUNTIME.md` codifies the parse vs validate semantics, the issue-normalization table (Decision #12), and the cache invariance rule. `INVARIANTS.md` extended with three new v0.6 corollaries (issue normalization is the contract; cache invariance; engine swap-safe). `SCOPE.md` updated — "Runtime validation library implementation" row moves from "external (Zod — we will *generate*, not reimplement)" to "external Zod is the v0.6 internal engine; user-facing surface is `parse` / `safeParse` / `validate` from this package." `BOUNDARIES.md` updated per the Thesis-fit "BOUNDARIES rows touched" section. |
 | **Immutability + determinism** | `parse` does not mutate input. Cache is keyed on `SchemaNode` identity. Compiled Zod is constructed from a deep-frozen IR (Invariant 6). |
-| **Tests** | Seven new test files; ~90–110 new tests; four-way semantic-parity matrix is the load-bearing one. |
+| **Tests** | Eight new test files, including the runtime semantic-parity matrix (Decision #19) and the separate OpenAPI spec-validity carry-forward (Decision #19a); ~90–110 new tests; the four-way runtime parity matrix is the load-bearing one. |
 | **Validation commands** | Same five (`test`, `typecheck`, `build`, `pack --dry-run`, `ls`). |
 | **Local artifacts** | New `docs/RUNTIME.md`. `docs/USAGE.md` extended with the three new functions and a "runtime validation: `@nekostack/schema` first, generated `_validator.ts` files as an opt-in" framing per the thesis. `docs/EXAMPLES.md` extended with at least one parse/validate example end-to-end. `docs/ROADMAP.md` v0.6 → candidate. `docs/SCOPE.md` row updated. `docs/INVARIANTS.md` extended with three corollaries. |
 | **Process** | Draft PR on `feat/schema-v0.6-candidate`. Ready-for-review only after self-audit walks the four-audit checklist clean. |
@@ -355,7 +355,11 @@ Estimated test count delta: **+90–110 tests** (342 → ~430–450).
 
 Implementation lands on `feat/schema-v0.6-candidate` as reviewable commits:
 
-1. Refactor the v0.2 Zod generator to expose an internal `irToZodSchema(node): ZodSchema` value-producing function; the string generator becomes a thin wrapper. Tests for the existing string output stay byte-identical.
+1. Extract the v0.2 Zod generator's shared IR traversal / modifier-ordering logic into an internal Zod semantic-mapping module. Keep two consumers:
+   - `generateZod(node): string` for deterministic TypeScript source output.
+   - `compileZodSchema(node): ZodSchema` (alias `irToZodSchema(node)`) for live runtime execution.
+
+   Existing v0.2 source snapshots must remain byte-identical. No value-to-source or source-to-value conversion in either direction. Per Decision #6.
 2. `src/runtime/compile.ts` — `WeakMap<SchemaNode, ZodSchema>` cache + `compile(node)` API.
 3. `src/runtime/strip-defaults.ts` — IR transform for `validate`.
 4. `src/runtime/normalize-issues.ts` — `ZodError → readonly Issue[]` per Decision #12 table.
