@@ -249,11 +249,15 @@ describe("compile-cache friendliness for validate", () => {
   });
 });
 
-describe("internal-only — no public surface yet", () => {
-  it("parse / safeParse / validate / ParseError are NOT exported from src/index.ts", () => {
-    expect("parse" in publicApi).toBe(false);
-    expect("safeParse" in publicApi).toBe(false);
-    expect("validate" in publicApi).toBe(false);
-    expect("ParseError" in publicApi).toBe(false);
+describe("public surface — v0.6 runtime API is exported", () => {
+  it("parse / safeParse / validate / ParseError are exported from src/index.ts", () => {
+    // Step 13 wired the v0.6 runtime onto the public surface. The
+    // full public-surface contract — including assertions that the
+    // exported entry points actually validate input and that internal
+    // helpers stay internal — is in tests/public-surface.test.ts.
+    expect("parse" in publicApi).toBe(true);
+    expect("safeParse" in publicApi).toBe(true);
+    expect("validate" in publicApi).toBe(true);
+    expect("ParseError" in publicApi).toBe(true);
   });
 });

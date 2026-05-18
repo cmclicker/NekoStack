@@ -71,10 +71,10 @@ describe("ParseError", () => {
     }
   });
 
-  it("is NOT exported from the public src/index.ts surface yet", () => {
-    // Public re-export lands in step 13 alongside parse/safeParse/
-    // validate. Until then, consumers that bind to the runtime get
-    // broken by the later wiring; keeping it internal prevents that.
-    expect("ParseError" in publicApi).toBe(false);
+  it("is exported from the public src/index.ts surface (v0.6)", () => {
+    // Step 13 wired ParseError onto the public surface alongside
+    // parse / safeParse / validate. The full public-surface contract
+    // is verified in tests/public-surface.test.ts.
+    expect("ParseError" in publicApi).toBe(true);
   });
 });
