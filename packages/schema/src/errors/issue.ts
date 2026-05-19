@@ -21,14 +21,20 @@ export const ISSUE_CODES = [
   "recursive_reference_unresolved",
   // v0.7 — registry / freshness / loader codes. Added per the Master
   // plan Decision #15 change-control rule, at each code's first use
-  // site. `integrity_error` lands here because `parse-provenance.ts`
-  // (Step 5) is its first constructor — emitted when a generated
-  // artifact's provenance block is missing, malformed, or self-
-  // inconsistent (the impossible row of the two-hash matrix in
-  // §"Freshness verdict — two-hash discipline"). Other v0.7 codes
-  // (schema_load_failed, duplicate_schema_id, etc.) get added in
-  // their respective consumer steps (CLI loader, buildRegistry, etc.).
+  // site:
+  // - `integrity_error`     — first constructed by `parse-provenance.ts`
+  //   (Step 5) for missing / malformed / self-inconsistent provenance
+  //   blocks. Reused by `checkHandler` (Step 10) for the impossible
+  //   row of the two-hash freshness matrix.
+  // - `duplicate_schema_id` — first constructed by `build-registry.ts`
+  //   (Step 6) when the same `(schemaId, schemaVersion)` pair appears
+  //   in more than one `RegistrySourceEntry`.
+  // Remaining v0.7 codes (schema_load_failed, schema_not_found,
+  // version_not_found, stale_artifact, cosmetic_drift) get added in
+  // their respective consumer steps (CLI loader, findSchema dispatchers,
+  // checkHandler).
   "integrity_error",
+  "duplicate_schema_id",
 ] as const;
 
 export type IssueCode = (typeof ISSUE_CODES)[number];
