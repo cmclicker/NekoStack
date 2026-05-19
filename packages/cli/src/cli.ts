@@ -96,6 +96,7 @@ export function buildCli(opts: BuildCliOptions = {}): Command {
   schema
     .command("list")
     .description("enumerate registry entries")
+    .allowExcessArguments(false)
     .option("--root <path>", "workspace root", process.cwd())
     .option("--json", "machine-readable JSON output", false)
     .option("--quiet", "suppress non-essential stderr output", false)
@@ -117,6 +118,7 @@ export function buildCli(opts: BuildCliOptions = {}): Command {
     .description(
       "classify a → b as breaking / additive / cosmetic; <a>/<b> are schemaId / schemaId@version / file path",
     )
+    .allowExcessArguments(false)
     .option("--root <path>", "workspace root", process.cwd())
     .option("--json", "machine-readable JSON output", false)
     .action(
@@ -144,6 +146,7 @@ export function buildCli(opts: BuildCliOptions = {}): Command {
     .description(
       "freshness gate — exit nonzero on stale / breaking / integrity-error artifacts",
     )
+    .allowExcessArguments(false)
     .option("--root <path>", "workspace root", process.cwd())
     .option("--json", "machine-readable JSON output", false)
     .option("--quiet", "suppress non-essential stderr output", false)
@@ -169,6 +172,7 @@ export function buildCli(opts: BuildCliOptions = {}): Command {
   schema
     .command("generate [pattern]")
     .description("regenerate artifacts for matching schema files")
+    .allowExcessArguments(false)
     .option("--root <path>", "workspace root", process.cwd())
     .option("--json", "machine-readable JSON output", false)
     .option("--quiet", "suppress non-essential stderr output", false)
