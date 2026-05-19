@@ -1,0 +1,7 @@
+#!/usr/bin/env node
+// Shebang launcher for `@nekostack/cli`. The compiled CLI entry lives at
+// `dist/cli.js` (built from `src/cli.ts`, added in a later step of the
+// v0.7 sequencing plan). This file exists so `package.json` `bin.neko`
+// resolves to a single, executable script — even before the package has
+// been built, so `npm install` wiring of the bin link is stable.
+import("../dist/cli.js");
