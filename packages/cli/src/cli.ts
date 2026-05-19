@@ -16,43 +16,24 @@
  * cut from any commit before Step 29 produces a clear "not yet
  * implemented" error rather than a silent success.
  *
- * Exit codes follow the locked enum (CLI plan Decision #6 — Step 26
- * extracts this into a dedicated `exit-codes.ts`; v0.7 Step 25 keeps
- * them inline so this file is self-contained for the first dispatch
- * commit):
- *
- *   0   success
- *   1   logical failure (verdict-level: stale artifacts, breaking diff,
- *       missing schema)
- *   2   argv / usage error (bad flags, unknown command)
- *   3   I/O error (workspace not readable, schema load failed)
- *   4   integrity error (the impossible irHash-matches/sourceHash-
- *       differs row of the two-hash matrix)
- *
- * `process.exit` is called exactly once, from `run()`, the production
- * entry. `dispatch()` itself never exits the process — every code path
- * returns an `EXIT_CODES` value.
+ * Exit codes follow the locked enum from [`./exit-codes.ts`](./exit-codes.ts)
+ * (CLI plan Decision #6). `process.exit` is called exactly once,
+ * from `run()`, the production entry. `dispatch()` itself never
+ * exits the process — every code path returns an `EXIT_CODES`
+ * value.
  */
 
 import { createRequire } from "node:module";
 import { Command, CommanderError } from "commander";
+import { EXIT_CODES, type ExitCode } from "./exit-codes.js";
+
+// Re-export so existing call sites that imported the enum from
+// `cli.ts` keep compiling without churn. `exit-codes.ts` is the
+// source of truth.
+export { EXIT_CODES, type ExitCode };
 
 const require = createRequire(import.meta.url);
 const pkg = require("../package.json") as { version: string };
-
-// =============================================================================
-// Exit codes
-// =============================================================================
-
-export const EXIT_CODES = {
-  SUCCESS: 0,
-  LOGICAL_FAILURE: 1,
-  USAGE_ERROR: 2,
-  IO_ERROR: 3,
-  INTEGRITY_ERROR: 4,
-} as const;
-
-export type ExitCode = (typeof EXIT_CODES)[keyof typeof EXIT_CODES];
 
 // =============================================================================
 // Builder options + writer injection
