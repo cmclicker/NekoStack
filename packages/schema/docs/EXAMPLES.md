@@ -193,7 +193,7 @@ All four generators handle composed schemas via the shared `emitSchemaFragment` 
 
 ## Optional `sourceHash` provenance (v0.7+)
 
-> The example artifacts in [`../examples/generated/`](../examples/generated/) do **not** include `sourceHash`. The slice is opt-in.
+> The example artifacts in [`../examples/generated/`](../examples/generated/) **include** `sourceHash` because the regenerate test ([`../tests/examples/regenerate.test.ts`](../tests/examples/regenerate.test.ts)) computes it from each schema source file's UTF-8 text. The slice remains **optional** for direct generator callers outside that path — omitting it produces byte-identical output to v0.6 and earlier.
 
 Every generator accepts an optional `ProvenanceOptions.sourceHash` slice on its options object. When you provide it, the emitted artifact gains an extra provenance field (`sourceHash:` line in JSDoc-headered TS/Zod output; `x-nekostack.sourceHash` extension in JSON Schema / OpenAPI). When you omit it, the generators emit byte-identical output to v0.6 and earlier — no new field appears anywhere.
 

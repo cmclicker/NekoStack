@@ -3,6 +3,7 @@
  * schemaId:         com.nekostack.entitlements.Entitlement
  * schemaVersion:    1.0.0
  * irHash:           sha256:62f8ab291e2dfa4b4450138c1dffbac2737de55d62392a162be4ed36afe09cf1
+ * sourceHash:       sha256:bded6fb2b3795b8c3c23406c7972a5eb7ab39b608f4e1e641683b3e5b5be324b
  * generator:        zod
  * generatorVersion: @nekostack/schema@0.7.0
  *
