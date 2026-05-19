@@ -12,10 +12,12 @@
  *   - Refinement-level: `runtimeRefinement` (all generators);
  *     `regexFlags` (JSON Schema / OpenAPI — `pattern` has no flag support).
  *
- * Current `generator` values: `typescript`, `zod`, `jsonSchema`, `openApi`.
- * Both unions extend over time as new generators or new throw cases land;
- * see the active generator docs in `packages/schema/docs/` for the
- * authoritative per-generator throw contract.
+ * Current `generator` values: `typescript`, `zod`, `jsonSchema`, `openApi`,
+ * `diff` (v0.7+ — emitted by `src/registry/diff.ts` for unsupported IR
+ * kinds at diff time). Both unions extend over time as new generators
+ * or new throw cases land; see the active generator docs in
+ * `packages/schema/docs/` for the authoritative per-generator throw
+ * contract.
  */
 export class UnsupportedNodeKindError extends Error {
   readonly code = "UNSUPPORTED_NODE_KIND" as const;
