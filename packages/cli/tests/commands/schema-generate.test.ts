@@ -30,11 +30,8 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { runGenerate } from "../../src/commands/schema/generate.js";
-import {
-  dispatch,
-  EXIT_CODES,
-  type ExitCode,
-} from "../../src/cli.js";
+import { EXIT_CODES, type ExitCode } from "../../src/cli.js";
+import { runCli } from "../cli-harness.js";
 
 // =============================================================================
 // Fixture helpers
@@ -54,6 +51,23 @@ const ANONYMOUS_SCHEMA = `import { s } from "@nekostack/schema";
 export const Anon = s.object({ id: s.string() });
 `;
 
+const TWO_NAMED_SCHEMAS = `import { s } from "@nekostack/schema";
+
+// Single source file declaring two named schemas. Master plan
+// Decision #6 disambiguates the per-schema artifact paths via a
+// schemaId-derived slug between basename and artifact extension.
+
+export const Alpha = s
+  .object({ id: s.string() })
+  .id("com.fixture.cli.generate.Alpha")
+  .version("1.0.0");
+
+export const Beta = s
+  .object({ id: s.string(), name: s.string() })
+  .id("com.fixture.cli.generate.Beta")
+  .version("1.0.0");
+`;
+
 function buildOneSchemaWorkspace(): string {
   const root = mkdtempSync(join(tmpdir(), "neko-generate-"));
   writeFileSync(join(root, "user.schema.ts"), ONE_NAMED_SCHEMA, "utf8");
@@ -68,6 +82,12 @@ function buildAnonymousWorkspace(): string {
 
 function buildEmptyWorkspace(): string {
   const root = mkdtempSync(join(tmpdir(), "neko-generate-"));
+  return root;
+}
+
+function buildMultiSchemaWorkspace(): string {
+  const root = mkdtempSync(join(tmpdir(), "neko-generate-"));
+  writeFileSync(join(root, "shared.schema.ts"), TWO_NAMED_SCHEMAS, "utf8");
   return root;
 }
 
@@ -116,19 +136,7 @@ async function runDirect(
   return { code, stdout, stderr };
 }
 
-async function runViaDispatch(argv: readonly string[]): Promise<Captured> {
-  let stdout = "";
-  let stderr = "";
-  const code = await dispatch(argv, {
-    stdout: (s) => {
-      stdout += s;
-    },
-    stderr: (s) => {
-      stderr += s;
-    },
-  });
-  return { code, stdout, stderr };
-}
+const runViaDispatch = runCli;
 
 // =============================================================================
 // Lifecycle
@@ -192,6 +200,72 @@ describe("runGenerate — one schema", () => {
     return runDirect(r2).then(() => {
       expect(existsSync(join(r2, "generated"))).toBe(true);
     });
+  });
+});
+
+// =============================================================================
+// Multi-schema source file — regression for the Step 11 path-collision fix,
+// exercised through the actual CLI write path.
+// =============================================================================
+
+describe("runGenerate — multi-schema source file", () => {
+  let root: string;
+  beforeAll(() => {
+    root = tracked(buildMultiSchemaWorkspace());
+  });
+
+  it("writes 8 disambiguated artifacts (2 schemas × 4 kinds) without collision", async () => {
+    const r = await runDirect(root);
+    expect(r.code).toBe(EXIT_CODES.SUCCESS);
+    expect(r.stderr).toBe("");
+
+    // Master plan Decision #6 slug rule:
+    //   schemaId lowercased, non-alphanumeric runs → `-`, trim ends.
+    //   `com.fixture.cli.generate.Alpha` → `com-fixture-cli-generate-alpha`.
+    const alphaSlug = "com-fixture-cli-generate-alpha";
+    const betaSlug = "com-fixture-cli-generate-beta";
+    const expectedPaths = [
+      `generated/shared.${alphaSlug}.types.ts`,
+      `generated/shared.${alphaSlug}.zod.ts`,
+      `generated/shared.${alphaSlug}.json.schema.json`,
+      `generated/shared.${alphaSlug}.openapi.json`,
+      `generated/shared.${betaSlug}.types.ts`,
+      `generated/shared.${betaSlug}.zod.ts`,
+      `generated/shared.${betaSlug}.json.schema.json`,
+      `generated/shared.${betaSlug}.openapi.json`,
+    ];
+    for (const rel of expectedPaths) {
+      expect(existsSync(join(root, rel))).toBe(true);
+    }
+  });
+
+  it("every emitted artifact has a unique on-disk path", async () => {
+    const r = await runDirect(root, { json: true });
+    expect(r.code).toBe(EXIT_CODES.SUCCESS);
+    const parsed = JSON.parse(r.stdout) as {
+      artifacts: Array<{ suggestedPath: string }>;
+    };
+    expect(parsed.artifacts).toHaveLength(8);
+    const paths = parsed.artifacts.map((a) => a.suggestedPath);
+    expect(new Set(paths).size).toBe(paths.length);
+  });
+
+  it("each schema's artifacts carry only that schema's id (no overwrite)", () => {
+    const alphaTs = readFileSync(
+      join(root, "generated", "shared.com-fixture-cli-generate-alpha.types.ts"),
+      "utf8",
+    );
+    const betaTs = readFileSync(
+      join(root, "generated", "shared.com-fixture-cli-generate-beta.types.ts"),
+      "utf8",
+    );
+
+    // Alpha's artifact header references Alpha's schemaId and NOT
+    // Beta's — proves the second write didn't overwrite the first.
+    expect(alphaTs).toContain("schemaId:         com.fixture.cli.generate.Alpha");
+    expect(alphaTs).not.toContain("com.fixture.cli.generate.Beta");
+    expect(betaTs).toContain("schemaId:         com.fixture.cli.generate.Beta");
+    expect(betaTs).not.toContain("com.fixture.cli.generate.Alpha");
   });
 });
 

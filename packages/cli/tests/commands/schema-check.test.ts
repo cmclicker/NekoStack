@@ -36,11 +36,8 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { s, irHash } from "@nekostack/schema";
 import { sourceHashFromText } from "@nekostack/schema/cli";
 import { runCheck } from "../../src/commands/schema/check.js";
-import {
-  dispatch,
-  EXIT_CODES,
-  type ExitCode,
-} from "../../src/cli.js";
+import { EXIT_CODES, type ExitCode } from "../../src/cli.js";
+import { runCli } from "../cli-harness.js";
 
 // =============================================================================
 // Fixture builder
@@ -193,19 +190,7 @@ async function runDirect(
   return { code, stdout, stderr };
 }
 
-async function runViaDispatch(argv: readonly string[]): Promise<Captured> {
-  let stdout = "";
-  let stderr = "";
-  const code = await dispatch(argv, {
-    stdout: (s) => {
-      stdout += s;
-    },
-    stderr: (s) => {
-      stderr += s;
-    },
-  });
-  return { code, stdout, stderr };
-}
+const runViaDispatch = runCli;
 
 // =============================================================================
 // One temp workspace per scenario, shared across the describe block
