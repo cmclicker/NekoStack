@@ -126,16 +126,38 @@ describe("dispatch — schema group help", () => {
 // Placeholder verbs
 // =============================================================================
 
-describe("dispatch — placeholder verb actions", () => {
-  // `list` (Step 29), `diff` (Step 30), and `check` (Step 31) are
-  // real verbs now; coverage lives in their own command test files.
-  // Only `generate` remains a placeholder until Step 32.
-  it("`neko schema generate` returns LOGICAL_FAILURE with a TODO message", async () => {
-    const r = await run(["schema", "generate"]);
-    expect(r.code).toBe(EXIT_CODES.LOGICAL_FAILURE);
-    expect(r.stderr).toMatch(/not yet implemented/);
-    expect(r.stderr).toMatch(/schema generate\b/);
-  });
+describe("dispatch — every schema verb is now wired to a real dispatch", () => {
+  // No placeholder verbs remain after Step 32. Per-verb behavior is
+  // covered in each verb's own test file under `tests/commands/`.
+  // This single assertion just guards against a regression that
+  // re-introduces a placeholder for any verb.
+  it.each(["list", "diff", "check", "generate"] as const)(
+    "`neko schema %s` action does not emit a 'not yet implemented' message",
+    async (verb) => {
+      // Use a fresh tmp dir as --root so each verb has a stable
+      // empty workspace to evaluate against. List/check/generate
+      // handle empty workspaces cleanly; diff is given two
+      // operands so commander accepts the argv.
+      const { mkdtempSync } = await import("node:fs");
+      const { tmpdir } = await import("node:os");
+      const { join } = await import("node:path");
+      const root = mkdtempSync(join(tmpdir(), "neko-noplaceholder-"));
+      try {
+        const argv =
+          verb === "diff"
+            ? ["schema", "diff", "com.x.A", "com.x.B", "--root", root]
+            : ["schema", verb, "--root", root];
+        const r = await run(argv);
+        expect(r.stderr).not.toMatch(/not yet implemented/);
+        // Each verb's specific exit code is checked in its own test
+        // file; here we just ensure no placeholder slipped in.
+        expect(typeof r.code).toBe("number");
+      } finally {
+        const { rmSync } = await import("node:fs");
+        rmSync(root, { recursive: true, force: true });
+      }
+    },
+  );
 });
 
 // =============================================================================

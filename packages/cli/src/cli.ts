@@ -10,11 +10,10 @@
  * Decision #9): tests call `dispatch`, capture stdout/stderr through
  * injected writers, and assert on the returned exit code.
  *
- * Schema verbs land verb-by-verb. `list` (Step 29), `diff`
- * (Step 30), and `check` (Step 31) are real. `generate` still
- * prints a TODO-style stderr message and returns LOGICAL_FAILURE
- * from its `.action()` placeholder. Step 32 replaces that
- * placeholder with a real dispatch.
+ * All four schema verbs — `list` (Step 29), `diff` (Step 30),
+ * `check` (Step 31), and `generate` (Step 32) — are now wired to
+ * real dispatches against the schema-side handlers exposed by
+ * `@nekostack/schema/cli`. No placeholders remain.
  *
  * Exit codes follow the locked enum from [`./exit-codes.ts`](./exit-codes.ts)
  * (CLI plan Decision #6). `process.exit` is called exactly once,
@@ -27,6 +26,7 @@ import { createRequire } from "node:module";
 import { Command, CommanderError } from "commander";
 import { runCheck } from "./commands/schema/check.js";
 import { runDiff } from "./commands/schema/diff.js";
+import { runGenerate } from "./commands/schema/generate.js";
 import { runList } from "./commands/schema/list.js";
 import { EXIT_CODES, type ExitCode } from "./exit-codes.js";
 
@@ -79,11 +79,9 @@ export function buildCli(opts: BuildCliOptions = {}): Command {
       outputError: (s, write) => write(s),
     });
 
-  // `schema` command group. `list` (Step 29), `diff` (Step 30), and
-  // `check` (Step 31) are wired to real dispatches; `generate`
-  // remains a placeholder that prints a stderr TODO message and
-  // resolves with a logical-failure exit code. Step 32 replaces it
-  // with a real dispatch to `@nekostack/schema/cli`'s pure handler.
+  // `schema` command group — all four verbs (`list`, `diff`,
+  // `check`, `generate`) wired to real dispatches against the
+  // schema-side handlers exposed by `@nekostack/schema/cli`.
 
   const schema = program
     .command("schema")
@@ -174,30 +172,26 @@ export function buildCli(opts: BuildCliOptions = {}): Command {
     .option("--root <path>", "workspace root", process.cwd())
     .option("--json", "machine-readable JSON output", false)
     .option("--quiet", "suppress non-essential stderr output", false)
-    .action(() => placeholderHandler("generate", writeErr));
+    .action(
+      async (
+        pattern: string | undefined,
+        cmdOpts: { root: string; json: boolean; quiet: boolean },
+      ) => {
+        const code = await runGenerate({
+          root: cmdOpts.root,
+          ...(pattern !== undefined ? { pattern } : {}),
+          json: cmdOpts.json,
+          quiet: cmdOpts.quiet,
+          stdout: writeOut,
+          stderr: writeErr,
+        });
+        if (code !== EXIT_CODES.SUCCESS) {
+          throw new CommandActionError(code);
+        }
+      },
+    );
 
   return program;
-}
-
-/**
- * Placeholder for the four schema verbs. Steps 29–32 replace each
- * `.action(() => placeholderHandler(...))` with a real dispatch.
- * Throws a `PlaceholderUnimplementedError` so `dispatch()` can map it
- * to `LOGICAL_FAILURE` without coupling the action callback to
- * exit-code semantics.
- */
-function placeholderHandler(verb: string, writeErr: (s: string) => void): void {
-  writeErr(
-    `neko schema ${verb}: not yet implemented in this build (Step 29–32 wires each verb).\n`,
-  );
-  throw new PlaceholderUnimplementedError(verb);
-}
-
-class PlaceholderUnimplementedError extends Error {
-  constructor(public readonly verb: string) {
-    super(`neko schema ${verb} is not yet implemented`);
-    this.name = "PlaceholderUnimplementedError";
-  }
 }
 
 /**
@@ -239,9 +233,6 @@ export async function dispatch(
   } catch (err) {
     if (err instanceof CommandActionError) {
       return err.exitCode;
-    }
-    if (err instanceof PlaceholderUnimplementedError) {
-      return EXIT_CODES.LOGICAL_FAILURE;
     }
     if (err instanceof CommanderError) {
       return mapCommanderError(err);

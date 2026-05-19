@@ -266,14 +266,7 @@ describe("dispatch — `schema list` wiring", () => {
     expect(r.code).toBe(EXIT_CODES.USAGE_ERROR);
   });
 
-  // Once Step 30 wires `diff` and Step 31 wires `check`, their
-  // placeholder coverage moves to their own test files. `generate`
-  // stays a placeholder here until Step 32 lands.
-  it("`schema generate` placeholder still returns LOGICAL_FAILURE", async () => {
-    const r = await runViaDispatch(["schema", "generate"]);
-    expect(r.code).toBe(EXIT_CODES.LOGICAL_FAILURE);
-    expect(r.stderr).toMatch(/not yet implemented/);
-  });
+  // All other verbs have their own test files post-Step 32.
 });
 
 // =============================================================================

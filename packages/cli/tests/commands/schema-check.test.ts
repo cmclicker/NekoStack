@@ -75,11 +75,31 @@ type Policy =
   | "stale"
   | "integrity_error"
   | "no_artifacts"
-  | "mixed_stale_and_integrity";
+  | "mixed_stale_and_integrity"
+  | "two_schemas_one_artifact";
 
 function buildCheckFixture(policy: Policy): string {
   const root = mkdtempSync(join(tmpdir(), "neko-check-"));
   writeFileSync(join(root, "user.schema.ts"), SCHEMA_SOURCE, "utf8");
+
+  if (policy === "two_schemas_one_artifact") {
+    // Regression fixture for the generated/-directory dedupe rule:
+    // a second `*.schema.ts` in the same directory means the walker
+    // returns two entries but they both imply `<dir>/generated/`.
+    // The check command must read that directory exactly once.
+    const second = SCHEMA_SOURCE.replace(
+      "com.fixture.cli.check.User",
+      "com.fixture.cli.check.Sibling",
+    );
+    writeFileSync(join(root, "sibling.schema.ts"), second, "utf8");
+    mkdirSync(join(root, "generated"), { recursive: true });
+    writeFileSync(
+      join(root, "generated", "user.types.ts"),
+      makeArtifact("typescript", REAL_IR_HASH, REAL_SOURCE_HASH),
+      "utf8",
+    );
+    return root;
+  }
 
   if (policy === "no_artifacts") return root;
 
@@ -201,6 +221,7 @@ beforeAll(() => {
     "integrity_error",
     "no_artifacts",
     "mixed_stale_and_integrity",
+    "two_schemas_one_artifact",
   ] as const) {
     fixtures[policy] = buildCheckFixture(policy);
   }
@@ -257,6 +278,24 @@ describe("runCheck — verdict → exit-code mapping", () => {
     expect(r.code).toBe(EXIT_CODES.SUCCESS);
     expect(r.stdout).toBe("No artifacts to check.\n");
     expect(r.stderr).toBe("");
+  });
+
+  it("dedupes the generated/ directory when multiple schemas share a source dir", async () => {
+    // Two schemas in the same source directory both imply the same
+    // `<dir>/generated/`. The check command must read that
+    // directory exactly once — otherwise the same artifact appears
+    // twice in the verdict list and the summary double-counts.
+    const r = await runDirect(fixtures.two_schemas_one_artifact, {
+      json: true,
+    });
+    expect(r.code).toBe(EXIT_CODES.SUCCESS);
+    const parsed = JSON.parse(r.stdout) as {
+      verdicts: Array<{ artifactPath: string; status: string }>;
+      summary: { clean: number };
+    };
+    expect(parsed.verdicts).toHaveLength(1);
+    expect(parsed.verdicts[0]!.artifactPath).toBe("generated/user.types.ts");
+    expect(parsed.summary.clean).toBe(1);
   });
 });
 
@@ -411,11 +450,7 @@ describe("dispatch — `schema check` wiring", () => {
     expect(r.code).toBe(EXIT_CODES.INTEGRITY_ERROR);
   });
 
-  it("`generate` placeholder still returns LOGICAL_FAILURE", async () => {
-    const r = await runViaDispatch(["schema", "generate"]);
-    expect(r.code).toBe(EXIT_CODES.LOGICAL_FAILURE);
-    expect(r.stderr).toMatch(/not yet implemented/);
-  });
+  // No placeholder verbs remain post-Step 32.
 });
 
 // =============================================================================
