@@ -2,11 +2,26 @@
   "name": "@nekostack/cli",
   "version": "0.0.0",
   "private": true,
+  "type": "module",
   "main": "./src/index.ts",
   "types": "./src/index.ts",
+  "bin": {
+    "neko": "./bin/neko"
+  },
   "scripts": {
-    "build": "tsc -b",
+    "build": "tsc -p tsconfig.build.json",
     "test": "vitest run",
+    "typecheck": "tsc --noEmit",
     "lint": "eslint ."
+  },
+  "dependencies": {
+    "@nekostack/schema": "*",
+    "commander": "^12.1.0",
+    "tsx": "^4.19.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
   }
 }

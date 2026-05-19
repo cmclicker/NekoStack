@@ -164,7 +164,7 @@ Every committed generated artifact has the deterministic header:
  * schemaVersion:    1.0.0
  * irHash:           sha256:<64-char-hex>
  * generator:        typescript | zod
- * generatorVersion: @nekostack/schema@0.6.0
+ * generatorVersion: @nekostack/schema@0.7.0
  *
  * DO NOT EDIT MANUALLY.
  */
@@ -191,10 +191,29 @@ const TenantPublic = Tenant.pick({ id: true, slug: true, name: true });
 
 All four generators handle composed schemas via the shared `emitSchemaFragment` — output is byte-identical to a hand-written equivalent. See [`COMPOSITION.md`](./COMPOSITION.md) for the full operator contract.
 
+## Optional `sourceHash` provenance (v0.7+)
+
+> The example artifacts in [`../examples/generated/`](../examples/generated/) **include** `sourceHash` because the regenerate test ([`../tests/examples/regenerate.test.ts`](../tests/examples/regenerate.test.ts)) computes it from each schema source file's UTF-8 text. The slice remains **optional** for direct generator callers outside that path — omitting it produces byte-identical output to v0.6 and earlier.
+
+Every generator accepts an optional `ProvenanceOptions.sourceHash` slice on its options object. When you provide it, the emitted artifact gains an extra provenance field (`sourceHash:` line in JSDoc-headered TS/Zod output; `x-nekostack.sourceHash` extension in JSON Schema / OpenAPI). When you omit it, the generators emit byte-identical output to v0.6 and earlier — no new field appears anywhere.
+
+```ts
+import { generateTypeScript, sourceHashFromText } from "@nekostack/schema";
+import { readFileSync } from "node:fs";
+import { Tenant } from "../examples/tenant.schema.js";
+
+const text = readFileSync("../examples/tenant.schema.ts", "utf8");
+const ts = generateTypeScript(Tenant.node, {
+  sourceHash: sourceHashFromText(text),
+});
+```
+
+The slice is **not required**, exists purely for provenance, and is **never** an integrity error when missing — pre-v0.7 artifacts without `sourceHash` continue to parse and validate as `clean` (when `irHash` matches the schema) or `stale` (when it doesn't). The two-hash freshness matrix (full contract in [`REGISTRY.md` → `checkHandler`](./REGISTRY.md#checkhandler--two-hash-freshness-matrix)) is the consumer of the field; in v0.7+ the `neko schema check` CLI is what computes and writes it. Hand-authored generation scripts can plug it in today, but the value adds is provenance-completeness, not correctness.
+
 ## What these examples deliberately don't show (yet)
 
 - **Full OpenAPI documents** (paths, operations, responses, security schemes) — `@nekostack/api`'s concern. v0.4 ships component schemas only.
 - **Composed-schema example artifacts under `examples/generated/`** — could add `tenant-patch.zod.ts` etc. in a future dogfood pass if the example surface grows enough to warrant it. v0.5 stays focused on the operator contract; ad-hoc consumer-side composition doesn't need its own snapshotted output here.
 - **`Tenant.extend({ ... })`, `pick({ id: true })`, etc.** — v0.5 composition operators; see [`COMPOSITION.md`](./COMPOSITION.md) for the full contract.
-- **Date / union / runtime-refinement schemas** — v0.6's runtime fails loudly (`UnsupportedNodeKindError`) on these IR kinds; builders are deferred to later phases.
-- **A `neko schema` CLI** — until v0.7, regenerate via the vitest snapshot mechanism shown at the top.
+- **Date / union / runtime-refinement schemas** — v0.6's runtime fails loudly (`UnsupportedNodeKindError`) on these IR kinds; builders are deferred to later phases. The v0.7 `diffNodes` likewise throws on these kinds — diffing them is a v0.8+ concern.
+- **A `neko schema` CLI** — v0.7's CLI is in progress on `feat/schema-cli-v0.7-candidate` ([PR #25](https://github.com/cmclicker/NekoStack/pull/25)) but not yet shipped. Until it lands, regenerate via the vitest snapshot mechanism shown at the top.

@@ -69,9 +69,10 @@
   "type": "object",
   "x-nekostack": {
     "generator": "openApi",
-    "generatorVersion": "@nekostack/schema@0.6.0",
+    "generatorVersion": "@nekostack/schema@0.7.0",
     "irHash": "sha256:bf0aa787125c09f239d5bdba22b5821c371898926aeb3bc128be79ef48bbd08b",
     "schemaId": "com.nekostack.audit.AuditEvent",
-    "schemaVersion": "1.0.0"
+    "schemaVersion": "1.0.0",
+    "sourceHash": "sha256:ccf5bddc88ede3b41537f44e6bd18ae201c7107982ec7d89e7c1415cad1c42bc"
   }
 }

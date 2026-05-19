@@ -25,7 +25,12 @@ export function generateZod(
   options: ZodGeneratorOptions = {},
 ): string {
   const constName = options.constName ?? "schema";
-  const header = buildHeader(node, { generator: "zod" });
+  const header = buildHeader(node, {
+    generator: "zod",
+    ...(options.sourceHash !== undefined
+      ? { sourceHash: options.sourceHash }
+      : {}),
+  });
   const chain = emit(node, /*depth*/ 0, stringEmitter);
   const doc = emitTopLevelDocComment(node);
   return [

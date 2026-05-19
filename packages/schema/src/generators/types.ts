@@ -2,12 +2,41 @@
  * Shared option types for generators.
  *
  * Each generator may extend with its own options; this file declares only
- * what is genuinely shared. v0.2 ships TS and Zod generators; future
- * generators (v0.3 JSON Schema, v0.4 OpenAPI) will likely extend.
+ * what is genuinely shared. v0.2 ships TS and Zod generators; v0.3 adds
+ * JSON Schema, v0.4 adds OpenAPI, v0.7 adds the cross-generator
+ * `ProvenanceOptions` slice (below).
  */
 
+/**
+ * Provenance options shared by every generator (v0.7+).
+ *
+ * `sourceHash` is the sha256 of the originating `*.schema.ts` source
+ * file's UTF-8 bytes, as produced by
+ * `registry/source-hash.ts → sourceHashFromText`. The CLI passes it
+ * through to each generator call when invoked via `neko schema *`;
+ * direct generator calls (vitest snapshots, ad-hoc scripts) may omit it.
+ *
+ * **Omission behavior (Master plan Decision #8, locked):**
+ * - When omitted, TS/Zod emit **no** `sourceHash:` JSDoc header line
+ *   (not `null`, not `unknown` — the line is absent entirely).
+ * - When omitted, JSON Schema / OpenAPI emit **no** `x-nekostack.sourceHash`
+ *   field (the field is absent entirely; not `null`).
+ * - Header / provenance parsers (`registry/parse-provenance.ts`, Step 5)
+ *   treat absent `sourceHash` as "unknown" — v0.6-era artifacts without
+ *   `sourceHash` are NOT integrity errors.
+ *
+ * Type discipline: the template-literal `` `sha256:${string}` `` is the
+ * canonical form everywhere `sourceHash` appears on the v0.7 surface
+ * (`RegistryEntry`, `GeneratedArtifact`, this option slice). A raw hex
+ * string without the `sha256:` prefix is a type error at the generator
+ * call site.
+ */
+export interface ProvenanceOptions {
+  readonly sourceHash?: `sha256:${string}`;
+}
+
 /** Options accepted by `generateTypeScript`. */
-export interface TypeScriptGeneratorOptions {
+export interface TypeScriptGeneratorOptions extends ProvenanceOptions {
   /**
    * Which side of the input/output split to emit. Default: "output".
    *
@@ -30,7 +59,7 @@ export interface TypeScriptGeneratorOptions {
 }
 
 /** Options accepted by `generateZod`. */
-export interface ZodGeneratorOptions {
+export interface ZodGeneratorOptions extends ProvenanceOptions {
   /**
    * Const name for the emitted Zod schema. Defaults to `"schema"` (lowercase
    * since it's a value, not a type).
@@ -39,7 +68,7 @@ export interface ZodGeneratorOptions {
 }
 
 /** Options accepted by `generateJsonSchema`. */
-export interface JsonSchemaGeneratorOptions {
+export interface JsonSchemaGeneratorOptions extends ProvenanceOptions {
   /**
    * Optional URL base for `$id`. When provided, emitted IDs take the form
    * `${idBase}/${metadata.id}/${metadata.version}` instead of the default
@@ -54,17 +83,19 @@ export interface JsonSchemaGeneratorOptions {
 /**
  * Options accepted by `generateOpenApiSchemaComponent`.
  *
- * v0.4 accepts **no options**. The `Record<string, never>` form is a
- * deliberate, enforceable contract: callers passing arbitrary fields fail
- * at compile time. An empty interface would be too permissive — TS allows
- * structurally-empty objects to receive extra properties in some contexts.
+ * v0.4 declared this as `Record<string, never>` to enforce a no-options
+ * contract. v0.7 narrows the contract by exactly one field:
+ * `ProvenanceOptions.sourceHash` is now accepted (and only that). All
+ * other options — `idBase`, `discriminator`, anything not declared on
+ * `ProvenanceOptions` — continue to fail at compile time, because the
+ * interface declares no own members.
  *
- * The named type is preserved as a typed extension point so adding the
- * first option later (likely a `discriminator` option when union builders
- * ship) is non-breaking — `Record<string, never>` widens to a richer
- * interface without removing the export.
+ * Extension point preserved: adding the first OpenAPI-specific option
+ * later (likely `discriminator` when union builders ship) is
+ * non-breaking — `extends ProvenanceOptions` widens further without
+ * removing the export.
  */
-export type OpenApiGeneratorOptions = Record<string, never>;
+export interface OpenApiGeneratorOptions extends ProvenanceOptions {}
 
 /** Union of all generator option types — exported for ergonomics. */
 export type GeneratorOptions =

@@ -163,19 +163,32 @@ describe("generateOpenApiSchemaComponent — determinism", () => {
   });
 });
 
-describe("generateOpenApiSchemaComponent — options contract is closed in v0.4", () => {
-  // OpenApiGeneratorOptions is `Record<string, never>` — explicit no-options
-  // contract. Callers passing arbitrary fields must fail at compile time.
-  // The `@ts-expect-error` directive REQUIRES the next line to error, so
-  // this assertion itself catches the regression if we ever weaken the type
-  // (e.g. accidentally widening back to an empty interface).
-  it("rejects unknown options at compile time", () => {
+describe("generateOpenApiSchemaComponent — options contract (v0.7)", () => {
+  // v0.4: OpenApiGeneratorOptions was `Record<string, never>` (no options).
+  // v0.7: narrowed to exactly the ProvenanceOptions slice — `sourceHash` is
+  // now accepted; every other field (idBase, discriminator, etc.) continues
+  // to fail at compile time because the interface declares no own members.
+  // The `@ts-expect-error` directives REQUIRE the next line to error, so
+  // these assertions catch the regression both ways: if `sourceHash` were
+  // accidentally removed from the surface, the positive test below would
+  // fail at compile time; if the interface widened to accept arbitrary
+  // fields, the @ts-expect-error lines would themselves fail.
+  it("accepts sourceHash; rejects every other option at compile time", () => {
     const node = s.string().id("com.x.Y").version("1.0.0").node;
-    // @ts-expect-error v0.4 accepts no OpenAPI generator options yet
+
+    // Positive: sourceHash is allowed (v0.7).
+    generateOpenApiSchemaComponent(node, {
+      sourceHash:
+        "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    });
+
+    // Negative: every unrelated option still rejected.
+    // @ts-expect-error discriminator is not on OpenApiGeneratorOptions
     generateOpenApiSchemaComponent(node, { discriminator: true });
-    // @ts-expect-error v0.4 accepts no OpenAPI generator options yet
+    // @ts-expect-error idBase is JSON-Schema-only, not on OpenAPI options
     generateOpenApiSchemaComponent(node, { idBase: "https://x" });
-    // The empty-options call is the only valid form today.
+
+    // The empty-options + no-options calls remain valid.
     expect(() => generateOpenApiSchemaComponent(node)).not.toThrow();
     expect(() => generateOpenApiSchemaComponent(node, {})).not.toThrow();
   });

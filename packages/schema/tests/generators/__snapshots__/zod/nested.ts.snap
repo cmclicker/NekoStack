@@ -4,7 +4,7 @@
  * schemaVersion:    null
  * irHash:           sha256:2fcd8b055d1b865b8641d3a3c04208858ef20ef11b08ee8fea0f5ddfa10ca64c
  * generator:        zod
- * generatorVersion: @nekostack/schema@0.6.0
+ * generatorVersion: @nekostack/schema@0.7.0
  *
  * DO NOT EDIT MANUALLY.
  */

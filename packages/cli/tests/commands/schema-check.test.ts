@@ -1,0 +1,488 @@
+/**
+ * Step 31 — `neko schema check` command gate tests.
+ *
+ * Each freshness verdict is exercised against a temp workspace built
+ * by `buildCheckFixture()` — the helper writes a schema source
+ * file, then writes a TS artifact with chosen `irHash` / `sourceHash`
+ * values so the two-hash matrix produces the verdict under test.
+ * Artifacts are minimal (one TS-style header + empty body); the
+ * schema-side handler only parses provenance.
+ *
+ * Covers:
+ *   - clean → SUCCESS
+ *   - cosmetic_drift only → SUCCESS
+ *   - any stale → LOGICAL_FAILURE
+ *   - any integrity_error → INTEGRITY_ERROR (4)
+ *   - no generated/ dir → SUCCESS (no artifacts to check is a valid
+ *     no-op state; per Step 24 the loader returns `[]`)
+ *   - --json shape `{ verdicts, summary }`
+ *   - load failures → IO_ERROR + JSON projection drops `cause`
+ *   - duplicate registry → LOGICAL_FAILURE
+ *   - pattern arg replaces the default glob
+ *   - `generate` placeholder unaffected
+ *   - static-scan: check.ts has no process.exit / console / stdio writes
+ */
+import {
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
+import { tmpdir } from "node:os";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { s, irHash } from "@nekostack/schema";
+import { sourceHashFromText } from "@nekostack/schema/cli";
+import { runCheck } from "../../src/commands/schema/check.js";
+import { EXIT_CODES, type ExitCode } from "../../src/cli.js";
+import { runCli } from "../cli-harness.js";
+
+// =============================================================================
+// Fixture builder
+// =============================================================================
+
+/**
+ * The schema source we write to every fixture's `user.schema.ts`.
+ * The inline `User` const below MUST match this source structurally
+ * (same id, version, fields) so `irHash(User.node)` produces the
+ * same hash the CLI computes after loading the file.
+ */
+const SCHEMA_SOURCE = `import { s } from "@nekostack/schema";
+
+export const User = s
+  .object({ id: s.string() })
+  .id("com.fixture.cli.check.User")
+  .version("1.0.0");
+`;
+
+const User = s
+  .object({ id: s.string() })
+  .id("com.fixture.cli.check.User")
+  .version("1.0.0");
+
+const REAL_IR_HASH = `sha256:${irHash(User.node)}` as const;
+const REAL_SOURCE_HASH = sourceHashFromText(SCHEMA_SOURCE);
+const WRONG_HASH = `sha256:${"0".repeat(64)}` as const;
+
+type Policy =
+  | "clean"
+  | "cosmetic_drift"
+  | "stale"
+  | "integrity_error"
+  | "no_artifacts"
+  | "mixed_stale_and_integrity"
+  | "two_schemas_one_artifact";
+
+function buildCheckFixture(policy: Policy): string {
+  const root = mkdtempSync(join(tmpdir(), "neko-check-"));
+  writeFileSync(join(root, "user.schema.ts"), SCHEMA_SOURCE, "utf8");
+
+  if (policy === "two_schemas_one_artifact") {
+    // Regression fixture for the generated/-directory dedupe rule:
+    // a second `*.schema.ts` in the same directory means the walker
+    // returns two entries but they both imply `<dir>/generated/`.
+    // The check command must read that directory exactly once.
+    const second = SCHEMA_SOURCE.replace(
+      "com.fixture.cli.check.User",
+      "com.fixture.cli.check.Sibling",
+    );
+    writeFileSync(join(root, "sibling.schema.ts"), second, "utf8");
+    mkdirSync(join(root, "generated"), { recursive: true });
+    writeFileSync(
+      join(root, "generated", "user.types.ts"),
+      makeArtifact("typescript", REAL_IR_HASH, REAL_SOURCE_HASH),
+      "utf8",
+    );
+    return root;
+  }
+
+  if (policy === "no_artifacts") return root;
+
+  mkdirSync(join(root, "generated"), { recursive: true });
+
+  if (policy === "mixed_stale_and_integrity") {
+    // Two artifacts in the same generated/ dir — one stale, one
+    // integrity-error. Exercises the precedence rule: any
+    // integrity_error wins INTEGRITY_ERROR over any stale.
+    writeFileSync(
+      join(root, "generated", "user.types.ts"),
+      makeArtifact("typescript", WRONG_HASH, WRONG_HASH),
+      "utf8",
+    );
+    writeFileSync(
+      join(root, "generated", "user.zod.ts"),
+      makeArtifact("zod", WRONG_HASH, REAL_SOURCE_HASH),
+      "utf8",
+    );
+    return root;
+  }
+
+  let artifactIr: `sha256:${string}` = REAL_IR_HASH;
+  let artifactSrc: `sha256:${string}` = REAL_SOURCE_HASH;
+  if (policy === "stale") {
+    artifactIr = WRONG_HASH;
+    artifactSrc = WRONG_HASH;
+  } else if (policy === "cosmetic_drift") {
+    artifactSrc = WRONG_HASH;
+  } else if (policy === "integrity_error") {
+    artifactIr = WRONG_HASH;
+    // sourceHash stays real
+  }
+
+  writeFileSync(
+    join(root, "generated", "user.types.ts"),
+    makeArtifact("typescript", artifactIr, artifactSrc),
+    "utf8",
+  );
+  return root;
+}
+
+function makeArtifact(
+  generator: "typescript" | "zod",
+  artifactIrHash: `sha256:${string}`,
+  artifactSourceHash: `sha256:${string}`,
+): string {
+  return `/**
+ * @generated by @nekostack/schema
+ * schemaId:         com.fixture.cli.check.User
+ * schemaVersion:    1.0.0
+ * irHash:           ${artifactIrHash}
+ * sourceHash:       ${artifactSourceHash}
+ * generator:        ${generator}
+ * generatorVersion: @nekostack/schema@0.7.0
+ *
+ * DO NOT EDIT MANUALLY.
+ */
+export type X = unknown;
+`;
+}
+
+// =============================================================================
+// Capture helpers
+// =============================================================================
+
+interface Captured {
+  readonly code: ExitCode;
+  readonly stdout: string;
+  readonly stderr: string;
+}
+
+async function runDirect(
+  root: string,
+  partial: Partial<Parameters<typeof runCheck>[0]> = {},
+): Promise<Captured> {
+  let stdout = "";
+  let stderr = "";
+  const code = await runCheck({
+    root,
+    json: false,
+    quiet: false,
+    stdout: (s) => {
+      stdout += s;
+    },
+    stderr: (s) => {
+      stderr += s;
+    },
+    ...partial,
+  });
+  return { code, stdout, stderr };
+}
+
+const runViaDispatch = runCli;
+
+// =============================================================================
+// One temp workspace per scenario, shared across the describe block
+// =============================================================================
+
+const fixtures: Record<Policy, string> = {} as Record<Policy, string>;
+
+beforeAll(() => {
+  for (const policy of [
+    "clean",
+    "cosmetic_drift",
+    "stale",
+    "integrity_error",
+    "no_artifacts",
+    "mixed_stale_and_integrity",
+    "two_schemas_one_artifact",
+  ] as const) {
+    fixtures[policy] = buildCheckFixture(policy);
+  }
+});
+
+afterAll(() => {
+  for (const path of Object.values(fixtures)) {
+    rmSync(path, { recursive: true, force: true });
+  }
+});
+
+// =============================================================================
+// Verdict mapping
+// =============================================================================
+
+describe("runCheck — verdict → exit-code mapping", () => {
+  it("clean artifacts return SUCCESS", async () => {
+    const r = await runDirect(fixtures.clean);
+    expect(r.code).toBe(EXIT_CODES.SUCCESS);
+    expect(r.stderr).toBe("");
+    expect(r.stdout).toMatch(/1 artifact: 1 clean/);
+    expect(r.stdout).toContain("[clean]");
+  });
+
+  it("cosmetic_drift alone returns SUCCESS and a visible verdict", async () => {
+    const r = await runDirect(fixtures.cosmetic_drift);
+    expect(r.code).toBe(EXIT_CODES.SUCCESS);
+    expect(r.stdout).toContain("[cosmetic_drift]");
+    expect(r.stdout).toMatch(/1 cosmetic_drift/);
+  });
+
+  it("any stale → LOGICAL_FAILURE", async () => {
+    const r = await runDirect(fixtures.stale);
+    expect(r.code).toBe(EXIT_CODES.LOGICAL_FAILURE);
+    expect(r.stdout).toContain("[stale]");
+  });
+
+  it("any integrity_error → INTEGRITY_ERROR (overrides stale)", async () => {
+    const r = await runDirect(fixtures.integrity_error);
+    expect(r.code).toBe(EXIT_CODES.INTEGRITY_ERROR);
+    expect(r.stdout).toContain("[integrity_error]");
+  });
+
+  it("stale + integrity_error in the same run → INTEGRITY_ERROR", async () => {
+    // Precedence: integrity_error wins over stale.
+    const r = await runDirect(fixtures.mixed_stale_and_integrity);
+    expect(r.code).toBe(EXIT_CODES.INTEGRITY_ERROR);
+    expect(r.stdout).toContain("[integrity_error]");
+    expect(r.stdout).toContain("[stale]");
+  });
+
+  it("no generated/ dir → SUCCESS with `No artifacts to check.`", async () => {
+    const r = await runDirect(fixtures.no_artifacts);
+    expect(r.code).toBe(EXIT_CODES.SUCCESS);
+    expect(r.stdout).toBe("No artifacts to check.\n");
+    expect(r.stderr).toBe("");
+  });
+
+  it("dedupes the generated/ directory when multiple schemas share a source dir", async () => {
+    // Two schemas in the same source directory both imply the same
+    // `<dir>/generated/`. The check command must read that
+    // directory exactly once — otherwise the same artifact appears
+    // twice in the verdict list and the summary double-counts.
+    const r = await runDirect(fixtures.two_schemas_one_artifact, {
+      json: true,
+    });
+    expect(r.code).toBe(EXIT_CODES.SUCCESS);
+    const parsed = JSON.parse(r.stdout) as {
+      verdicts: Array<{ artifactPath: string; status: string }>;
+      summary: { clean: number };
+    };
+    expect(parsed.verdicts).toHaveLength(1);
+    expect(parsed.verdicts[0]!.artifactPath).toBe("generated/user.types.ts");
+    expect(parsed.summary.clean).toBe(1);
+  });
+});
+
+// =============================================================================
+// --json output
+// =============================================================================
+
+describe("runCheck — --json output", () => {
+  it("emits one-line `{ verdicts, summary }` on clean", async () => {
+    const r = await runDirect(fixtures.clean, { json: true });
+    expect(r.code).toBe(EXIT_CODES.SUCCESS);
+    expect(r.stderr).toBe("");
+    expect(r.stdout.endsWith("\n")).toBe(true);
+    expect(r.stdout.slice(0, -1)).not.toMatch(/\n/);
+
+    const parsed = JSON.parse(r.stdout) as {
+      verdicts: Array<{ status: string; artifactPath: string }>;
+      summary: {
+        clean: number;
+        cosmetic_drift: number;
+        stale: number;
+        integrity_error: number;
+      };
+    };
+    expect(parsed.verdicts).toHaveLength(1);
+    expect(parsed.verdicts[0]!.status).toBe("clean");
+    expect(parsed.summary).toEqual({
+      clean: 1,
+      cosmetic_drift: 0,
+      stale: 0,
+      integrity_error: 0,
+    });
+  });
+
+  it("integrity_error JSON round-trips with the correct exit code", async () => {
+    const r = await runDirect(fixtures.integrity_error, { json: true });
+    expect(r.code).toBe(EXIT_CODES.INTEGRITY_ERROR);
+    const parsed = JSON.parse(r.stdout) as {
+      summary: { integrity_error: number; stale: number };
+    };
+    expect(parsed.summary.integrity_error).toBe(1);
+  });
+
+  it("no-artifacts JSON returns empty verdicts + zero summary", async () => {
+    const r = await runDirect(fixtures.no_artifacts, { json: true });
+    expect(r.code).toBe(EXIT_CODES.SUCCESS);
+    const parsed = JSON.parse(r.stdout) as {
+      verdicts: unknown[];
+      summary: { clean: number };
+    };
+    expect(parsed.verdicts).toEqual([]);
+    expect(parsed.summary.clean).toBe(0);
+  });
+
+  it("artifactPath is workspace-relative + forward-slash normalized", async () => {
+    const r = await runDirect(fixtures.clean, { json: true });
+    const parsed = JSON.parse(r.stdout) as {
+      verdicts: Array<{ artifactPath: string }>;
+    };
+    for (const v of parsed.verdicts) {
+      expect(v.artifactPath).toBe("generated/user.types.ts");
+    }
+  });
+});
+
+// =============================================================================
+// Workspace prelude failures
+// =============================================================================
+
+describe("runCheck — workspace prelude failures", () => {
+  const FIXTURES_DIR = join(
+    dirname(fileURLToPath(import.meta.url)),
+    "..",
+    "fixtures",
+    "walk-workspace",
+  );
+
+  it("load failures → IO_ERROR with pretty diagnostics on stderr", async () => {
+    const r = await runDirect(join(FIXTURES_DIR, "failures"));
+    expect(r.code).toBe(EXIT_CODES.IO_ERROR);
+    expect(r.stdout).toBe("");
+    expect(r.stderr).toMatch(/failed to load/);
+  });
+
+  it("JSON load failures drop the raw `cause` field", async () => {
+    const r = await runDirect(join(FIXTURES_DIR, "failures"), { json: true });
+    expect(r.code).toBe(EXIT_CODES.IO_ERROR);
+    const parsed = JSON.parse(r.stdout) as {
+      failures: Array<Record<string, unknown>>;
+    };
+    for (const f of parsed.failures) {
+      expect(f).not.toHaveProperty("cause");
+      expect(Object.keys(f).sort()).toEqual(["message", "path", "reason"]);
+    }
+  });
+
+  it("duplicate registry → LOGICAL_FAILURE", async () => {
+    const r = await runDirect(join(FIXTURES_DIR, "duplicates"));
+    expect(r.code).toBe(EXIT_CODES.LOGICAL_FAILURE);
+    expect(r.stderr).toContain("duplicate_schema_id");
+  });
+});
+
+// =============================================================================
+// End-to-end via dispatch — `--root`, `[pattern]`, placeholder preservation
+// =============================================================================
+
+describe("dispatch — `schema check` wiring", () => {
+  it("`neko schema check --root <fixture>` returns SUCCESS for clean", async () => {
+    const r = await runViaDispatch([
+      "schema",
+      "check",
+      "--root",
+      fixtures.clean,
+    ]);
+    expect(r.code).toBe(EXIT_CODES.SUCCESS);
+  });
+
+  it("`[pattern]` positional replaces the default schema-file glob", async () => {
+    // No schema file matches `**/*.no-match.ts` in the clean fixture
+    // — the walk produces zero entries, so `check` has no committed
+    // artifacts to evaluate against any registry. Result: SUCCESS
+    // with `No artifacts to check.`.
+    const r = await runViaDispatch([
+      "schema",
+      "check",
+      "**/*.no-match.ts",
+      "--root",
+      fixtures.clean,
+    ]);
+    expect(r.code).toBe(EXIT_CODES.SUCCESS);
+    expect(r.stdout).toBe("No artifacts to check.\n");
+  });
+
+  it("stale workspace via dispatch → LOGICAL_FAILURE", async () => {
+    const r = await runViaDispatch([
+      "schema",
+      "check",
+      "--root",
+      fixtures.stale,
+    ]);
+    expect(r.code).toBe(EXIT_CODES.LOGICAL_FAILURE);
+  });
+
+  it("integrity_error workspace via dispatch → INTEGRITY_ERROR", async () => {
+    const r = await runViaDispatch([
+      "schema",
+      "check",
+      "--root",
+      fixtures.integrity_error,
+    ]);
+    expect(r.code).toBe(EXIT_CODES.INTEGRITY_ERROR);
+  });
+
+  // No placeholder verbs remain post-Step 32.
+});
+
+// =============================================================================
+// Static-scan purity
+// =============================================================================
+
+describe("schema/check — side-effect discipline (static-scan)", () => {
+  const SRC = readFileSync(
+    join(
+      dirname(fileURLToPath(import.meta.url)),
+      "..",
+      "..",
+      "src",
+      "commands",
+      "schema",
+      "check.ts",
+    ),
+    "utf8",
+  );
+
+  const STRIPPED = SRC.replace(/\/\*[\s\S]*?\*\//g, "").replace(
+    /\/\/.*$/gm,
+    "",
+  );
+
+  const FORBIDDEN: { name: string; pattern: RegExp }[] = [
+    { name: "console.log", pattern: /\bconsole\s*\.\s*log\s*\(/ },
+    { name: "console.error", pattern: /\bconsole\s*\.\s*error\s*\(/ },
+    { name: "console.warn", pattern: /\bconsole\s*\.\s*warn\s*\(/ },
+    { name: "console.info", pattern: /\bconsole\s*\.\s*info\s*\(/ },
+    { name: "console.debug", pattern: /\bconsole\s*\.\s*debug\s*\(/ },
+    { name: "process.exit", pattern: /\bprocess\s*\.\s*exit\s*\(/ },
+    { name: "process.abort", pattern: /\bprocess\s*\.\s*abort\s*\(/ },
+    {
+      name: "process.stdout.write",
+      pattern: /\bprocess\s*\.\s*stdout\s*\.\s*write\s*\(/,
+    },
+    {
+      name: "process.stderr.write",
+      pattern: /\bprocess\s*\.\s*stderr\s*\.\s*write\s*\(/,
+    },
+  ];
+
+  it.each(FORBIDDEN)(
+    "check.ts source does not call `$name`",
+    ({ pattern }) => {
+      expect(STRIPPED).not.toMatch(pattern);
+    },
+  );
+});
