@@ -206,15 +206,17 @@ export type GenerateResult = Result<{
 }>;
 
 export interface CheckOpts {
-  // v0.7 audit round-10 amendment: switched from `entries:
-  // RegistrySourceEntry[]` to `registry: Registry`. The CLI calls
-  // `buildRegistry` once and passes the same Registry to every
-  // handler (list / diff / check) — having `checkHandler` rebuild
-  // from raw entries on each call would be wasteful, and would also
-  // surface duplicate-detection failures inside `checkHandler` which
-  // the CLI has already caught upstream. The locked
-  // PHASE_PLAN_v0.7.md row will be aligned in the Step 19 docs sweep.
+  /**
+   * Already-built registry. The CLI calls `buildRegistry` once,
+   * handles duplicate-detection failures upstream, and passes the
+   * same `Registry` to every handler (list / diff / check / generate).
+   */
   readonly registry: Registry;
+  /**
+   * Already-read generated artifacts. The CLI owns filesystem reads;
+   * `checkHandler` only parses content and classifies freshness via
+   * the two-hash matrix.
+   */
   readonly committedArtifacts: readonly CommittedArtifact[];
 }
 export type CheckResult = Result<{
