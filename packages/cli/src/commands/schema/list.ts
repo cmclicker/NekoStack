@@ -48,6 +48,20 @@ import {
   formatLoadFailuresPretty,
 } from "../../formatters/pretty.js";
 import { walkWorkspace } from "../../loaders/walk-workspace.js";
+import type { LoadFailure } from "../../loaders/tsx-loader.js";
+
+/**
+ * Project a `LoadFailure` to a stable, JSON-safe shape. The
+ * underlying `LoadFailure.cause` is an `unknown` thrown by tsx /
+ * esbuild and may not serialize cleanly (or at all — circular
+ * references, function values, etc.). The CLI's `--json` contract
+ * for load failures is `{ path, reason, message }` only.
+ */
+function toSerializableLoadFailure(
+  f: LoadFailure,
+): { readonly path: string; readonly reason: LoadFailure["reason"]; readonly message: string } {
+  return { path: f.path, reason: f.reason, message: f.message };
+}
 
 export interface RunListOptions {
   readonly root: string;
@@ -66,7 +80,11 @@ export async function runList(opts: RunListOptions): Promise<ExitCode> {
   //    suppress them per the audit guidance for Step 29.
   if (walk.failures.length > 0) {
     if (opts.json) {
-      opts.stdout(formatJson({ failures: walk.failures }));
+      opts.stdout(
+        formatJson({
+          failures: walk.failures.map(toSerializableLoadFailure),
+        }),
+      );
     } else {
       opts.stderr(formatLoadFailuresPretty(walk.failures));
     }

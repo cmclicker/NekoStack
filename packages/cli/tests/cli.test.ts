@@ -127,20 +127,14 @@ describe("dispatch — schema group help", () => {
 // =============================================================================
 
 describe("dispatch — placeholder verb actions", () => {
-  // `list` is no longer a placeholder as of Step 29 — coverage moved
-  // to `tests/commands/schema-list.test.ts`. The remaining three
-  // stay placeholders until Steps 30 / 31 / 32.
-  it.each(["diff", "check", "generate"] as const)(
+  // `list` is no longer a placeholder as of Step 29; `diff` is no
+  // longer a placeholder as of Step 30. Coverage for each lives in
+  // its own command test file. `check` and `generate` stay
+  // placeholders until Steps 31 / 32.
+  it.each(["check", "generate"] as const)(
     "`neko schema %s` returns LOGICAL_FAILURE with a TODO message",
     async (verb) => {
-      // `diff` takes two positional args; pass them so commander
-      // doesn't reject for missing required arguments before the
-      // placeholder action runs.
-      const argv =
-        verb === "diff"
-          ? ["schema", "diff", "com.x.A", "com.x.B"]
-          : ["schema", verb];
-      const r = await run(argv);
+      const r = await run(["schema", verb]);
       expect(r.code).toBe(EXIT_CODES.LOGICAL_FAILURE);
       expect(r.stderr).toMatch(/not yet implemented/);
       expect(r.stderr).toMatch(new RegExp(`schema ${verb}\\b`));

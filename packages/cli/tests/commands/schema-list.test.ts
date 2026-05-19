@@ -191,6 +191,20 @@ describe("runList — failure paths", () => {
     expect(reasons).toContain("no_schema_export");
   });
 
+  it("JSON load-failure shape excludes the raw `cause` field", async () => {
+    // `LoadFailure.cause` is `unknown` thrown by tsx/esbuild — not a
+    // stable CLI contract. Projection must drop it before JSON.
+    const r = await runDirect({ root: fixture("failures"), json: true });
+    expect(r.code).toBe(EXIT_CODES.IO_ERROR);
+    const parsed = JSON.parse(r.stdout) as {
+      failures: Array<Record<string, unknown>>;
+    };
+    for (const f of parsed.failures) {
+      expect(f).not.toHaveProperty("cause");
+      expect(Object.keys(f).sort()).toEqual(["message", "path", "reason"]);
+    }
+  });
+
   it("duplicate schemaId → LOGICAL_FAILURE + issue diagnostics", async () => {
     const r = await runDirect({ root: fixture("duplicates") });
     expect(r.code).toBe(EXIT_CODES.LOGICAL_FAILURE);
@@ -252,12 +266,9 @@ describe("dispatch — `schema list` wiring", () => {
     expect(r.code).toBe(EXIT_CODES.USAGE_ERROR);
   });
 
-  it("`schema diff` placeholder still returns LOGICAL_FAILURE", async () => {
-    const r = await runViaDispatch(["schema", "diff", "com.x.A", "com.x.B"]);
-    expect(r.code).toBe(EXIT_CODES.LOGICAL_FAILURE);
-    expect(r.stderr).toMatch(/not yet implemented/);
-  });
-
+  // Once Step 30 wires `diff`, its placeholder coverage moves to
+  // `schema-diff.test.ts`. `check` and `generate` stay placeholders
+  // here until Steps 31 / 32 land.
   it("`schema check` placeholder still returns LOGICAL_FAILURE", async () => {
     const r = await runViaDispatch(["schema", "check"]);
     expect(r.code).toBe(EXIT_CODES.LOGICAL_FAILURE);

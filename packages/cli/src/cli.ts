@@ -10,11 +10,11 @@
  * Decision #9): tests call `dispatch`, capture stdout/stderr through
  * injected writers, and assert on the returned exit code.
  *
- * Schema-verb implementations land in Steps 29–32. Until then the
- * four `schema` subcommands print a TODO-style stderr message and
- * return exit code 1 — running `neko schema list` against a build
- * cut from any commit before Step 29 produces a clear "not yet
- * implemented" error rather than a silent success.
+ * Schema verbs land verb-by-verb. `list` is the first real verb
+ * (Step 29). The remaining verbs — `diff`, `check`, `generate` —
+ * still print a TODO-style stderr message and return
+ * LOGICAL_FAILURE from their `.action()` placeholders. Steps 30–32
+ * replace each placeholder with a real dispatch.
  *
  * Exit codes follow the locked enum from [`./exit-codes.ts`](./exit-codes.ts)
  * (CLI plan Decision #6). `process.exit` is called exactly once,
@@ -25,6 +25,7 @@
 
 import { createRequire } from "node:module";
 import { Command, CommanderError } from "commander";
+import { runDiff } from "./commands/schema/diff.js";
 import { runList } from "./commands/schema/list.js";
 import { EXIT_CODES, type ExitCode } from "./exit-codes.js";
 
@@ -77,10 +78,12 @@ export function buildCli(opts: BuildCliOptions = {}): Command {
       outputError: (s, write) => write(s),
     });
 
-  // `schema` command group. The four subcommand handlers are
+  // `schema` command group. As of Step 29 the `list` verb is wired
+  // to a real dispatch; `diff` / `check` / `generate` remain
   // placeholders that print a stderr TODO message and resolve with a
-  // logical-failure exit code; Steps 29–32 replace each one with the
-  // wired-up dispatch to `@nekostack/schema/cli`'s pure handlers.
+  // logical-failure exit code. Steps 30–32 replace each remaining
+  // placeholder with a real dispatch to `@nekostack/schema/cli`'s
+  // pure handlers.
 
   const schema = program
     .command("schema")
@@ -118,7 +121,25 @@ export function buildCli(opts: BuildCliOptions = {}): Command {
     )
     .option("--root <path>", "workspace root", process.cwd())
     .option("--json", "machine-readable JSON output", false)
-    .action(() => placeholderHandler("diff", writeErr));
+    .action(
+      async (
+        a: string,
+        b: string,
+        cmdOpts: { root: string; json: boolean },
+      ) => {
+        const code = await runDiff({
+          root: cmdOpts.root,
+          a,
+          b,
+          json: cmdOpts.json,
+          stdout: writeOut,
+          stderr: writeErr,
+        });
+        if (code !== EXIT_CODES.SUCCESS) {
+          throw new CommandActionError(code);
+        }
+      },
+    );
 
   schema
     .command("check [pattern]")
