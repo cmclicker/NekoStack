@@ -264,6 +264,64 @@ describe("runDiff — resolution failures", () => {
     };
     expect(parsed.issues[0]!.code).toBe("schema_not_found");
   });
+
+  // ---------------------------------------------------------------------------
+  // Multi-schema file operand — must be rejected, not silently disambiguated
+  // ---------------------------------------------------------------------------
+
+  it("file operand on a multi-schema file returns LOGICAL_FAILURE", async () => {
+    const r = await runDirect({
+      a: "multi.schema.ts",
+      b: "com.fixture.walk.DiffUser@1.0.0",
+    });
+    expect(r.code).toBe(EXIT_CODES.LOGICAL_FAILURE);
+    expect(r.stderr).toContain("schema_not_found");
+  });
+
+  it("multi-schema file operand error mentions using schemaId", async () => {
+    const r = await runDirect({
+      a: "multi.schema.ts",
+      b: "com.fixture.walk.DiffUser@1.0.0",
+    });
+    expect(r.code).toBe(EXIT_CODES.LOGICAL_FAILURE);
+    // The message must point the user at the operand form that has
+    // no ambiguity — `schemaId` or `schemaId@version`.
+    expect(r.stderr).toMatch(/use schemaId/);
+    expect(r.stderr).toMatch(/multi\.schema\.ts/);
+  });
+
+  it("multi-schema file JSON output carries metadata.reason = ambiguous_file_operand", async () => {
+    const r = await runDirect({
+      a: "multi.schema.ts",
+      b: "com.fixture.walk.DiffUser@1.0.0",
+      json: true,
+    });
+    expect(r.code).toBe(EXIT_CODES.LOGICAL_FAILURE);
+    expect(r.stderr).toBe("");
+    const parsed = JSON.parse(r.stdout) as {
+      issues: Array<{
+        code: string;
+        metadata?: {
+          reason?: string;
+          kind?: string;
+          operand?: string;
+          schemaIds?: unknown[];
+        };
+      }>;
+    };
+    const ambiguous = parsed.issues.find(
+      (i) => i.metadata?.reason === "ambiguous_file_operand",
+    );
+    expect(ambiguous).toBeDefined();
+    expect(ambiguous!.code).toBe("schema_not_found");
+    expect(ambiguous!.metadata?.kind).toBe("file");
+    expect(ambiguous!.metadata?.operand).toBe("multi.schema.ts");
+    expect(Array.isArray(ambiguous!.metadata?.schemaIds)).toBe(true);
+    expect(ambiguous!.metadata?.schemaIds).toEqual([
+      "com.fixture.walk.DiffMultiA",
+      "com.fixture.walk.DiffMultiB",
+    ]);
+  });
 });
 
 // =============================================================================

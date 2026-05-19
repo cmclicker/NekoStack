@@ -10,11 +10,11 @@
  * Decision #9): tests call `dispatch`, capture stdout/stderr through
  * injected writers, and assert on the returned exit code.
  *
- * Schema verbs land verb-by-verb. `list` is the first real verb
- * (Step 29). The remaining verbs — `diff`, `check`, `generate` —
- * still print a TODO-style stderr message and return
- * LOGICAL_FAILURE from their `.action()` placeholders. Steps 30–32
- * replace each placeholder with a real dispatch.
+ * Schema verbs land verb-by-verb. `list` (Step 29) and `diff`
+ * (Step 30) are real. `check` and `generate` still print a
+ * TODO-style stderr message and return LOGICAL_FAILURE from their
+ * `.action()` placeholders. Steps 31 / 32 replace each remaining
+ * placeholder with a real dispatch.
  *
  * Exit codes follow the locked enum from [`./exit-codes.ts`](./exit-codes.ts)
  * (CLI plan Decision #6). `process.exit` is called exactly once,
@@ -78,10 +78,10 @@ export function buildCli(opts: BuildCliOptions = {}): Command {
       outputError: (s, write) => write(s),
     });
 
-  // `schema` command group. As of Step 29 the `list` verb is wired
-  // to a real dispatch; `diff` / `check` / `generate` remain
+  // `schema` command group. `list` (Step 29) and `diff` (Step 30)
+  // are wired to real dispatches; `check` / `generate` remain
   // placeholders that print a stderr TODO message and resolve with a
-  // logical-failure exit code. Steps 30–32 replace each remaining
+  // logical-failure exit code. Steps 31 / 32 replace each remaining
   // placeholder with a real dispatch to `@nekostack/schema/cli`'s
   // pure handlers.
 

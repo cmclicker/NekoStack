@@ -150,8 +150,7 @@ function resolveOperand(
         },
       };
     }
-    const node = entry.schemas[0]?.node;
-    if (node === undefined) {
+    if (entry.schemas.length === 0) {
       return {
         ok: false,
         issue: {
@@ -163,7 +162,30 @@ function resolveOperand(
         },
       };
     }
-    return { ok: true, node };
+    if (entry.schemas.length > 1) {
+      // v0.7 supports multi-schema source files (Master plan Decision
+      // #6 disambiguates the generated artifact paths). The diff
+      // verb has no such per-schema disambiguator on its operands —
+      // silently picking `schemas[0]` would produce a possibly-wrong
+      // diff with no signal to the user. Reject the operand and
+      // tell them to address one schema explicitly.
+      return {
+        ok: false,
+        issue: {
+          code: "schema_not_found",
+          path: [],
+          message: `File operand \`${operand}\` matched multiple schemas; use schemaId or schemaId@version instead.`,
+          severity: "error",
+          metadata: {
+            operand,
+            kind: "file",
+            reason: "ambiguous_file_operand",
+            schemaIds: entry.schemas.map((s) => s.node.metadata?.id ?? null),
+          },
+        },
+      };
+    }
+    return { ok: true, node: entry.schemas[0]!.node };
   }
 
   // schemaId or schemaId@version.
