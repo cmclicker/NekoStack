@@ -60,8 +60,13 @@ v0.7's registry is **in-memory and pure**. The schema package never touches the 
 // @nekostack/cli (filesystem-aware)
 const entries: RegistrySourceEntry[] = await loadSchemaFiles(roots);
 
-// @nekostack/schema (pure — no I/O)
-const registry = buildRegistry(entries);
+// @nekostack/schema (pure — no I/O; buildRegistry returns Result because
+// duplicate (schemaId, schemaVersion) is reported as an Issue, never thrown)
+const registryResult = buildRegistry(entries);
+if (!registryResult.success) {
+  return formatIssuesAndExit(registryResult.issues); // CLI-side
+}
+const registry = registryResult.data;
 const result = diffHandler({ registry, before, after });
 ```
 
@@ -155,9 +160,12 @@ export interface RegistryEntry {
 export type Registry = ReadonlyMap<string, ReadonlyMap<string, RegistryEntry>>;
 //                                  ^id              ^version
 
+// buildRegistry returns Result<Registry> because duplicate
+// (schemaId, schemaVersion) entries are reported as an Issue with code
+// `duplicate_schema_id`, never thrown (Decision #4 + Decision #15).
 export function buildRegistry(
   entries: readonly RegistrySourceEntry[],
-): Registry;
+): Result<Registry>;
 
 export function findSchema(
   reg: Registry,
@@ -191,7 +199,10 @@ export function diffNodes(
 
 export interface GenerateOpts {
   readonly entries: readonly RegistrySourceEntry[];
-  readonly kinds?: readonly GeneratorKind[]; // default: all four (TS, Zod, JSON, OpenAPI)
+  // No `kinds` filter in v0.7. Generation writes all four artifact kinds
+  // (TS / Zod / JSON Schema / OpenAPI) per Decision #6's artifact-layout
+  // contract. Partial generation is deferred — `check` would not be able
+  // to distinguish intentional absence from staleness without it.
 }
 export interface GeneratedArtifact {
   readonly schemaId: string;
@@ -329,7 +340,9 @@ packages/schema/
     │                                         #       sourceHashFromText / diffNodes /
     │                                         #       *Handler / Registry / *Result types
     ├── registry/                           # NEW DIRECTORY (pure; no filesystem)
-    │   ├── build-registry.ts               # buildRegistry(entries) — pure
+    │   ├── build-registry.ts               # buildRegistry(entries) — pure;
+    │                                       #   Result<Registry>; duplicate
+    │                                       #   (id, version) → duplicate_schema_id
     │   ├── source-hash.ts                  # sourceHashFromText(text) — pure
     │   ├── parse-provenance.ts             # NEW — parses JSDoc-header + x-nekostack
     │   ├── diff.ts                         # SchemaNode → SchemaNode diff classifier
@@ -450,7 +463,7 @@ Sixteen decisions. Highest-stakes flagged.
    | Overwrite | `generate` overwrites by default. Use `neko schema check` for the no-write preflight. |
    | Missing artifact | `check` treats as **stale** (the four artifact kinds are mandatory in v0.7) |
    | Extra / unexpected artifact in `generated/` | `check` warns on stderr but does NOT fail; v0.7 does not own pruning |
-   | "Partial" generation (only some kinds) | Supported via `--kinds ts,zod` flag on `generate`; default is all four |
+   | "Partial" generation (only some kinds) | **Not supported in v0.7.** `generate` writes all four artifact kinds; `check` expects all four. Partial generation would create freshness ambiguity (`check` can't tell intentional absence from staleness) and is deferred until that distinction has a real consumer. |
    | Stale-artifact pruning | Out of v0.7 scope (a future `neko schema prune` could land in v0.8+) |
    | Committed in git | Convention — yes, per the existing examples — but the CLI does not enforce |
 
@@ -582,7 +595,7 @@ Implementation order. Each numbered step is a separate commit with its own valid
 3. `src/generators/types.ts` — `ProvenanceOptions` added to `GeneratorOptions`. Per-generator options gain the slice. No behavior change yet.
 4. `src/generators/header.ts` + per-generator emit paths — emit `sourceHash` (JSDoc line for TS/Zod; `x-nekostack.sourceHash` for JSON/OpenAPI) **only when provided**. Regen all v0.2/v0.3/v0.4/v0.5/v0.6 snapshots — since tests still call generators without provenance options, snapshots stay byte-identical (no `sourceHash` field appears). This is the gate that proves backward compatibility.
 5. `src/registry/parse-provenance.ts` — parses both JSDoc-header and `x-nekostack` shapes; tolerates absent `sourceHash` for v0.6-era artifacts. Tests cover both formats and the old-artifact-missing-sourceHash case.
-6. `src/registry/build-registry.ts` — `buildRegistry(entries)` (pure) + `findSchema` + duplicate-detection. Tests use hand-constructed entries, not filesystem fixtures.
+6. `src/registry/build-registry.ts` — `buildRegistry(entries)` (pure; returns `Result<Registry>`) + `findSchema` + duplicate-detection (failure path emits `duplicate_schema_id` Issue, never throws). Tests use hand-constructed entries, not filesystem fixtures; duplicate-detection test asserts `success: false` with the expected `issues[0].code`, not a `toThrow`.
 7. `src/registry/diff.ts` — diff walker + classifier + Decision #12 matrix as a test fixture set. Each row of the table gets a fixture pair; the test asserts on `severity` per pair.
 8. `src/registry/handlers/list.ts` — simplest handler; verifies the handler shape and the `Result<T>` discriminated-union contract.
 9. `src/registry/handlers/diff.ts` — wraps `diffNodes` + computes `worstSeverity` for CLI consumption.

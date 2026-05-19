@@ -163,10 +163,12 @@ $ neko schema list
 
 ```text
 $ neko schema list --json
-{"schemas":[{"schemaId":"com.nekostack.tenant.Tenant","schemaVersion":"1.0.0","sourcePath":"packages/schema/examples/tenant.schema.ts","irHash":"sha256:..."}, ...]}
+{"schemas":[{"schemaId":"com.nekostack.tenant.Tenant","schemaVersion":"1.0.0","sourcePath":"packages/schema/examples/tenant.schema.ts","irHash":"sha256:...","sourceHash":"sha256:..."}, ...]}
 ```
 
-JSON output is one line per invocation (no pretty-printing) so it's pipeable. Schema for each command's JSON output is locked in the implementation phase — keyed to the underlying schema-side `*Result` shape.
+JSON output is one line per invocation (no pretty-printing) so it's pipeable. Every JSON entry that wraps a `RegistryEntry` carries both `irHash` AND `sourceHash` — the two-hash freshness model is the v0.7 contract, and machine consumers downstream (`neko schema check` in CI, future `@nekostack/migrate` etc.) need both. Pretty output may omit `sourceHash` for readability; JSON must not.
+
+Schema for each command's JSON output is locked in the implementation phase — keyed to the underlying schema-side `*Result` shape.
 
 ### Explicit non-scope
 
@@ -189,7 +191,7 @@ The package may export the dispatch internals (`buildCli()`, `dispatch(argv)`) a
 
 ```
 packages/cli/
-├── package.json                # gains "bin", "dependencies": { commander, @nekostack/schema }
+├── package.json                # gains "bin", "dependencies": { commander, tsx, @nekostack/schema }
 ├── bin/
 │   └── neko                    # NEW — shebang script invoking dist/cli.js
 ├── src/
