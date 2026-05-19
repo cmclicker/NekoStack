@@ -100,12 +100,31 @@ Explicitly deferred:
 
 Per the [`PRODUCT_THESIS`](../../../PRODUCT_THESIS.md), v0.6 is the phase where NekoStack starts taking runtime-validator workflow space — users no longer have to install or import Zod directly for runtime validation. Zod stays as the internal execution engine; the user-facing surface is `parse` / `safeParse` / `validate` / `ParseError` from `@nekostack/schema`.
 
-## v0.7 — Registry-lite + CLI ← *active target*
+## v0.7 — Registry-lite + CLI ← *candidate implementation in progress*
 
-- Local schema registry (lookup by id + version)
-- Schema diffing + breaking-change detection
-- `neko schema check` (freshness) + `neko schema diff` — **consume** the existing `irHash` (shipped in v0.2) to detect stale generated artifacts; introduce the new `sourceHash` to detect source-file edits that left the IR unchanged.
-- CLI orchestration lives in `@nekostack/cli`; the v0.6 runtime stays the engine for runtime validation behind it.
+Status: **in progress** on `feat/schema-cli-v0.7-candidate` ([PR #25](https://github.com/cmclicker/NekoStack/pull/25), draft). Plan: [`PHASE_PLAN_v0.7.md`](./PHASE_PLAN_v0.7.md). Schema-side steps 1–18 landed as separate audit-gated commits; CLI-side steps 21–34 not yet started. Not yet tagged. Do not treat as shipped.
+
+Ships (schema-side — what's landed so far):
+
+- **`sourceHash` provenance slice** — `sourceHashFromText(text)` and the `ProvenanceOptions.sourceHash` field on every generator. The slice is **optional** — generators omit the `sourceHash` line/extension when not provided, so v0.6-and-earlier callers produce byte-identical output. Backward compatibility gated by the v0.2/v0.3/v0.4/v0.5/v0.6 snapshot tests.
+- **`parseProvenanceFromText(text)`** — auto-detects JSDoc-header and `x-nekostack` provenance carriers, tolerates v0.6-era artifacts missing `sourceHash`, returns `Result<ParsedProvenance>` with `integrity_error` + `metadata.reason` on failure (no throws).
+- **Registry primitives** — `buildRegistry(entries): Result<Registry>` and `findSchema(registry, schemaId, version?)`. Duplicate `(schemaId, schemaVersion)` pairs collected into `duplicate_schema_id` Issues; anonymous schemas silently skipped; unversioned schemas indexed under the empty-string inner key. Full contract in [`REGISTRY.md`](./REGISTRY.md).
+- **Diff classifier** — `diffNodes(before, after)` walks two `SchemaNode` trees and returns `readonly DiffChange[]` per the locked Decision #12 table. Severity uses the input-acceptance lens. Unsupported IR kinds throw `UnsupportedNodeKindError({ generator: "diff", kind })`. Full contract in [`DIFF_CLASSIFICATION.md`](./DIFF_CLASSIFICATION.md).
+- **Four pure handlers** — `listHandler`, `diffHandler` (adds `worstSeverity` aggregation, precedence `breaking > additive > cosmetic`, `null` for empty), `checkHandler` (two-hash freshness matrix + v0.6 missing-`sourceHash` fallback), `generateHandler` (emits all four artifact kinds per named schema; partial generation is not supported in v0.7 per Decision #6). Data-in / data-out; the schema package never touches the filesystem. Purity gated by [`../tests/registry/handler-purity.test.ts`](../tests/registry/handler-purity.test.ts).
+- **Generated-artifact path convention** — `<schema-dir>/generated/<basename>[.<discriminator>].<artifact-kind>`. Multi-schema source files get a slugged discriminator per named schema; same-id-multiple-versions automatically embeds a version slug.
+- **Integration subpath** — `@nekostack/schema/cli` exports the v0.7 surface for `@nekostack/cli` to consume. Root `@nekostack/schema` continues to expose only the v0.6 contract; the negative-leakage gate in [`../tests/public-surface.test.ts`](../tests/public-surface.test.ts) enforces this. Subpath wiring lives in the `package.json` `exports` map.
+
+CLI-side (not yet started — companion plan in [`../../cli/docs/PHASE_PLAN_v0.7.md`](../../cli/docs/PHASE_PLAN_v0.7.md)):
+
+- `neko schema list / diff / check / generate` commands.
+- `tsx` loader, workspace walker, artifact reader, formatters, exit-code mapping.
+- The CLI is what owns filesystem discovery, dynamic schema loading, stdout/stderr formatting, and exit codes — Master plan Decision #1 keeps `@nekostack/schema` pure.
+
+Explicitly deferred:
+
+- Migration proposal / generation / application — v0.8+.
+- Partial generation (subset of artifact kinds) — locked by Decision #6.
+- Date / union / recursiveRef / transform IR — still throws `UnsupportedNodeKindError` from generators and from `diffNodes`.
 
 ## v0.8+ — Migrations
 

@@ -179,13 +179,17 @@ Single source of truth for shape definitions.
 | JSON Schema generation | `schema` | |
 | OpenAPI component generation | `schema` | |
 | Schema versioning | `schema` | |
-| Schema migration registry | `schema` | (works with `migrate` for data-level migrations) |
+| Local schema registry (id + version lookup, in-process) | `schema` | v0.7+ — `buildRegistry`, `findSchema`; pure data-in/data-out; exposed via `@nekostack/schema/cli` subpath |
+| Schema diff classification (breaking / additive / cosmetic) | `schema` | v0.7+ — `diffNodes` + `worstSeverity` aggregation; pure |
+| Generated-artifact freshness verdict (two-hash matrix) | `schema` | v0.7+ — `checkHandler` + `parseProvenanceFromText`; pure classifier. CLI owns the filesystem reads that feed it. |
+| Generation planning (emit-ready artifact payloads + suggested paths) | `schema` | v0.7+ — `generateHandler`. Pure. The CLI writes the files. |
+| Schema migration *execution* | `migrate` | data-level migrations (works with `schema`); migration-generation deferred to schema v0.8+ |
 | Branded IDs / typed identifiers | `id` | NEW; uses `schema` as substrate |
 | Cross-package shared type contracts | `schema` | |
 | Runtime validation execution | `schema` | (via `@nekostack/schema` runtime — `parse` / `safeParse` / `validate`; Zod is the internal engine, not part of the consumer surface) |
 | Runtime issue normalization (Zod issues → `Issue[]`) | `schema` | v0.6+ — consumer-facing error contract; downstream packages depend on the stable `IssueCode` vocabulary |
 | `ParseError` (thrown by `parse`) | `schema` | v0.6+ — `code = "parse_failed"`, frozen `issues: readonly Issue[]` |
-| `neko schema *` CLI commands | `cli` | v0.7 — consumes the `schema` runtime + `irHash` for freshness checks |
+| `neko schema *` CLI commands (`list` / `diff` / `check` / `generate`) | `cli` | v0.7 — owns filesystem discovery, dynamic schema loading via `tsx`, stdout/stderr formatting, exit codes. Consumes the pure registry primitives via `@nekostack/schema/cli`. |
 | Form input validation (UI side) | `form` | consumes `schema` |
 | Server-side request body validation | `api` | consumes `schema` |
 | Content-shape validation (Codex entities, etc.) | `validator` | consumes `schema` |

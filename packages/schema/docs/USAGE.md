@@ -240,7 +240,7 @@ Same IR → same hash, every time. Semantic change → different hash. This is t
 
 ## Workflow today (no CLI yet)
 
-There is no `neko schema generate` command in v0.6. The intended workflow until v0.7:
+There is no `neko schema generate` command in v0.6, and the v0.7 CLI is in progress but not yet shipped — see [`ROADMAP.md`](./ROADMAP.md). The intended workflow until v0.7 lands:
 
 1. Author the schema in `your-package/schemas/foo.schema.ts`.
 2. **For runtime validation:** import `parse` / `safeParse` / `validate` from `@nekostack/schema` and call them directly. No generated artifact required.
@@ -248,7 +248,22 @@ There is no `neko schema generate` command in v0.6. The intended workflow until 
 4. Commit both the source schema and any generated files.
 5. Review diffs as ordinary code review.
 
-Once v0.7 ships, the CLI will replace the hand-written generation script + add freshness CI.
+Once v0.7's CLI ships, `neko schema generate` / `check` / `diff` / `list` replace the hand-written generation script and add freshness CI.
+
+## `@nekostack/schema/cli` — internal integration only (v0.7)
+
+> Not a public consumer API. This is the subpath `@nekostack/cli` imports from to build the v0.7 `neko schema *` commands.
+
+The v0.7 registry / freshness / generation primitives are reachable through a separate subpath:
+
+```text
+@nekostack/schema           public v0.6 consumer surface (parse, safeParse, validate, s, generators, …)
+@nekostack/schema/cli       package-internal CLI integration surface (buildRegistry, diffNodes, four handlers, …)
+```
+
+If you are writing application code or a library that uses `@nekostack/schema` directly, **do not** import from `@nekostack/schema/cli`. The names exposed there are subject to internal change between minor versions; engine-swap-safety lives at the root, not at this subpath. The negative gate in [`../tests/public-surface.test.ts`](../tests/public-surface.test.ts) enforces that root `@nekostack/schema` does not leak any v0.7 registry name.
+
+The subpath exists so the eventual `neko schema *` CLI (companion plan in [`../../cli/docs/PHASE_PLAN_v0.7.md`](../../cli/docs/PHASE_PLAN_v0.7.md)) has a stable, package-internal seam to import from. Full surface and contract in [`REGISTRY.md`](./REGISTRY.md); diff classification in [`DIFF_CLASSIFICATION.md`](./DIFF_CLASSIFICATION.md).
 
 ## Handling unsupported IR
 
