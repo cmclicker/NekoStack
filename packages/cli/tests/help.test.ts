@@ -1,5 +1,5 @@
 /**
- * Step 35 — `--help` output gate tests.
+ * Final hardening — `--help` output gate tests.
  *
  * Locks the **stable essentials** of each help screen — not a brittle
  * snapshot of the entire commander-generated text. The contract:

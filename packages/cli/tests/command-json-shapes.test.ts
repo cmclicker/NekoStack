@@ -1,5 +1,5 @@
 /**
- * Step 36 — JSON output envelope gate.
+ * Final hardening — JSON output envelope gate.
  *
  * Locks ONLY the top-level shape of each verb's `--json` output —
  * success envelopes and failure envelopes. Per-command semantics
