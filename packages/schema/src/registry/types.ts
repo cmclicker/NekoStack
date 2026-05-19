@@ -107,7 +107,11 @@ export type DiffKind =
   | "absence_modifier_changed"
   | "metadata_changed"
   | "refinements_reordered"
-  | "schema_version_changed";
+  | "schema_version_changed"
+  // Added in Step 7 for top-level kind mismatches that the Decision #12
+  // table did not explicitly row (e.g., `s.string()` → `s.number()`).
+  // Always breaking — the accepted-input set is entirely different.
+  | "type_changed";
 
 export interface DiffChange {
   readonly severity: DiffSeverity;
@@ -132,11 +136,13 @@ export interface DiffChange {
  *                       prints a stderr warning; CI still passes.
  * - `stale`           — irHash differs. Regenerate required. CLI
  *                       exits 1.
- * - `integrity_error` — irHash matches, sourceHash differs. The
- *                       impossible row of the matrix; indicates a
- *                       hand-edit of the artifact (or astronomically
- *                       unlikely hash collision). CLI exits 4 and
- *                       refuses to auto-regenerate.
+ * - `integrity_error` — sourceHash matches, irHash differs. The
+ *                       impossible row of the matrix; if the artifact
+ *                       was generated from the recorded source text,
+ *                       irHash must match too. Indicates a manual
+ *                       artifact edit, provenance tampering, or
+ *                       hash inconsistency. CLI exits 4 and refuses
+ *                       to auto-regenerate.
  */
 export type FreshnessVerdict =
   | { readonly status: "clean"; readonly artifactPath: string }
