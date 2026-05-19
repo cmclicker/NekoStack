@@ -13,8 +13,8 @@
  *   width matches the existing fields (value aligned at column 18).
  * - JSON Schema / OpenAPI: a `sourceHash` field inside the
  *   `x-nekostack` provenance object. `canonicalize` sorts keys
- *   alphabetically, so the field's position in the emitted JSON
- *   is between `schemaId` and `schemaVersion`.
+ *   deterministically; tests assert presence/absence, not JSON
+ *   field position.
  * - When omitted, the line / field is absent entirely (NOT `null`).
  */
 import { describe, expect, it } from "vitest";

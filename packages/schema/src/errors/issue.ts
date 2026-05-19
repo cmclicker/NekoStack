@@ -19,6 +19,16 @@ export const ISSUE_CODES = [
   "custom_refinement_failed",
   "schema_version_unsupported",
   "recursive_reference_unresolved",
+  // v0.7 — registry / freshness / loader codes. Added per the Master
+  // plan Decision #15 change-control rule, at each code's first use
+  // site. `integrity_error` lands here because `parse-provenance.ts`
+  // (Step 5) is its first constructor — emitted when a generated
+  // artifact's provenance block is missing, malformed, or self-
+  // inconsistent (the impossible row of the two-hash matrix in
+  // §"Freshness verdict — two-hash discipline"). Other v0.7 codes
+  // (schema_load_failed, duplicate_schema_id, etc.) get added in
+  // their respective consumer steps (CLI loader, buildRegistry, etc.).
+  "integrity_error",
 ] as const;
 
 export type IssueCode = (typeof ISSUE_CODES)[number];
