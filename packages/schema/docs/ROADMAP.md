@@ -100,11 +100,11 @@ Explicitly deferred:
 
 Per the [`PRODUCT_THESIS`](../../../PRODUCT_THESIS.md), v0.6 is the phase where NekoStack starts taking runtime-validator workflow space — users no longer have to install or import Zod directly for runtime validation. Zod stays as the internal execution engine; the user-facing surface is `parse` / `safeParse` / `validate` / `ParseError` from `@nekostack/schema`.
 
-## v0.7 — Registry-lite + CLI ← *candidate implementation in progress*
+## v0.7 — Registry-lite + CLI
 
-Status: **in progress** on `feat/schema-cli-v0.7-candidate` ([PR #25](https://github.com/cmclicker/NekoStack/pull/25), draft). Plan: [`PHASE_PLAN_v0.7.md`](./PHASE_PLAN_v0.7.md). Schema-side steps 1–18 landed as separate audit-gated commits; CLI-side steps 21–34 not yet started. Not yet tagged. Do not treat as shipped.
+Status: **shipped** ([#25](https://github.com/cmclicker/NekoStack/pull/25), merged 2026-05-19). Plan: [`PHASE_PLAN_v0.7.md`](./PHASE_PLAN_v0.7.md). Contracts: [`REGISTRY.md`](./REGISTRY.md), [`DIFF_CLASSIFICATION.md`](./DIFF_CLASSIFICATION.md). Tagged as [`schema-v0.7.0`](https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.7.0). Joint schema + CLI phase — first real implementation of [`@nekostack/cli`](../../cli) ships alongside the schema-side registry primitives.
 
-Ships (schema-side — what's landed so far):
+Ships (schema-side):
 
 - **`sourceHash` provenance slice** — `sourceHashFromText(text)` and the `ProvenanceOptions.sourceHash` field on every generator. The slice is **optional** — generators omit the `sourceHash` line/extension when not provided, so v0.6-and-earlier callers produce byte-identical output. Backward compatibility gated by the v0.2/v0.3/v0.4/v0.5/v0.6 snapshot tests.
 - **`parseProvenanceFromText(text)`** — auto-detects JSDoc-header and `x-nekostack` provenance carriers, tolerates v0.6-era artifacts missing `sourceHash`, returns `Result<ParsedProvenance>` with `integrity_error` + `metadata.reason` on failure (no throws).
@@ -114,11 +114,12 @@ Ships (schema-side — what's landed so far):
 - **Generated-artifact path convention** — `<schema-dir>/generated/<basename>[.<discriminator>].<artifact-kind>`. Multi-schema source files get a slugged discriminator per named schema; same-id-multiple-versions automatically embeds a version slug.
 - **Integration subpath** — `@nekostack/schema/cli` exports the v0.7 surface for `@nekostack/cli` to consume. Root `@nekostack/schema` continues to expose only the v0.6 contract; the negative-leakage gate in [`../tests/public-surface.test.ts`](../tests/public-surface.test.ts) enforces this. Subpath wiring lives in the `package.json` `exports` map.
 
-CLI-side (not yet started — companion plan in [`../../cli/docs/PHASE_PLAN_v0.7.md`](../../cli/docs/PHASE_PLAN_v0.7.md)):
+Ships (CLI-side — companion plan in [`../../cli/docs/PHASE_PLAN_v0.7.md`](../../cli/docs/PHASE_PLAN_v0.7.md), first real implementation of [`@nekostack/cli`](../../cli)):
 
-- `neko schema list / diff / check / generate` commands.
-- `tsx` loader, workspace walker, artifact reader, formatters, exit-code mapping.
-- The CLI is what owns filesystem discovery, dynamic schema loading, stdout/stderr formatting, and exit codes — Master plan Decision #1 keeps `@nekostack/schema` pure.
+- `neko schema list / diff / check / generate` — four locked verbs.
+- `tsx` loader (register-once strategy), workspace walker, committed-artifact reader, JSON + pretty formatters.
+- Locked exit-code mapping: `0 SUCCESS` / `1 LOGICAL_FAILURE` / `2 USAGE_ERROR` / `3 IO_ERROR` / `4 INTEGRITY_ERROR`.
+- `@nekostack/cli` owns filesystem discovery, dynamic schema loading, stdout/stderr formatting, and exit codes — Master plan Decision #1 keeps `@nekostack/schema` pure.
 
 Explicitly deferred:
 
@@ -126,7 +127,7 @@ Explicitly deferred:
 - Partial generation (subset of artifact kinds) — locked by Decision #6.
 - Date / union / recursiveRef / transform IR — still throws `UnsupportedNodeKindError` from generators and from `diffNodes`.
 
-## v0.8+ — Migrations
+## v0.8+ — Migrations ← *active target*
 
 - Migration registry, forward migrations, pre/post validation, audit
 

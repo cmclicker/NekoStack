@@ -5,8 +5,8 @@
 ## Active workstream
 
 - **Package:** @nekostack/schema
-- **Latest release:** [`schema-v0.6.0`](https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.6.0) — 2026-05-18
-- **Active target:** v0.7 — Registry-lite + CLI
+- **Latest release:** [`schema-v0.7.0`](https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.7.0) — 2026-05-19
+- **Active target:** v0.8+ — Migrations
 - **Doctrine in force:** [NekoStack — Product Thesis](../PRODUCT_THESIS.md)
 
 ## Latest milestones
@@ -15,17 +15,17 @@
 
 | Tag | Date | Summary |
 |---|---|---|
+| [`schema-v0.7.0`](https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.7.0) | 2026-05-19 | Registry-lite + `neko schema *`. |
 | [`schema-v0.6.0`](https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.6.0) | 2026-05-18 | Runtime validation as a NekoStack-owned workflow on the v0.2 source-generator + v0.5 composition foundation. |
 | [`schema-v0.5.0`](https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.5.0) | 2026-05-17 | Composition layer on the v0.1 IR foundation. |
 | [`schema-v0.4.0`](https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.4.0) | 2026-05-17 | Fourth generator on the v0.1 IR foundation. |
 | [`schema-v0.3.0`](https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.3.0) | 2026-05-17 | Third generator on the v0.1 IR foundation. |
-| [`schema-v0.2.1`](https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.2.1) | 2026-05-16 | Patch release on the v0.2 line — proof artifacts + generator output polish from the dogfood pass. |
 
 ## Validation snapshot
 
 Test counts come from each package's most recent CHANGELOG entry. After validating a release, update the package CHANGELOG and run `npm run status:generate`.
 
-- **@nekostack/schema:** 587 tests recorded (latest: schema-v0.6.0)
+- **@nekostack/schema:** 871 tests recorded (latest: schema-v0.7.0)
 
 ## Next actions
 
