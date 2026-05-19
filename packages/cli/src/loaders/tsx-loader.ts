@@ -39,8 +39,20 @@
 
 import { stat } from "node:fs/promises";
 import { pathToFileURL } from "node:url";
-import { tsImport } from "tsx/esm/api";
+import { register } from "tsx/esm/api";
 import type { AnySchema } from "@nekostack/schema";
+
+// Register tsx's ESM hook once at module load. Per-call `tsImport()`
+// pays a fresh-context cost that compounds across many files (each
+// call spins up new ESM resolution state), which on Windows pushes
+// per-load latency above 1s and turns a normal `walkWorkspace` over
+// a few schema files into a multi-minute hang. `register()` installs
+// the loader globally for the lifetime of the process, after which a
+// plain dynamic `import()` of a `.ts` file goes through tsx's
+// transform pipeline and benefits from Node's module cache — the
+// second load of any file (or any cross-test repeat) is effectively
+// free.
+register();
 
 // =============================================================================
 // Public types
@@ -67,12 +79,17 @@ export interface LoadFailure {
 export interface LoadedSchemaModule {
   readonly path: string;
   /**
-   * Every exported value structurally recognized as a `Schema`. Order
-   * follows ESM module-namespace iteration — alphabetical by export
-   * name (`Object.keys` over a `Module` namespace object), NOT
-   * declaration order. Downstream code that needs a deterministic
-   * registry ordering should re-sort by `schemaId` (which `listHandler`
-   * already does) or otherwise not depend on this order.
+   * Every exported value structurally recognized as a `Schema`,
+   * sorted ascending by `schemaId` with anonymous schemas (no `.id()`)
+   * pushed to the end in their original-iteration order. Sorting is
+   * done here so callers see a deterministic shape regardless of how
+   * the underlying ESM runtime iterates module namespaces — plain
+   * Node + tsx's `register()` hook returns alphabetical-by-export-name
+   * order, vitest's worker returns declaration order, and a future
+   * Node release could change either. Downstream registry code
+   * already sorts by `schemaId` (see `listHandler`); doing it here
+   * means single-file callers also get the stable order without
+   * re-sorting.
    */
   readonly schemas: readonly AnySchema[];
 }
@@ -87,27 +104,29 @@ export type LoadResult =
 
 /**
  * Load one schema-source file by absolute or workspace-relative path.
- * `parentURL` is used by `tsImport` to resolve relative paths. Callers
- * that pass an absolute path don't need to think about it — the default
- * resolves against this module's URL, which is stable across CLI
- * invocations.
+ *
+ * `parentURL` is retained on the signature for API stability (some
+ * future loader strategy may need it again) but is unused in the
+ * current `register()`-based implementation — file URLs are absolute,
+ * so resolution doesn't need a parent.
  */
 export async function loadSchemaModule(
   path: string,
-  parentURL: string = import.meta.url,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _parentURL: string = import.meta.url,
 ): Promise<LoadResult> {
   // 1. IO check — fail fast on missing / non-regular files. This catches
   //    typos and stale paths before tsx spins up an esbuild worker.
   const ioFailure = await checkRegularFile(path);
   if (ioFailure !== undefined) return { success: false, failure: ioFailure };
 
-  // 2. Resolve to a file:// URL so tsImport treats it as an absolute
-  //    specifier regardless of platform path separator.
+  // 2. Resolve to a file:// URL so plain dynamic import treats it as
+  //    an absolute specifier regardless of platform path separator.
   const specifier = pathToFileURL(path).href;
 
   let mod: Record<string, unknown>;
   try {
-    mod = (await tsImport(specifier, parentURL)) as Record<string, unknown>;
+    mod = (await import(specifier)) as Record<string, unknown>;
   } catch (cause) {
     const reason = classifyImportError(cause);
     return {
@@ -121,10 +140,11 @@ export async function loadSchemaModule(
     };
   }
 
-  // 3. Extract every Schema instance from the module namespace. Filter,
-  //    don't fail — `with-extras` modules legitimately export helpers
-  //    alongside schemas.
-  const schemas = extractSchemas(mod);
+  // 3. Extract every Schema instance from the module namespace, then
+  //    sort deterministically by schemaId so callers see a stable
+  //    shape regardless of how the underlying ESM runtime iterates
+  //    namespace exports.
+  const schemas = sortSchemas(extractSchemas(mod));
   if (schemas.length === 0) {
     return {
       success: false,
@@ -170,6 +190,7 @@ function classifyImportError(err: unknown): LoadFailureReason {
     name?: unknown;
     errors?: unknown;
     code?: unknown;
+    message?: unknown;
   };
   // 1. esbuild `BuildFailure` — has a populated `errors` array.
   if (Array.isArray(e.errors) && e.errors.length > 0) return "compile_error";
@@ -181,6 +202,15 @@ function classifyImportError(err: unknown): LoadFailureReason {
   if (e.code === "ERR_UNSUPPORTED_DIR_IMPORT" || e.code === "ERR_INVALID_MODULE_SPECIFIER") {
     return "compile_error";
   }
+  // 5. Message-pattern fallback for environments where tsx's error
+  //    propagation flattens `name` / `errors` to a plain `Error`. In
+  //    vitest's worker pool, for instance, esbuild transform failures
+  //    arrive as `new Error("Transform failed with N errors: ...")`
+  //    with no other discriminating properties. The message prefix
+  //    is esbuild's own and is stable across tsx/esbuild versions.
+  if (typeof e.message === "string" && /^Transform failed/.test(e.message)) {
+    return "compile_error";
+  }
   return "runtime_error";
 }
 
@@ -190,6 +220,25 @@ function extractSchemas(mod: Record<string, unknown>): AnySchema[] {
     if (isAnySchema(value)) out.push(value);
   }
   return out;
+}
+
+/**
+ * Sort schemas ascending by `schemaId`. Anonymous schemas (id ===
+ * undefined) are stable-sorted to the end, in their original index
+ * order. Matches the convention `listHandler` uses on the registry
+ * side so single-file and registry-level orderings agree.
+ */
+function sortSchemas(schemas: AnySchema[]): AnySchema[] {
+  return schemas
+    .map((s, i) => ({ s, i, id: s.node.metadata?.id }))
+    .sort((a, b) => {
+      // Anonymous-to-end, then by index for stability.
+      if (a.id === undefined && b.id === undefined) return a.i - b.i;
+      if (a.id === undefined) return 1;
+      if (b.id === undefined) return -1;
+      return a.id < b.id ? -1 : a.id > b.id ? 1 : a.i - b.i;
+    })
+    .map((r) => r.s);
 }
 
 /**

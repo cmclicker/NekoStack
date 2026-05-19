@@ -51,12 +51,12 @@ describe("tsx-loader — happy paths", () => {
     expect(r.data.schemas[0]!.node.metadata?.version).toBe("1.0.0");
   });
 
-  it("loads a multi-schema fixture (ESM-namespace order — alphabetical by export name)", async () => {
-    // The loader documents that ordering follows ESM module-namespace
-    // iteration (alphabetical by export name), NOT source declaration
-    // order. `Account` < `Tenant` lexicographically, so the loader
-    // returns them in that order even though the fixture declares
-    // `Tenant` first.
+  it("loads a multi-schema fixture (sorted ascending by schemaId)", async () => {
+    // The loader sorts results by `schemaId` before returning, so the
+    // order is stable across ESM runtimes (plain Node + tsx returns
+    // alphabetical-by-export-name; vitest's worker returns declaration
+    // order). After sorting by schemaId, both environments produce
+    // the same `Account < Tenant` ordering.
     const r = await loadSchemaModule(fixture("multi-schema.schema.ts"));
     expect(r.success).toBe(true);
     if (!r.success) return;
