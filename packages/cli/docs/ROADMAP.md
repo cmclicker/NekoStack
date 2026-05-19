@@ -2,9 +2,9 @@
 
 Authoritative source for "what ships when" on the CLI side. The full design rationale lives in [`../README.md`](../README.md); this file is the operational checklist. Pairs with [`packages/schema/docs/ROADMAP.md`](../../schema/docs/ROADMAP.md) — the two roadmaps cross-reference at v0.7 because the phases ship jointly.
 
-## v0.7 — `neko schema *` ← *active target*
+## v0.7 — `neko schema *`
 
-Status: **plan-only draft** (PR pending). Plan: [`PHASE_PLAN_v0.7.md`](./PHASE_PLAN_v0.7.md). Master plan (schema-side): [`packages/schema/docs/PHASE_PLAN_v0.7.md`](../../schema/docs/PHASE_PLAN_v0.7.md).
+Status: **shipped** ([#25](https://github.com/cmclicker/NekoStack/pull/25), merged 2026-05-19). Plan: [`PHASE_PLAN_v0.7.md`](./PHASE_PLAN_v0.7.md). Master plan (schema-side): [`packages/schema/docs/PHASE_PLAN_v0.7.md`](../../schema/docs/PHASE_PLAN_v0.7.md). Joint phase tagged as [`schema-v0.7.0`](https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.7.0).
 
 First implementation phase for `@nekostack/cli`. The package was a placeholder through v0.1–v0.6; v0.7 is the phase that justifies its existence.
 
@@ -34,7 +34,7 @@ The CLI consumes [`@nekostack/schema`](../../schema)'s handler functions directl
 - `@nekostack/schema` owns: registry, diff, `sourceHash`, handler functions.
 - `@nekostack/cli` owns: argv parse, dispatch, formatters, exit codes, filesystem I/O.
 
-## v0.8+ — TBD
+## v0.8+ — TBD ← *active target*
 
 Subcommand families owned by their packages will register here as they land. Likely first additions:
 

@@ -16,11 +16,16 @@
     {
       "name": "@nekostack/schema",
       "dir": "packages/schema",
-      "latest_release": "schema-v0.6.0",
-      "latest_release_date": "2026-05-18",
-      "active_target": "v0.7 — Registry-lite + CLI",
-      "test_count": 587,
+      "latest_release": "schema-v0.7.0",
+      "latest_release_date": "2026-05-19",
+      "active_target": "v0.8+ — Migrations",
+      "test_count": 871,
       "milestones": [
+        {
+          "tag": "schema-v0.7.0",
+          "date": "2026-05-19",
+          "summary": "Registry-lite + `neko schema *`."
+        },
         {
           "tag": "schema-v0.6.0",
           "date": "2026-05-18",
@@ -40,11 +45,6 @@
           "tag": "schema-v0.3.0",
           "date": "2026-05-17",
           "summary": "Third generator on the v0.1 IR foundation."
-        },
-        {
-          "tag": "schema-v0.2.1",
-          "date": "2026-05-16",
-          "summary": "Patch release on the v0.2 line — proof artifacts + generator output polish from the dogfood pass."
         }
       ]
     }

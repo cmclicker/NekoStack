@@ -6,6 +6,56 @@ This package is workspace-internal (`private: true`, version `0.0.0`). The miles
 
 ---
 
+## schema-v0.7.0 — 2026-05-19
+
+[Tag](https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.7.0) · merge commit [`931aa15`](https://github.com/cmclicker/NekoStack/commit/931aa15048f74942a21406ad885283c50da07631). Registry-lite + `neko schema *`. Joint schema + CLI phase; the schema-side primitives ship under this tag and the first real implementation of [`@nekostack/cli`](../cli) ships alongside.
+
+### Shipped
+
+- **`@nekostack/schema/cli` integration subpath** — wired through the `package.json` `exports` map. Exposes the registry primitives, four pure handlers, two-hash provenance helpers, and the full registry / diff / freshness / generation type surface to `@nekostack/cli`. **External consumers should not import from this path; it is subject to internal change.** The root `@nekostack/schema` import surface is unchanged from v0.6 and does not carry any v0.7 registry name — engine-swap-safety holds.
+- **Decision #1 — pure handler boundary** — `listHandler`, `diffHandler`, `checkHandler`, `generateHandler` are data-in / data-out. No `fs.*`, no dynamic `import()`, no `process.*`, no `console.*`. Gated by [`tests/registry/handler-purity.test.ts`](tests/registry/handler-purity.test.ts) — hybrid static-file-level import scan plus runtime spies for `console.*` / `process.exit` / `process.abort` over each handler's full module-graph reach.
+- **Decision #6 — locked artifact path convention** — `<schema-dir>/generated/<basename>[.<discriminator>].<artifact-kind>`. Multi-schema source files gain a slugged `schemaId` discriminator; same-id-multiple-versions auto-promotes to a version-suffixed slug. **Partial generation is not supported in v0.7** — `generateHandler` emits all four artifact kinds per named schema and `checkHandler` expects all four.
+- **Decision #8 — `sourceHash` provenance is opt-in** — `ProvenanceOptions.sourceHash` slice on every generator. Omitted callers continue to produce byte-identical pre-v0.7 output. A v0.6-era artifact missing `sourceHash` is **never** an integrity error — `parseProvenanceFromText` returns `sourceHash: undefined` and `checkHandler` falls back to the irHash-only verdict. Backward compatibility is gated by every v0.2–v0.6 snapshot test, all of which stayed byte-identical post-introduction.
+- **Decision #10 — `@nekostack/schema/cli` subpath is the only entry point** — both directions of the boundary are gated: [`tests/registry-surface.test.ts`](tests/registry-surface.test.ts) asserts the subpath positively exposes the surface; [`tests/public-surface.test.ts`](tests/public-surface.test.ts) asserts root `@nekostack/schema` exports none of the 11 v0.7 runtime names or 18 v0.7 types.
+- **Decision #11 / #12 / #13 — diff classifier** — `diffNodes(before, after): readonly DiffChange[]` walks two `SchemaNode` trees per the locked Decision #12 classification table. Severity uses the **input-acceptance lens** (would data the old schema accepted still pass the new schema?). `diffHandler` adds `worstSeverity` aggregation with precedence `breaking > additive > cosmetic` and `null` for empty change lists. A `schemaVersion`-only change is cosmetic; paired with structural changes it inherits the worst structural severity.
+- **Decision #14 — fail-loud on unsupported IR** — `diffNodes` throws `UnsupportedNodeKindError({ generator: "diff", kind })` for `date` / `union` / `recursiveRef` / `transform`. Same fail-loud discipline as the v0.3 / v0.6 generators.
+- **Registry primitives** — `buildRegistry(entries): Result<Registry>` (pure; duplicate `(schemaId, version)` pairs surfaced as `duplicate_schema_id` Issues; never throws); `findSchema(registry, id, version?)` (exact match when version is given; highest-semver fallback when omitted; versioned wins over unversioned; empty-string inner key addresses unversioned schemas exactly).
+- **Provenance parser** — `parseProvenanceFromText(text)` auto-detects JSDoc-header and `x-nekostack` carriers, validates `sha256:<64-hex>` shape, returns `Result<ParsedProvenance>`. Failures use the existing `integrity_error` code with `metadata.reason` (`unknown_format` / `missing_provenance` / `missing_field` / `malformed_hash` / `json_parse_error` / `malformed_field`); no new code invented.
+- **Two-hash freshness matrix** (Decision #7 realized) — `clean` / `cosmetic_drift` / `stale` / `integrity_error`. The impossible row (sourceHash matches + irHash differs) means a hand-edited artifact or tampered provenance; the CLI exits 4 and refuses to auto-regenerate.
+- **New ISSUE_CODES** — `integrity_error`, `duplicate_schema_id`, `schema_not_found`, `version_not_found` added per the locked change-control rule, each at its first use site.
+- **`GENERATOR_VERSION` bumped to `@nekostack/schema@0.7.0`** — 59 generator snapshots + 12 example artifacts regenerated. Example artifacts also gain `sourceHash` provenance (the regen test reads each schema's UTF-8 source and threads `sourceHashFromText` through `ProvenanceOptions`).
+
+### New contract docs
+
+- [`docs/REGISTRY.md`](docs/REGISTRY.md) — schema/CLI ownership boundary, registry shapes, two-hash discipline, handler contracts, locked path convention, multi-schema disambiguation, `/cli` subpath visibility.
+- [`docs/DIFF_CLASSIFICATION.md`](docs/DIFF_CLASSIFICATION.md) — input-acceptance lens, three severity values, `worstSeverity` aggregation rule, every locked classification row, `schemaVersion` aggregation nuance, `UnsupportedNodeKindError` boundary, migrations deferred to v0.8+.
+
+### Five new INVARIANTS corollaries
+
+Registry collision is an error (`duplicate_schema_id`); pure handlers (no fs/import/process/console); subpath boundary (both directions gated); two-hash freshness discipline (matrix locked; v0.6 backward compatibility codified); diff classification (input-acceptance lens; `worstSeverity` precedence; fail-loud on unsupported IR).
+
+### Docs sweep
+
+[`SCOPE.md`](docs/SCOPE.md), [`INVARIANTS.md`](docs/INVARIANTS.md), [`ROADMAP.md`](docs/ROADMAP.md), [`USAGE.md`](docs/USAGE.md), [`EXAMPLES.md`](docs/EXAMPLES.md) all updated. Repo-root [`BOUNDARIES.md`](../../BOUNDARIES.md) §7 refined: local registry, diff classification, freshness verdict, and generation planning attributed to `schema`; CLI orchestration row attributed to `cli`.
+
+### Dependency changes
+
+None. No new runtime deps in `@nekostack/schema`. The CLI's new `commander` and `tsx` deps are isolated to `@nekostack/cli`.
+
+### Test count
+
+- 587 → 871 (+284 net, schema-only). Workspace-wide (schema + cli) total is 1,177.
+
+### Still deferred
+
+- Migrations (registry, forward migrations, pre/post validation, audit) — v0.8+.
+- Partial artifact-kind generation — explicitly out of scope; locked by Decision #6.
+- Date / union / recursiveRef / transform IR — still throws `UnsupportedNodeKindError` from generators and from `diffNodes`.
+- Runtime refinement execution — IR shape declared; runtime fails loud.
+- CLI plugin contract / additional `neko` command families — out of v0.7.
+
+---
+
 ## schema-v0.6.0 — 2026-05-18
 
 [Tag](https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.6.0) · merge commit [`c55ce95`](https://github.com/cmclicker/NekoStack/commit/c55ce952bc027b98cc1f4d270db4ec5b9e2b758d). Runtime validation as a NekoStack-owned workflow on the v0.2 source-generator + v0.5 composition foundation.
