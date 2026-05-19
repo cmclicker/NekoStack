@@ -67,8 +67,15 @@ const SRC_ROOT = resolve(__dirname, "../../src");
 
 /**
  * Files transitively reachable from a handler — handler file plus the
- * sibling registry primitives the handlers compose. Anything CLI-side
- * is deliberately omitted from this list.
+ * non-external imports each handler composes. Anything CLI-side is
+ * deliberately omitted.
+ *
+ * Hand-curated rather than auto-walked (Master plan: "the goal is not
+ * a full import graph engine; it is to make the gate honest"). For
+ * `generateHandler` this list expanded in audit round 12 to include
+ * every generator module the handler delegates to — without that
+ * reach, an `fs` import added to a generator would bypass the gate
+ * because `fs` can't be reliably spied at runtime under Node 22.
  */
 const HANDLER_REACH: ReadonlyArray<readonly [string, readonly string[]]> = [
   ["listHandler", ["registry/handlers/list.ts"]],
@@ -87,7 +94,27 @@ const HANDLER_REACH: ReadonlyArray<readonly [string, readonly string[]]> = [
   ],
   [
     "generateHandler",
-    ["registry/handlers/generate.ts", "registry/source-hash.ts"],
+    [
+      // Handler + its source-hash helper.
+      "registry/handlers/generate.ts",
+      "registry/source-hash.ts",
+      // Direct generator modules invoked by the handler.
+      "generators/ts.ts",
+      "generators/zod.ts",
+      "generators/json-schema.ts",
+      "generators/openapi.ts",
+      // Shared generator infrastructure reached transitively from the
+      // four above.
+      "generators/header.ts",
+      "generators/schema-fragment.ts",
+      "generators/zod-mapping.ts",
+      "generators/json-schema-meta.ts",
+      "generators/version.ts",
+      "generators/errors.ts",
+      // IR helpers reached by header / json-schema / openapi.
+      "ir/hash.ts",
+      "ir/serialize.ts",
+    ],
   ],
 ];
 
@@ -98,6 +125,28 @@ const FORBIDDEN_IMPORT_PATTERNS: readonly RegExp[] = [
   /from\s+["']fs\/promises["']/,
   // `import("…")` dynamic-import expressions
   /\bimport\(/,
+];
+
+/**
+ * Top-level/code-level forbidden tokens. Runtime spies only catch
+ * calls made *during* handler invocation; a `console.log(...)` or
+ * `process.exit(...)` executed at module-import time (e.g., from a
+ * side-effecting top-level statement) would be invisible because the
+ * spies are installed after the modules are imported. Adding these
+ * to the static scan closes that hole.
+ *
+ * Patterns are loose enough to catch both calls (`process.exit(1)`)
+ * and reference saves (`const ex = process.exit; ex(1)`).
+ */
+const FORBIDDEN_RUNTIME_PATTERNS: readonly RegExp[] = [
+  /\bconsole\.[a-z]+/i,
+  /\bprocess\.exit\b/,
+  /\bprocess\.abort\b/,
+];
+
+const ALL_FORBIDDEN_PATTERNS: readonly RegExp[] = [
+  ...FORBIDDEN_IMPORT_PATTERNS,
+  ...FORBIDDEN_RUNTIME_PATTERNS,
 ];
 
 /**
@@ -117,50 +166,85 @@ function stripComments(src: string): string {
     .replace(/^\s*\/\/.*$/gm, ""); // whole-line line comments
 }
 
-describe("handler purity — static import check (deterministic, file-level)", () => {
+describe("handler purity — static scan (deterministic, file-level)", () => {
   it.each(HANDLER_REACH)(
-    "no `fs` or dynamic-`import()` reach in any file behind %s",
+    "no `fs` / dynamic-`import()` / `console.*` / `process.exit|abort` reach in any file behind %s",
     (handlerName, relPaths) => {
       for (const rel of relPaths) {
         const absolute = resolve(SRC_ROOT, rel);
         const source = stripComments(readFileSync(absolute, "utf8"));
-        for (const pattern of FORBIDDEN_IMPORT_PATTERNS) {
+        for (const pattern of ALL_FORBIDDEN_PATTERNS) {
           expect(
             pattern.test(source),
             `${handlerName} (file ${rel}) matches forbidden pattern ${pattern}. ` +
-              `Master plan Decision #1 forbids filesystem and dynamic-import surface in schema-side handlers.`,
+              `Master plan Decision #1 forbids filesystem / dynamic-import / console / process surface in schema-side handlers.`,
           ).toBe(false);
         }
       }
     },
   );
 
-  it("(sentinel) the forbidden-pattern matcher rejects an offending sample", () => {
-    const offending = `import { readFileSync } from "node:fs";\nimport { x } from "./y.js";`;
+  it("(sentinel) `import { readFileSync } from \"node:fs\"` is caught", () => {
+    const offending = `import { readFileSync } from "node:fs";`;
     const stripped = stripComments(offending);
-    const matched = FORBIDDEN_IMPORT_PATTERNS.some((p) => p.test(stripped));
-    expect(matched).toBe(true);
+    expect(ALL_FORBIDDEN_PATTERNS.some((p) => p.test(stripped))).toBe(true);
   });
 
   it("(sentinel) a dynamic `import(...)` in code is caught", () => {
     const offending = `const mod = await import("./x.js");`;
     const stripped = stripComments(offending);
-    const matched = FORBIDDEN_IMPORT_PATTERNS.some((p) => p.test(stripped));
-    expect(matched).toBe(true);
+    expect(ALL_FORBIDDEN_PATTERNS.some((p) => p.test(stripped))).toBe(true);
+  });
+
+  it("(sentinel) a top-level `console.log(...)` is caught", () => {
+    // The motivating regression — top-level / module-load-time
+    // console output that runtime spies installed *after* import
+    // would miss entirely.
+    const offending = `console.log("debug: loaded handler");\nexport function listHandler() {}`;
+    const stripped = stripComments(offending);
+    expect(ALL_FORBIDDEN_PATTERNS.some((p) => p.test(stripped))).toBe(true);
+  });
+
+  it("(sentinel) a `console.error(...)` reference is caught", () => {
+    const offending = `function bad() { console.error("uh oh"); }`;
+    const stripped = stripComments(offending);
+    expect(ALL_FORBIDDEN_PATTERNS.some((p) => p.test(stripped))).toBe(true);
+  });
+
+  it("(sentinel) `process.exit(...)` is caught", () => {
+    const offending = `if (broken) process.exit(1);`;
+    const stripped = stripComments(offending);
+    expect(ALL_FORBIDDEN_PATTERNS.some((p) => p.test(stripped))).toBe(true);
+  });
+
+  it("(sentinel) `process.abort()` is caught", () => {
+    const offending = `process.abort();`;
+    const stripped = stripComments(offending);
+    expect(ALL_FORBIDDEN_PATTERNS.some((p) => p.test(stripped))).toBe(true);
+  });
+
+  it("(sentinel) saved-reference patterns like `const x = console.log` are caught", () => {
+    const offending = `const x = console.log; x("hi");`;
+    const stripped = stripComments(offending);
+    expect(ALL_FORBIDDEN_PATTERNS.some((p) => p.test(stripped))).toBe(true);
   });
 
   it("(sentinel) a clean handler source does not match", () => {
     const clean = `import type { Registry } from "../types.js";\nimport { irHash } from "../../ir/hash.js";`;
     const stripped = stripComments(clean);
-    const matched = FORBIDDEN_IMPORT_PATTERNS.some((p) => p.test(stripped));
-    expect(matched).toBe(false);
+    expect(ALL_FORBIDDEN_PATTERNS.some((p) => p.test(stripped))).toBe(false);
   });
 
-  it("(sentinel) `import(` mentioned only in a JSDoc comment does NOT match", () => {
+  it("(sentinel) `import(` mentioned only in a JSDoc comment does NOT match (false-positive suppression)", () => {
     const commentOnly = `/**\n * No \`import()\` allowed.\n */\nexport const x = 1;`;
     const stripped = stripComments(commentOnly);
-    const matched = FORBIDDEN_IMPORT_PATTERNS.some((p) => p.test(stripped));
-    expect(matched).toBe(false);
+    expect(ALL_FORBIDDEN_PATTERNS.some((p) => p.test(stripped))).toBe(false);
+  });
+
+  it("(sentinel) `console.log` / `process.exit` mentioned only in JSDoc do NOT match", () => {
+    const commentOnly = `/**\n * Don't reach for \`console.log\` or \`process.exit()\` from a handler.\n */\nexport const x = 1;`;
+    const stripped = stripComments(commentOnly);
+    expect(ALL_FORBIDDEN_PATTERNS.some((p) => p.test(stripped))).toBe(false);
   });
 });
 
