@@ -296,7 +296,7 @@ For the JSON Schema generator specifically, regex with non-empty flags also thro
 | Deep / recursive composition (nested-field merge) | future | v0.5 ships shallow operators only |
 | Composition history (`metadata.derivedFrom`) | future | Could aid v0.7 diffing; not needed for v0.5 |
 | `neko schema generate / check / diff` CLI | v0.7 | Registry-lite phase |
-| `sourceHash` in headers | v0.7 | Needs CLI to walk source files |
+| Automatic CLI-populated `sourceHash` in committed artifacts | v0.7 CLI | Direct generator calls can already pass `sourceHash` via `ProvenanceOptions.sourceHash` — see the "Optional `sourceHash` provenance (v0.7+)" section in [`EXAMPLES.md`](./EXAMPLES.md). The CLI will compute it from source files automatically. |
 | `$defs` extraction / cross-package `$ref` | v0.7 (registry-lite) | No IR construct in v0.3 needs it |
 | Output-shape JSON Schema (default-applied, all fields required) | deferred | JSON Schema can't represent the input/output split as a single document |
 | Migrations between schema versions | v0.8+ | Bigger scope |
