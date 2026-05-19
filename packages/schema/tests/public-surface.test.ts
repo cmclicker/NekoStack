@@ -1,5 +1,7 @@
 /**
  * Step 13 — v0.6 public surface gate.
+ * Step 16 — v0.7 registry-surface leakage gate (negative complement
+ *           to Step 15's `tests/registry-surface.test.ts`).
  *
  * Canonical place that asserts what `@nekostack/schema` exposes for
  * the v0.6 runtime API:
@@ -12,12 +14,27 @@
  *     intentionally NOT exported — they are package-internal and
  *     may be reworked without a major version bump
  *
- * This file imports everything from `../src/index.js` to mirror what
- * an external consumer would write (`import { ... } from
- * "@nekostack/schema"`).
+ * Step 16 adds a second namespace import — this time through the
+ * package path `@nekostack/schema` — and asserts the v0.7 registry /
+ * CLI-integration surface does NOT bleed through the root. The
+ * positive subpath gate (Step 15) lives in `registry-surface.test.ts`
+ * and uses `@nekostack/schema/cli`; this file is the negative twin.
+ *
+ * Why both: Step 15 proves the integration surface IS reachable via
+ * `/cli`; Step 16 proves it is NOT reachable via the root. Together
+ * they lock the product boundary set in Master plan Decision #10:
+ *
+ *   `@nekostack/schema`       = public consumer API (v0.6 contract)
+ *   `@nekostack/schema/cli`   = package-internal CLI integration API
+ *
+ * The original block below imports from `../src/index.js` to keep
+ * the v0.6 assertions identical to what shipped in v0.6. The Step 16
+ * additions import through the package path so the manifest's
+ * `exports.["."]` is what's gated, not the source layout.
  */
 import { describe, expect, it } from "vitest";
 import * as publicApi from "../src/index.js";
+import * as schemaRoot from "@nekostack/schema";
 import {
   s,
   parse,
@@ -121,5 +138,138 @@ describe("public surface — exported entry points actually work", () => {
       ParseError: typeof ParseError;
     }).ParseError;
     expect(fromNamespace).toBe(ParseError);
+  });
+});
+
+// =============================================================================
+// Step 16 — root `@nekostack/schema` MUST NOT export v0.7 registry surface
+// =============================================================================
+//
+// The v0.7 integration surface lives at `@nekostack/schema/cli`
+// (Steps 13/14 wire the barrel + the `exports."./cli"` manifest
+// entry). The root path remains the v0.6 contract. If any of these
+// names leaks through the root, downstream consumers would silently
+// couple to package-internal types — and engine-swap safety at the
+// root would break. This block is the gate.
+//
+// Coverage matches the positive Step 15 gate exactly so the two
+// suites can be diffed at a glance.
+
+const V07_FORBIDDEN_RUNTIME_NAMES = [
+  "sourceHashFromText",
+  "parseProvenanceFromText",
+  "buildRegistry",
+  "findSchema",
+  "diffNodes",
+  "listHandler",
+  "diffHandler",
+  "checkHandler",
+  "generateHandler",
+  "suggestedPathFor",
+  "GENERATOR_KINDS",
+] as const;
+
+describe("public surface — v0.7 registry names stay off the root", () => {
+  it.each(V07_FORBIDDEN_RUNTIME_NAMES)(
+    "does NOT export `%s` through @nekostack/schema",
+    (name) => {
+      const surface = schemaRoot as unknown as Record<string, unknown>;
+      expect(name in surface).toBe(false);
+      expect(surface[name]).toBeUndefined();
+    },
+  );
+
+  it("the namespace import still works (sanity: gate is meaningful)", () => {
+    // If the import itself failed, `it.each` above would have errored
+    // out before reaching the assertions. This guard exists so a
+    // future refactor that accidentally turns the namespace into an
+    // empty object still fails loudly here rather than passing the
+    // "does NOT export X" rows by virtue of being empty.
+    expect("parse" in schemaRoot).toBe(true);
+    expect("s" in schemaRoot).toBe(true);
+  });
+});
+
+// =============================================================================
+// Step 16 — type-level negative gate
+// =============================================================================
+//
+// Each `@ts-expect-error` below is itself the assertion: the line
+// MUST fail typecheck. If a v0.7 type ever starts being exported by
+// the root, the directive becomes unused and `tsc` reports an
+// "Unused '@ts-expect-error' directive" error — which is exactly the
+// signal we want.
+
+// @ts-expect-error root must not export Registry
+import type { Registry as _Reg } from "@nekostack/schema";
+// @ts-expect-error root must not export RegistryEntry
+import type { RegistryEntry as _RegEntry } from "@nekostack/schema";
+// @ts-expect-error root must not export RegistrySourceEntry
+import type { RegistrySourceEntry as _RegSrc } from "@nekostack/schema";
+// @ts-expect-error root must not export DiffSeverity
+import type { DiffSeverity as _DSev } from "@nekostack/schema";
+// @ts-expect-error root must not export DiffKind
+import type { DiffKind as _DKind } from "@nekostack/schema";
+// @ts-expect-error root must not export DiffChange
+import type { DiffChange as _DChange } from "@nekostack/schema";
+// @ts-expect-error root must not export FreshnessVerdict
+import type { FreshnessVerdict as _FV } from "@nekostack/schema";
+// @ts-expect-error root must not export GeneratorKind
+import type { GeneratorKind as _GK } from "@nekostack/schema";
+// @ts-expect-error root must not export GeneratedArtifact
+import type { GeneratedArtifact as _GA } from "@nekostack/schema";
+// @ts-expect-error root must not export CommittedArtifact
+import type { CommittedArtifact as _CA } from "@nekostack/schema";
+// @ts-expect-error root must not export GenerateOpts
+import type { GenerateOpts as _GO } from "@nekostack/schema";
+// @ts-expect-error root must not export GenerateResult
+import type { GenerateResult as _GR } from "@nekostack/schema";
+// @ts-expect-error root must not export CheckOpts
+import type { CheckOpts as _CO } from "@nekostack/schema";
+// @ts-expect-error root must not export CheckResult
+import type { CheckResult as _CR } from "@nekostack/schema";
+// @ts-expect-error root must not export DiffOpts
+import type { DiffOpts as _DO } from "@nekostack/schema";
+// @ts-expect-error root must not export DiffResult
+import type { DiffResult as _DR } from "@nekostack/schema";
+// @ts-expect-error root must not export ListOpts
+import type { ListOpts as _LO } from "@nekostack/schema";
+// @ts-expect-error root must not export ListResult
+import type { ListResult as _LR } from "@nekostack/schema";
+
+// Keep the names load-bearing under aggressive dead-code elim — if
+// the directives above pass (i.e. the type *was* exported), these
+// `type _Used = ...` aliases ensure the imports are still referenced
+// somewhere so `noUnusedLocals` doesn't erase them and mask the
+// regression. (When the imports legitimately fail to resolve, the
+// aliases resolve to `any` and the union compiles fine.)
+type _Used =
+  | _Reg
+  | _RegEntry
+  | _RegSrc
+  | _DSev
+  | _DKind
+  | _DChange
+  | _FV
+  | _GK
+  | _GA
+  | _CA
+  | _GO
+  | _GR
+  | _CO
+  | _CR
+  | _DO
+  | _DR
+  | _LO
+  | _LR;
+const _u: _Used | undefined = undefined;
+
+describe("public surface — v0.7 registry types stay off the root", () => {
+  it("typecheck-gated: every @ts-expect-error above must still apply", () => {
+    // The 18 `@ts-expect-error` directives above are the assertion.
+    // If any one of them stops applying (because the type became
+    // exported), `tsc` reports an unused-directive error and the
+    // typecheck step fails before this runtime block ever runs.
+    expect(_u).toBeUndefined();
   });
 });
