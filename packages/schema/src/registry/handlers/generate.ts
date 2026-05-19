@@ -11,9 +11,12 @@
  * Master plan Decision #1 boundary: pure, data-in / data-out. No
  * `fs.*`, no `import()`, no `process.*`, no `console.*`. The
  * `sourceText` is hashed once per entry via `sourceHashFromText`
- * (Step 2), and that hash plus `irHash(schema.node)` are passed
- * through to each generator's `ProvenanceOptions` (Step 3 + Step 4)
- * so the emitted artifact bytes carry full provenance.
+ * (Step 2). `sourceHash` is passed through to each generator's
+ * `ProvenanceOptions` (Step 3 + Step 4) so the emitted artifact
+ * bytes carry provenance; `irHash(schema.node)` is recorded
+ * separately on each `GeneratedArtifact` and independently emitted
+ * by the generators from `schema.node` — the irHash field is NOT
+ * part of `ProvenanceOptions`.
  *
  * **Anonymous schemas (no `.id()`)** are silently skipped — they
  * cannot participate in registry lookup downstream, so emitting
@@ -27,12 +30,33 @@
  *
  * ## Suggested path convention (Master plan Decision #6 locked)
  *
+ * **Single named schema in a source file:**
+ *
  *   <schema-dir>/<basename>.schema.{ts,js}
  *     ↓
  *   <schema-dir>/generated/<basename>.types.ts
  *   <schema-dir>/generated/<basename>.zod.ts
  *   <schema-dir>/generated/<basename>.json.schema.json
  *   <schema-dir>/generated/<basename>.openapi.json
+ *
+ * **Multiple named schemas in one source file** — paths gain a
+ * schemaId-derived discriminator slug so the four-artifact set per
+ * schema doesn't collide on disk:
+ *
+ *   <schema-dir>/<basename>.schema.ts
+ *     export const Tenant = s.object(...).id("com.x.Tenant");
+ *     export const Audit  = s.object(...).id("com.x.AuditEvent");
+ *     ↓
+ *   <schema-dir>/generated/<basename>.com-x-tenant.types.ts
+ *   <schema-dir>/generated/<basename>.com-x-auditevent.types.ts
+ *   <schema-dir>/generated/<basename>.com-x-tenant.zod.ts
+ *   ... and so on for json/openapi.
+ *
+ * Slug rule: lowercase, non-alphanumeric runs collapse to `-`, with
+ * leading/trailing `-` trimmed. If a source file declares the same
+ * `schemaId` at multiple versions (rare; v0.7 doesn't endorse but
+ * does tolerate), the discriminator additionally includes a slugged
+ * version (`com-x-tenant-1-0-0`) so per-schema paths stay unique.
  *
  * The basename strips a `.schema.{ts,js,mts,cts}` suffix when
  * present; falls back to "filename minus last extension" otherwise.
@@ -68,16 +92,21 @@ export function generateHandler(opts: GenerateOpts): GenerateResult {
 
   for (const entry of opts.entries) {
     const entrySourceHash = sourceHashFromText(entry.sourceText);
+    const discriminators = discriminatorsFor(entry);
+
     for (const schema of entry.schemas) {
       const schemaId = schema.node.metadata?.id;
       if (schemaId === undefined) continue; // anonymous → skip
       const schemaIrHash = `sha256:${irHash(schema.node)}` as const;
+      const discriminator = discriminators.get(schema);
 
       for (const kind of GENERATOR_KINDS) {
         artifacts.push({
           schemaId,
           kind,
-          suggestedPath: suggestedPathFor(entry.sourcePath, kind),
+          suggestedPath: suggestedPathFor(entry.sourcePath, kind, {
+            ...(discriminator !== undefined ? { discriminator } : {}),
+          }),
           content: renderArtifact(kind, schema, entrySourceHash),
           irHash: schemaIrHash,
           sourceHash: entrySourceHash,
@@ -87,6 +116,72 @@ export function generateHandler(opts: GenerateOpts): GenerateResult {
   }
 
   return { success: true, data: { artifacts } };
+}
+
+// =============================================================================
+// Per-entry discriminator slugs (Master plan Decision #6 multi-schema rule)
+// =============================================================================
+
+/**
+ * For one `RegistrySourceEntry`, decide the discriminator slug each
+ * named schema needs on its `suggestedPath`:
+ *
+ * - Entry contains exactly 0 or 1 named schemas → no discriminator.
+ * - Entry contains 2+ named schemas with **distinct ids** →
+ *   discriminator = `slugify(schemaId)`.
+ * - Entry contains 2+ named schemas where **at least one id appears
+ *   more than once** (different versions of the same id in one
+ *   source file — rare) → for the IDs that repeat, the discriminator
+ *   additionally embeds the slugged version so per-schema paths
+ *   stay unique. IDs that appear only once still use the id-only
+ *   slug.
+ *
+ * Returned `Map` is keyed by the original `AnySchema` instance so
+ * the handler loop can look up each schema's discriminator without
+ * re-deriving it. Anonymous schemas are not represented in the map.
+ */
+function discriminatorsFor(
+  entry: RegistrySourceEntry,
+): Map<AnySchema, string | undefined> {
+  const result = new Map<AnySchema, string | undefined>();
+  const named = entry.schemas.filter(
+    (s) => s.node.metadata?.id !== undefined,
+  );
+
+  if (named.length <= 1) {
+    for (const s of named) result.set(s, undefined);
+    return result;
+  }
+
+  // Multiple named schemas — disambiguation needed. Count id
+  // occurrences; if any id appears more than once, those entries
+  // get the version-suffixed slug to stay unique.
+  const idCounts = new Map<string, number>();
+  for (const s of named) {
+    const id = s.node.metadata!.id!;
+    idCounts.set(id, (idCounts.get(id) ?? 0) + 1);
+  }
+
+  for (const s of named) {
+    const id = s.node.metadata!.id!;
+    const version = s.node.metadata?.version;
+    const idSlug = slugify(id);
+    const sameIdElsewhere = (idCounts.get(id) ?? 0) > 1;
+    const slug =
+      sameIdElsewhere && version !== undefined
+        ? `${idSlug}-${slugify(version)}`
+        : idSlug;
+    result.set(s, slug);
+  }
+  return result;
+}
+
+/** Lowercase, non-alphanumeric runs → `-`, trim leading/trailing `-`. */
+function slugify(s: string): string {
+  return s
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
 }
 
 // =============================================================================
@@ -123,16 +218,22 @@ const KIND_TO_EXT: Record<GeneratorKind, string> = {
 };
 
 /**
- * `<schema-dir>/<basename>.schema.ts` → `<schema-dir>/generated/<basename>.<ext>`.
+ * `<schema-dir>/<basename>.schema.ts` → `<schema-dir>/generated/<basename>[.<discriminator>].<ext>`.
  *
  * Pure string manipulation; no `node:path` import. Forward slashes
  * are the canonical separator in the suggested path even on Windows
  * — the CLI normalizes back to platform separators on write
  * (separate concern; Step 31).
+ *
+ * The optional `discriminator` is inserted between the basename and
+ * the artifact extension. The handler computes it per-entry via
+ * `discriminatorsFor` (see above); callers that know they have a
+ * single-schema source file may omit the option entirely.
  */
 export function suggestedPathFor(
   sourcePath: string,
   kind: GeneratorKind,
+  options: { readonly discriminator?: string } = {},
 ): string {
   const normalized = sourcePath.replace(/\\/g, "/");
   const lastSlash = normalized.lastIndexOf("/");
@@ -140,7 +241,11 @@ export function suggestedPathFor(
   const filename =
     lastSlash >= 0 ? normalized.slice(lastSlash + 1) : normalized;
   const basename = basenameOf(filename);
-  const prefix = dir ? `${dir}/generated/${basename}` : `generated/${basename}`;
+  const stem =
+    options.discriminator !== undefined
+      ? `${basename}.${options.discriminator}`
+      : basename;
+  const prefix = dir ? `${dir}/generated/${stem}` : `generated/${stem}`;
   return `${prefix}${KIND_TO_EXT[kind]}`;
 }
 

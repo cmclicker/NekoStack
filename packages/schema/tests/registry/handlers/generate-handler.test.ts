@@ -366,6 +366,162 @@ describe("generateHandler — suggestedPath convention", () => {
 });
 
 // =============================================================================
+// Multi-schema path disambiguation (audit-round-11 fix)
+// =============================================================================
+
+describe("generateHandler — multi-schema path disambiguation", () => {
+  it("single named schema keeps the no-discriminator convention", () => {
+    const r = generateHandler({
+      entries: [entry("schemas/domain.schema.ts", "// d", [TENANT()])],
+    });
+    if (r.success) {
+      const ts = r.data.artifacts.find((a) => a.kind === "typescript");
+      expect(ts?.suggestedPath).toBe(
+        "schemas/generated/domain.types.ts",
+      );
+      expect(ts?.suggestedPath).not.toContain(".com-x-");
+    }
+  });
+
+  it("two named schemas in one file produce unique suggestedPath values", () => {
+    const r = generateHandler({
+      entries: [
+        entry("schemas/domain.schema.ts", "// domain", [TENANT(), AUDIT()]),
+      ],
+    });
+    if (r.success) {
+      const paths = r.data.artifacts.map((a) => a.suggestedPath);
+      expect(new Set(paths).size).toBe(paths.length);
+    }
+  });
+
+  it("two named schemas in one file each carry a deterministic schemaId slug", () => {
+    const r = generateHandler({
+      entries: [
+        entry("schemas/domain.schema.ts", "// domain", [TENANT(), AUDIT()]),
+      ],
+    });
+    if (r.success) {
+      const tenantTs = r.data.artifacts.find(
+        (a) => a.kind === "typescript" && a.schemaId === "com.x.Tenant",
+      );
+      const auditTs = r.data.artifacts.find(
+        (a) => a.kind === "typescript" && a.schemaId === "com.x.AuditEvent",
+      );
+      expect(tenantTs?.suggestedPath).toBe(
+        "schemas/generated/domain.com-x-tenant.types.ts",
+      );
+      expect(auditTs?.suggestedPath).toBe(
+        "schemas/generated/domain.com-x-auditevent.types.ts",
+      );
+    }
+  });
+
+  it("schemaId → slug rule: lowercase, non-alphanumeric runs collapse to `-`", () => {
+    // Build a name with mixed case, dots, underscores, and trailing
+    // punctuation to verify the slug rule directly.
+    const Weird = s
+      .object({ id: s.string() })
+      .id("Com.NekoStack-Foo_Bar 123!")
+      .version("1.0.0");
+    const r = generateHandler({
+      entries: [entry("schemas/d.schema.ts", "// d", [Weird, TENANT()])],
+    });
+    if (r.success) {
+      const weirdTs = r.data.artifacts.find(
+        (a) =>
+          a.kind === "typescript" && a.schemaId === "Com.NekoStack-Foo_Bar 123!",
+      );
+      expect(weirdTs?.suggestedPath).toBe(
+        "schemas/generated/d.com-nekostack-foo-bar-123.types.ts",
+      );
+    }
+  });
+
+  it("no duplicate suggestedPath across the full generateHandler result (cross-entry, multi-schema)", () => {
+    // Compose a registry that mixes:
+    //  - a single-schema file (no discriminator)
+    //  - a multi-schema file (discriminators)
+    // and verify path uniqueness across the whole emitted list.
+    const r = generateHandler({
+      entries: [
+        entry("schemas/users.schema.ts", "// u", [TENANT()]),
+        entry("schemas/domain.schema.ts", "// d", [TENANT(), AUDIT()]),
+      ],
+    });
+    if (r.success) {
+      const paths = r.data.artifacts.map((a) => a.suggestedPath);
+      expect(new Set(paths).size).toBe(paths.length);
+    }
+  });
+
+  it("generated content still belongs to the correct schema (no cross-contamination)", () => {
+    // The multi-schema disambiguation must not accidentally swap
+    // content between schemas. Each artifact's content must be the
+    // generator output of its own `schema`, not the sibling's.
+    const r = generateHandler({
+      entries: [
+        entry("schemas/domain.schema.ts", "// d", [TENANT(), AUDIT()]),
+      ],
+    });
+    if (r.success) {
+      const tenantTs = r.data.artifacts.find(
+        (a) => a.kind === "typescript" && a.schemaId === "com.x.Tenant",
+      );
+      const auditTs = r.data.artifacts.find(
+        (a) => a.kind === "typescript" && a.schemaId === "com.x.AuditEvent",
+      );
+      // The TS generator embeds the schemaId in the generated header.
+      // Tenant's artifact must reference com.x.Tenant, NOT com.x.AuditEvent.
+      expect(tenantTs?.content).toContain("com.x.Tenant");
+      expect(tenantTs?.content).not.toContain("com.x.AuditEvent");
+      expect(auditTs?.content).toContain("com.x.AuditEvent");
+      expect(auditTs?.content).not.toContain("com.x.Tenant");
+    }
+  });
+
+  it("same schemaId at two versions in one file: discriminator includes version", () => {
+    // Rare but tolerated case (Master plan Decision #6 v0.7 doesn't
+    // endorse but does tolerate). The discriminator gains a slugged
+    // version suffix on the ids that repeat so paths stay unique.
+    const V1 = s.object({ id: s.string() }).id("com.x.Tenant").version("1.0.0");
+    const V2 = s
+      .object({ id: s.string(), name: s.string() })
+      .id("com.x.Tenant")
+      .version("2.0.0");
+    const r = generateHandler({
+      entries: [entry("schemas/tenant.schema.ts", "// t", [V1, V2])],
+    });
+    if (r.success) {
+      const paths = r.data.artifacts.map((a) => a.suggestedPath);
+      expect(new Set(paths).size).toBe(paths.length);
+      // v1 → `com-x-tenant-1-0-0`; v2 → `com-x-tenant-2-0-0`.
+      expect(paths).toContain(
+        "schemas/generated/tenant.com-x-tenant-1-0-0.types.ts",
+      );
+      expect(paths).toContain(
+        "schemas/generated/tenant.com-x-tenant-2-0-0.types.ts",
+      );
+    }
+  });
+
+  it("anonymous + named schemas in one file: only the named gets emitted, no discriminator (single named)", () => {
+    const r = generateHandler({
+      entries: [
+        entry("mixed.schema.ts", "// mixed", [TENANT(), ANON()]),
+      ],
+    });
+    if (r.success) {
+      // 4 artifacts for the named schema; anonymous skipped; no
+      // discriminator because there's only one *named* schema.
+      expect(r.data.artifacts).toHaveLength(4);
+      const ts = r.data.artifacts.find((a) => a.kind === "typescript");
+      expect(ts?.suggestedPath).toBe("generated/mixed.types.ts");
+    }
+  });
+});
+
+// =============================================================================
 // Field preservation
 // =============================================================================
 
