@@ -1,12 +1,21 @@
 /**
  * `tsx`-backed schema-module loader (v0.7 Step 22).
  *
- * Loads a single `*.schema.{ts,js,mts,cts}` file in-process via tsx's
- * programmatic `tsImport` API, extracts every exported NekoStack `Schema`
- * instance, and returns a typed `LoadResult`. Pure data-in / data-out at
- * this layer — no `console.*`, no `process.exit`, no `stderr.write`. The
- * CLI dispatch layer (Steps 25+) maps `LoadFailure` payloads to
- * `schema_load_failed` `Issue`s and to exit code 3.
+ * Loads a single `*.schema.{ts,js,mts,cts}` file in-process, extracts
+ * every exported NekoStack `Schema` instance, and returns a typed
+ * `LoadResult`. Pure data-in / data-out at this layer — no `console.*`,
+ * no `process.exit`, no `stderr.write`. The CLI dispatch layer (Steps
+ * 25+) maps `LoadFailure` payloads to `schema_load_failed` `Issue`s
+ * and to exit code 3.
+ *
+ * **Loading strategy.** `register()` from `tsx/esm/api` installs tsx's
+ * ESM hook once at module load (`register()` is called below, near
+ * the imports). Subsequent loads use plain dynamic `import()` — Node
+ * routes `.ts` and `.tsx` specifiers through tsx's transform
+ * pipeline, and Node's own module cache makes repeat loads near-free.
+ * Per-call `tsImport()` was tried first but pays a fresh-ESM-context
+ * cost on every invocation that compounds badly on Windows (multi-
+ * second per-load latency when walking even a small workspace).
  *
  * Loader-level failures classify per the locked Master plan Decision #1
  * categories:
@@ -26,15 +35,21 @@
  *     `@nekostack/schema/cli`).
  *   - Format anything for stdout / stderr (Step 27 / Step 28).
  *
- * tsx detection notes — tsx wraps esbuild, and a TS/JS compile failure
- * surfaces as an error with one of three signals:
- *   1. `error.errors` (esbuild's `BuildFailure` shape — array of
- *      `Message`s).
- *   2. `error instanceof SyntaxError` (Node's own parser fallback or a
- *      genuine ESM syntax mismatch).
- *   3. The error's `name === "TransformError"` (some esbuild paths).
- * Anything else thrown while attempting to import the module is treated
- * as a runtime error.
+ * Compile-error detection — esbuild surfaces transform failures
+ * through one of several shapes depending on how tsx wraps them and
+ * what runtime is in front (plain Node vs. vitest's worker pool).
+ * `classifyImportError` checks, in order:
+ *   1. `error.errors` is a populated array (esbuild's `BuildFailure`).
+ *   2. `error instanceof SyntaxError` (Node's ESM parser fallback).
+ *   3. `error.name === "TransformError"`.
+ *   4. Specific Node module-loading codes
+ *      (`ERR_UNSUPPORTED_DIR_IMPORT`, `ERR_INVALID_MODULE_SPECIFIER`).
+ *   5. Message-pattern fallback `/^Transform failed/` — vitest's
+ *      worker flattens esbuild errors to plain `new Error(...)` with
+ *      no discriminating properties, but the message prefix stays
+ *      stable across tsx and esbuild versions.
+ * Anything else thrown while attempting to import is treated as a
+ * runtime error.
  */
 
 import { stat } from "node:fs/promises";

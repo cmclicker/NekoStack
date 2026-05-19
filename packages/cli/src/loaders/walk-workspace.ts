@@ -42,8 +42,10 @@
 import { readFile } from "node:fs/promises";
 import { glob } from "node:fs/promises";
 import { isAbsolute, resolve, sep } from "node:path";
-import type { AnySchema } from "@nekostack/schema";
+import type { RegistrySourceEntry } from "@nekostack/schema/cli";
 import { loadSchemaModule, type LoadFailure } from "./tsx-loader.js";
+
+export type { RegistrySourceEntry };
 
 // =============================================================================
 // Public types
@@ -58,20 +60,6 @@ export interface WalkOpts {
   readonly root: string;
   /** Optional glob, **replaces** {@link DEFAULT_SCHEMA_PATTERN}. */
   readonly pattern?: string;
-}
-
-/**
- * Schema-side `RegistrySourceEntry` shape. Duplicated locally — not
- * re-exported from `@nekostack/schema/cli` — to keep the loader free
- * of any handler import. The type is structurally identical to the
- * schema-side definition; downstream code that needs the schema-side
- * type imports from `@nekostack/schema/cli` and assigns through this
- * compatible shape.
- */
-export interface RegistrySourceEntry {
-  readonly sourcePath: string;
-  readonly sourceText: string;
-  readonly schemas: readonly AnySchema[];
 }
 
 export interface WalkResult {
