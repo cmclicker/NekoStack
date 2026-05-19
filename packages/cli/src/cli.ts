@@ -10,10 +10,10 @@
  * Decision #9): tests call `dispatch`, capture stdout/stderr through
  * injected writers, and assert on the returned exit code.
  *
- * Schema verbs land verb-by-verb. `list` (Step 29) and `diff`
- * (Step 30) are real. `check` and `generate` still print a
- * TODO-style stderr message and return LOGICAL_FAILURE from their
- * `.action()` placeholders. Steps 31 / 32 replace each remaining
+ * Schema verbs land verb-by-verb. `list` (Step 29), `diff`
+ * (Step 30), and `check` (Step 31) are real. `generate` still
+ * prints a TODO-style stderr message and returns LOGICAL_FAILURE
+ * from its `.action()` placeholder. Step 32 replaces that
  * placeholder with a real dispatch.
  *
  * Exit codes follow the locked enum from [`./exit-codes.ts`](./exit-codes.ts)
@@ -25,6 +25,7 @@
 
 import { createRequire } from "node:module";
 import { Command, CommanderError } from "commander";
+import { runCheck } from "./commands/schema/check.js";
 import { runDiff } from "./commands/schema/diff.js";
 import { runList } from "./commands/schema/list.js";
 import { EXIT_CODES, type ExitCode } from "./exit-codes.js";
@@ -78,12 +79,11 @@ export function buildCli(opts: BuildCliOptions = {}): Command {
       outputError: (s, write) => write(s),
     });
 
-  // `schema` command group. `list` (Step 29) and `diff` (Step 30)
-  // are wired to real dispatches; `check` / `generate` remain
-  // placeholders that print a stderr TODO message and resolve with a
-  // logical-failure exit code. Steps 31 / 32 replace each remaining
-  // placeholder with a real dispatch to `@nekostack/schema/cli`'s
-  // pure handlers.
+  // `schema` command group. `list` (Step 29), `diff` (Step 30), and
+  // `check` (Step 31) are wired to real dispatches; `generate`
+  // remains a placeholder that prints a stderr TODO message and
+  // resolves with a logical-failure exit code. Step 32 replaces it
+  // with a real dispatch to `@nekostack/schema/cli`'s pure handler.
 
   const schema = program
     .command("schema")
@@ -149,7 +149,24 @@ export function buildCli(opts: BuildCliOptions = {}): Command {
     .option("--root <path>", "workspace root", process.cwd())
     .option("--json", "machine-readable JSON output", false)
     .option("--quiet", "suppress non-essential stderr output", false)
-    .action(() => placeholderHandler("check", writeErr));
+    .action(
+      async (
+        pattern: string | undefined,
+        cmdOpts: { root: string; json: boolean; quiet: boolean },
+      ) => {
+        const code = await runCheck({
+          root: cmdOpts.root,
+          ...(pattern !== undefined ? { pattern } : {}),
+          json: cmdOpts.json,
+          quiet: cmdOpts.quiet,
+          stdout: writeOut,
+          stderr: writeErr,
+        });
+        if (code !== EXIT_CODES.SUCCESS) {
+          throw new CommandActionError(code);
+        }
+      },
+    );
 
   schema
     .command("generate [pattern]")

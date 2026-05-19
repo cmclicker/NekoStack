@@ -127,19 +127,15 @@ describe("dispatch — schema group help", () => {
 // =============================================================================
 
 describe("dispatch — placeholder verb actions", () => {
-  // `list` is no longer a placeholder as of Step 29; `diff` is no
-  // longer a placeholder as of Step 30. Coverage for each lives in
-  // its own command test file. `check` and `generate` stay
-  // placeholders until Steps 31 / 32.
-  it.each(["check", "generate"] as const)(
-    "`neko schema %s` returns LOGICAL_FAILURE with a TODO message",
-    async (verb) => {
-      const r = await run(["schema", verb]);
-      expect(r.code).toBe(EXIT_CODES.LOGICAL_FAILURE);
-      expect(r.stderr).toMatch(/not yet implemented/);
-      expect(r.stderr).toMatch(new RegExp(`schema ${verb}\\b`));
-    },
-  );
+  // `list` (Step 29), `diff` (Step 30), and `check` (Step 31) are
+  // real verbs now; coverage lives in their own command test files.
+  // Only `generate` remains a placeholder until Step 32.
+  it("`neko schema generate` returns LOGICAL_FAILURE with a TODO message", async () => {
+    const r = await run(["schema", "generate"]);
+    expect(r.code).toBe(EXIT_CODES.LOGICAL_FAILURE);
+    expect(r.stderr).toMatch(/not yet implemented/);
+    expect(r.stderr).toMatch(/schema generate\b/);
+  });
 });
 
 // =============================================================================

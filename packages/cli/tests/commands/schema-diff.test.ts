@@ -398,12 +398,6 @@ describe("dispatch — `schema diff` wiring", () => {
     expect(r.stdout).toMatch(/2 schemas in workspace:/);
   });
 
-  it("`check` placeholder still returns LOGICAL_FAILURE", async () => {
-    const r = await runViaDispatch(["schema", "check"]);
-    expect(r.code).toBe(EXIT_CODES.LOGICAL_FAILURE);
-    expect(r.stderr).toMatch(/not yet implemented/);
-  });
-
   it("`generate` placeholder still returns LOGICAL_FAILURE", async () => {
     const r = await runViaDispatch(["schema", "generate"]);
     expect(r.code).toBe(EXIT_CODES.LOGICAL_FAILURE);
