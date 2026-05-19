@@ -39,15 +39,10 @@ import type { OpenApiGeneratorOptions } from "./types.js";
  */
 export function generateOpenApiSchemaComponent(
   node: SchemaNode,
-  _options: OpenApiGeneratorOptions = {},
+  options: OpenApiGeneratorOptions = {},
 ): string {
-  // No options consumed yet — v0.4 has a single defaulted behavior. Kept
-  // for API stability with future option additions (e.g., `discriminator`
-  // when union builders ship).
-  void _options;
-
   const body = emitSchemaFragment(node, { generator: "openApi" });
-  const provenance = emitProvenance(node);
+  const provenance = emitProvenance(node, options.sourceHash);
   const root = {
     ...body,
     ...provenance,
@@ -55,12 +50,22 @@ export function generateOpenApiSchemaComponent(
   return JSON.stringify(canonicalize(root), null, 2) + "\n";
 }
 
-function emitProvenance(node: SchemaNode): Record<string, JsonValue> {
+/**
+ * Same shape as the JSON Schema provenance block, but with
+ * `generator: "openApi"`. v0.7 adds the optional `sourceHash` field
+ * (Master plan Decision #8); when omitted, the field is absent
+ * entirely from the emitted JSON (`canonicalize` drops `undefined`).
+ */
+function emitProvenance(
+  node: SchemaNode,
+  sourceHash: `sha256:${string}` | undefined,
+): Record<string, JsonValue> {
   return {
     [JSON_SCHEMA_EXTENSIONS.provenance]: {
       generator: "openApi",
       generatorVersion: GENERATOR_VERSION,
       irHash: `sha256:${irHash(node)}`,
+      ...(sourceHash !== undefined ? { sourceHash } : {}),
       schemaId: node.metadata?.id ?? null,
       schemaVersion: node.metadata?.version ?? null,
     },

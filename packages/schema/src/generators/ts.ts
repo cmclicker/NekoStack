@@ -32,7 +32,12 @@ export function generateTypeScript(
 ): string {
   const mode = options.mode ?? "output";
   const baseName = options.typeName ?? deriveName(node);
-  const header = buildHeader(node, { generator: "typescript" });
+  const header = buildHeader(node, {
+    generator: "typescript",
+    ...(options.sourceHash !== undefined
+      ? { sourceHash: options.sourceHash }
+      : {}),
+  });
 
   if (mode === "both") {
     return [

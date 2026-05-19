@@ -36,7 +36,7 @@ export function generateJsonSchema(
 ): string {
   const body = emitSchemaFragment(node, { generator: "jsonSchema" });
   const idBlock = emitRootIdBlock(node, options);
-  const provenance = emitProvenance(node);
+  const provenance = emitProvenance(node, options.sourceHash);
   const root = {
     $schema: "https://json-schema.org/draft/2020-12/schema",
     ...idBlock,
@@ -53,13 +53,24 @@ export function generateJsonSchema(
  * it doesn't pollute the top-level JSON Schema namespace and is easy for
  * downstream tooling to read or strip. Mirrors the v0.2 JSDoc header
  * concept, adapted for a comment-less format.
+ *
+ * v0.7 adds `sourceHash` as an optional field. When the caller passes
+ * `options.sourceHash`, the field appears in the `x-nekostack` block;
+ * when omitted, the field is absent entirely (Master plan Decision #8 —
+ * NOT emitted as `null`). `canonicalize` drops `undefined` values, so
+ * setting the field to `undefined` here is equivalent to omitting it
+ * from the output JSON.
  */
-function emitProvenance(node: SchemaNode): Record<string, JsonValue> {
+function emitProvenance(
+  node: SchemaNode,
+  sourceHash: `sha256:${string}` | undefined,
+): Record<string, JsonValue> {
   return {
     [JSON_SCHEMA_EXTENSIONS.provenance]: {
       generator: "jsonSchema",
       generatorVersion: GENERATOR_VERSION,
       irHash: `sha256:${irHash(node)}`,
+      ...(sourceHash !== undefined ? { sourceHash } : {}),
       schemaId: node.metadata?.id ?? null,
       schemaVersion: node.metadata?.version ?? null,
     },
