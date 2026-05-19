@@ -127,7 +127,10 @@ describe("dispatch — schema group help", () => {
 // =============================================================================
 
 describe("dispatch — placeholder verb actions", () => {
-  it.each(["list", "diff", "check", "generate"] as const)(
+  // `list` is no longer a placeholder as of Step 29 — coverage moved
+  // to `tests/commands/schema-list.test.ts`. The remaining three
+  // stay placeholders until Steps 30 / 31 / 32.
+  it.each(["diff", "check", "generate"] as const)(
     "`neko schema %s` returns LOGICAL_FAILURE with a TODO message",
     async (verb) => {
       // `diff` takes two positional args; pass them so commander

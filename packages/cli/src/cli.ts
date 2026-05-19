@@ -25,6 +25,7 @@
 
 import { createRequire } from "node:module";
 import { Command, CommanderError } from "commander";
+import { runList } from "./commands/schema/list.js";
 import { EXIT_CODES, type ExitCode } from "./exit-codes.js";
 
 // Re-export so existing call sites that imported the enum from
@@ -97,7 +98,18 @@ export function buildCli(opts: BuildCliOptions = {}): Command {
     .option("--root <path>", "workspace root", process.cwd())
     .option("--json", "machine-readable JSON output", false)
     .option("--quiet", "suppress non-essential stderr output", false)
-    .action(() => placeholderHandler("list", writeErr));
+    .action(async (cmdOpts: { root: string; json: boolean; quiet: boolean }) => {
+      const code = await runList({
+        root: cmdOpts.root,
+        json: cmdOpts.json,
+        quiet: cmdOpts.quiet,
+        stdout: writeOut,
+        stderr: writeErr,
+      });
+      if (code !== EXIT_CODES.SUCCESS) {
+        throw new CommandActionError(code);
+      }
+    });
 
   schema
     .command("diff <a> <b>")
@@ -150,6 +162,19 @@ class PlaceholderUnimplementedError extends Error {
   }
 }
 
+/**
+ * Carries a chosen `ExitCode` out of a commander `.action()` callback.
+ * Action callbacks can't return values that commander surfaces, so a
+ * non-zero outcome travels back to `dispatch()` via a throw. The
+ * error is plain control-flow — never logged or surfaced to the user.
+ */
+class CommandActionError extends Error {
+  constructor(public readonly exitCode: ExitCode) {
+    super(`Command action returned exit code ${exitCode}`);
+    this.name = "CommandActionError";
+  }
+}
+
 // =============================================================================
 // Dispatch
 // =============================================================================
@@ -174,6 +199,9 @@ export async function dispatch(
     await program.parseAsync(argv, { from: "user" });
     return EXIT_CODES.SUCCESS;
   } catch (err) {
+    if (err instanceof CommandActionError) {
+      return err.exitCode;
+    }
     if (err instanceof PlaceholderUnimplementedError) {
       return EXIT_CODES.LOGICAL_FAILURE;
     }
