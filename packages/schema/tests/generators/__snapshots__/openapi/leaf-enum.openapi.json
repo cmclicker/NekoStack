@@ -6,7 +6,7 @@
   ],
   "x-nekostack": {
     "generator": "openApi",
-    "generatorVersion": "@nekostack/schema@0.6.0",
+    "generatorVersion": "@nekostack/schema@0.7.0",
     "irHash": "sha256:c531f8d8ad2aecd4a48d830201d15b512432d1bfb706957c4c81135e1772e133",
     "schemaId": "com.x.Color",
     "schemaVersion": "1.0.0"
