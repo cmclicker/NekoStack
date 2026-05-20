@@ -1,19 +1,24 @@
 /**
- * Step 15 — `@nekostack/schema/cli` integration-surface gate.
+ * `@nekostack/schema/cli` integration-surface positive gate.
  *
- * Positive gate: imports through the package subpath
- * `@nekostack/schema/cli` (resolved via Step 14's `package.json`
- * `exports` map → Step 13's `cli-integration.ts` barrel) and verifies
- * the complete v0.7 integration surface is reachable.
+ * Imports through the package subpath `@nekostack/schema/cli`
+ * (resolved via the `package.json` `exports` map → the
+ * `cli-integration.ts` barrel) and verifies the complete
+ * integration surface is reachable. Covers both:
  *
- * Why through the package path: the CLI (Steps 22-31) will import via
- * `@nekostack/schema/cli`, not via a relative source path. Testing the
- * resolution + the barrel together catches both kinds of regression:
- * a barrel that forgets to re-export something, and a manifest that
- * forgets to wire the subpath at all.
+ *   - v0.7 registry / freshness / generation surface
+ *   - v0.8 migration planning / verification / stub surface
+ *     (Step 13 extension)
  *
- * Step 16 will add the complementary negative gate (root
- * `@nekostack/schema` does NOT export any v0.7 registry name).
+ * Why through the package path: the CLI imports via
+ * `@nekostack/schema/cli`, not via a relative source path. Testing
+ * the resolution + the barrel together catches both kinds of
+ * regression: a barrel that forgets to re-export something, and a
+ * manifest that forgets to wire the subpath at all.
+ *
+ * The complementary negative gate (root `@nekostack/schema` does
+ * NOT export any v0.7 or v0.8 registry/migration name) lives in
+ * `public-surface.test.ts`.
  */
 import { describe, expect, it } from "vitest";
 import * as schemaCli from "@nekostack/schema/cli";
@@ -169,6 +174,135 @@ describe("@nekostack/schema/cli — type surface", () => {
       | _DiffResult
       | _ListOpts
       | _ListResult;
+    const _u: _Used | undefined = undefined;
+    expect(_u).toBeUndefined();
+  });
+});
+
+// =============================================================================
+// v0.8 — migration surface (Step 13 extension)
+// =============================================================================
+
+const MIGRATION_FUNCTION_EXPORTS = [
+  "parseMigrationProvenanceFromText",
+  "buildMigrationRegistry",
+  "planMigration",
+  "verifyMigrationProvenance",
+  "stubMigration",
+  "suggestedMigrationPathFor",
+  "listMigrationsHandler",
+  "planMigrationHandler",
+  "verifyMigrationsHandler",
+  "stubMigrationHandler",
+] as const;
+
+describe("@nekostack/schema/cli — v0.8 migration runtime surface", () => {
+  it.each(MIGRATION_FUNCTION_EXPORTS)(
+    "exports `%s` as a function",
+    (name) => {
+      const surface = schemaCli as unknown as Record<string, unknown>;
+      expect(name in surface).toBe(true);
+      expect(typeof surface[name]).toBe("function");
+    },
+  );
+});
+
+describe("@nekostack/schema/cli — v0.8 migration smoke behavior", () => {
+  it("`suggestedMigrationPathFor` returns the locked migration-path shape", () => {
+    // Locked path convention (Decision #5): `<schema-dir>/migrations/<basename>.<from-slug>-to-<to-slug>.migration.ts`.
+    expect(
+      schemaCli.suggestedMigrationPathFor(
+        "schemas/user.schema.ts",
+        "1.0.0",
+        "2.0.0",
+      ),
+    ).toBe("schemas/migrations/user.1-0-0-to-2-0-0.migration.ts");
+  });
+
+  it("`suggestedMigrationPathFor` handles prerelease versions via the v0.7-compatible slug rule", () => {
+    expect(
+      schemaCli.suggestedMigrationPathFor(
+        "schemas/user.schema.ts",
+        "1.0.0-beta.1",
+        "2.0.0+build.5",
+      ),
+    ).toBe(
+      "schemas/migrations/user.1-0-0-beta-1-to-2-0-0-build-5.migration.ts",
+    );
+  });
+});
+
+// Type-only imports for the v0.8 migration surface. Same pattern as
+// the v0.7 type block above — `type _X = X` aliases give every
+// import a use-site so `tsc`'s `noUnusedLocals` doesn't drop them.
+
+import type {
+  Migration,
+  AnyMigration,
+  MigrationSourceEntry,
+  MigrationEntry,
+  MigrationRegistry,
+  MigrationPlan,
+  PlanNote,
+  MigrationVerdict,
+  VerificationResult,
+  MigrationStub,
+  MigrationListOpts,
+  MigrationListResult,
+  MigrationPlanOpts,
+  MigrationPlanResult,
+  MigrationVerifyOpts,
+  MigrationVerifyResult,
+  MigrationStubOpts,
+  MigrationStubResult,
+} from "@nekostack/schema/cli";
+
+type _Migration = Migration<string, string, string>;
+type _AnyMigration = AnyMigration;
+type _MigrationSourceEntry = MigrationSourceEntry;
+type _MigrationEntry = MigrationEntry;
+type _MigrationRegistry = MigrationRegistry;
+type _MigrationPlan = MigrationPlan;
+type _PlanNote = PlanNote;
+type _MigrationVerdict = MigrationVerdict;
+type _VerificationResult = VerificationResult;
+type _MigrationStub = MigrationStub;
+type _MigrationListOpts = MigrationListOpts;
+type _MigrationListResult = MigrationListResult;
+type _MigrationPlanOpts = MigrationPlanOpts;
+type _MigrationPlanResult = MigrationPlanResult;
+type _MigrationVerifyOpts = MigrationVerifyOpts;
+type _MigrationVerifyResult = MigrationVerifyResult;
+type _MigrationStubOpts = MigrationStubOpts;
+type _MigrationStubResult = MigrationStubResult;
+
+describe("@nekostack/schema/cli — v0.8 migration type surface", () => {
+  it("all 18 migration types are reachable via the subpath (typecheck-gated)", () => {
+    // `type _X = X` aliases above are the actual assertion. This
+    // runtime expect is a green-row placeholder.
+    const _v: _MigrationVerdict["status"] = "bound";
+    expect(_v).toBe("bound");
+    // Use every alias once at the type level to keep them
+    // load-bearing under aggressive dead-code elimination.
+    type _Used =
+      | _Migration
+      | _AnyMigration
+      | _MigrationSourceEntry
+      | _MigrationEntry
+      | _MigrationRegistry
+      | _MigrationPlan
+      | _PlanNote
+      | _MigrationVerdict
+      | _VerificationResult
+      | _MigrationStub
+      | _MigrationListOpts
+      | _MigrationListResult
+      | _MigrationPlanOpts
+      | _MigrationPlanResult
+      | _MigrationVerifyOpts
+      | _MigrationVerifyResult
+      | _MigrationStubOpts
+      | _MigrationStubResult;
     const _u: _Used | undefined = undefined;
     expect(_u).toBeUndefined();
   });
