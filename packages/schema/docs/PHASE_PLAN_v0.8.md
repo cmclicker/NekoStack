@@ -5,6 +5,8 @@
 > Reviewed against [`checklists/package/implementation-acceptance.md`](../../../checklists/package/implementation-acceptance.md). Once approved, implementation lands on `feat/schema-v0.8-candidate` (separate branch).
 >
 > **Hard-locked at the start of the plan:** v0.8 ships *migration planning, verification, and stub generation*. v0.8 does **NOT** ship `neko schema migrate apply` or any other verb that mutates data. Migration execution is deferred to v0.9+ behind its own plan and risk review. This is the load-bearing decision the whole plan is shaped against.
+>
+> **What "no apply" means precisely.** "No apply" means no v0.8 code path ever calls `migration.transform(input)` against any data, anywhere. It does **not** mean migration modules are inert at the file-system layer — they are loaded through `tsx` (the same loader v0.7 uses for schema files) during discovery, and any **module top-level code evaluates** at load time. Top-level evaluation failures are classified as load failures (`runtime_error`) by the existing tsx-loader contract. The authoring guidance ([`docs/MIGRATIONS.md`](./MIGRATIONS.md), Decision #5) **requires migration files to keep top-level code declarative and side-effect-free** — exports the `default` migration, optional helpers used by the eventual `transform`, nothing more. A migration whose top-level mutates data or calls an effect at module load violates the authoring contract and is a load failure waiting to happen.
 
 ## Thesis-fit
 
@@ -114,7 +116,7 @@ v0.8 solves authorship + drift detection + chain planning. v0.9+ may then solve 
 
 - Indexes migrations by `(schemaId, fromVersion, toVersion)`.
 - Duplicate `(schemaId, fromVersion, toVersion)` triples surface as `Result.failure` with `duplicate_migration` Issues. Never throws. (Mirrors v0.7 Decision #4 / `duplicate_schema_id`.)
-- Anonymous migrations (no clear `(schemaId, fromVersion, toVersion)` provenance) are silently skipped at this layer; the CLI warns. (Mirrors v0.7 Decision #5.)
+- **Malformed migration provenance is fail-loud, never silent.** A `.migration.ts` file exists specifically to declare a `(schemaId, fromVersion, toVersion)` transition. Missing or unparseable provenance is treated as an invalid declaration, not as a silent skip — silent skip would let a broken migration mask itself as "no migration found." `buildMigrationRegistry` returns `Result.failure` with an `integrity_error` Issue carrying `metadata.reason: "missing_migration_provenance"` (or one of the existing parse-provenance reason variants for malformed fields). The CLI surfaces the diagnostic. This is an **intentional departure from v0.7 Decision #5** (where anonymous *schemas* are tolerated because a schema file may legitimately export both indexed schemas and helper schemas) — a migration file has no analogous "helper migration" use case.
 
 **`planMigration({ migrations, schemaId, fromVersion, toVersion }): Result<MigrationPlan>`**
 
@@ -130,6 +132,7 @@ v0.8 solves authorship + drift detection + chain planning. v0.9+ may then solve 
 - For every migration, compare its recorded `fromIrHash` / `toIrHash` against `findSchema(registry, schemaId, from|to).irHash`.
 - Per-migration verdict: `bound` / `drift` / `missing_endpoint` (one or both versions not in the schema registry).
 - Cumulative failure: any `drift` or `missing_endpoint` surfaces an Issue. The CLI maps to `LOGICAL_FAILURE`.
+- **Scope of "verification" — provenance + chain integrity only.** `verifyMigrationProvenance` does NOT prove transform correctness. Transform execution is deferred to v0.9+; v0.8 cannot inspect a function body to know whether it correctly maps `s.output<v1>` to `s.output<v2>`. A migration whose `transform` is `throw new Error("Not yet implemented")` verifies just as cleanly as one with a fully-authored body, as long as the provenance hashes bind. Authors who need transform correctness in v0.8 write their own unit tests against the migration module's default export. The verifier is a `provenance-says-what-it-says` check, not a behavior check.
 
 **Stub generation** — `stubMigration({ schemaId, fromVersion, toVersion, registry }): Result<MigrationStub>`. Produces the file *contents* (provenance header + skeleton function signature). The CLI writes the file. Pure planner here.
 
@@ -160,7 +163,7 @@ Locked TS shape (Decision #5 below records the rationale):
  *
  * DO NOT REMOVE THE HEADER. Authors EDIT THE BODY.
  */
-import type { Migration } from "@nekostack/schema";
+import type { Migration } from "@nekostack/schema/cli";
 
 const migration: Migration<"com.x.User", "1.0.0", "2.0.0"> = {
   schemaId: "com.x.User",
@@ -269,14 +272,30 @@ Sixteen decisions. The hard-locked v0.8 scope ("no apply") is implicit in every 
     <schema-dir>/migrations/<basename>.<from-slug>-to-<to-slug>.migration.ts
     ```
 
-    where `<basename>` strips the `.schema.{ts,js}` suffix from the matching schema source file, and `<from-slug>` / `<to-slug>` are the version strings with `.` → `-`. Example:
+    where `<basename>` strips the `.schema.{ts,js}` suffix from the matching schema source file, and `<from-slug>` / `<to-slug>` are the version strings normalized by **the same slug rule v0.7 uses for multi-schema artifact discriminators** ([`src/registry/handlers/generate.ts` `slugify()`](../src/registry/handlers/generate.ts)):
+
+    ```
+    lowercase → non-alphanumeric runs collapse to "-" → trim leading/trailing "-"
+    ```
+
+    Examples:
+
+    ```
+    1.0.0          → 1-0-0
+    1.0.0-beta.1   → 1-0-0-beta-1
+    2.0.0+build.5  → 2-0-0-build-5
+    1.0            → 1-0           (non-strict but still unambiguous)
+    ```
+
+    Worked example:
 
     ```
     schemas/user.schema.ts
     schemas/migrations/user.1-0-0-to-2-0-0.migration.ts
+    schemas/migrations/user.1-0-0-beta-1-to-1-0-0.migration.ts
     ```
 
-    Rationale: mirrors the v0.7 `<schema-dir>/generated/` convention; lets `walk-workspace` discover both generated artifacts and migrations under the same root pattern. Discriminator slugs follow the same rule as the v0.7 path helper.
+    Rationale: mirrors the v0.7 `<schema-dir>/generated/` convention; lets `walk-workspace` discover both generated artifacts and migrations under the same root pattern. Reusing the exact `slugify()` from v0.7 means one slug rule across the whole package — no separate "migration version slug" function to maintain, and no semver-only restriction on the version string.
 
 6. **Exports through `@nekostack/schema/cli`, not the root.** The v0.7 subpath is the established package-internal integration surface; v0.8 adds to it rather than introducing a new one. Root `@nekostack/schema` still exposes only the v0.6 contract.
 
@@ -408,3 +427,11 @@ Implementation order. Each numbered step is a separate commit with its own valid
 
 - **v0.8-plan, initial draft** — 16 decisions. Hard-locked at the start: v0.8 is plan + verify + stub only. No apply. Migration execution is deferred to v0.9+ behind its own plan and explicit safety review.
 - **Round-1 audit anticipation** — risk areas likely to be flagged: (a) is "forward-only" too restrictive? — argument: bidirectional migrations are a separate authorship surface and should not piggyback on the planning phase. (b) does the JSDoc provenance header survive being edited by a human? — yes, the field-extraction regex is whitespace-tolerant and the parser already handles human-edited v0.7 generated headers. (c) is the diff classifier coupling too tight? — the dependency is documented, not enforced; a row change in Decision #12 triggers a migration-compat doc PR, not a v0.X chain re-validation.
+
+- **Round-2 corrections** ([PR #27](https://github.com/cmclicker/NekoStack/pull/27) audit feedback) — five plan-doc tightenings, no scope change:
+
+  - **Root import contradiction resolved.** The migration-file example originally imported `Migration` from `@nekostack/schema`; that violated the v0.6/v0.7 root-non-leakage invariant. Corrected to `import type { Migration } from "@nekostack/schema/cli"`. `Migration` and every other v0.8 type stay under the `/cli` subpath — Decision #6 reaffirmed.
+  - **"Silent skip" for anonymous migrations removed.** Original plan said malformed-provenance `.migration.ts` files are silently dropped at the schema layer; that mirrors v0.7 Decision #5 for anonymous *schemas*, but the analogy doesn't hold — a `.migration.ts` file exists specifically to declare a transition, so missing provenance is a broken declaration, not a permissible state. `buildMigrationRegistry` now returns `Result.failure` with `integrity_error` + `metadata.reason: "missing_migration_provenance"`. **Intentional departure from v0.7 Decision #5**, documented at the primitive's spec.
+  - **"No apply" boundary tightened.** Original phrasing could be read as "no v0.8 code runs migration code." Sharpened to: "no v0.8 code path calls `migration.transform(input)`" — module top-level code DOES evaluate during tsx-backed discovery, and top-level evaluation failures classify as `runtime_error` load failures. Authoring guidance ([`docs/MIGRATIONS.md`](./MIGRATIONS.md)) requires migration files to keep top-level code declarative and side-effect-free.
+  - **Version slug rule locked to v0.7's `slugify()`.** Original draft said "`.` → `-`"; that breaks on prerelease/build markers (`1.0.0-beta.1`, `2.0.0+build.5`). Decision #5 now reuses the exact `slugify()` from `src/registry/handlers/generate.ts` (lowercase → non-alphanumeric → "-" → trim) with worked examples. One slug rule across the whole package.
+  - **Scope of "verification" pinned to provenance + chain integrity.** Added an explicit "verify does NOT prove transform correctness" clause on `verifyMigrationProvenance`. A migration whose `transform` is a stub or throws verifies as cleanly as a fully-authored one — the verifier is a `provenance-says-what-it-says` check, not a behavior check. Behavior is v0.9+.
