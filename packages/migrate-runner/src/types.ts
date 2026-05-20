@@ -42,13 +42,20 @@ import type { Issue } from "@nekostack/schema";
 /**
  * Three modes the runner can be invoked in.
  *
- * | mode             | calls `transform` | calls `outputAdapter.persist` |
- * |------------------|-------------------|-------------------------------|
- * | `validate-only`  | ✗                 | ✗                             |
- * | `dry-run`        | ✓                 | ✗                             |
- * | `execute`        | ✓                 | ✓                             |
+ * | mode             | walks stream | calls `transform` | calls `outputAdapter.persist` |
+ * |------------------|--------------|-------------------|-------------------------------|
+ * | `validate-only`  | ✗ (v0.9)     | ✗                 | ✗                             |
+ * | `dry-run`        | ✓            | ✓                 | ✗                             |
+ * | `execute`        | ✓            | ✓                 | ✓                             |
  *
- * Audit is always written.
+ * **Audit entries are written only for records that are actually
+ * walked.** In v0.9, `validate-only` is locked as pre-flight-only —
+ * the stream is not consumed and no per-record audit entries are
+ * written. The empty-chain no-op (null / cosmetic diff with no
+ * registered migration, or `from === to`) likewise does not walk
+ * records and writes no per-record audit entries. A future
+ * amendment may add a per-record validation pass under
+ * `validate-only`; that's an explicit non-change for v0.9.
  */
 export type RunMode = "validate-only" | "dry-run" | "execute";
 
@@ -263,20 +270,32 @@ export interface RunSuccess {
 }
 
 /**
- * Failed run. Three failure shapes (Decision #14):
+ * Failed run. Four observable shapes (Decision #14 + the Step 6
+ * locked behavior):
  *
- *   - Run-level: `classification` is one of `pre_flight_failed`,
- *     `adapter_init_failed`, or `cancelled`; the per-record counts
- *     are absent because the runner stopped before walking records.
- *   - Per-record aggregate: `classification` is one of the five
- *     per-record codes that triggered the failure (the most-severe
- *     code seen, or simply the first); the counts are populated.
- *   - `onError: "stop"` first-failure abort: classification is the
- *     per-record code that triggered the stop; counts reflect what
- *     was processed before the stop.
+ *   - **`pre_flight_failed`** — planner or chain-scoped verifier
+ *     refused; the runner stopped before walking records.
+ *     `recordCount` / `successCount` / `failureCount` are
+ *     deliberately ABSENT (the runner never began the record walk).
+ *   - **`adapter_init_failed`** — input adapter threw during stream
+ *     iteration. Counts ARE present and reflect how many records
+ *     the runner processed before the throw; `failureCount` MAY be
+ *     `0` if the throw happened before any per-record failure.
+ *   - **`cancelled`** — `AbortSignal` fired pre-stream or between
+ *     records. Counts ARE present; `failureCount` MAY be `0` (pre-
+ *     stream cancellation has all counts `0`; between-records
+ *     cancellation has counts reflecting work done up to the abort).
+ *   - **Per-record aggregate** (incl. `onError: "stop"` first-
+ *     failure abort) — `classification` is the FIRST per-record
+ *     failure's code (the per-record codes are all per-record
+ *     classifications). Counts are populated; `failureCount` is
+ *     guaranteed `> 0`.
  *
- * `failureCount` is always > 0 here; otherwise the result would be
- * `RunSuccess`.
+ * **`failureCount > 0` is NOT a global invariant of `RunFailure`.**
+ * It holds only for the per-record-aggregate shape. Run-level
+ * failures (`pre_flight_failed`) and cancellation may have
+ * `failureCount` absent or `0`. Consumers should branch on
+ * `classification` to know which shape applies.
  */
 export interface RunFailure {
   readonly success: false;

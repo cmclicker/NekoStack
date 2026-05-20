@@ -924,6 +924,154 @@ describe("run — sequential ordering preserved", () => {
 });
 
 // =============================================================================
+// Locked Step 6 contract shapes (regression guard, round-2 cleanup)
+// =============================================================================
+//
+// The Step 6 implementation made specific calls that the type
+// JSDoc now documents:
+//   - validate-only writes NO per-record audit entries (stream
+//     not consumed)
+//   - empty-chain no-op writes NO per-record audit entries
+//   - pre-stream cancellation returns `cancelled` with all counts
+//     at 0 (NOT failureCount > 0 — failureCount is `0` here)
+//   - pre-flight failure returns `pre_flight_failed` and
+//     deliberately OMITS recordCount / successCount / failureCount
+//     (the runner never began the record walk)
+//
+// These behaviors are partially asserted by earlier blocks; this
+// block locks them as explicit regression sentinels so the chosen
+// Step 6 interpretation cannot drift silently.
+
+describe("createMigrationRunner — locked Step 6 no-record-walk shapes", () => {
+  it("validate-only writes NO audit entries (even when the stream has items it never consumed)", async () => {
+    const { registry, migReg } = setupBoundFixture();
+    const { adapter: out } = makeRecordingOutputAdapter();
+    const audit = createMemoryAuditAdapter();
+    const runner = createMigrationRunner({
+      schemaRegistry: registry,
+      migrationRegistry: migReg,
+      inputAdapter: makeInputAdapter([
+        { value: "1" },
+        { value: "2" },
+        { value: "3" },
+      ]),
+      outputAdapter: out,
+      auditAdapter: audit,
+    });
+    const r = await runner.run({
+      schemaId: SCHEMA_ID,
+      fromVersion: "1.0.0",
+      toVersion: "2.0.0",
+      mode: "validate-only",
+      auditBefore: true,
+      auditAfter: true, // even with retention flags on, no entries
+    });
+    expect(r.success).toBe(true);
+    expect(audit.entries.length).toBe(0);
+  });
+
+  it("empty-chain no-op (from === to) writes NO audit entries", async () => {
+    const { registry } = buildSchemaReg([
+      { id: SCHEMA_ID, version: "1.0.0", schema: v1 },
+    ]);
+    const migReg = buildMigReg([]);
+    const { adapter: out } = makeRecordingOutputAdapter();
+    const audit = createMemoryAuditAdapter();
+    const runner = createMigrationRunner({
+      schemaRegistry: registry,
+      migrationRegistry: migReg,
+      inputAdapter: makeInputAdapter([{ value: "x" }]),
+      outputAdapter: out,
+      auditAdapter: audit,
+    });
+    const r = await runner.run({
+      schemaId: SCHEMA_ID,
+      fromVersion: "1.0.0",
+      toVersion: "1.0.0",
+      mode: "execute",
+      auditBefore: true,
+      auditAfter: true,
+    });
+    expect(r.success).toBe(true);
+    if (!r.success) return;
+    expect(r.recordCount).toBe(0);
+    expect(r.successCount).toBe(0);
+    expect(r.failureCount).toBe(0);
+    expect(audit.entries.length).toBe(0);
+  });
+
+  it("pre-stream cancellation returns RunFailure with classification === 'cancelled' AND failureCount === 0", async () => {
+    const { registry, migReg } = setupBoundFixture();
+    const { adapter: out } = makeRecordingOutputAdapter();
+    const audit = createMemoryAuditAdapter();
+    const ac = new AbortController();
+    ac.abort();
+    const runner = createMigrationRunner({
+      schemaRegistry: registry,
+      migrationRegistry: migReg,
+      inputAdapter: makeInputAdapter([{ value: "1" }, { value: "2" }]),
+      outputAdapter: out,
+      auditAdapter: audit,
+    });
+    const r = await runner.run({
+      schemaId: SCHEMA_ID,
+      fromVersion: "1.0.0",
+      toVersion: "2.0.0",
+      mode: "execute",
+      signal: ac.signal,
+    });
+    expect(r.success).toBe(false);
+    if (r.success) return;
+    expect(r.classification).toBe("cancelled");
+    // Pre-stream cancellation: counts are present per the locked
+    // RunFailure JSDoc (cancelled may have counts), and they're
+    // all zero because no record was processed.
+    expect(r.recordCount).toBe(0);
+    expect(r.successCount).toBe(0);
+    expect(r.failureCount).toBe(0);
+    // Audit also empty — cancellation pre-stream means no entries.
+    expect(audit.entries.length).toBe(0);
+  });
+
+  it("pre-flight failure returns RunFailure WITHOUT recordCount/successCount/failureCount keys", async () => {
+    const { registry } = buildSchemaReg([
+      { id: SCHEMA_ID, version: "1.0.0", schema: v1 },
+      { id: SCHEMA_ID, version: "2.0.0", schema: v2 },
+    ]);
+    // No migration registered → planner refuses with
+    // migration_not_found → pre-flight failure.
+    const migReg = buildMigReg([]);
+    const { adapter: out } = makeRecordingOutputAdapter();
+    const audit = createMemoryAuditAdapter();
+    const runner = createMigrationRunner({
+      schemaRegistry: registry,
+      migrationRegistry: migReg,
+      inputAdapter: makeInputAdapter([{ value: "1" }]),
+      outputAdapter: out,
+      auditAdapter: audit,
+    });
+    const r = await runner.run({
+      schemaId: SCHEMA_ID,
+      fromVersion: "1.0.0",
+      toVersion: "2.0.0",
+      mode: "execute",
+    });
+    expect(r.success).toBe(false);
+    if (r.success) return;
+    expect(r.classification).toBe("pre_flight_failed");
+    // The locked Step 6 RunFailure shape for pre_flight_failed
+    // OMITS the record-walk counts because the walk never began.
+    // Assert via `in` operator on the runtime value — this is the
+    // strongest regression guard against the runner accidentally
+    // populating those fields in the future.
+    expect("recordCount" in r).toBe(false);
+    expect("successCount" in r).toBe(false);
+    expect("failureCount" in r).toBe(false);
+    expect(audit.entries.length).toBe(0);
+  });
+});
+
+// =============================================================================
 // Public-entry runtime export gate
 // =============================================================================
 
