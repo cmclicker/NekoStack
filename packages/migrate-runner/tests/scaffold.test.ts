@@ -4,8 +4,8 @@
  * Proves the new `@nekostack/migrate-runner` package is wired up:
  *
  *   - `src/index.ts` is importable
- *   - the workspace `@nekostack/schema` peer is resolvable through
- *     the (future) runner subpath we'll consume from
+ *   - the workspace `@nekostack/schema` dependency is resolvable
+ *     through the (future) runner subpath we'll consume from
  *     `@nekostack/schema/cli` in later steps
  *   - the package source carries no `.transform(` call, no
  *     `console.*`, no `process.exit`, no direct stdout/stderr writes
@@ -33,11 +33,13 @@ describe("@nekostack/migrate-runner — scaffold wiring", () => {
     expect(PACKAGE_NAME).toBe("@nekostack/migrate-runner");
   });
 
-  it("resolves the `@nekostack/schema` workspace peer via the public root", async () => {
+  it("resolves the `@nekostack/schema` workspace dependency via the public root", async () => {
     // Sanity that the workspace links resolve at test time. The
-    // runner consumes `@nekostack/schema/cli` (NOT the root) in
-    // later steps; for Step 1 we just prove the workspace link
-    // exists. Importing from the root is the safe v0.6 surface.
+    // runner declares `@nekostack/schema` as a normal dependency
+    // (in `dependencies`, not `peerDependencies`); the runner
+    // consumes `@nekostack/schema/cli` (NOT the root) in later
+    // steps. For Step 1 we just prove the workspace link exists.
+    // Importing from the root is the safe v0.6 surface.
     const schema = await import("@nekostack/schema");
     expect(schema).toBeTypeOf("object");
     expect(schema).toHaveProperty("s");
