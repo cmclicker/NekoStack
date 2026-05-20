@@ -42,11 +42,26 @@
  *     `MigrationRunner`, `ResumeCursor`, the four `PreFlight*`
  *     shapes, and the four `PerRecordPipeline*` shapes).
  *
- * ## Still ahead (sequenced behind audit gates)
+ *   - **JSON / JSONL reference adapters** (Step 7) —
+ *     `createJsonFileInputAdapter(path)` reads a JSON array (or
+ *     `{ records: [...] }`) from disk and streams sequentially;
+ *     `createJsonFileOutputAdapter(path)` buffers records in memory
+ *     and writes a single JSON array on `flush()`;
+ *     `createJsonlAuditAdapter(path)` is the persistent JSONL
+ *     audit log paired with the in-memory default from Step 5.
+ *     These are the ONLY files in the package that import
+ *     `node:fs/promises`; the cross-cutting scan in
+ *     `tests/scaffold.test.ts` enforces "fs imports only under
+ *     `src/adapters/`". See [`./adapters/`](./adapters/) for the
+ *     individual contracts.
  *
- *   - Step 7 — JSON-file reference adapters (incl. the persistent
- *     JSONL audit adapter, separate from the in-memory default
- *     shipped in Step 5).
+ * ## Still ahead
+ *
+ *   - Step 8 — full test matrix sweep (end-to-end chain, cross-
+ *     cutting purity, etc.).
+ *   - Step 9 — runtime purity gates (formal cross-cutting static
+ *     scan beyond the per-file scans).
+ *   - Step 10 — docs (`README.md` + `docs/RUNNER.md`).
  *
  * ## What this file MUST NOT do (now or ever)
  *
@@ -133,3 +148,13 @@ export { createMemoryAuditAdapter, makeAuditEntry } from "./audit.js";
 // =============================================================================
 
 export { createMigrationRunner } from "./runner.js";
+
+// =============================================================================
+// Step 7 — JSON / JSONL reference adapters
+// =============================================================================
+
+export {
+  createJsonFileInputAdapter,
+  createJsonFileOutputAdapter,
+  createJsonlAuditAdapter,
+} from "./adapters/index.js";
