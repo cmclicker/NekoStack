@@ -67,21 +67,121 @@ export function createJsonlAuditAdapter(path: string): AuditAdapter {
         const line = lines[i]!;
         const trimmed = line.trim();
         if (trimmed === "") continue; // blank lines are legal padding
-        let parsed: AuditEntry;
-        try {
-          parsed = JSON.parse(trimmed) as AuditEntry;
-        } catch (cause) {
-          throw new Error(
-            `JSONL audit adapter: malformed JSON on line ${i + 1} of ${path}: ${errorMessageOf(cause)}`,
-          );
-        }
-        if (parsed.runId === runId && parsed.status === "success") {
-          out.push(parsed.recordIndex);
+        const entry = parseAuditEntryLine(trimmed, i + 1, path);
+        if (entry.runId === runId && entry.status === "success") {
+          out.push(entry.recordIndex);
         }
       }
       return out;
     },
   };
+}
+
+// =============================================================================
+// Audit-entry line validator
+// =============================================================================
+//
+// Audit is the truth source for resume. A line that's JSON-valid but
+// structurally not an `AuditEntry` can poison the cursor — pushing
+// `undefined` / non-number values that violate `cursor(runId):
+// Promise<readonly number[]>` and silently break resume correctness.
+//
+// `parseAuditEntryLine` parses the JSON, runtime-validates the fields
+// the cursor actually depends on (`__auditSchemaVersion`, `runId`,
+// `status`, `recordIndex`), and throws an adapter-readable error
+// naming the failing field. All resume-safety guarantees flow through
+// here.
+
+function parseAuditEntryLine(
+  line: string,
+  lineNumber: number,
+  path: string,
+): AuditEntry {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(line);
+  } catch (cause) {
+    throw malformedLineError({
+      lineNumber,
+      path,
+      field: "json",
+      detail: `not valid JSON: ${errorMessageOf(cause)}`,
+    });
+  }
+
+  if (parsed === null || typeof parsed !== "object" || Array.isArray(parsed)) {
+    throw malformedLineError({
+      lineNumber,
+      path,
+      field: "shape",
+      detail: "audit-entry line must be a JSON object",
+    });
+  }
+
+  const obj = parsed as Record<string, unknown>;
+
+  if (obj.__auditSchemaVersion !== "1") {
+    throw malformedLineError({
+      lineNumber,
+      path,
+      field: "__auditSchemaVersion",
+      detail: `expected "1", got ${describeValue(obj.__auditSchemaVersion)}`,
+    });
+  }
+
+  if (typeof obj.runId !== "string") {
+    throw malformedLineError({
+      lineNumber,
+      path,
+      field: "runId",
+      detail: `expected string, got ${describeValue(obj.runId)}`,
+    });
+  }
+
+  if (obj.status !== "success" && obj.status !== "failure") {
+    throw malformedLineError({
+      lineNumber,
+      path,
+      field: "status",
+      detail: `expected "success" | "failure", got ${describeValue(obj.status)}`,
+    });
+  }
+
+  if (
+    typeof obj.recordIndex !== "number" ||
+    !Number.isInteger(obj.recordIndex) ||
+    obj.recordIndex < 0
+  ) {
+    throw malformedLineError({
+      lineNumber,
+      path,
+      field: "recordIndex",
+      detail: `expected non-negative integer, got ${describeValue(obj.recordIndex)}`,
+    });
+  }
+
+  return obj as unknown as AuditEntry;
+}
+
+function malformedLineError(opts: {
+  lineNumber: number;
+  path: string;
+  field: string;
+  detail: string;
+}): Error {
+  return new Error(
+    `JSONL audit adapter: malformed entry on line ${opts.lineNumber} of ${opts.path} — field \`${opts.field}\` (${opts.detail}).`,
+  );
+}
+
+function describeValue(value: unknown): string {
+  if (value === undefined) return "undefined";
+  if (value === null) return "null";
+  if (typeof value === "string") return `"${value}"`;
+  if (typeof value === "number") return String(value);
+  if (typeof value === "boolean") return String(value);
+  if (Array.isArray(value)) return "array";
+  return typeof value;
 }
 
 // =============================================================================

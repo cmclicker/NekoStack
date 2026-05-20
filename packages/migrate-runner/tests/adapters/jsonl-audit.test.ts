@@ -171,7 +171,195 @@ describe("createJsonlAuditAdapter — blank lines tolerated; malformed JSONL fai
     const a = createJsonlAuditAdapter(path);
     await a.append(entry({ runId: "r", recordIndex: 0, status: "success" }));
     appendFileSync(path, "this-is-not-json\n");
-    await expect(a.cursor("r")).rejects.toThrow(/malformed JSON/);
+    await expect(a.cursor("r")).rejects.toThrow(/malformed entry.*field `json`/);
+  });
+});
+
+// =============================================================================
+// AuditEntry shape validation (round-2 cleanup)
+// =============================================================================
+//
+// JSON-valid but structurally-not-an-AuditEntry lines can poison
+// the cursor and break resume. `parseAuditEntryLine` validates the
+// fields cursor depends on at runtime — these tests prove each
+// validation rule fires.
+
+describe("createJsonlAuditAdapter — cursor() validates AuditEntry shape (audit is truth source for resume)", () => {
+  function setupWithRawLine(rawLine: string): {
+    adapter: ReturnType<typeof createJsonlAuditAdapter>;
+    path: string;
+  } {
+    const dir = freshDir();
+    const path = join(dir, "audit.jsonl");
+    appendFileSync(path, rawLine + "\n", "utf8");
+    return { adapter: createJsonlAuditAdapter(path), path };
+  }
+
+  it("array at top level → throws (`shape` field)", async () => {
+    const { adapter } = setupWithRawLine("[1, 2, 3]");
+    await expect(adapter.cursor("r")).rejects.toThrow(
+      /malformed entry.*field `shape`/,
+    );
+  });
+
+  it("null at top level → throws (`shape` field)", async () => {
+    const { adapter } = setupWithRawLine("null");
+    await expect(adapter.cursor("r")).rejects.toThrow(
+      /malformed entry.*field `shape`/,
+    );
+  });
+
+  it("missing `__auditSchemaVersion` → throws (`__auditSchemaVersion` field)", async () => {
+    const { adapter } = setupWithRawLine(
+      JSON.stringify({ runId: "r", status: "success", recordIndex: 0 }),
+    );
+    await expect(adapter.cursor("r")).rejects.toThrow(
+      /malformed entry.*field `__auditSchemaVersion`/,
+    );
+  });
+
+  it("wrong `__auditSchemaVersion` → throws", async () => {
+    const { adapter } = setupWithRawLine(
+      JSON.stringify({
+        __auditSchemaVersion: "999",
+        runId: "r",
+        status: "success",
+        recordIndex: 0,
+      }),
+    );
+    await expect(adapter.cursor("r")).rejects.toThrow(
+      /malformed entry.*field `__auditSchemaVersion`/,
+    );
+  });
+
+  it("missing `runId` → throws (`runId` field)", async () => {
+    const { adapter } = setupWithRawLine(
+      JSON.stringify({
+        __auditSchemaVersion: "1",
+        status: "success",
+        recordIndex: 0,
+      }),
+    );
+    await expect(adapter.cursor("r")).rejects.toThrow(
+      /malformed entry.*field `runId`/,
+    );
+  });
+
+  it("non-string `runId` → throws (`runId` field)", async () => {
+    const { adapter } = setupWithRawLine(
+      JSON.stringify({
+        __auditSchemaVersion: "1",
+        runId: 42,
+        status: "success",
+        recordIndex: 0,
+      }),
+    );
+    await expect(adapter.cursor("r")).rejects.toThrow(
+      /malformed entry.*field `runId`/,
+    );
+  });
+
+  it("missing `status` → throws (`status` field)", async () => {
+    const { adapter } = setupWithRawLine(
+      JSON.stringify({
+        __auditSchemaVersion: "1",
+        runId: "r",
+        recordIndex: 0,
+      }),
+    );
+    await expect(adapter.cursor("r")).rejects.toThrow(
+      /malformed entry.*field `status`/,
+    );
+  });
+
+  it("invalid `status` value → throws (`status` field)", async () => {
+    const { adapter } = setupWithRawLine(
+      JSON.stringify({
+        __auditSchemaVersion: "1",
+        runId: "r",
+        status: "unknown",
+        recordIndex: 0,
+      }),
+    );
+    await expect(adapter.cursor("r")).rejects.toThrow(
+      /malformed entry.*field `status`/,
+    );
+  });
+
+  it("missing `recordIndex` → throws (`recordIndex` field)", async () => {
+    const { adapter } = setupWithRawLine(
+      JSON.stringify({
+        __auditSchemaVersion: "1",
+        runId: "r",
+        status: "success",
+      }),
+    );
+    await expect(adapter.cursor("r")).rejects.toThrow(
+      /malformed entry.*field `recordIndex`/,
+    );
+  });
+
+  it("non-number `recordIndex` → throws (`recordIndex` field)", async () => {
+    const { adapter } = setupWithRawLine(
+      JSON.stringify({
+        __auditSchemaVersion: "1",
+        runId: "r",
+        status: "success",
+        recordIndex: "not-a-number",
+      }),
+    );
+    await expect(adapter.cursor("r")).rejects.toThrow(
+      /malformed entry.*field `recordIndex`/,
+    );
+  });
+
+  it("negative `recordIndex` → throws (`recordIndex` field)", async () => {
+    const { adapter } = setupWithRawLine(
+      JSON.stringify({
+        __auditSchemaVersion: "1",
+        runId: "r",
+        status: "success",
+        recordIndex: -1,
+      }),
+    );
+    await expect(adapter.cursor("r")).rejects.toThrow(
+      /malformed entry.*field `recordIndex`/,
+    );
+  });
+
+  it("non-integer `recordIndex` (float) → throws (`recordIndex` field)", async () => {
+    const { adapter } = setupWithRawLine(
+      JSON.stringify({
+        __auditSchemaVersion: "1",
+        runId: "r",
+        status: "success",
+        recordIndex: 1.5,
+      }),
+    );
+    await expect(adapter.cursor("r")).rejects.toThrow(
+      /malformed entry.*field `recordIndex`/,
+    );
+  });
+
+  it("error messages include the line number and file path", async () => {
+    const dir = freshDir();
+    const path = join(dir, "audit.jsonl");
+    const a = createJsonlAuditAdapter(path);
+    await a.append(entry({ runId: "r", recordIndex: 0, status: "success" }));
+    // Append a corrupted second line.
+    appendFileSync(
+      path,
+      JSON.stringify({
+        runId: "r",
+        status: "success",
+        recordIndex: 1,
+      }) + "\n",
+    );
+    await expect(a.cursor("r")).rejects.toThrow(
+      new RegExp(
+        `line 2 of ${path.replace(/\\/g, "\\\\").replace(/[.*+?^${}()|[\\]]/g, "\\$&")}`,
+      ),
+    );
   });
 });
 
