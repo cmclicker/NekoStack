@@ -51,12 +51,27 @@ export const ISSUE_CODES = [
   //   `(schemaId, fromVersion, toVersion)` triple appears in more than
   //   one `MigrationSourceEntry`. Mirrors `duplicate_schema_id` from
   //   v0.7; the planner / verifier rely on the triple being unique.
-  // Remaining v0.8 codes (`migration_not_found`,
-  // `migration_chain_broken`, `migration_drift`,
-  // `migration_cosmetic_drift`, `migration_ambiguous_chain`,
-  // `migration_missing_endpoint`) land at their own first-use sites
-  // in Steps 4 (planner) and 5 (verifier).
+  // - `migration_missing_endpoint` — first constructed by
+  //   `migrations/plan-migration.ts` (Step 4) when either the from-
+  //   or to-version is absent from the schema registry. Also used by
+  //   Step 5's verifier when a registered migration references a
+  //   schema version that has since vanished.
+  // - `migration_not_found` — first constructed by `plan-migration.ts`
+  //   (Step 4) when the requested transition is `breaking` and no
+  //   migrations are registered for the schemaId at all.
+  // - `migration_chain_broken` — first constructed by
+  //   `plan-migration.ts` (Step 4) when migrations exist for the
+  //   schemaId but no path bridges (from, to).
+  // - `migration_ambiguous_chain` — first constructed by
+  //   `plan-migration.ts` (Step 4) when two or more distinct chains
+  //   reach the target. The planner refuses to pick.
+  // Remaining v0.8 codes (`migration_drift`, `migration_cosmetic_drift`)
+  // land at their own first-use site in Step 5 (verifier).
   "duplicate_migration",
+  "migration_missing_endpoint",
+  "migration_not_found",
+  "migration_chain_broken",
+  "migration_ambiguous_chain",
 ] as const;
 
 export type IssueCode = (typeof ISSUE_CODES)[number];
