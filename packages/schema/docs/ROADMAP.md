@@ -145,7 +145,7 @@ Ships (schema-side) — *additive* over v0.7, no public-surface breakage at root
 - **Integration subpath extension** — `@nekostack/schema/cli` exports the v0.8 surface alongside the v0.7 surface (10 runtime + 18 type names). Root `@nekostack/schema` retains the v0.6 contract unchanged; the negative-leakage gate in [`../tests/public-surface.test.ts`](../tests/public-surface.test.ts) extends to every v0.8 name.
 - **`GENERATOR_VERSION` bump** to `@nekostack/schema@0.8.0` (Step 17 of the v0.8 plan).
 
-Ships (CLI-side — companion plan in [`../../cli/docs/PHASE_PLAN_v0.8.md`](../../cli/docs/PHASE_PLAN_v0.8.md), in progress):
+Ships (CLI-side — companion implementation in [PR #28](https://github.com/cmclicker/NekoStack/pull/28)):
 
 - `neko schema migrate list / plan / verify / stub` — four locked verbs mirroring the v0.7 `neko schema *` verb shape.
 - `tsx`-based migration-file loader, workspace walker for migration directories, stdout/stderr formatters, exit-code mapping consistent with v0.7 (`0 SUCCESS` / `1 LOGICAL_FAILURE` / `2 USAGE_ERROR` / `3 IO_ERROR` / `4 INTEGRITY_ERROR`).
