@@ -1,4 +1,4 @@
-# Examples — `@nekostack/schema` v0.6
+# Examples — `@nekostack/schema`
 
 Three realistic example schemas under [`../examples/`](../examples/), each with its committed generated artifacts under [`../examples/generated/`](../examples/generated/). These files are validated by [`../tests/examples/regenerate.test.ts`](../tests/examples/regenerate.test.ts): if a schema changes and the generated files aren't refreshed, the test fails.
 
