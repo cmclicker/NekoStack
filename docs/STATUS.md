@@ -5,8 +5,8 @@
 ## Active workstream
 
 - **Package:** @nekostack/schema
-- **Latest release:** [`schema-v0.7.0`](https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.7.0) — 2026-05-19
-- **Active target:** v0.8 — Schema-data migrations: planning + verification + stub generation
+- **Latest release:** [`schema-v0.8.0`](https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.8.0) — 2026-05-20
+- **Active target:** v0.9+ — Active target placeholder
 - **Doctrine in force:** [NekoStack — Product Thesis](../PRODUCT_THESIS.md)
 
 ## Latest milestones
@@ -15,23 +15,23 @@
 
 | Tag | Date | Summary |
 |---|---|---|
+| [`schema-v0.8.0`](https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.8.0) | 2026-05-20 | Schema-data migration planning + provenance verification + stub generation. |
 | [`schema-v0.7.0`](https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.7.0) | 2026-05-19 | Registry-lite + `neko schema *`. |
 | [`schema-v0.6.0`](https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.6.0) | 2026-05-18 | Runtime validation as a NekoStack-owned workflow on the v0.2 source-generator + v0.5 composition foundation. |
 | [`schema-v0.5.0`](https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.5.0) | 2026-05-17 | Composition layer on the v0.1 IR foundation. |
 | [`schema-v0.4.0`](https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.4.0) | 2026-05-17 | Fourth generator on the v0.1 IR foundation. |
-| [`schema-v0.3.0`](https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.3.0) | 2026-05-17 | Third generator on the v0.1 IR foundation. |
 
 ## Validation snapshot
 
 Test counts come from each package's most recent CHANGELOG entry. After validating a release, update the package CHANGELOG and run `npm run status:generate`.
 
-- **@nekostack/schema:** 871 tests recorded (latest: schema-v0.7.0)
+- **@nekostack/schema:** 1292 tests recorded (latest: schema-v0.8.0)
 
 ## Next actions
 
-1. Open the v0.7 phase-plan PR for @nekostack/schema — Registry-lite + CLI; consumes v0.2 irHash and the new sourceHash for freshness.
-2. Land the v0.7 CLI runtime in @nekostack/cli; the v0.6 runtime stays the engine behind it.
-3. Apply the thesis-fit audit gate to the v0.7 phase plan before any implementation PR.
+1. schema-v0.8.0 shipped (PR #28, tag schema-v0.8.0 at ec742e8). Active target placeholder: v0.9+. No implementation has started; no phase plan exists yet.
+2. If a migration runner / apply path is proposed for v0.9, raise it as a separate plan-only PR with thesis-fit audit. The v0.8 hard-locks (no apply in @nekostack/schema, forward-only, one schemaId per migration, no DDL) remain in force regardless of what v0.9 picks up.
+3. Apply the thesis-fit audit gate to any v0.9 phase plan before any implementation PR.
 
 ## How to refresh
 

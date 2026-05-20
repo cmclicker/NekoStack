@@ -6,6 +6,61 @@ This package is workspace-internal (`private: true`, version `0.0.0`). The miles
 
 ---
 
+## schema-v0.8.0 — 2026-05-20
+
+[Tag](https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.8.0) · merge commit [`ec742e8`](https://github.com/cmclicker/NekoStack/commit/ec742e894c499a282b855374dbe2f20a927dfdb4). Schema-data migration planning + provenance verification + stub generation. Joint schema + CLI phase; v0.8 primitives ship under this tag alongside the four `neko schema migrate *` verbs.
+
+### Shipped
+
+- **Hard-locked v0.8 boundary** — schema-data migration *planning*, *verification*, and *stub generation* only. **No `apply` verb. No `migration.transform` execution. No data mutation. No rollback. No DDL migrations.** Enforced by cross-cutting `.transform(` static-scan gates on both the schema-side handler reach and the CLI command surface (`cli.ts` + every file under `src/commands/schema/migrate/`).
+- **Migration type surface** — `Migration<SchemaId, FromVersion, ToVersion, Input, Output>`, `MigrationSourceEntry`, `MigrationEntry`, `MigrationRegistry` (three-level `(schemaId → fromVersion → toVersion)` Map), `MigrationPlan`, `PlanNote` (`over_specified` / `additive_no_migration`), `MigrationVerdict` (four-way), `VerificationResult`, `MigrationStub`, plus four `*Opts`/`*Result` pairs.
+- **`parseMigrationProvenanceFromText`** — JSDoc-only carrier; 9 required fields (`schemaId`, `fromVersion`, `toVersion`, `fromIrHash`, `toIrHash`, `fromSourceHash`, `toSourceHash`, `generator`, `generatorVersion`). Fail-loud `integrity_error` + stable `metadata.reason` (`unknown_format` / `missing_migration_provenance` / `missing_field` / `malformed_hash` / `malformed_field`); never silently skips.
+- **`buildMigrationRegistry`** — pure constructor with first-seen-wins duplicate handling; `duplicate_migration` Issues collected without short-circuit; preserves `MigrationEntry` and `AnyMigration` object identity.
+- **`planMigration({ schemaRegistry, migrationRegistry, schemaId, fromVersion, toVersion })`** — diff-aware planner consuming **both** registries (Round-3 contract). Severity-gated chain requirement: null/cosmetic → empty chain (`over_specified` note when an exact migration is registered); additive → empty + `additive_no_migration` note OR include exact migration; breaking → DFS chain enumeration with `migration_not_found` / `migration_chain_broken` / `migration_ambiguous_chain` on the four failure shapes.
+- **`verifyMigrationProvenance({ schemaRegistry, migrationRegistry })`** — four-way verdict matrix mirroring v0.7's two-hash freshness: `bound` / `cosmetic_drift` / `drift` / `missing_endpoint`. `bound` and `cosmetic_drift` are success-compatible (`cosmetic_drift` is warning-class); `drift` and `missing_endpoint` are failure-class. Deterministic iteration sorted by `(schemaId, fromVersion, toVersion)`.
+- **`stubMigration` + `suggestedMigrationPathFor`** — pure file-content generator emitting the 9-field provenance header + `import type { Migration } from "@nekostack/schema/cli"` + typed declaration + `transform(input) { throw "Not yet implemented" }` body + default export. Slug rule reuses v0.7's `suggestedPathFor` shape.
+- **Four pure handlers** — `listMigrationsHandler`, `planMigrationHandler`, `verifyMigrationsHandler`, `stubMigrationHandler`. Data-in / data-out; never touch the filesystem; never call `.transform(`. Gated by [`tests/migrations/handler-purity.test.ts`](tests/migrations/handler-purity.test.ts) (static-import scan over 9 modules × 12 forbidden patterns + 15 sentinel rows).
+- **`@nekostack/schema/cli` subpath extension** — 10 runtime + 18 type names exposed for `@nekostack/cli` consumption. Root `@nekostack/schema` remains unchanged from v0.6 / v0.7; negative-leakage gate at [`tests/public-surface.test.ts`](tests/public-surface.test.ts) enforces zero v0.8 names on the root surface (10 runtime forbidden + 18 `@ts-expect-error` type rows).
+- **CLI-side** — `read-migrations` loader (discovers `*.migration.ts` via shared `tsx` ESM hook; structural default-export validation; never calls `transform`); four `neko schema migrate *` verbs:
+  - `neko schema migrate list`
+  - `neko schema migrate plan <schemaId> <fromVersion> <toVersion>`
+  - `neko schema migrate verify`
+  - `neko schema migrate stub <schemaId> <fromVersion> <toVersion>`
+  All four accept `--root` / `--json` / `--quiet`. **No `neko schema migrate apply` command. No `--force` flag. `stub` refuses to overwrite an existing file** (`stub_path_exists` failure → `LOGICAL_FAILURE`; existing content preserved byte-identically).
+- **New ISSUE_CODES** — `duplicate_migration`, `migration_missing_endpoint`, `migration_not_found`, `migration_chain_broken`, `migration_ambiguous_chain`, `migration_drift`, `migration_cosmetic_drift` — added at first-use sites per the locked change-control rule.
+- **`GENERATOR_VERSION` bumped to `@nekostack/schema@0.8.0`** — 47 snapshot files + 12 example artifacts regenerated. Diff was version-string-only.
+
+### New contract docs
+
+- [`docs/MIGRATIONS.md`](docs/MIGRATIONS.md) — full v0.8 contract: hard-locked boundary, 9-field provenance header, registry semantics, planner severity dispatch table, verifier verdict matrix, stub contract, schema/CLI ownership, explicit non-goals.
+- [`docs/PHASE_PLAN_v0.8.md`](docs/PHASE_PLAN_v0.8.md) — locked sequencing for the 29-step implementation.
+
+### Invariants
+
+Seven new v0.8 corollaries in [`docs/INVARIANTS.md`](docs/INVARIANTS.md): no-apply/no-transform-execution boundary; subpath gate extends to v0.8 names; forward-only + one-schemaId-per-migration; fail-loud provenance; four-way verifier matrix mirrors freshness; planner consumes both registries; pure migration handlers. Plus two v0.8-specific corollaries: **migrations are append-only** (frozen historical records; in-place rewrites surface as `drift` / `cosmetic_drift` via the verifier) and **migration files are content-addressed by `(fromIrHash, toIrHash)`** (semantic binding by IR-hash pair; `(fromSourceHash, toSourceHash)` layered on top for literal-source drift).
+
+### Docs sweep
+
+[`SCOPE.md`](docs/SCOPE.md), [`INVARIANTS.md`](docs/INVARIANTS.md), [`ROADMAP.md`](docs/ROADMAP.md), [`USAGE.md`](docs/USAGE.md), [`EXAMPLES.md`](docs/EXAMPLES.md), and repo-root [`BOUNDARIES.md`](../../BOUNDARIES.md) all updated to reflect the v0.8 surface and locked non-goals.
+
+### Dependency changes
+
+None. No new runtime deps in either `@nekostack/schema` or `@nekostack/cli`.
+
+### Test count
+
+- 871 → 1292 (+421 net, schema-only). CLI: 327 → 504 (+177 net, including 24+30+29+24 per-verb command tests + dispatch + envelope hardening). Workspace-wide schema + CLI total is 1,796.
+
+### Still deferred
+
+- **Migration `apply` / runner / executor** — explicit non-goal of the v0.8 schema-package contract; no schema-package verb runs `transform(input)` against real data. If a future runner exists, it lives in a downstream package, never in `@nekostack/schema`.
+- **Rollback / reverse migrations** — Decision #2 (forward-only) is locked.
+- **Cross-schema migrations** — Decision #4 (exactly one `schemaId` per authored migration) is locked.
+- **Database / DDL migrations** — `@nekostack/migrate`'s concern.
+- **Date / union / recursiveRef / transform IR** — still throws `UnsupportedNodeKindError` from generators, `diffNodes`, and the diff path inside `planMigration`.
+
+---
+
 ## schema-v0.7.0 — 2026-05-19
 
 [Tag](https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.7.0) · merge commit [`931aa15`](https://github.com/cmclicker/NekoStack/commit/931aa15048f74942a21406ad885283c50da07631). Registry-lite + `neko schema *`. Joint schema + CLI phase; the schema-side primitives ship under this tag and the first real implementation of [`@nekostack/cli`](../cli) ships alongside.

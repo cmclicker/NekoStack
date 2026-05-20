@@ -127,9 +127,9 @@ Explicitly deferred:
 - Partial generation (subset of artifact kinds) — locked by Decision #6.
 - Date / union / recursiveRef / transform IR — still throws `UnsupportedNodeKindError` from generators and from `diffNodes`.
 
-## v0.8 — Schema-data migrations: planning + verification + stub generation ← *active target*
+## v0.8 — Schema-data migrations: planning + verification + stub generation
 
-Status: **in progress** on [`feat/schema-v0.8-candidate`](https://github.com/cmclicker/NekoStack/tree/feat/schema-v0.8-candidate) ([PR #28](https://github.com/cmclicker/NekoStack/pull/28)). Plan: [`PHASE_PLAN_v0.8.md`](./PHASE_PLAN_v0.8.md). Contract: [`MIGRATIONS.md`](./MIGRATIONS.md). Tag will be `schema-v0.8.0` once merged.
+Status: **shipped** ([#28](https://github.com/cmclicker/NekoStack/pull/28), merged 2026-05-20). Plan: [`PHASE_PLAN_v0.8.md`](./PHASE_PLAN_v0.8.md). Contract: [`MIGRATIONS.md`](./MIGRATIONS.md). Tagged as [`schema-v0.8.0`](https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.8.0). Joint schema + CLI phase — the schema-side migration primitives ship under this tag and the four `neko schema migrate *` verbs ship alongside in [`@nekostack/cli`](../../cli).
 
 The v0.8 boundary is **hard-locked**: the schema package owns *planning*, *verification*, and *stub generation* of authored schema-data migrations. It never executes a migration's `transform(input)` function and never ships an "apply" verb. The full non-goals table is in [`MIGRATIONS.md`](./MIGRATIONS.md).
 
@@ -145,7 +145,7 @@ Ships (schema-side) — *additive* over v0.7, no public-surface breakage at root
 - **Integration subpath extension** — `@nekostack/schema/cli` exports the v0.8 surface alongside the v0.7 surface (10 runtime + 18 type names). Root `@nekostack/schema` retains the v0.6 contract unchanged; the negative-leakage gate in [`../tests/public-surface.test.ts`](../tests/public-surface.test.ts) extends to every v0.8 name.
 - **`GENERATOR_VERSION` bump** to `@nekostack/schema@0.8.0` (Step 17 of the v0.8 plan).
 
-Ships (CLI-side — companion plan in [`../../cli/docs/PHASE_PLAN_v0.8.md`](../../cli/docs/PHASE_PLAN_v0.8.md), in progress):
+Ships (CLI-side — companion implementation in [PR #28](https://github.com/cmclicker/NekoStack/pull/28)):
 
 - `neko schema migrate list / plan / verify / stub` — four locked verbs mirroring the v0.7 `neko schema *` verb shape.
 - `tsx`-based migration-file loader, workspace walker for migration directories, stdout/stderr formatters, exit-code mapping consistent with v0.7 (`0 SUCCESS` / `1 LOGICAL_FAILURE` / `2 USAGE_ERROR` / `3 IO_ERROR` / `4 INTEGRITY_ERROR`).
@@ -160,6 +160,17 @@ Explicitly **not** shipped — these are hard-locked non-goals, not deferred ite
 - **No database DDL migrations** (`@nekostack/migrate`'s concern).
 - **No transform-correctness proof** — the package never executes `transform`, so it has no opinion on whether the transform is correct. Verification covers provenance integrity only.
 - **No filesystem I/O, dynamic `import()`, stdout/stderr, exit codes** — owned by `@nekostack/cli`.
+
+## v0.9+ — Active target placeholder ← *active target*
+
+Status: **not started.** No implementation work, no phase plan, no PR. This is a planning placeholder only — the active-target marker exists so the workspace status surface (`docs/STATUS.md`) has a non-empty pointer; it does NOT mean v0.9 is in motion.
+
+Likely focus areas (planning placeholder only — none committed to a phase plan; each requires a separate plan-only PR with thesis-fit audit before any implementation lands):
+
+- **Migration runner / `apply` safety plan.** If a runner ever ships, the v0.8 hard-locked contract means it cannot live in `@nekostack/schema` — it lives in a downstream package. The plan-only PR would need to spell out: who owns it; how `transform` is invoked (sandboxed? streaming? per-record?); pre/post validation against the endpoint schemas; idempotency; partial-failure resumability; observability; and how the v0.8 INVARIANTS continue to hold for the schema package itself even when a runner exists adjacent to it.
+- **Other v0.9 candidates** — open. No commitments. Each requires its own thesis-fit audit before becoming an active target.
+
+The v0.8 hard-locks ([`MIGRATIONS.md`](./MIGRATIONS.md) non-goals table) remain in force regardless of what v0.9 picks up: forward-only, one schemaId per migration, no rollback, no cross-schema, no DDL, no schema-package transform execution.
 
 ## v1.0 — Stable API
 
