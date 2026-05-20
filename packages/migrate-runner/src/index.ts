@@ -39,3 +39,30 @@
  * Bumped alongside the future `migrate-runner-vX.Y.Z` git tag line.
  */
 export const PACKAGE_NAME = "@nekostack/migrate-runner" as const;
+
+// =============================================================================
+// Step 2 — core type surface (see `./types.ts` for the locked contract)
+// =============================================================================
+//
+// Re-exports only. No runtime values are introduced here. The runner
+// orchestrator (Step 6) will land later and may add a single
+// `createMigrationRunner(...)` factory; for Step 2 the public surface
+// is type-only.
+
+export type {
+  AuditAdapter,
+  AuditEntry,
+  ErrorClassification,
+  InputAdapter,
+  MigrationEntry,
+  MigrationRegistry,
+  OutputAdapter,
+  Registry,
+  ResumeCursor,
+  RunFailure,
+  RunMode,
+  RunOpts,
+  RunResult,
+  RunSuccess,
+  RunnerOptions,
+} from "./types.js";
