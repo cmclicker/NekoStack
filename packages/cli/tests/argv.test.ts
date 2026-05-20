@@ -189,6 +189,74 @@ describe("argv — `--quiet` acceptance is verb-specific", () => {
   });
 });
 
+// =============================================================================
+// `--quiet` acceptance on the v0.8 migrate verbs
+// =============================================================================
+//
+// The canonical migrate dispatch tests in `schema-migrate-dispatch.test.ts`
+// already cover `--root` / `--json` acceptance, missing/excess operands,
+// no `apply`, and no `--force`. This block is the symmetric `--quiet`
+// row for the migrate verbs — `argv.test.ts` is the canonical home
+// for "is flag X accepted on verb Y?" assertions and the migrate
+// verbs should be reachable here for the same reason the v0.7 verbs
+// are.
+
+describe("argv — `--quiet` is accepted on every migrate verb", () => {
+  it("`schema migrate list --quiet` parses", async () => {
+    const r = await runCli([
+      "schema",
+      "migrate",
+      "list",
+      "--quiet",
+      "--root",
+      emptyRoot,
+    ]);
+    expect(r.code).not.toBe(EXIT_CODES.USAGE_ERROR);
+  });
+
+  it("`schema migrate plan <a> <b> <c> --quiet` parses", async () => {
+    const r = await runCli([
+      "schema",
+      "migrate",
+      "plan",
+      "com.x.X",
+      "1.0.0",
+      "2.0.0",
+      "--quiet",
+      "--root",
+      emptyRoot,
+    ]);
+    expect(r.code).not.toBe(EXIT_CODES.USAGE_ERROR);
+  });
+
+  it("`schema migrate verify --quiet` parses", async () => {
+    const r = await runCli([
+      "schema",
+      "migrate",
+      "verify",
+      "--quiet",
+      "--root",
+      emptyRoot,
+    ]);
+    expect(r.code).not.toBe(EXIT_CODES.USAGE_ERROR);
+  });
+
+  it("`schema migrate stub <a> <b> <c> --quiet` parses", async () => {
+    const r = await runCli([
+      "schema",
+      "migrate",
+      "stub",
+      "com.x.X",
+      "1.0.0",
+      "2.0.0",
+      "--quiet",
+      "--root",
+      emptyRoot,
+    ]);
+    expect(r.code).not.toBe(EXIT_CODES.USAGE_ERROR);
+  });
+});
+
 describe("argv — `[pattern]` positional acceptance", () => {
   it("`schema check <pattern>` parses (no USAGE_ERROR)", async () => {
     const r = await runCli([

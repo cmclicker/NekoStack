@@ -18,9 +18,10 @@
  * empty-but-real workspaces (mkdtempSync) so the underlying command
  * module's logic doesn't accidentally USAGE_ERROR on its own.
  */
-import { mkdtempSync, rmSync } from "node:fs";
+import { mkdtempSync, readFileSync, readdirSync, rmSync, statSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { afterEach, describe, expect, it } from "vitest";
 import { EXIT_CODES } from "../../src/cli.js";
 import { runCli } from "../cli-harness.js";
@@ -293,4 +294,67 @@ describe("commander wiring — v0.7 schema verbs still work after Step 24", () =
     expect(r.code).toBe(EXIT_CODES.SUCCESS);
     expect(r.stdout).toContain("No schemas found");
   });
+});
+
+// =============================================================================
+// Final cross-cutting static scan — `.transform(` is forbidden EVERYWHERE
+// the migrate surface lives.
+//
+// Each command module has its own `.transform(` static-scan test in its
+// own test file. This block is the all-modules-at-once regression net
+// that catches a hypothetical future file (e.g., a shared migrate
+// helper) which would slip past per-file scans.
+// =============================================================================
+
+describe("v0.8 migrate surface — `.transform(` forbidden across every source", () => {
+  const MIGRATE_DIR = join(
+    dirname(fileURLToPath(import.meta.url)),
+    "..",
+    "..",
+    "src",
+    "commands",
+    "schema",
+    "migrate",
+  );
+  const CLI_TS = join(
+    dirname(fileURLToPath(import.meta.url)),
+    "..",
+    "..",
+    "src",
+    "cli.ts",
+  );
+
+  function listFiles(p: string): string[] {
+    if (statSync(p).isDirectory()) {
+      return readdirSync(p).flatMap((f) => listFiles(join(p, f)));
+    }
+    return [p];
+  }
+
+  const FILES = [...listFiles(MIGRATE_DIR), CLI_TS].filter((f) =>
+    f.endsWith(".ts"),
+  );
+
+  it("scan covers every migrate command module + cli.ts (sentinel)", () => {
+    const names = FILES.map((f) => f.split(/[\\/]/).pop()).sort();
+    expect(names).toEqual([
+      "cli.ts",
+      "list.ts",
+      "plan.ts",
+      "stub.ts",
+      "verify.ts",
+    ]);
+  });
+
+  for (const file of FILES) {
+    const name = file.split(/[\\/]/).pop();
+    const SRC = readFileSync(file, "utf8");
+    const STRIPPED = SRC.replace(/\/\*[\s\S]*?\*\//g, "").replace(
+      /\/\/.*$/gm,
+      "",
+    );
+    it(`\`${name}\` source contains no \`.transform(\` call`, () => {
+      expect(STRIPPED).not.toMatch(/\.transform\s*\(/);
+    });
+  }
 });
