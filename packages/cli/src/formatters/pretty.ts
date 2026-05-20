@@ -30,6 +30,7 @@ import type {
   DiffSeverity,
   FreshnessVerdict,
   GeneratedArtifact,
+  MigrationEntry,
   RegistryEntry,
 } from "@nekostack/schema/cli";
 import type { Issue } from "@nekostack/schema";
@@ -69,6 +70,43 @@ export function formatListPretty(
   const lines = rows.map(
     (r) =>
       `  ${r.id.padEnd(idWidth)}   ${r.version.padEnd(versionWidth)}   ${r.path}`,
+  );
+  return [header, ...lines].join("\n") + "\n";
+}
+
+// =============================================================================
+// `neko schema migrate list`
+// =============================================================================
+
+/**
+ * Render a migration-listing as a fixed-width table. Same shape as
+ * `formatListPretty` but with `(schemaId, fromVersion → toVersion,
+ * sourcePath)` columns. Entries are NOT re-sorted —
+ * `listMigrationsHandler` already returns them in
+ * `(schemaId, fromVersion, toVersion)` ascending order.
+ *
+ * The `migration` field on `MigrationEntry` (the loaded `AnyMigration`)
+ * is deliberately NOT rendered: it carries a closure `transform` that
+ * the v0.8 boundary forbids touching here, and the pretty output is
+ * for human review of the registry shape only.
+ */
+export function formatMigrationListPretty(
+  entries: readonly MigrationEntry[],
+): string {
+  if (entries.length === 0) return "No migrations found in workspace.\n";
+
+  const header = `${pluralize(entries.length, "migration", "migrations")} in workspace:`;
+  const rows = entries.map((e) => ({
+    id: e.schemaId,
+    versions: `${e.fromVersion} → ${e.toVersion}`,
+    path: e.sourcePath,
+  }));
+  const idWidth = maxWidth(rows.map((r) => r.id));
+  const versionsWidth = maxWidth(rows.map((r) => r.versions));
+
+  const lines = rows.map(
+    (r) =>
+      `  ${r.id.padEnd(idWidth)}   ${r.versions.padEnd(versionsWidth)}   ${r.path}`,
   );
   return [header, ...lines].join("\n") + "\n";
 }
@@ -196,18 +234,34 @@ export function formatGeneratePretty(
 // =============================================================================
 
 /**
- * Render `LoadFailure[]` from `walk-workspace.ts`. Each row carries
- * the schema-file path, the locked reason, and the underlying
- * message. Used by the CLI dispatch layer when one or more schema
- * files failed to load — distinct concern from `Issue[]` (the
- * schema-side normalized error vocabulary).
+ * Render `LoadFailure[]` from a CLI loader (`walk-workspace.ts` for
+ * schema files, `read-migrations.ts` for migration files). Each row
+ * carries the file path, the locked reason, and the underlying
+ * message. Used by the CLI dispatch layer when one or more files
+ * failed to load — distinct concern from `Issue[]` (the schema-side
+ * normalized error vocabulary).
+ *
+ * The header noun defaults to `"schema file" / "schema files"` so
+ * the existing `neko schema list / diff / check / generate` commands
+ * keep their byte-identical output. Migration commands pass
+ * `{ noun: { singular: "migration file", plural: "migration files" } }`
+ * so their stderr is unambiguous.
  */
+export interface LoadFailuresPrettyOpts {
+  readonly noun?: {
+    readonly singular: string;
+    readonly plural: string;
+  };
+}
+
 export function formatLoadFailuresPretty(
   failures: readonly LoadFailure[],
+  opts: LoadFailuresPrettyOpts = {},
 ): string {
   if (failures.length === 0) return "No load failures.\n";
 
-  const header = `${pluralize(failures.length, "schema file failed", "schema files failed")} to load:`;
+  const noun = opts.noun ?? { singular: "schema file", plural: "schema files" };
+  const header = `${pluralize(failures.length, `${noun.singular} failed`, `${noun.plural} failed`)} to load:`;
   const lines = failures.map(
     (f) => `  [${f.reason}] ${f.path} — ${f.message}`,
   );

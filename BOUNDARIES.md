@@ -183,7 +183,10 @@ Single source of truth for shape definitions.
 | Schema diff classification (breaking / additive / cosmetic) | `schema` | v0.7+ — `diffNodes` + `worstSeverity` aggregation; pure |
 | Generated-artifact freshness verdict (two-hash matrix) | `schema` | v0.7+ — `checkHandler` + `parseProvenanceFromText`; pure classifier. CLI owns the filesystem reads that feed it. |
 | Generation planning (emit-ready artifact payloads + suggested paths) | `schema` | v0.7+ — `generateHandler`. Pure. The CLI writes the files. |
-| Schema migration *execution* | `migrate` | data-level migrations (works with `schema`); migration-generation deferred to schema v0.8+ |
+| Schema-data migration **planning / verification / stub generation** (pure primitives + four handlers) | `schema` | v0.8 (in progress; [PR #28](https://github.com/cmclicker/NekoStack/pull/28)) — `parseMigrationProvenanceFromText`, `buildMigrationRegistry`, `planMigration`, `verifyMigrationProvenance`, `stubMigration`, four pure handlers. Exposed via `@nekostack/schema/cli` subpath; never executes `transform`. Contract: [`packages/schema/docs/MIGRATIONS.md`](packages/schema/docs/MIGRATIONS.md). |
+| Schema-data migration **execution** (running a migration's `transform(input)` over real data) | not `schema` | Hard-locked non-goal of `@nekostack/schema` v0.8. If a runner exists, it lives in downstream code, never in `@nekostack/schema`. |
+| `neko schema migrate *` CLI verbs (`list` / `plan` / `verify` / `stub`) | `cli` | v0.8 (in progress) — owns migration-file walking, dynamic loading via `tsx`, stdout/stderr formatting, exit codes. Consumes the pure migration primitives via `@nekostack/schema/cli`. |
+| Database / DDL migration execution | `migrate` | Data-level / DDL migrations (works with `schema`); completely separate from `@nekostack/schema`'s schema-data migration *planning* surface. |
 | Branded IDs / typed identifiers | `id` | NEW; uses `schema` as substrate |
 | Cross-package shared type contracts | `schema` | |
 | Runtime validation execution | `schema` | (via `@nekostack/schema` runtime — `parse` / `safeParse` / `validate`; Zod is the internal engine, not part of the consumer surface) |

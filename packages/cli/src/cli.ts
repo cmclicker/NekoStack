@@ -28,6 +28,10 @@ import { runCheck } from "./commands/schema/check.js";
 import { runDiff } from "./commands/schema/diff.js";
 import { runGenerate } from "./commands/schema/generate.js";
 import { runList } from "./commands/schema/list.js";
+import { runMigrateList } from "./commands/schema/migrate/list.js";
+import { runMigratePlan } from "./commands/schema/migrate/plan.js";
+import { runMigrateStub } from "./commands/schema/migrate/stub.js";
+import { runMigrateVerify } from "./commands/schema/migrate/verify.js";
 import { EXIT_CODES, type ExitCode } from "./exit-codes.js";
 
 // Re-export so existing call sites that imported the enum from
@@ -57,7 +61,22 @@ export interface BuildCliOptions extends CliWriters {
 // Builder
 // =============================================================================
 
-const SCHEMA_VERBS = ["list", "diff", "check", "generate"] as const;
+const SCHEMA_VERBS = [
+  "list",
+  "diff",
+  "check",
+  "generate",
+  "migrate",
+] as const;
+
+/**
+ * Locked v0.8 `migrate` subcommand verbs (Decision #5 of the v0.8
+ * phase plan + the user-locked surface: `list / plan / verify /
+ * stub`). No `apply`, no `--force`. The verbs are declared in this
+ * order under the `migrate` group; the help-screen test asserts the
+ * declaration order is the contract.
+ */
+const MIGRATE_VERBS = ["list", "plan", "verify", "stub"] as const;
 
 export function buildCli(opts: BuildCliOptions = {}): Command {
   const writeOut = opts.stdout ?? ((s) => process.stdout.write(s));
@@ -85,7 +104,9 @@ export function buildCli(opts: BuildCliOptions = {}): Command {
 
   const schema = program
     .command("schema")
-    .description("v0.7 schema commands — list / diff / check / generate")
+    .description(
+      "schema commands — list / diff / check / generate (v0.7) + migrate (v0.8)",
+    )
     .exitOverride()
     .configureOutput({
       writeOut,
@@ -184,6 +205,136 @@ export function buildCli(opts: BuildCliOptions = {}): Command {
         const code = await runGenerate({
           root: cmdOpts.root,
           ...(pattern !== undefined ? { pattern } : {}),
+          json: cmdOpts.json,
+          quiet: cmdOpts.quiet,
+          stdout: writeOut,
+          stderr: writeErr,
+        });
+        if (code !== EXIT_CODES.SUCCESS) {
+          throw new CommandActionError(code);
+        }
+      },
+    );
+
+  // ---------------------------------------------------------------------------
+  // `schema migrate` subgroup — v0.8 verbs (list / plan / verify / stub).
+  //
+  // Hard-locked: no `apply` verb, no `--force` flag (`stub` refuses to
+  // overwrite unconditionally). `migration.transform` is never invoked
+  // here — the four command modules carry static-scan tests proving
+  // it, and Master plan Decision #1 plus v0.8 INVARIANTS keep the
+  // schema package pure.
+  // ---------------------------------------------------------------------------
+
+  const migrate = schema
+    .command("migrate")
+    .description("v0.8 migrate commands — list / plan / verify / stub")
+    .exitOverride()
+    .configureOutput({
+      writeOut,
+      writeErr,
+      outputError: (s, write) => write(s),
+    });
+
+  migrate
+    .command("list")
+    .description("enumerate registered migrations")
+    .allowExcessArguments(false)
+    .option("--root <path>", "workspace root", process.cwd())
+    .option("--json", "machine-readable JSON output", false)
+    .option("--quiet", "suppress non-essential stderr output", false)
+    .action(
+      async (cmdOpts: { root: string; json: boolean; quiet: boolean }) => {
+        const code = await runMigrateList({
+          root: cmdOpts.root,
+          json: cmdOpts.json,
+          quiet: cmdOpts.quiet,
+          stdout: writeOut,
+          stderr: writeErr,
+        });
+        if (code !== EXIT_CODES.SUCCESS) {
+          throw new CommandActionError(code);
+        }
+      },
+    );
+
+  migrate
+    .command("plan <schemaId> <fromVersion> <toVersion>")
+    .description(
+      "compute the migration chain (or no-migration-needed plan) for a (schemaId, fromVersion, toVersion) triple",
+    )
+    .allowExcessArguments(false)
+    .option("--root <path>", "workspace root", process.cwd())
+    .option("--json", "machine-readable JSON output", false)
+    .option("--quiet", "suppress non-essential stderr output", false)
+    .action(
+      async (
+        schemaId: string,
+        fromVersion: string,
+        toVersion: string,
+        cmdOpts: { root: string; json: boolean; quiet: boolean },
+      ) => {
+        const code = await runMigratePlan({
+          root: cmdOpts.root,
+          schemaId,
+          fromVersion,
+          toVersion,
+          json: cmdOpts.json,
+          quiet: cmdOpts.quiet,
+          stdout: writeOut,
+          stderr: writeErr,
+        });
+        if (code !== EXIT_CODES.SUCCESS) {
+          throw new CommandActionError(code);
+        }
+      },
+    );
+
+  migrate
+    .command("verify")
+    .description(
+      "classify every registered migration as bound / cosmetic_drift / drift / missing_endpoint",
+    )
+    .allowExcessArguments(false)
+    .option("--root <path>", "workspace root", process.cwd())
+    .option("--json", "machine-readable JSON output", false)
+    .option("--quiet", "suppress non-essential stderr output", false)
+    .action(
+      async (cmdOpts: { root: string; json: boolean; quiet: boolean }) => {
+        const code = await runMigrateVerify({
+          root: cmdOpts.root,
+          json: cmdOpts.json,
+          quiet: cmdOpts.quiet,
+          stdout: writeOut,
+          stderr: writeErr,
+        });
+        if (code !== EXIT_CODES.SUCCESS) {
+          throw new CommandActionError(code);
+        }
+      },
+    );
+
+  migrate
+    .command("stub <schemaId> <fromVersion> <toVersion>")
+    .description(
+      "generate a skeleton migration file (refuses to overwrite an existing file)",
+    )
+    .allowExcessArguments(false)
+    .option("--root <path>", "workspace root", process.cwd())
+    .option("--json", "machine-readable JSON output", false)
+    .option("--quiet", "suppress non-essential stderr output", false)
+    .action(
+      async (
+        schemaId: string,
+        fromVersion: string,
+        toVersion: string,
+        cmdOpts: { root: string; json: boolean; quiet: boolean },
+      ) => {
+        const code = await runMigrateStub({
+          root: cmdOpts.root,
+          schemaId,
+          fromVersion,
+          toVersion,
           json: cmdOpts.json,
           quiet: cmdOpts.quiet,
           stdout: writeOut,

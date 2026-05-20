@@ -8,5 +8,10 @@
     "types": ["node"]
   },
   "include": ["src/**/*", "tests/**/*"],
-  "exclude": ["dist", "node_modules", "tests/fixtures/tsx-loader/compile-error.schema.ts"]
+  "exclude": [
+    "dist",
+    "node_modules",
+    "tests/fixtures/tsx-loader/compile-error.schema.ts",
+    "tests/fixtures/read-migrations/failures/compile-error.1-to-2.migration.ts"
+  ]
 }

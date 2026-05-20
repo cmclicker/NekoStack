@@ -151,7 +151,7 @@ function makeArtifact(
  * irHash:           ${artifactIrHash}
  * sourceHash:       ${artifactSourceHash}
  * generator:        ${generator}
- * generatorVersion: @nekostack/schema@0.7.0
+ * generatorVersion: @nekostack/schema@0.8.0
  *
  * DO NOT EDIT MANUALLY.
  */

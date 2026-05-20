@@ -1,0 +1,26 @@
+/**
+ * Claims the same triple as `a.1-0-0-to-2-0-0.migration.ts` —
+ * `buildMigrationRegistry` surfaces `duplicate_migration`; the
+ * command exits LOGICAL_FAILURE.
+ *
+ * @migration by @nekostack/schema
+ * schemaId:         com.fixture.cli.migrate-plan.DupMig
+ * fromVersion:      1.0.0
+ * toVersion:        2.0.0
+ * fromIrHash:       sha256:1111111111111111111111111111111111111111111111111111111111111111
+ * toIrHash:         sha256:2222222222222222222222222222222222222222222222222222222222222222
+ * fromSourceHash:   sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+ * toSourceHash:     sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+ * generator:        neko-schema-migrate-stub
+ * generatorVersion: @nekostack/schema@0.8.0
+ */
+import type { Migration } from "@nekostack/schema/cli";
+const migration: Migration<"com.fixture.cli.migrate-plan.DupMig", "1.0.0", "2.0.0"> = {
+  schemaId: "com.fixture.cli.migrate-plan.DupMig",
+  from: "1.0.0",
+  to: "2.0.0",
+  transform(input) {
+    return input;
+  },
+};
+export default migration;

@@ -1,4 +1,4 @@
-# Usage — `@nekostack/schema` v0.6
+# Usage — `@nekostack/schema`
 
 > What v0.6 lets you do as an author, end-to-end. For the runtime contract, see [`RUNTIME.md`](./RUNTIME.md). For the why and the scope boundaries, see [`SCOPE.md`](./SCOPE.md). For the full surface, see [`../README.md`](../README.md).
 
@@ -265,6 +265,72 @@ If you are writing application code or a library that uses `@nekostack/schema` d
 
 The subpath exists so the eventual `neko schema *` CLI (companion plan in [`../../cli/docs/PHASE_PLAN_v0.7.md`](../../cli/docs/PHASE_PLAN_v0.7.md)) has a stable, package-internal seam to import from. Full surface and contract in [`REGISTRY.md`](./REGISTRY.md); diff classification in [`DIFF_CLASSIFICATION.md`](./DIFF_CLASSIFICATION.md).
 
+## Schema-data migrations (v0.8 — in progress, preview only)
+
+> v0.8 is **in progress** on [`feat/schema-v0.8-candidate`](https://github.com/cmclicker/NekoStack/tree/feat/schema-v0.8-candidate) ([PR #28](https://github.com/cmclicker/NekoStack/pull/28)), not yet shipped. The schema-side primitives below already exist on the branch; the CLI-side `neko schema migrate *` verbs are still being wired up. This section is a preview of the v0.8 workflow once it lands — the contract is locked in [`MIGRATIONS.md`](./MIGRATIONS.md).
+
+v0.8 lets you describe how to migrate **data** from one version of a schema to a newer version of the same schema. It ships planning, verification, and stub generation — it does **not** ship an apply verb, and the package never executes a migration's `transform(input)`. If you need to run a migration against real data, that lives in your own code or a downstream package.
+
+A migration is a TypeScript module under your package's migration directory. The locked file shape (Decision #5 + Decision #6) is the JSDoc-only nine-field provenance carrier emitted by `stubMigration`, an `import type { Migration } from "@nekostack/schema/cli"`, a typed declaration, and a default export:
+
+```ts
+/**
+ * @migration by @nekostack/schema
+ * schemaId:         com.nekostack.tenant.Tenant
+ * fromVersion:      1.0.0
+ * toVersion:        2.0.0
+ * fromIrHash:       sha256:<hex of the v1 IR>
+ * toIrHash:         sha256:<hex of the v2 IR>
+ * fromSourceHash:   sha256:<hex of the v1 schema source file's UTF-8 bytes>
+ * toSourceHash:     sha256:<hex of the v2 schema source file's UTF-8 bytes>
+ * generator:        neko-schema-migrate-stub
+ * generatorVersion: @nekostack/schema@0.8.0
+ *
+ * DO NOT REMOVE THE HEADER. Authors EDIT THE BODY.
+ */
+import type { Migration } from "@nekostack/schema/cli";
+import type { TenantV1 } from "../generated/tenant-1.0.0.types.js";
+import type { TenantV2 } from "../generated/tenant-2.0.0.types.js";
+
+const migration: Migration<
+  "com.nekostack.tenant.Tenant",
+  "1.0.0",
+  "2.0.0",
+  TenantV1,
+  TenantV2
+> = {
+  schemaId: "com.nekostack.tenant.Tenant",
+  from: "1.0.0",
+  to: "2.0.0",
+  transform(input) {
+    return { ...input, /* v2 shape */ };
+  },
+};
+
+export default migration;
+```
+
+> **`fromSourceHash` / `toSourceHash` bind the *endpoint schemas'* source bytes**, not the migration file's own source hash. There is no per-migration-file `sourceHash` in the v0.8 header — the verifier compares `from{Ir,Source}Hash` and `to{Ir,Source}Hash` to whatever the schema registry currently reports for the two endpoint versions, so the migration stays anchored to a specific shape of both endpoints. The `Migration` object on disk uses the compact `from` / `to` keys; the `MigrationEntry` produced by `buildMigrationRegistry` exposes the same triple as `(schemaId, fromVersion, toVersion)` for index lookup.
+
+Three rules:
+
+- **One `schemaId` per migration** (Decision #4). A single migration may never straddle two schemas; split it.
+- **Forward-only** (Decision #2). `fromVersion` is always older than `toVersion`; no reverse module shape, no rollback.
+- **Fail-loud provenance.** All nine header fields are required. Missing or malformed headers fail with `code: "integrity_error"` and a stable `metadata.reason` — they are never silently skipped.
+
+Once v0.8's CLI ships, four verbs will mirror the v0.7 `neko schema *` shape:
+
+| Verb | What it does | Pure surface it consumes |
+|---|---|---|
+| `neko schema migrate list` | Enumerate authored migrations grouped by `(schemaId, fromVersion)` | `listMigrationsHandler` |
+| `neko schema migrate plan` | Compute the migration chain (or "none needed", or "over-specified") for a `(schemaId, fromVersion, toVersion)` path | `planMigrationHandler` (consumes BOTH schema and migration registries) |
+| `neko schema migrate verify` | Classify every authored migration as `bound` / `cosmetic_drift` / `drift` / `missing_endpoint` against the current schema registry | `verifyMigrationsHandler({ schemaRegistry, migrationRegistry })` (consumes BOTH registries — provenance hashes are compared to current endpoint-schema hashes) |
+| `neko schema migrate stub` | Generate a skeleton migration file (header + typed declaration + `transform(input) { throw "Not yet implemented"; }`) | `stubMigrationHandler` + `suggestedMigrationPathFor` |
+
+The schema package never walks the migration directory, never imports your authored migration modules, and never calls `.transform(...)` — those responsibilities all sit in `@nekostack/cli`. Master plan Decision #1 (schema is pure) stays in force; the migration handlers' purity is gated by [`../tests/migrations/handler-purity.test.ts`](../tests/migrations/handler-purity.test.ts).
+
+The contract details — provenance header field-by-field, planner severity dispatch table, verifier verdict matrix, schema/CLI ownership, non-goals — live in [`MIGRATIONS.md`](./MIGRATIONS.md).
+
 ## Handling unsupported IR
 
 A `SchemaNode` whose kind isn't generator-ready throws `UnsupportedNodeKindError` with a stable shape. v0.3 extends the set with two new `kind` values: `"runtimeRefinement"` (from any generator) and `"regexFlags"` (JSON Schema only — regex with non-empty flags).
@@ -299,7 +365,10 @@ For the JSON Schema generator specifically, regex with non-empty flags also thro
 | Automatic CLI-populated `sourceHash` in committed artifacts | v0.7 CLI | Direct generator calls can already pass `sourceHash` via `ProvenanceOptions.sourceHash` — see the "Optional `sourceHash` provenance (v0.7+)" section in [`EXAMPLES.md`](./EXAMPLES.md). The CLI will compute it from source files automatically. |
 | `$defs` extraction / cross-package `$ref` | v0.7 (registry-lite) | No IR construct in v0.3 needs it |
 | Output-shape JSON Schema (default-applied, all fields required) | deferred | JSON Schema can't represent the input/output split as a single document |
-| Migrations between schema versions | v0.8+ | Bigger scope |
+| Schema-data migrations: planning + verification + stub generation | v0.8 ([PR #28](https://github.com/cmclicker/NekoStack/pull/28), in progress) | See the v0.8 preview section above and [`MIGRATIONS.md`](./MIGRATIONS.md). |
+| **Executing** a schema-data migration's `transform(input)` | never in `@nekostack/schema` | Hard-locked non-goal of the v0.8 contract; the package owns planning + verification + stub generation only. If you need a runner, it lives in your own code or a downstream package. |
+| Database / DDL migrations | `@nekostack/migrate` | Always — `@nekostack/schema` migrations are schema-data only. |
+| Reverse / rollback migrations | not supported | v0.8 is forward-only (Decision #2). |
 | Date types (`isoDateTime` etc.) | future | IR exists; builders deferred |
 
 ## Worked examples

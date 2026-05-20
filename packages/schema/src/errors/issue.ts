@@ -44,6 +44,47 @@ export const ISSUE_CODES = [
   "duplicate_schema_id",
   "schema_not_found",
   "version_not_found",
+  // v0.8 — migration codes. Added per the Master plan Decision #15
+  // change-control rule, at each code's first use site:
+  // - `duplicate_migration` — first constructed by
+  //   `migrations/build-migration-registry.ts` (Step 3) when the same
+  //   `(schemaId, fromVersion, toVersion)` triple appears in more than
+  //   one `MigrationSourceEntry`. Mirrors `duplicate_schema_id` from
+  //   v0.7; the planner / verifier rely on the triple being unique.
+  // - `migration_missing_endpoint` — first constructed by
+  //   `migrations/plan-migration.ts` (Step 4) when either the from-
+  //   or to-version is absent from the schema registry. Also used by
+  //   Step 5's verifier when a registered migration references a
+  //   schema version that has since vanished.
+  // - `migration_not_found` — first constructed by `plan-migration.ts`
+  //   (Step 4) when the requested transition is `breaking` and no
+  //   migrations are registered for the schemaId at all.
+  // - `migration_chain_broken` — first constructed by
+  //   `plan-migration.ts` (Step 4) when migrations exist for the
+  //   schemaId but no path bridges (from, to).
+  // - `migration_ambiguous_chain` — first constructed by
+  //   `plan-migration.ts` (Step 4) when two or more distinct chains
+  //   reach the target. The planner refuses to pick.
+  // - `migration_drift` — first constructed by
+  //   `migrations/verify-provenance.ts` (Step 5) when a migration's
+  //   recorded `fromIrHash` or `toIrHash` doesn't match the schema
+  //   registry's current irHash for that version. The migration was
+  //   authored against a schema state that has since changed
+  //   semantically; the transform may no longer be correct. CLI
+  //   maps to LOGICAL_FAILURE.
+  // - `migration_cosmetic_drift` — first constructed by
+  //   `verify-provenance.ts` (Step 5) when irHash matches at both
+  //   endpoints but at least one sourceHash differs. Source was
+  //   edited without semantic effect. v0.8 verifier classifies this
+  //   as a warning verdict; the CLI prints to stderr but the run
+  //   still succeeds.
+  "duplicate_migration",
+  "migration_missing_endpoint",
+  "migration_not_found",
+  "migration_chain_broken",
+  "migration_ambiguous_chain",
+  "migration_drift",
+  "migration_cosmetic_drift",
 ] as const;
 
 export type IssueCode = (typeof ISSUE_CODES)[number];

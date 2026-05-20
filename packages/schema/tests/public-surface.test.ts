@@ -273,3 +273,120 @@ describe("public surface — v0.7 registry types stay off the root", () => {
     expect(_u).toBeUndefined();
   });
 });
+
+// =============================================================================
+// v0.8 — root `@nekostack/schema` MUST NOT export migration surface
+// =============================================================================
+//
+// Same boundary rule as the v0.7 block above, extended to the v0.8
+// migration planning / verification / stub-generation surface. The
+// v0.8 names live behind `@nekostack/schema/cli`; root
+// `@nekostack/schema` continues to expose only the v0.6 contract.
+//
+// Coverage mirrors the positive `tests/registry-surface.test.ts`
+// gate exactly so the two suites can be diffed at a glance.
+
+const V08_FORBIDDEN_RUNTIME_NAMES = [
+  "parseMigrationProvenanceFromText",
+  "buildMigrationRegistry",
+  "planMigration",
+  "verifyMigrationProvenance",
+  "stubMigration",
+  "suggestedMigrationPathFor",
+  "listMigrationsHandler",
+  "planMigrationHandler",
+  "verifyMigrationsHandler",
+  "stubMigrationHandler",
+] as const;
+
+describe("public surface — v0.8 migration names stay off the root", () => {
+  it.each(V08_FORBIDDEN_RUNTIME_NAMES)(
+    "does NOT export `%s` through @nekostack/schema",
+    (name) => {
+      const surface = schemaRoot as unknown as Record<string, unknown>;
+      expect(name in surface).toBe(false);
+      expect(surface[name]).toBeUndefined();
+    },
+  );
+});
+
+// =============================================================================
+// v0.8 — type-level negative gate (mirrors the v0.7 block above)
+// =============================================================================
+//
+// Each `@ts-expect-error` below is itself the assertion — the line
+// MUST fail typecheck. If a v0.8 type ever starts being exported by
+// the root, the directive becomes unused and `tsc` reports an
+// "Unused '@ts-expect-error' directive" error.
+
+// @ts-expect-error root must not export Migration
+import type { Migration as _M } from "@nekostack/schema";
+// @ts-expect-error root must not export AnyMigration
+import type { AnyMigration as _AM } from "@nekostack/schema";
+// @ts-expect-error root must not export MigrationSourceEntry
+import type { MigrationSourceEntry as _MSE } from "@nekostack/schema";
+// @ts-expect-error root must not export MigrationEntry
+import type { MigrationEntry as _ME } from "@nekostack/schema";
+// @ts-expect-error root must not export MigrationRegistry
+import type { MigrationRegistry as _MReg } from "@nekostack/schema";
+// @ts-expect-error root must not export MigrationPlan
+import type { MigrationPlan as _MP } from "@nekostack/schema";
+// @ts-expect-error root must not export PlanNote
+import type { PlanNote as _PN } from "@nekostack/schema";
+// @ts-expect-error root must not export MigrationVerdict
+import type { MigrationVerdict as _MV } from "@nekostack/schema";
+// @ts-expect-error root must not export VerificationResult
+import type { VerificationResult as _VR } from "@nekostack/schema";
+// @ts-expect-error root must not export MigrationStub
+import type { MigrationStub as _MS } from "@nekostack/schema";
+// @ts-expect-error root must not export MigrationListOpts
+import type { MigrationListOpts as _MLO } from "@nekostack/schema";
+// @ts-expect-error root must not export MigrationListResult
+import type { MigrationListResult as _MLR } from "@nekostack/schema";
+// @ts-expect-error root must not export MigrationPlanOpts
+import type { MigrationPlanOpts as _MPO } from "@nekostack/schema";
+// @ts-expect-error root must not export MigrationPlanResult
+import type { MigrationPlanResult as _MPR } from "@nekostack/schema";
+// @ts-expect-error root must not export MigrationVerifyOpts
+import type { MigrationVerifyOpts as _MVO } from "@nekostack/schema";
+// @ts-expect-error root must not export MigrationVerifyResult
+import type { MigrationVerifyResult as _MVR } from "@nekostack/schema";
+// @ts-expect-error root must not export MigrationStubOpts
+import type { MigrationStubOpts as _MSO } from "@nekostack/schema";
+// @ts-expect-error root must not export MigrationStubResult
+import type { MigrationStubResult as _MSR } from "@nekostack/schema";
+
+// Keep the imports load-bearing under aggressive dead-code elim —
+// same trick as the v0.7 block above. When the imports legitimately
+// fail to resolve, each alias is `any` and this union compiles fine.
+type _UsedV08 =
+  | _M
+  | _AM
+  | _MSE
+  | _ME
+  | _MReg
+  | _MP
+  | _PN
+  | _MV
+  | _VR
+  | _MS
+  | _MLO
+  | _MLR
+  | _MPO
+  | _MPR
+  | _MVO
+  | _MVR
+  | _MSO
+  | _MSR;
+const _u08: _UsedV08 | undefined = undefined;
+
+describe("public surface — v0.8 migration types stay off the root", () => {
+  it("typecheck-gated: every @ts-expect-error above must still apply", () => {
+    // The 18 `@ts-expect-error` directives above are the assertion.
+    // If any one of them stops applying (because the type became
+    // exported through the root), `tsc` reports an unused-directive
+    // error and the typecheck step fails before this runtime block
+    // ever runs.
+    expect(_u08).toBeUndefined();
+  });
+});

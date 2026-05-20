@@ -127,9 +127,39 @@ Explicitly deferred:
 - Partial generation (subset of artifact kinds) — locked by Decision #6.
 - Date / union / recursiveRef / transform IR — still throws `UnsupportedNodeKindError` from generators and from `diffNodes`.
 
-## v0.8+ — Migrations ← *active target*
+## v0.8 — Schema-data migrations: planning + verification + stub generation ← *active target*
 
-- Migration registry, forward migrations, pre/post validation, audit
+Status: **in progress** on [`feat/schema-v0.8-candidate`](https://github.com/cmclicker/NekoStack/tree/feat/schema-v0.8-candidate) ([PR #28](https://github.com/cmclicker/NekoStack/pull/28)). Plan: [`PHASE_PLAN_v0.8.md`](./PHASE_PLAN_v0.8.md). Contract: [`MIGRATIONS.md`](./MIGRATIONS.md). Tag will be `schema-v0.8.0` once merged.
+
+The v0.8 boundary is **hard-locked**: the schema package owns *planning*, *verification*, and *stub generation* of authored schema-data migrations. It never executes a migration's `transform(input)` function and never ships an "apply" verb. The full non-goals table is in [`MIGRATIONS.md`](./MIGRATIONS.md).
+
+Ships (schema-side) — *additive* over v0.7, no public-surface breakage at root `@nekostack/schema`:
+
+- **`Migration<SchemaId, FromVersion, ToVersion, Input, Output>`** — the authored module shape: a 9-field JSDoc provenance header + a pure `transform(input)` function + a default export. Identity is the triple `(schemaId, fromVersion, toVersion)`; one `schemaId` per migration (Decision #4); forward-only (Decision #2).
+- **`parseMigrationProvenanceFromText(text)`** — read the 9-field provenance carrier off a committed migration file. Fail-loud `integrity_error` + stable `metadata.reason` on malformed input; never silently skips (round-2 audit correction). The same JSDoc-only carrier discipline as v0.7 generators.
+- **`buildMigrationRegistry(entries)`** — pure constructor with first-seen-wins duplicate handling; three-level shape supporting exact-triple lookup AND `(schemaId, fromVersion) → outgoing-edges` enumeration for chain construction. Returns `Result<MigrationRegistry>` and collects multiple failures without short-circuiting.
+- **`planMigration({ schemaRegistry, migrationRegistry, schemaId, fromVersion, toVersion })`** — diff-aware planner. Consumes **both** registries so it can honor Decision #10's severity → migration-requirement dispatch. Locked rules: `null` / `cosmetic` → empty chain; `null` / `cosmetic` *with* an exact migration also authored → empty chain + `over_specified` `PlanNote` (migration not included in chain); `additive` *with* an exact migration → chain containing that migration; `additive` *without* a migration → empty chain + `additive_no_migration` `PlanNote`; `breaking` → DFS chain enumeration over the `(schemaId, fromVersion)` adjacency, required to reach `toVersion`. Never calls `transform`.
+- **`verifyMigrationProvenance({ schemaRegistry, migrationRegistry })`** — four-way verdict matrix mirroring v0.7 freshness: `bound` / `cosmetic_drift` / `drift` / `missing_endpoint`. Requires **both** registries because verdicts come from comparing each migration's provenance hashes against the current endpoint-schema hashes. `bound` and `cosmetic_drift` are success-compatible (`cosmetic_drift` is warning-class on the success branch); `drift` and `missing_endpoint` are failure-class with stable metadata reasons. Iteration sorted by `(schemaId, fromVersion, toVersion)` for determinism.
+- **`stubMigration(opts)` + `suggestedMigrationPathFor(opts)`** — pure file-content generator emitting the JSDoc header + `import type { Migration } from "@nekostack/schema/cli"` + typed declaration + `transform(input) { throw "Not yet implemented"; }` body + default export. Slug rule byte-compatible with v0.7's `suggestedPathFor`.
+- **Four pure migration handlers** — `listMigrationsHandler`, `planMigrationHandler`, `verifyMigrationsHandler`, `stubMigrationHandler`. Data-in / data-out; never touch the filesystem, never call `.transform(`. Cross-handler purity gated by [`../tests/migrations/handler-purity.test.ts`](../tests/migrations/handler-purity.test.ts) (static-import scan over 9 modules × 12 forbidden patterns + 15 sentinel rows).
+- **Integration subpath extension** — `@nekostack/schema/cli` exports the v0.8 surface alongside the v0.7 surface (10 runtime + 18 type names). Root `@nekostack/schema` retains the v0.6 contract unchanged; the negative-leakage gate in [`../tests/public-surface.test.ts`](../tests/public-surface.test.ts) extends to every v0.8 name.
+- **`GENERATOR_VERSION` bump** to `@nekostack/schema@0.8.0` (Step 17 of the v0.8 plan).
+
+Ships (CLI-side — companion plan in [`../../cli/docs/PHASE_PLAN_v0.8.md`](../../cli/docs/PHASE_PLAN_v0.8.md), in progress):
+
+- `neko schema migrate list / plan / verify / stub` — four locked verbs mirroring the v0.7 `neko schema *` verb shape.
+- `tsx`-based migration-file loader, workspace walker for migration directories, stdout/stderr formatters, exit-code mapping consistent with v0.7 (`0 SUCCESS` / `1 LOGICAL_FAILURE` / `2 USAGE_ERROR` / `3 IO_ERROR` / `4 INTEGRITY_ERROR`).
+- `@nekostack/cli` owns filesystem discovery, dynamic migration-module loading, stdout/stderr formatting, exit codes, and **any side-effecting top-level evaluation of authored migration modules**. Master plan Decision #1 (schema is pure) stays in force for v0.8.
+
+Explicitly **not** shipped — these are hard-locked non-goals, not deferred items:
+
+- **No apply / runner / executor verb** — the schema package never calls a migration's `transform(input)` against real data. If a future package wants to provide one, it lives outside `@nekostack/schema`. [`MIGRATIONS.md`](./MIGRATIONS.md) is the contract.
+- **No rollback** (Decision #2 — forward-only).
+- **No cross-schema migrations** (Decision #4 — exactly one `schemaId` per migration).
+- **No multi-hop skip** — chain enumeration is required; the planner never silently bypasses intermediate versions.
+- **No database DDL migrations** (`@nekostack/migrate`'s concern).
+- **No transform-correctness proof** — the package never executes `transform`, so it has no opinion on whether the transform is correct. Verification covers provenance integrity only.
+- **No filesystem I/O, dynamic `import()`, stdout/stderr, exit codes** — owned by `@nekostack/cli`.
 
 ## v1.0 — Stable API
 
