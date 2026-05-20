@@ -234,18 +234,34 @@ export function formatGeneratePretty(
 // =============================================================================
 
 /**
- * Render `LoadFailure[]` from `walk-workspace.ts`. Each row carries
- * the schema-file path, the locked reason, and the underlying
- * message. Used by the CLI dispatch layer when one or more schema
- * files failed to load — distinct concern from `Issue[]` (the
- * schema-side normalized error vocabulary).
+ * Render `LoadFailure[]` from a CLI loader (`walk-workspace.ts` for
+ * schema files, `read-migrations.ts` for migration files). Each row
+ * carries the file path, the locked reason, and the underlying
+ * message. Used by the CLI dispatch layer when one or more files
+ * failed to load — distinct concern from `Issue[]` (the schema-side
+ * normalized error vocabulary).
+ *
+ * The header noun defaults to `"schema file" / "schema files"` so
+ * the existing `neko schema list / diff / check / generate` commands
+ * keep their byte-identical output. Migration commands pass
+ * `{ noun: { singular: "migration file", plural: "migration files" } }`
+ * so their stderr is unambiguous.
  */
+export interface LoadFailuresPrettyOpts {
+  readonly noun?: {
+    readonly singular: string;
+    readonly plural: string;
+  };
+}
+
 export function formatLoadFailuresPretty(
   failures: readonly LoadFailure[],
+  opts: LoadFailuresPrettyOpts = {},
 ): string {
   if (failures.length === 0) return "No load failures.\n";
 
-  const header = `${pluralize(failures.length, "schema file failed", "schema files failed")} to load:`;
+  const noun = opts.noun ?? { singular: "schema file", plural: "schema files" };
+  const header = `${pluralize(failures.length, `${noun.singular} failed`, `${noun.plural} failed`)} to load:`;
   const lines = failures.map(
     (f) => `  [${f.reason}] ${f.path} — ${f.message}`,
   );

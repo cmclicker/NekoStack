@@ -117,7 +117,11 @@ export async function runMigrateList(
         }),
       );
     } else {
-      opts.stderr(formatLoadFailuresPretty(walk.failures));
+      opts.stderr(
+        formatLoadFailuresPretty(walk.failures, {
+          noun: { singular: "migration file", plural: "migration files" },
+        }),
+      );
     }
     return EXIT_CODES.IO_ERROR;
   }
