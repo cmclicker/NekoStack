@@ -21,19 +21,26 @@
  *     console / process / fs side effects. See
  *     [`./per-record-pipeline.ts`](./per-record-pipeline.ts) for the
  *     contract.
+ *   - **`createMemoryAuditAdapter`** + **`makeAuditEntry`** (Step 5) —
+ *     in-memory audit adapter (the default sink when the
+ *     orchestrator's caller doesn't supply one) and a constructor
+ *     helper that guarantees `__auditSchemaVersion: "1"`. Pure;
+ *     append-only; never logs / touches fs / touches process. See
+ *     [`./audit.ts`](./audit.ts) for the contract.
  *   - **Type-only re-exports** from [`./types.ts`](./types.ts) covering
  *     the locked v0.9 contract (`RunnerOptions`, `RunOpts`, `RunMode`,
  *     `RunResult` / `RunSuccess` / `RunFailure`, `ErrorClassification`,
- *     `AuditEntry`, the three adapter interfaces, `ResumeCursor`,
- *     the four `PreFlight*` shapes, and the four `PerRecordPipeline*`
- *     shapes).
+ *     `AuditEntry`, the three adapter interfaces, `MemoryAuditAdapter`,
+ *     `ResumeCursor`, the four `PreFlight*` shapes, and the four
+ *     `PerRecordPipeline*` shapes).
  *
  * ## Still ahead (sequenced behind audit gates)
  *
- *   - Step 5 — audit (`./audit.ts`).
  *   - Step 6 — orchestrator (`./runner.ts`) exporting
  *     `createMigrationRunner(...)`.
- *   - Step 7 — JSON-file reference adapters.
+ *   - Step 7 — JSON-file reference adapters (incl. the persistent
+ *     JSONL audit adapter, separate from the in-memory default
+ *     shipped in Step 5).
  *
  * ## What this file MUST NOT do (now or ever)
  *
@@ -70,6 +77,7 @@ export type {
   DiffSeverity,
   ErrorClassification,
   InputAdapter,
+  MemoryAuditAdapter,
   MigrationEntry,
   MigrationRegistry,
   NonEmptyChain,
@@ -93,6 +101,8 @@ export type {
   RunnerOptions,
 } from "./types.js";
 
+export type { MakeAuditEntryOpts } from "./audit.js";
+
 // =============================================================================
 // Step 3 — pre-flight (chain-scoped plan + verify)
 // =============================================================================
@@ -104,3 +114,9 @@ export { preFlight } from "./pre-flight.js";
 // =============================================================================
 
 export { runRecordPipeline } from "./per-record-pipeline.js";
+
+// =============================================================================
+// Step 5 — audit (in-memory adapter + entry constructor)
+// =============================================================================
+
+export { createMemoryAuditAdapter, makeAuditEntry } from "./audit.js";

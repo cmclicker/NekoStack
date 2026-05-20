@@ -450,6 +450,29 @@ export type PerRecordPipelineResult =
   | PerRecordPipelineFailure;
 
 // =============================================================================
+// Audit (Step 5 — Decision #16)
+// =============================================================================
+
+/**
+ * In-memory `AuditAdapter` implementation. Extends the contract
+ * with a read-only `entries` view for tests and ad-hoc inspection.
+ * The view is NOT part of `AuditAdapter` — consumers that depend
+ * on it must specifically type their reference as
+ * `MemoryAuditAdapter`.
+ *
+ * Append-only semantics: each `append` snapshots the entry via a
+ * shallow `Object.freeze`, so later mutations of the caller's
+ * reference do not affect what the adapter holds. Deep freeze of
+ * the `before` / `after` payloads is deliberately NOT done — the
+ * runner trusts the orchestrator to hand it stable snapshots; the
+ * cost of a deep clone per record would be prohibitive at scale.
+ */
+export interface MemoryAuditAdapter extends AuditAdapter {
+  /** Read-only view of every appended entry, in append order. */
+  readonly entries: readonly AuditEntry[];
+}
+
+// =============================================================================
 // Re-export schema-side types the runner consumes (for caller convenience)
 // =============================================================================
 

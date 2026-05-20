@@ -44,6 +44,7 @@ import type {
   DiffSeverity,
   ErrorClassification,
   InputAdapter,
+  MemoryAuditAdapter,
   MigrationEntry,
   MigrationRegistry,
   NonEmptyChain,
@@ -84,6 +85,7 @@ import type {
   DiffSeverity as IndexDiffSeverity,
   ErrorClassification as IndexErrorClassification,
   InputAdapter as IndexInputAdapter,
+  MemoryAuditAdapter as IndexMemoryAuditAdapter,
   MigrationEntry as IndexMigrationEntry,
   MigrationRegistry as IndexMigrationRegistry,
   NonEmptyChain as IndexNonEmptyChain,
@@ -207,6 +209,35 @@ describe("public-entry re-export gate: every locked type round-trips through `sr
     expectTypeOf<IndexPerRecordPipelineSuccess>().toEqualTypeOf<PerRecordPipelineSuccess>();
     expectTypeOf<IndexPerRecordPipelineFailure>().toEqualTypeOf<PerRecordPipelineFailure>();
     expectTypeOf<IndexPerRecordPipelineResult>().toEqualTypeOf<PerRecordPipelineResult>();
+  });
+
+  it("`MemoryAuditAdapter` re-exports through the index (Step 5)", () => {
+    expectTypeOf<IndexMemoryAuditAdapter>().toEqualTypeOf<MemoryAuditAdapter>();
+  });
+});
+
+// =============================================================================
+// MemoryAuditAdapter shape (Step 5)
+// =============================================================================
+
+describe("MemoryAuditAdapter extends AuditAdapter and exposes the `entries` view", () => {
+  it("is assignable to AuditAdapter (extends the contract)", () => {
+    expectTypeOf<MemoryAuditAdapter>().toMatchTypeOf<AuditAdapter>();
+  });
+
+  it("has `entries: readonly AuditEntry[]`", () => {
+    expectTypeOf<MemoryAuditAdapter["entries"]>().toEqualTypeOf<
+      readonly AuditEntry[]
+    >();
+  });
+
+  it("`append` and `cursor` keep the AuditAdapter signatures", () => {
+    expectTypeOf<MemoryAuditAdapter["append"]>().toEqualTypeOf<
+      AuditAdapter["append"]
+    >();
+    expectTypeOf<MemoryAuditAdapter["cursor"]>().toEqualTypeOf<
+      AuditAdapter["cursor"]
+    >();
   });
 });
 
