@@ -54,7 +54,16 @@ export function createMemoryAuditAdapter(): MemoryAuditAdapter {
 
   const adapter: MemoryAuditAdapter = {
     get entries(): readonly AuditEntry[] {
-      return store;
+      // Defensive snapshot: a frozen copy of the current store.
+      // Returning `store` directly would expose the internal mutable
+      // array — TypeScript's `readonly` annotation is erased at
+      // runtime, so any JS caller (or any TS caller using a cast)
+      // could `push(...)` or set `.length = 0` and bypass the
+      // append-only contract. Each call allocates a new frozen
+      // wrapper; the individual entry object references inside
+      // remain stable across calls, so `a.entries[0] === e0Ref`
+      // identity-checks across calls still hold.
+      return Object.freeze([...store]);
     },
     async append(entry: AuditEntry): Promise<void> {
       // Shallow-freeze the snapshot. The caller's reference may

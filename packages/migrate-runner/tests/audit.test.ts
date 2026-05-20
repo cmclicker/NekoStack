@@ -256,6 +256,174 @@ describe("createMemoryAuditAdapter — append-only (later appends do not mutate 
 });
 
 // =============================================================================
+// 5b. `entries` view is a frozen defensive snapshot (round-2 cleanup)
+// =============================================================================
+//
+// The audit log is append-only by contract. Returning the internal
+// mutable array from the `entries` getter would let any JS caller
+// (or any TS caller using a cast) bypass that contract via `push`
+// or `.length = 0`. The getter MUST return a frozen defensive copy.
+
+describe("createMemoryAuditAdapter — entries view is a frozen defensive snapshot", () => {
+  it("the returned view is Object.isFrozen-true", async () => {
+    const a = createMemoryAuditAdapter();
+    await a.append(
+      makeAuditEntry({
+        runId: "run-1",
+        schemaId: "com.fix.X",
+        fromVersion: "1.0.0",
+        toVersion: "2.0.0",
+        chainEntries: CHAIN_ENTRIES_FIXTURE,
+        recordIndex: 0,
+        status: "success",
+      }),
+    );
+    const view = a.entries;
+    expect(Object.isFrozen(view)).toBe(true);
+  });
+
+  it("mutation of the returned view via `push` cannot reach the adapter's stored entries", async () => {
+    const a = createMemoryAuditAdapter();
+    await a.append(
+      makeAuditEntry({
+        runId: "run-1",
+        schemaId: "com.fix.X",
+        fromVersion: "1.0.0",
+        toVersion: "2.0.0",
+        chainEntries: CHAIN_ENTRIES_FIXTURE,
+        recordIndex: 0,
+        status: "success",
+      }),
+    );
+    const view = a.entries;
+    const fake = makeAuditEntry({
+      runId: "run-1",
+      schemaId: "com.fix.X",
+      fromVersion: "1.0.0",
+      toVersion: "2.0.0",
+      chainEntries: CHAIN_ENTRIES_FIXTURE,
+      recordIndex: 99,
+      status: "success",
+    });
+    // Strict-mode ES modules throw TypeError on mutation of a
+    // frozen array. The test runs under ESM strict.
+    expect(() => {
+      (view as AuditEntry[]).push(fake);
+    }).toThrow(TypeError);
+    // Belt-and-suspenders: regardless of whether the throw was
+    // observed, the adapter's stored length MUST be unchanged.
+    expect(a.entries).toHaveLength(1);
+    expect(a.entries[0]!.recordIndex).toBe(0);
+  });
+
+  it("mutation via `length = 0` is also blocked", async () => {
+    const a = createMemoryAuditAdapter();
+    for (let i = 0; i < 3; i++) {
+      await a.append(
+        makeAuditEntry({
+          runId: "run-1",
+          schemaId: "com.fix.X",
+          fromVersion: "1.0.0",
+          toVersion: "2.0.0",
+          chainEntries: CHAIN_ENTRIES_FIXTURE,
+          recordIndex: i,
+          status: "success",
+        }),
+      );
+    }
+    const view = a.entries;
+    expect(() => {
+      (view as AuditEntry[]).length = 0;
+    }).toThrow(TypeError);
+    expect(a.entries).toHaveLength(3);
+  });
+
+  it("mutation via index assignment is also blocked", async () => {
+    const a = createMemoryAuditAdapter();
+    await a.append(
+      makeAuditEntry({
+        runId: "run-1",
+        schemaId: "com.fix.X",
+        fromVersion: "1.0.0",
+        toVersion: "2.0.0",
+        chainEntries: CHAIN_ENTRIES_FIXTURE,
+        recordIndex: 0,
+        status: "success",
+      }),
+    );
+    const view = a.entries;
+    const fake = makeAuditEntry({
+      runId: "run-1",
+      schemaId: "com.fix.X",
+      fromVersion: "1.0.0",
+      toVersion: "2.0.0",
+      chainEntries: CHAIN_ENTRIES_FIXTURE,
+      recordIndex: 99,
+      status: "success",
+    });
+    expect(() => {
+      (view as AuditEntry[])[0] = fake;
+    }).toThrow(TypeError);
+    expect(a.entries[0]!.recordIndex).toBe(0);
+  });
+
+  it("append still preserves entry-object snapshots after the defensive wrapper change", async () => {
+    const a = createMemoryAuditAdapter();
+    await a.append(
+      makeAuditEntry({
+        runId: "run-1",
+        schemaId: "com.fix.X",
+        fromVersion: "1.0.0",
+        toVersion: "2.0.0",
+        chainEntries: CHAIN_ENTRIES_FIXTURE,
+        recordIndex: 0,
+        status: "success",
+      }),
+    );
+    const e0Ref = a.entries[0]!;
+    await a.append(
+      makeAuditEntry({
+        runId: "run-1",
+        schemaId: "com.fix.X",
+        fromVersion: "1.0.0",
+        toVersion: "2.0.0",
+        chainEntries: CHAIN_ENTRIES_FIXTURE,
+        recordIndex: 1,
+        status: "success",
+      }),
+    );
+    // Even though `.entries` allocates a new frozen wrapper per
+    // call, the individual entry-object references are stable.
+    expect(a.entries[0]).toBe(e0Ref);
+    expect(Object.isFrozen(a.entries[0])).toBe(true);
+  });
+
+  it("`cursor` behavior unchanged after the defensive snapshot fix", async () => {
+    const a = createMemoryAuditAdapter();
+    for (let i = 0; i < 4; i++) {
+      await a.append(
+        makeAuditEntry({
+          runId: "run-x",
+          schemaId: "com.fix.X",
+          fromVersion: "1.0.0",
+          toVersion: "2.0.0",
+          chainEntries: CHAIN_ENTRIES_FIXTURE,
+          recordIndex: i,
+          status: i === 2 ? "failure" : "success",
+          ...(i === 2
+            ? {
+                classification: "transform_threw" as const,
+                errorMessage: "boom",
+              }
+            : {}),
+        }),
+      );
+    }
+    expect(await a.cursor("run-x")).toEqual([0, 1, 3]);
+  });
+});
+
+// =============================================================================
 // 6. caller-side mutation does NOT affect stored snapshot
 // =============================================================================
 
