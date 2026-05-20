@@ -77,7 +77,8 @@ export type LoadFailureReason =
   | "io_error"
   | "compile_error"
   | "runtime_error"
-  | "no_schema_export";
+  | "no_schema_export"
+  | "no_migration_export";
 
 export interface LoadFailure {
   readonly path: string;
@@ -199,7 +200,16 @@ async function checkRegularFile(path: string): Promise<LoadFailure | undefined> 
   }
 }
 
-function classifyImportError(err: unknown): LoadFailureReason {
+/**
+ * Classify a thrown value from a dynamic `import()` into one of the
+ * structural failure categories. Exported so sibling loaders (e.g.
+ * `read-migrations.ts`) can use the same classification rules without
+ * duplicating the esbuild/tsx detection list. The returned reason is
+ * one of the import-time categories only (`compile_error` /
+ * `runtime_error`); `io_error` and `no_*_export` are decided by
+ * callers before / after the import.
+ */
+export function classifyImportError(err: unknown): LoadFailureReason {
   if (err === null || typeof err !== "object") return "runtime_error";
   const e = err as {
     name?: unknown;
@@ -275,7 +285,12 @@ function isAnySchema(v: unknown): v is AnySchema {
   return typeof (node as { kind?: unknown }).kind === "string";
 }
 
-function errorMessageOf(err: unknown): string {
+/**
+ * Stringify an unknown thrown value the way every loader in this
+ * package needs to. Exported for sibling loaders so they share one
+ * coercion rule.
+ */
+export function errorMessageOf(err: unknown): string {
   if (err instanceof Error) return err.message;
   if (typeof err === "string") return err;
   try {
