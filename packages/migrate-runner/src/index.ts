@@ -1,5 +1,5 @@
 /**
- * `@nekostack/migrate-runner` — scaffold entry (Step 1).
+ * `@nekostack/migrate-runner` — public package entry.
  *
  * This package is the downstream orchestrator that **invokes** authored
  * migrations' `transform(input)` functions against real data. It sits
@@ -8,22 +8,35 @@
  * ([`packages/schema/docs/PHASE_PLAN_v0.9.md`](../../schema/docs/PHASE_PLAN_v0.9.md))
  * is the load-bearing design doc.
  *
- * **Scaffold step — no runtime surface yet.** This module exists so:
+ * ## Public surface (current)
  *
- *   1. The workspace can resolve `@nekostack/migrate-runner` and load
- *      this package alongside `@nekostack/schema` + `@nekostack/cli`.
- *   2. Subsequent steps (core types, pre-flight, per-record pipeline,
- *      adapters, runner orchestrator, audit) have a place to land.
- *   3. `tsc --noEmit` and `vitest run` both succeed on the empty
- *      package, proving the build / test wiring is in place before
- *      any real code is written.
+ *   - **`PACKAGE_NAME`** (Step 1) — runtime package-identity constant.
+ *   - **`preFlight`** (Step 3) — pure pre-flight chain resolver + chain-
+ *     scoped provenance verifier. Returns a `PreFlightResult` and never
+ *     invokes a migration's `transform`. See [`./pre-flight.ts`](./pre-flight.ts)
+ *     for the contract.
+ *   - **Type-only re-exports** from [`./types.ts`](./types.ts) covering
+ *     the locked v0.9 contract (`RunnerOptions`, `RunOpts`, `RunMode`,
+ *     `RunResult` / `RunSuccess` / `RunFailure`, `ErrorClassification`,
+ *     `AuditEntry`, the three adapter interfaces, `ResumeCursor`, and
+ *     the four `PreFlight*` shapes).
  *
- * **What this file MUST NOT do (now or ever):**
+ * ## Still ahead (sequenced behind audit gates)
  *
- *   - It MUST NOT call `migration.transform(input)`. That is the
- *     runner's job once the orchestrator lands in a later step. Step 1
- *     ships zero behavior; calling `transform` here would violate the
- *     v0.9 plan's locked sequencing.
+ *   - Step 4 — per-record pipeline (`./per-record-pipeline.ts`): the
+ *     **only** file in the package allowed to call
+ *     `migration.transform(...)`. The static-scan boundary widens to
+ *     allow `.transform(` there and stays banned everywhere else.
+ *   - Step 5 — audit (`./audit.ts`).
+ *   - Step 6 — orchestrator (`./runner.ts`) exporting
+ *     `createMigrationRunner(...)`.
+ *   - Step 7 — JSON-file reference adapters.
+ *
+ * ## What this file MUST NOT do (now or ever)
+ *
+ *   - It MUST NOT call `migration.transform(input)`. The per-record
+ *     pipeline (Step 4) is the sole `transform` site. Touching it from
+ *     the package entry would invert the v0.9 plan's locked sequencing.
  *   - It MUST NOT import from `@nekostack/cli`. The runner is a peer
  *     to the CLI, not a dependency on it.
  *   - It MUST NOT widen `@nekostack/schema`'s `Migration` type or
@@ -34,9 +47,9 @@
  */
 
 /**
- * Package identity. Exported so workspace consumers (currently: only
- * this package's own tests) can detect the scaffold is loaded.
- * Bumped alongside the future `migrate-runner-vX.Y.Z` git tag line.
+ * Package identity. Exported so workspace consumers (and the
+ * package's own tests) can detect the runner is loaded. Bumped
+ * alongside the future `migrate-runner-vX.Y.Z` git tag line.
  */
 export const PACKAGE_NAME = "@nekostack/migrate-runner" as const;
 
@@ -44,10 +57,9 @@ export const PACKAGE_NAME = "@nekostack/migrate-runner" as const;
 // Step 2 — core type surface (see `./types.ts` for the locked contract)
 // =============================================================================
 //
-// Re-exports only. No runtime values are introduced here. The runner
-// orchestrator (Step 6) will land later and may add a single
-// `createMigrationRunner(...)` factory; for Step 2 the public surface
-// is type-only.
+// Type-only re-exports. The runtime exports (`preFlight`,
+// future-step `createMigrationRunner`, etc.) live in their own
+// sections below.
 
 export type {
   AuditAdapter,

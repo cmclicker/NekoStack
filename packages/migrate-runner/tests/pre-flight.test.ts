@@ -49,6 +49,7 @@ import type {
   Registry,
 } from "@nekostack/schema/cli";
 import { preFlight } from "../src/pre-flight.js";
+import { preFlight as publicPreFlight } from "../src/index.js";
 
 // =============================================================================
 // Tiny in-memory registry builders
@@ -198,6 +199,27 @@ const v1_5_breaking = s
 // =============================================================================
 // 1. null severity — from === to
 // =============================================================================
+
+// =============================================================================
+// Public runtime-export gate (round-2 cleanup)
+// =============================================================================
+//
+// Step 3 makes `src/index.ts` re-export `preFlight`. The direct-from-
+// module tests below prove the IMPLEMENTATION is correct; this block
+// proves the PUBLIC PACKAGE ENTRY actually exposes the same function.
+// Without it, a future edit that drops the `export { preFlight }`
+// line from `src/index.ts` would leave every other test green while
+// silently breaking the consumer surface.
+
+describe("preFlight — public-entry runtime export gate", () => {
+  it("`@nekostack/migrate-runner`'s package entry re-exports `preFlight` identity-preserved", () => {
+    expect(publicPreFlight).toBe(preFlight);
+  });
+
+  it("`preFlight` is a function at runtime", () => {
+    expect(typeof publicPreFlight).toBe("function");
+  });
+});
 
 describe("preFlight — null severity (from === to) no-op", () => {
   it("returns success with empty chain and no notes", () => {
