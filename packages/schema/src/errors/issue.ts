@@ -65,13 +65,26 @@ export const ISSUE_CODES = [
   // - `migration_ambiguous_chain` — first constructed by
   //   `plan-migration.ts` (Step 4) when two or more distinct chains
   //   reach the target. The planner refuses to pick.
-  // Remaining v0.8 codes (`migration_drift`, `migration_cosmetic_drift`)
-  // land at their own first-use site in Step 5 (verifier).
+  // - `migration_drift` — first constructed by
+  //   `migrations/verify-provenance.ts` (Step 5) when a migration's
+  //   recorded `fromIrHash` or `toIrHash` doesn't match the schema
+  //   registry's current irHash for that version. The migration was
+  //   authored against a schema state that has since changed
+  //   semantically; the transform may no longer be correct. CLI
+  //   maps to LOGICAL_FAILURE.
+  // - `migration_cosmetic_drift` — first constructed by
+  //   `verify-provenance.ts` (Step 5) when irHash matches at both
+  //   endpoints but at least one sourceHash differs. Source was
+  //   edited without semantic effect. v0.8 verifier classifies this
+  //   as a warning verdict; the CLI prints to stderr but the run
+  //   still succeeds.
   "duplicate_migration",
   "migration_missing_endpoint",
   "migration_not_found",
   "migration_chain_broken",
   "migration_ambiguous_chain",
+  "migration_drift",
+  "migration_cosmetic_drift",
 ] as const;
 
 export type IssueCode = (typeof ISSUE_CODES)[number];
