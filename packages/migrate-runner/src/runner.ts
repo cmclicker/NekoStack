@@ -142,10 +142,24 @@ export function createMigrationRunner(
     // 4. Resume cursor. If the caller is resuming a prior run,
     //    query the audit adapter for the set of recordIndexes
     //    already marked `success` for that runId and skip them.
+    //    A cursor() throw (e.g. malformed JSONL audit file)
+    //    classifies as `adapter_init_failed` — the audit adapter
+    //    is also an adapter, and the runner's contract is to
+    //    return RunResult, not throw.
     const skipSet = new Set<number>();
     if (opts.resumeFrom !== undefined) {
-      const cursor = await auditAdapter.cursor(opts.resumeFrom.runId);
-      for (const idx of cursor) skipSet.add(idx);
+      try {
+        const cursor = await auditAdapter.cursor(opts.resumeFrom.runId);
+        for (const idx of cursor) skipSet.add(idx);
+      } catch (cause) {
+        return {
+          success: false,
+          runId,
+          mode: opts.mode,
+          classification: "adapter_init_failed",
+          errorMessage: `Audit adapter cursor() failed during resume: ${errorMessageOf(cause)}`,
+        };
+      }
     }
 
     const onError: "continue" | "stop" = opts.onError ?? "continue";
