@@ -6,7 +6,7 @@
 
 - **Package:** @nekostack/schema
 - **Latest release:** [`schema-v0.7.0`](https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.7.0) — 2026-05-19
-- **Active target:** v0.8+ — Migrations
+- **Active target:** v0.8 — Schema-data migrations: planning + verification + stub generation
 - **Doctrine in force:** [NekoStack — Product Thesis](../PRODUCT_THESIS.md)
 
 ## Latest milestones
