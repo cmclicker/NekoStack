@@ -118,20 +118,36 @@ v0.8 solves authorship + drift detection + chain planning. v0.9+ may then solve 
 - Duplicate `(schemaId, fromVersion, toVersion)` triples surface as `Result.failure` with `duplicate_migration` Issues. Never throws. (Mirrors v0.7 Decision #4 / `duplicate_schema_id`.)
 - **Malformed migration provenance is fail-loud, never silent.** A `.migration.ts` file exists specifically to declare a `(schemaId, fromVersion, toVersion)` transition. Missing or unparseable provenance is treated as an invalid declaration, not as a silent skip — silent skip would let a broken migration mask itself as "no migration found." `buildMigrationRegistry` returns `Result.failure` with an `integrity_error` Issue carrying `metadata.reason: "missing_migration_provenance"` (or one of the existing parse-provenance reason variants for malformed fields). The CLI surfaces the diagnostic. This is an **intentional departure from v0.7 Decision #5** (where anonymous *schemas* are tolerated because a schema file may legitimately export both indexed schemas and helper schemas) — a migration file has no analogous "helper migration" use case.
 
-**`planMigration({ migrations, schemaId, fromVersion, toVersion }): Result<MigrationPlan>`**
+**`planMigration({ schemaRegistry, migrationRegistry, schemaId, fromVersion, toVersion }): Result<MigrationPlan>`**
 
-- BFS/DFS over the migration registry; returns the ordered list of `MigrationEntry`s to go from `fromVersion` to `toVersion`.
-- Failure paths:
-  - `migration_not_found` — no migrations registered for `schemaId`.
-  - `migration_chain_broken` — registered migrations exist but cannot bridge `fromVersion` → `toVersion`.
-  - `migration_ambiguous_chain` — two distinct chains both reach the target. v0.8 refuses to pick; the user must constrain by removing one or specifying.
-- `MigrationPlan` carries the ordered chain, the cumulative version path, and a structural digest the verifier can compare against later.
+The planner consumes **both** registries (and the diff classifier from v0.7) so it can honor Decision #10's severity → migration-requirement mapping. A migrations-only signature is insufficient: without the schema registry it cannot know whether the from/to versions exist; without the diff classifier it cannot know whether a missing migration is acceptable (`additive` / `cosmetic`) or fatal (`breaking`).
+
+Locked behavior:
+
+1. **Resolve endpoints in the schema registry.** `findSchema(schemaRegistry, schemaId, fromVersion)` and `(... toVersion)`. If either is `undefined` → `Result.failure` with `migration_missing_endpoint`. No diff is computed when an endpoint is missing.
+2. **Classify the transition via `diffNodes`.** Compute `diffNodes(fromEntry.schema.node, toEntry.schema.node)` and the corresponding `worstSeverity` (`null` / `cosmetic` / `additive` / `breaking`).
+3. **Map severity → plan shape:**
+   - `worstSeverity === null` or `"cosmetic"` → `Result.success` with an **empty migration chain**. No migration is required; if one exists for the pair it is reported as `over_specified` in `MigrationPlan.notes` but not failed.
+   - `worstSeverity === "additive"` → `Result.success` with an empty chain by default, plus a `MigrationPlan.notes` entry suggesting the consumer review whether an explicit migration is desired. If a migration *is* registered for the pair, it is included in the chain.
+   - `worstSeverity === "breaking"` → a migration chain is **required**. The planner then runs the BFS/DFS step below.
+4. **Chain resolution (only when severity requires it).** BFS from `fromVersion` over `migrationRegistry` indexed by `(schemaId, fromVersion)`. Returns the ordered list of `MigrationEntry`s reaching `toVersion`.
+5. **Failure paths (post-severity-gating):**
+   - `migration_not_found` — severity is `breaking`, no migrations registered for `schemaId` at all.
+   - `migration_chain_broken` — severity is `breaking`, migrations exist for `schemaId` but none bridges `fromVersion → toVersion`.
+   - `migration_ambiguous_chain` — severity is `breaking`, two or more distinct chains both reach `toVersion`. v0.8 refuses to pick; the consumer must remove the duplicate or constrain.
+6. **`MigrationPlan` shape** — carries `chain: readonly MigrationEntry[]` (empty for null/cosmetic/additive-without-explicit-migration), `versionPath: readonly string[]` (the sequence `[fromVersion, ..., toVersion]`), `worstSeverity` (the diff result that drove the decision), and `notes: readonly PlanNote[]` (free-form annotations like `over_specified` or `additive_no_migration`).
+
+Rationale for the heavier signature: without the schema registry + diff, a chain-only planner would either fail every missing migration (over-strict — refuses legitimate `cosmetic`/`additive` transitions) or accept every missing migration (under-strict — silently passes `breaking` transitions). Decision #10 demands the third behavior — **failure-by-severity** — and only a planner with full context can deliver it.
 
 **`verifyMigrationProvenance({ migrations, registry }): Result<VerificationResult>`**
 
-- For every migration, compare its recorded `fromIrHash` / `toIrHash` against `findSchema(registry, schemaId, from|to).irHash`.
-- Per-migration verdict: `bound` / `drift` / `missing_endpoint` (one or both versions not in the schema registry).
-- Cumulative failure: any `drift` or `missing_endpoint` surfaces an Issue. The CLI maps to `LOGICAL_FAILURE`.
+- For every migration, compare its recorded `fromIrHash` / `toIrHash` / `fromSourceHash` / `toSourceHash` against `findSchema(registry, schemaId, from|to).irHash` / `.sourceHash`.
+- **Per-migration verdict — four values**, mirroring the v0.7 two-hash freshness matrix (Decision #9 / `migration_cosmetic_drift` / `migration_drift`):
+  - `bound` — both `irHash` and `sourceHash` match at both endpoints.
+  - `cosmetic_drift` — `irHash` matches at both endpoints, but at least one `sourceHash` differs. Source was edited without semantic effect; CI may treat as warning.
+  - `drift` — at least one endpoint's `irHash` differs from the schema registry. The migration was authored against a schema state that has since changed semantically; the transform may no longer be correct. CLI maps to `LOGICAL_FAILURE`.
+  - `missing_endpoint` — one or both versions are not in the schema registry. Surfaces `migration_missing_endpoint`.
+- Cumulative failure: any `drift` or `missing_endpoint` surfaces an Issue. `cosmetic_drift` is a warning, not a failure (CLI prints stderr; exit code stays `SUCCESS` unless other verdicts fail).
 - **Scope of "verification" — provenance + chain integrity only.** `verifyMigrationProvenance` does NOT prove transform correctness. Transform execution is deferred to v0.9+; v0.8 cannot inspect a function body to know whether it correctly maps `s.output<v1>` to `s.output<v2>`. A migration whose `transform` is `throw new Error("Not yet implemented")` verifies just as cleanly as one with a fully-authored body, as long as the provenance hashes bind. Authors who need transform correctness in v0.8 write their own unit tests against the migration module's default export. The verifier is a `provenance-says-what-it-says` check, not a behavior check.
 
 **Stub generation** — `stubMigration({ schemaId, fromVersion, toVersion, registry }): Result<MigrationStub>`. Produces the file *contents* (provenance header + skeleton function signature). The CLI writes the file. Pure planner here.
@@ -372,11 +388,11 @@ Implementation order. Each numbered step is a separate commit with its own valid
 1. `src/migrations/types.ts` — types only (`Migration<...>`, `MigrationSourceEntry`, `MigrationEntry`, `MigrationRegistry`, `MigrationPlan`, `MigrationStub`, `MigrationVerdict`, `VerificationResult`, `*Opts`, `*Result`). No logic. Mirror v0.7 Step 1.
 2. `src/migrations/parse-provenance.ts` — extend the v0.7 provenance parser to accept the migration-header field set. Return shape adds `fromVersion`, `toVersion`, `fromIrHash`, `toIrHash`, `fromSourceHash`, `toSourceHash`. Failure paths preserve the existing `integrity_error` + `metadata.reason` contract.
 3. `src/migrations/build-migration-registry.ts` — pure constructor; `duplicate_migration` Issues on triple collision; never throws. Tests use hand-constructed entries.
-4. `src/migrations/plan-migration.ts` — chain resolver. BFS over the registry indexed by `(schemaId, fromVersion)`. Cover the three failure modes: not_found / chain_broken / ambiguous_chain. Plan-only — never executes a `transform`.
-5. `src/migrations/verify-provenance.ts` — per-migration `bound` / `drift` / `cosmetic_drift` / `missing_endpoint` verdicts; `VerificationResult` carries summary + per-verdict array. No filesystem.
+4. `src/migrations/plan-migration.ts` — diff-aware planner. Signature `planMigration({ schemaRegistry, migrationRegistry, schemaId, fromVersion, toVersion }): Result<MigrationPlan>`. Resolves endpoints in `schemaRegistry`, computes `worstSeverity` via `diffNodes`, severity-gates the chain requirement (null/cosmetic → empty plan; additive → empty plan + note; breaking → required chain). When required, BFS over `migrationRegistry` indexed by `(schemaId, fromVersion)`. Cover the four failure modes: `missing_endpoint` / `not_found` (breaking + no migrations) / `chain_broken` (breaking + no path) / `ambiguous_chain` (breaking + 2+ paths). Plan-only — never executes a `transform`.
+5. `src/migrations/verify-provenance.ts` — per-migration four-way verdict (`bound` / `cosmetic_drift` / `drift` / `missing_endpoint`) mirroring the v0.7 two-hash matrix. `VerificationResult` carries summary + per-verdict array. No filesystem.
 6. `src/migrations/stub.ts` — pure file-content generator. Reads `findSchema(registry, ...)` for the from/to irHash + sourceHash; emits the locked header + skeleton body string. The CLI writes it.
 7. `src/migrations/handlers/list.ts` — pure handler; simplest dispatch surface (mirrors v0.7's listHandler-first pattern).
-8. `src/migrations/handlers/plan.ts` — wraps `planMigration` + maps the three failure modes to Issues.
+8. `src/migrations/handlers/plan.ts` — wraps `planMigration`; takes both registries as opts; maps the four failure modes to Issues.
 9. `src/migrations/handlers/verify.ts` — wraps `verifyMigrationProvenance` + computes a summary (count by verdict).
 10. `src/migrations/handlers/stub.ts` — wraps `stubMigration`; returns `{ suggestedPath, content }` shape mirroring `GeneratedArtifact`.
 11. `tests/migrations/handler-purity.test.ts` — extend the v0.7 static + runtime purity gate to cover the four new handlers' module-graph reach. Sentinel rows.
@@ -392,7 +408,7 @@ Implementation order. Each numbered step is a separate commit with its own valid
 
 19. `packages/cli/src/loaders/read-migrations.ts` — walk `**/*.migration.ts` under each schema dir; load via existing tsx loader; index by `(schemaId, fromVersion, toVersion)` from the loaded default export.
 20. `src/commands/schema/migrate/list.ts` — dispatch to `listMigrationsHandler`; pretty + JSON shapes.
-21. `src/commands/schema/migrate/plan.ts` — operand parser for `<schemaId> <fromVersion> <toVersion>`; dispatch to `planMigrationHandler`; map `migration_*` Issue codes to `LOGICAL_FAILURE` (and `integrity_error` to `INTEGRITY_ERROR`).
+21. `src/commands/schema/migrate/plan.ts` — operand parser for `<schemaId> <fromVersion> <toVersion>`; walks both schemas and migrations (reusing v0.7's walker + new Step 19 migration loader), builds both registries, dispatches to `planMigrationHandler({ schemaRegistry, migrationRegistry, ... })`. Maps `migration_missing_endpoint` / `migration_not_found` / `migration_chain_broken` / `migration_ambiguous_chain` to `LOGICAL_FAILURE`; `integrity_error` → `INTEGRITY_ERROR`. Empty-plan success paths (null/cosmetic/additive) print the diff classification and the `over_specified` / `additive_no_migration` notes.
 22. `src/commands/schema/migrate/verify.ts` — dispatch to `verifyMigrationsHandler`; per-verdict tally header in pretty output.
 23. `src/commands/schema/migrate/stub.ts` — the only verb that writes a file. `mkdir -p` + `writeFile`. Refuses to overwrite an existing migration file at the suggested path (unlike `generate`'s overwrite-by-default behavior, since `generate` overwrites generated artifacts but `stub` would overwrite hand-authored code).
 24. `src/cli.ts` — wire the `migrate` subcommand group under `schema`. `.allowExcessArguments(false)` on every verb.
@@ -427,6 +443,11 @@ Implementation order. Each numbered step is a separate commit with its own valid
 
 - **v0.8-plan, initial draft** — 16 decisions. Hard-locked at the start: v0.8 is plan + verify + stub only. No apply. Migration execution is deferred to v0.9+ behind its own plan and explicit safety review.
 - **Round-1 audit anticipation** — risk areas likely to be flagged: (a) is "forward-only" too restrictive? — argument: bidirectional migrations are a separate authorship surface and should not piggyback on the planning phase. (b) does the JSDoc provenance header survive being edited by a human? — yes, the field-extraction regex is whitespace-tolerant and the parser already handles human-edited v0.7 generated headers. (c) is the diff classifier coupling too tight? — the dependency is documented, not enforced; a row change in Decision #12 triggers a migration-compat doc PR, not a v0.X chain re-validation.
+
+- **Round-3 corrections** ([PR #27](https://github.com/cmclicker/NekoStack/pull/27) round-2 re-audit feedback) — two plan-doc tightenings, no scope change:
+
+  - **Migration planner contract widened to receive both registries + diff context.** Original `planMigration({ migrations, schemaId, fromVersion, toVersion })` couldn't honor Decision #10's severity → migration-requirement mapping — without the schema registry it couldn't compute the diff, so it had to either fail every missing migration (over-strict for `additive` / `cosmetic`) or accept every missing migration (under-strict for `breaking`). Corrected signature is `planMigration({ schemaRegistry, migrationRegistry, schemaId, fromVersion, toVersion })`. Locked behavior: resolve endpoints; compute `diffNodes` + `worstSeverity`; severity-gate the chain requirement (null/cosmetic → empty plan; additive → empty plan + note; breaking → required chain). `MigrationPlan` now carries `worstSeverity` and a `notes` array so consumers can see *why* the chain came out the way it did. `planMigrationHandler` and the CLI Step 21 wiring updated to match.
+  - **`verifyMigrationProvenance` verdict list expanded to four values.** Original scope said `bound / drift / missing_endpoint`, but Decision #9 and the new ISSUE_CODES already named `cosmetic_drift` / `migration_cosmetic_drift`. Corrected the primitive's spec to enumerate all four (`bound` / `cosmetic_drift` / `drift` / `missing_endpoint`) with the same two-hash-matrix mapping the v0.7 freshness verdict uses. Exit-code mapping clarified: `drift` and `missing_endpoint` fail; `cosmetic_drift` is a warning (stderr; SUCCESS exit).
 
 - **Round-2 corrections** ([PR #27](https://github.com/cmclicker/NekoStack/pull/27) audit feedback) — five plan-doc tightenings, no scope change:
 
