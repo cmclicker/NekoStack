@@ -198,7 +198,14 @@ describe("buildCli — shape", () => {
 
     const schema = program.commands.find((c) => c.name() === "schema");
     const verbs = schema?.commands.map((c) => c.name());
-    expect(verbs).toEqual(["list", "diff", "check", "generate"]);
+    expect(verbs).toEqual(["list", "diff", "check", "generate", "migrate"]);
+
+    // `migrate` is a subcommand group; assert its four verbs are
+    // registered in the locked v0.8 declaration order (list / plan /
+    // verify / stub) — no `apply` verb.
+    const migrate = schema?.commands.find((c) => c.name() === "migrate");
+    const migrateVerbs = migrate?.commands.map((c) => c.name());
+    expect(migrateVerbs).toEqual(["list", "plan", "verify", "stub"]);
   });
 
   it("EXIT_CODES is the locked enum", () => {
