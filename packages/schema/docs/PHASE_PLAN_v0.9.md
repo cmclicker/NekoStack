@@ -98,7 +98,7 @@ Rationale:
 
 ### Decision #4 — Runner library shape (the public API).
 
-**Locked.**
+**Locked.** The interface below carries **every** option referenced anywhere in this plan; no decision references a field outside this shape.
 
 ```ts
 export interface RunnerOptions {
@@ -113,35 +113,65 @@ export interface RunOpts {
   readonly schemaId: string;
   readonly fromVersion: string;
   readonly toVersion: string;
+
   readonly mode: "execute" | "dry-run" | "validate-only";
-  /** Allow `cosmetic_drift` to count as bound for the pre-flight verify. */
+
+  /** Allow `cosmetic_drift` to count as `bound` for the pre-flight verify
+   *  (Decision #5, #15). Default `false` (strict). */
   readonly allowCosmeticDrift?: boolean;
-  /** Resume from a partial-failure checkpoint produced by a prior run. */
+
+  /** Per-record best-effort timeout for the synchronous transform call
+   *  (Decision #8). v0.9 cannot forcibly interrupt CPU-bound sync code;
+   *  this is a soft guard for transforms that yield (microtask boundary,
+   *  generator iteration, etc.) or for the surrounding pipeline awaiting
+   *  validators. Default `5000`. */
+  readonly transformTimeoutMs?: number;
+
+  /** Partial-failure policy (Decision #10). Default `"continue"`. */
+  readonly onError?: "continue" | "stop";
+
+  /** Audit retention flags (Decision #16). Default `false` for both —
+   *  authors opt in to before/after retention because records can be
+   *  large or sensitive. */
+  readonly auditBefore?: boolean;
+  readonly auditAfter?: boolean;
+
+  /** Resume from a checkpoint produced by a prior run (Decision #10). */
   readonly resumeFrom?: ResumeCursor;
+
+  /** Caller-supplied cancellation (Decision #8) — surfaces a top-level
+   *  abort path. Does NOT preempt a synchronous in-flight transform. */
+  readonly signal?: AbortSignal;
 }
 
 export type RunResult = RunSuccess | RunFailure;
 ```
 
 - `mode: "validate-only"` runs input validation but does NOT call `transform`. Useful as a CI gate.
-- `mode: "dry-run"` runs the full chain INCLUDING `transform` but does NOT call `outputAdapter.persist(...)`. The audit log still records what would have been written.
+- `mode: "dry-run"` runs the full chain INCLUDING `transform` but does NOT call `outputAdapter.persist(...)`. The audit log records the transformed value as `would-have-persisted`.
 - `mode: "execute"` is the only mode that writes to `outputAdapter`.
 - `createMigrationRunner(opts)` returns a runner instance; calling `runner.run(...)` invokes the orchestration.
 
-The three adapter interfaces — input / output / audit — are the runner's seam for plugging in data backends. v0.9 ships **one reference implementation per interface** (JSON-file adapters); database adapters come later.
+**Sync-only transform contract.** The v0.8 `Migration` type pins `transform: (input: Input) => Output` — a **synchronous** function. v0.9 does not widen it. The runner therefore treats `transform` as sync; any timeout / cancellation interaction with `transform` itself is best-effort only (see Decision #8). True async transforms, Promise transforms, or AbortSignal-aware transforms would require a schema-side type change, which is out of scope for v0.9.
+
+The three adapter interfaces — input / output / audit — are the runner's seam for plugging in data backends. v0.9 ships **one reference implementation per interface** (JSON-file / JSONL adapters); database adapters come later.
 
 ### Decision #5 — Pre-flight chain.
 
-**Locked.** Before invoking `transform` on any record, the runner executes:
+**Locked.** Before invoking `transform` on any record, the runner executes the steps below. The branching is keyed off the **actual fields on `MigrationPlan`** — `worstSeverity` (`null` / `"cosmetic"` / `"additive"` / `"breaking"`), `chain` (the resolved `readonly MigrationEntry[]`), and `notes` (the `PlanNote[]` discriminator covering `over_specified` / `additive_no_migration`). There is no `plan.kind` on `MigrationPlan` itself.
 
-1. **Resolve the chain.** Call `planMigrationHandler({ schemaRegistry, migrationRegistry, schemaId, fromVersion, toVersion })`. Refuse to run unless `plan.kind` describes a chain that actually transforms data. Specifically:
-   - `null` / `cosmetic` → no migration needed; the runner is a no-op (returns success with `recordCount: 0` and a warning).
-   - `additive` *without* a migration → no-op (same as above).
-   - `additive` *with* a migration → chain of length 1; proceed.
-   - `breaking` → chain of length ≥ 1; proceed.
-   - Any planner failure (`migration_missing_endpoint` / `migration_not_found` / `migration_chain_broken` / `migration_ambiguous_chain`) → runner returns failure with the same issue code; **never invokes** `transform`.
-2. **Re-verify provenance.** Call `verifyMigrationsHandler({ schemaRegistry, migrationRegistry })`. Filter to the entries on the resolved chain. Refuse unless every chain entry is `bound`, or `bound` / `cosmetic_drift` when `allowCosmeticDrift: true`. `drift` or `missing_endpoint` on any chain entry → runner returns failure without calling `transform`.
-3. **Lock the chain.** From this point, the chain entries used for execution are fixed for the entire run. The runner does NOT re-query the registries mid-run; data shape changes during a long run can't silently swap the active migration set.
+1. **Resolve the chain.** Call `planMigrationHandler({ schemaRegistry, migrationRegistry, schemaId, fromVersion, toVersion })`. Branch on the success-branch fields:
+   - `plan.worstSeverity === null` or `plan.worstSeverity === "cosmetic"` → no migration needed. `plan.chain.length === 0` by the v0.8 planner contract; if a `PlanNote` of kind `over_specified` is present, surface it as a warning. The runner is a no-op: returns success with `recordCount: 0` and the warning.
+   - `plan.worstSeverity === "additive"` AND `plan.chain.length === 0` (i.e., `plan.notes` carries `additive_no_migration`) → no-op as above; surface the `additive_no_migration` note as a warning.
+   - `plan.worstSeverity === "additive"` AND `plan.chain.length === 1` → proceed.
+   - `plan.worstSeverity === "breaking"` AND `plan.chain.length >= 1` → proceed.
+   - Any planner-branch failure (`Result.failure` with `migration_missing_endpoint` / `migration_not_found` / `migration_chain_broken` / `migration_ambiguous_chain`) → runner returns failure with the same issue code; **never invokes** `transform`.
+2. **Build a chain-scoped migration registry.** From `plan.chain` (the resolved `MigrationEntry[]`), construct a fresh `MigrationRegistry` containing **only** the chain entries — the same three-level `(schemaId → fromVersion → toVersion)` Map shape, populated from the chain alone. This is the runner's responsibility, not the schema package's; the schema-side primitives stay unchanged.
+3. **Re-verify provenance on the chain-scoped registry.** Call `verifyMigrationsHandler({ schemaRegistry, migrationRegistry: chainScopedRegistry })`. The reason this MUST be on a chain-scoped registry — not the workspace registry — is that v0.8's `verifyMigrationProvenance` returns `Result.failure` with **only** issues on the failure branch (verdicts are dropped). A workspace-wide verify can fail because of an authored migration that lies entirely outside the planned chain; the runner then cannot reliably reason about chain entries afterward. Scoping the registry to the chain BEFORE verifying guarantees that any failure issue references an entry the runner is actually about to execute.
+   - Refuse unless every chain entry verifies as `bound`.
+   - Allow `cosmetic_drift` only when `RunOpts.allowCosmeticDrift === true` (default `false` — see Decision #4).
+   - `drift` or `missing_endpoint` on any chain entry → runner returns failure with the verifier's issues; never invokes `transform`.
+4. **Lock the chain.** From this point, the chain entries used for execution are fixed for the entire run. The runner does NOT re-query the registries mid-run; data shape changes during a long run can't silently swap the active migration set.
 
 ### Decision #6 — Per-record execution model.
 
@@ -162,12 +192,22 @@ Records are processed serially by default. A future opt-in `concurrency: N` opti
 Rationale:
 - v0.9 is a dev-time-first runner. Authors run it on their own laptops over fixture data or local DBs.
 - In-process keeps the type story straightforward — `migration.transform(input)` is invoked directly with the validated input value.
-- Authors are advised in [`docs/MIGRATIONS.md`](./MIGRATIONS.md) (existing v0.8 contract) to keep `transform` pure, side-effect-free, and synchronous-or-Promise. The runner enforces a per-transform timeout (Decision #8) as a backstop against runaway code.
+- Authors are advised in [`docs/MIGRATIONS.md`](./MIGRATIONS.md) (existing v0.8 contract) to keep `transform` pure, side-effect-free, and synchronous (the schema-side type pins it as sync — `(input: Input) => Output`). The runner's `transformTimeoutMs` (Decision #8) is a best-effort backstop only — it cannot preempt a CPU-bound sync transform mid-execution.
 - Production-grade isolation (per-record V8 isolate, etc.) is a future v0.9.X+ concern, gated by its own thesis-fit audit.
 
-### Decision #8 — Transform timeout + cancellation.
+### Decision #8 — Transform timeout + cancellation (best-effort, sync-bounded).
 
-**Locked.** Every `transform(input)` call is wrapped in a per-record timeout (default 5 seconds, configurable via `RunOpts.transformTimeoutMs`). On timeout, the record is classified as `transform_timeout` and the partial-failure policy applies. The runner returns a top-level `AbortSignal`-cancellable promise so callers can stop a long run cleanly.
+**Locked: sync-first, best-effort cancellation only.**
+
+The v0.8 `Migration.transform` signature is **synchronous** (`(input: Input) => Output`). A synchronous in-process function call CANNOT be preempted from the same thread; CPU-bound code holds the event loop until it returns. v0.9 does not change the schema-side type, so it cannot promise true per-transform interruption.
+
+What v0.9 does ship:
+
+- **Run-level `AbortSignal`** (`RunOpts.signal`). The runner checks the signal **between records** — after a per-record pipeline completes (or fails) and before pulling the next input. Aborting stops the next iteration cleanly; it does not unwind a transform already in flight.
+- **`transformTimeoutMs` as a soft guard.** A per-record `setTimeout(transformTimeoutMs)` runs alongside the pipeline. If the timeout fires before the per-record pipeline resolves, the record is classified as `transform_timeout` and the partial-failure policy (Decision #10) applies. Because the transform itself runs synchronously on the same thread, the timeout cannot interrupt a CPU-bound transform mid-execution — it can only mark the record post-hoc once control returns to the runner. The flag is useful for transforms that yield at microtask boundaries, iterate generators, or await downstream validators; it is a backstop, not a hard kill.
+- **No subprocess / worker / V8-isolate execution in v0.9.** True preemption requires moving `transform` out-of-process. That's a future amendment (see Decision #7 + non-goals).
+
+Authors who need hard timeout discipline must keep `transform` cheap, deterministic, and non-blocking. The plan explicitly states (and [`docs/MIGRATIONS.md`](./MIGRATIONS.md) already documents) that `transform` should be pure and side-effect-free.
 
 ### Decision #9 — Dry-run + validate-only modes.
 
@@ -210,8 +250,8 @@ There is intentionally no `runner.rollback(...)` method. There is intentionally 
 **Locked behavior.** A "destructive" migration is one whose forward diff is `breaking` AND drops information (field removal, type narrowing that can't round-trip).
 
 - The runner does NOT refuse destructive migrations; the planner already classifies the diff and the user authored the migration deliberately.
-- The runner DOES require `mode: "execute"` (no destructive operation behind `dry-run` aliasing the term "destructive" with anything special; dry-run still simulates the transform).
-- Audit log records the BEFORE record verbatim alongside the AFTER record, so destructive migrations leave a forensic trail. (Audit retention is the consumer's concern.)
+- Destructive migrations follow the **same mode rules as every other migration** — `validate-only` does not call `transform`; `dry-run` calls `transform` (potentially simulating destructive output) but never calls `outputAdapter.persist`; `execute` calls both. There is **no** special "destructive migrations require `mode: 'execute'`" rule. Dry-run a destructive migration freely; the runner won't write anything.
+- Audit log records the BEFORE record verbatim alongside the AFTER record (when `auditBefore` / `auditAfter` are enabled), so destructive migrations leave a forensic trail. Audit retention is the consumer's concern.
 
 ### Decision #13 — Batch / stream execution.
 
@@ -253,6 +293,11 @@ If the runner ships a thin CLI alongside the library, the CLI maps these to the 
 
 ```ts
 interface AuditEntry {
+  /** Locked audit-entry schema version (OQ-4). Bumped on any breaking
+   *  change to this interface; consumers reading older entries branch
+   *  on the field. Always present from day one. */
+  readonly __auditSchemaVersion: "1";
+
   readonly runId: string;             // ULID per runner.run() invocation
   readonly schemaId: string;
   readonly fromVersion: string;
@@ -352,15 +397,17 @@ There is **no schema-side work** in v0.9. The schema package is read by the runn
 
 13. Tag (the runner package's own `migrate-runner-vN` tag scheme — TBD, since this is a new package). Release. Status / ROADMAP sweep.
 
-## Open questions
+## Locked plan-time decisions (formerly "open questions")
 
-These remain genuinely open at plan time and need resolution before the implementation PR opens:
+These were the five open questions at first draft. Round-2 review locked defaults; the implementation PR inherits them.
 
-1. **Package name.** `@nekostack/migrate-runner` is the working name. Alternative: `@nekostack/migrate-data` (more descriptive but easier to confuse with `@nekostack/migrate`'s DDL focus). Recommend `@nekostack/migrate-runner` unless the audit picks another name.
-2. **Initial version.** Is this v0.1.0 of a new package, or does it share the schema's version line (`schema-runner-v0.9.0`)? Strong recommendation: independent version (`migrate-runner-v0.1.0`); the runner ships its own roadmap.
-3. **Type-parameterized `Migration<...>`** — should the runner pin to `AnyMigration` (loose) at runtime and rely on the per-record pipeline to validate via the source/dest schemas? Or should the runner re-derive the input/output types from the schemas? Recommended: loose at runtime, validate at the boundary; the type safety lives at authoring time, not at runtime.
-4. **Audit-log schema versioning.** The `AuditEntry` shape itself will evolve. Add a `__auditSchemaVersion: "1"` field now (cheap) or wait for a breaking change to force it (painful)? Recommend: add the field from day one.
-5. **Pre-flight cosmetic_drift policy default.** Should `cosmetic_drift` count as `bound` by default (loose) or require an explicit opt-in (strict)? Recommend: strict default — `allowCosmeticDrift: false` unless the caller flips it. The default is the safest read.
+| # | Question | **Locked answer** |
+|---|---|---|
+| OQ-1 | Package name | **`@nekostack/migrate-runner`**. Working name in the plan body is the locked name. |
+| OQ-2 | Initial versioning | **Independent package version line**, starting `migrate-runner-v0.1.0`. The runner does NOT share the `schema-vX.Y.Z` tag scheme; it ships its own roadmap, its own CHANGELOG, its own release cadence. |
+| OQ-3 | Runtime type strategy for `Migration<...>` | **Loose at runtime.** The runner pins migrations as `AnyMigration` at the registry boundary; correctness is enforced by the per-record pipeline's `parse(<source>, input)` and `parse(<dest>, output)` calls. Type safety lives at authoring time (the `Migration<SchemaId, From, To, Input, Output>` generic in the migration file). The runner does NOT re-derive types from schemas at runtime. |
+| OQ-4 | `AuditEntry` schema versioning | **Include `__auditSchemaVersion: "1"` from day one.** Cheap insurance against later breaking changes to the entry shape; consumers reading the audit log can branch on the field. Listed in the locked `AuditEntry` interface in Decision #16. |
+| OQ-5 | `allowCosmeticDrift` default | **`false` (strict).** `cosmetic_drift` does NOT count as `bound` unless the caller explicitly passes `allowCosmeticDrift: true`. The safest default — surfaces a known-source-edit mismatch instead of running silently. |
 
 ## Risks
 
