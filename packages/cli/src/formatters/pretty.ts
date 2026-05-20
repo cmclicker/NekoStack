@@ -30,6 +30,7 @@ import type {
   DiffSeverity,
   FreshnessVerdict,
   GeneratedArtifact,
+  MigrationEntry,
   RegistryEntry,
 } from "@nekostack/schema/cli";
 import type { Issue } from "@nekostack/schema";
@@ -69,6 +70,43 @@ export function formatListPretty(
   const lines = rows.map(
     (r) =>
       `  ${r.id.padEnd(idWidth)}   ${r.version.padEnd(versionWidth)}   ${r.path}`,
+  );
+  return [header, ...lines].join("\n") + "\n";
+}
+
+// =============================================================================
+// `neko schema migrate list`
+// =============================================================================
+
+/**
+ * Render a migration-listing as a fixed-width table. Same shape as
+ * `formatListPretty` but with `(schemaId, fromVersion → toVersion,
+ * sourcePath)` columns. Entries are NOT re-sorted —
+ * `listMigrationsHandler` already returns them in
+ * `(schemaId, fromVersion, toVersion)` ascending order.
+ *
+ * The `migration` field on `MigrationEntry` (the loaded `AnyMigration`)
+ * is deliberately NOT rendered: it carries a closure `transform` that
+ * the v0.8 boundary forbids touching here, and the pretty output is
+ * for human review of the registry shape only.
+ */
+export function formatMigrationListPretty(
+  entries: readonly MigrationEntry[],
+): string {
+  if (entries.length === 0) return "No migrations found in workspace.\n";
+
+  const header = `${pluralize(entries.length, "migration", "migrations")} in workspace:`;
+  const rows = entries.map((e) => ({
+    id: e.schemaId,
+    versions: `${e.fromVersion} → ${e.toVersion}`,
+    path: e.sourcePath,
+  }));
+  const idWidth = maxWidth(rows.map((r) => r.id));
+  const versionsWidth = maxWidth(rows.map((r) => r.versions));
+
+  const lines = rows.map(
+    (r) =>
+      `  ${r.id.padEnd(idWidth)}   ${r.versions.padEnd(versionsWidth)}   ${r.path}`,
   );
   return [header, ...lines].join("\n") + "\n";
 }
