@@ -371,6 +371,85 @@ export interface PreFlightFailure {
 export type PreFlightResult = PreFlightSuccess | PreFlightFailure;
 
 // =============================================================================
+// Per-record pipeline (Step 4 — Decision #6)
+// =============================================================================
+
+/**
+ * Non-empty migration chain. The per-record pipeline cannot be
+ * invoked on an empty chain (a chain of length 0 means no transform
+ * needed; the orchestrator skips the record-walk in that case). The
+ * non-empty-tuple type forces callers to check before invoking.
+ */
+export type NonEmptyChain = readonly [
+  MigrationEntry,
+  ...(readonly MigrationEntry[]),
+];
+
+/**
+ * Input to `runRecordPipeline(opts)`. Pure; no I/O. The orchestrator
+ * (Step 6) supplies the locked chain (from a `PreFlightSuccess`),
+ * the schema registry the pre-flight verified against, the single
+ * input record, and an optional per-transform wall-clock budget.
+ */
+export interface PerRecordPipelineOpts {
+  readonly schemaRegistry: Registry;
+  readonly chain: NonEmptyChain;
+  readonly input: unknown;
+  /**
+   * Optional post-hoc wall-clock budget around each synchronous
+   * transform call. Measured AFTER control returns from `transform`;
+   * the pipeline does NOT preempt a running transform (Decision #8).
+   * Default: no budget — transforms can take arbitrary time.
+   */
+  readonly transformTimeoutMs?: number;
+}
+
+/**
+ * Per-record success. The transformed value has passed destination-
+ * schema validation and is ready for the orchestrator to hand to
+ * `outputAdapter.persist` (in `execute` mode) or discard (in
+ * `dry-run`).
+ */
+export interface PerRecordPipelineSuccess {
+  readonly success: true;
+  readonly output: unknown;
+}
+
+/**
+ * Per-record failure. `classification` is one of four locked codes
+ * (no `persist_failed` here — that's the orchestrator's concern, not
+ * the pipeline's). `chainIndex` pinpoints where the failure landed:
+ *
+ *   - `-1`              — input validation (before any transform call)
+ *   - `0..chain.length-1` — the i-th transform threw or timed out
+ *   - `chain.length`    — output validation (after the last transform)
+ *
+ * `issues` carries the source/destination schema's `Issue[]` for
+ * validation failures, or a synthesized `schema_not_found` issue
+ * when an endpoint schema can't be resolved. Empty array for
+ * `transform_threw` / `transform_timeout`.
+ *
+ * **The pipeline never persists output and never writes an audit
+ * entry.** Both are explicitly the orchestrator's concern; the
+ * pipeline is the inner-loop primitive only.
+ */
+export interface PerRecordPipelineFailure {
+  readonly success: false;
+  readonly classification:
+    | "input_validation_failed"
+    | "transform_threw"
+    | "transform_timeout"
+    | "output_validation_failed";
+  readonly chainIndex: number;
+  readonly errorMessage: string;
+  readonly issues: readonly Issue[];
+}
+
+export type PerRecordPipelineResult =
+  | PerRecordPipelineSuccess
+  | PerRecordPipelineFailure;
+
+// =============================================================================
 // Re-export schema-side types the runner consumes (for caller convenience)
 // =============================================================================
 

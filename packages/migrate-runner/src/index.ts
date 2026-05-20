@@ -15,18 +15,21 @@
  *     scoped provenance verifier. Returns a `PreFlightResult` and never
  *     invokes a migration's `transform`. See [`./pre-flight.ts`](./pre-flight.ts)
  *     for the contract.
+ *   - **`runRecordPipeline`** (Step 4) — per-record pipeline. The ONE
+ *     file in the package allowed to call `migration.transform(...)`.
+ *     Pure: data-in / data-out, no persistence, no audit writes, no
+ *     console / process / fs side effects. See
+ *     [`./per-record-pipeline.ts`](./per-record-pipeline.ts) for the
+ *     contract.
  *   - **Type-only re-exports** from [`./types.ts`](./types.ts) covering
  *     the locked v0.9 contract (`RunnerOptions`, `RunOpts`, `RunMode`,
  *     `RunResult` / `RunSuccess` / `RunFailure`, `ErrorClassification`,
- *     `AuditEntry`, the three adapter interfaces, `ResumeCursor`, and
- *     the four `PreFlight*` shapes).
+ *     `AuditEntry`, the three adapter interfaces, `ResumeCursor`,
+ *     the four `PreFlight*` shapes, and the four `PerRecordPipeline*`
+ *     shapes).
  *
  * ## Still ahead (sequenced behind audit gates)
  *
- *   - Step 4 — per-record pipeline (`./per-record-pipeline.ts`): the
- *     **only** file in the package allowed to call
- *     `migration.transform(...)`. The static-scan boundary widens to
- *     allow `.transform(` there and stays banned everywhere else.
  *   - Step 5 — audit (`./audit.ts`).
  *   - Step 6 — orchestrator (`./runner.ts`) exporting
  *     `createMigrationRunner(...)`.
@@ -69,7 +72,12 @@ export type {
   InputAdapter,
   MigrationEntry,
   MigrationRegistry,
+  NonEmptyChain,
   OutputAdapter,
+  PerRecordPipelineFailure,
+  PerRecordPipelineOpts,
+  PerRecordPipelineResult,
+  PerRecordPipelineSuccess,
   PlanNote,
   PreFlightFailure,
   PreFlightOpts,
@@ -90,3 +98,9 @@ export type {
 // =============================================================================
 
 export { preFlight } from "./pre-flight.js";
+
+// =============================================================================
+// Step 4 — per-record pipeline (THE ONLY file allowed to call .transform)
+// =============================================================================
+
+export { runRecordPipeline } from "./per-record-pipeline.js";

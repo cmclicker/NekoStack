@@ -46,7 +46,12 @@ import type {
   InputAdapter,
   MigrationEntry,
   MigrationRegistry,
+  NonEmptyChain,
   OutputAdapter,
+  PerRecordPipelineFailure,
+  PerRecordPipelineOpts,
+  PerRecordPipelineResult,
+  PerRecordPipelineSuccess,
   PlanNote,
   PreFlightFailure,
   PreFlightOpts,
@@ -81,7 +86,12 @@ import type {
   InputAdapter as IndexInputAdapter,
   MigrationEntry as IndexMigrationEntry,
   MigrationRegistry as IndexMigrationRegistry,
+  NonEmptyChain as IndexNonEmptyChain,
   OutputAdapter as IndexOutputAdapter,
+  PerRecordPipelineFailure as IndexPerRecordPipelineFailure,
+  PerRecordPipelineOpts as IndexPerRecordPipelineOpts,
+  PerRecordPipelineResult as IndexPerRecordPipelineResult,
+  PerRecordPipelineSuccess as IndexPerRecordPipelineSuccess,
   PlanNote as IndexPlanNote,
   PreFlightFailure as IndexPreFlightFailure,
   PreFlightOpts as IndexPreFlightOpts,
@@ -189,6 +199,83 @@ describe("public-entry re-export gate: every locked type round-trips through `sr
   it("`DiffSeverity` / `PlanNote` re-export through the index", () => {
     expectTypeOf<IndexDiffSeverity>().toEqualTypeOf<DiffSeverity>();
     expectTypeOf<IndexPlanNote>().toEqualTypeOf<PlanNote>();
+  });
+
+  it("`PerRecordPipelineOpts` / `Success` / `Failure` / `Result` + `NonEmptyChain` re-export through the index (Step 4)", () => {
+    expectTypeOf<IndexNonEmptyChain>().toEqualTypeOf<NonEmptyChain>();
+    expectTypeOf<IndexPerRecordPipelineOpts>().toEqualTypeOf<PerRecordPipelineOpts>();
+    expectTypeOf<IndexPerRecordPipelineSuccess>().toEqualTypeOf<PerRecordPipelineSuccess>();
+    expectTypeOf<IndexPerRecordPipelineFailure>().toEqualTypeOf<PerRecordPipelineFailure>();
+    expectTypeOf<IndexPerRecordPipelineResult>().toEqualTypeOf<PerRecordPipelineResult>();
+  });
+});
+
+// =============================================================================
+// Per-record pipeline types (Step 4)
+// =============================================================================
+
+describe("PerRecordPipelineOpts carries the locked Step 4 input shape", () => {
+  it("has schemaRegistry / non-empty chain / input + optional transformTimeoutMs", () => {
+    expectTypeOf<PerRecordPipelineOpts["schemaRegistry"]>().toEqualTypeOf<Registry>();
+    expectTypeOf<PerRecordPipelineOpts["chain"]>().toEqualTypeOf<NonEmptyChain>();
+    expectTypeOf<PerRecordPipelineOpts["input"]>().toEqualTypeOf<unknown>();
+    expectTypeOf<PerRecordPipelineOpts["transformTimeoutMs"]>().toEqualTypeOf<
+      number | undefined
+    >();
+  });
+
+  it("`NonEmptyChain` enforces at least one entry at the type level", () => {
+    // The tuple shape `[MigrationEntry, ...MigrationEntry[]]`
+    // means an empty `MigrationEntry[]` is NOT assignable.
+    expectTypeOf<NonEmptyChain>().toMatchTypeOf<
+      readonly [MigrationEntry, ...readonly MigrationEntry[]]
+    >();
+    // A plain readonly array is wider — proves NonEmptyChain is strictly narrower.
+    expectTypeOf<NonEmptyChain>().not.toEqualTypeOf<
+      readonly MigrationEntry[]
+    >();
+  });
+});
+
+describe("PerRecordPipelineResult is a `success`-discriminated union", () => {
+  it("narrows to PerRecordPipelineSuccess when `result.success === true`", () => {
+    type N<R extends PerRecordPipelineResult> = R extends { success: true }
+      ? R
+      : never;
+    type N_S = N<Extract<PerRecordPipelineResult, { success: true }>>;
+    expectTypeOf<N_S>().toEqualTypeOf<PerRecordPipelineSuccess>();
+  });
+
+  it("narrows to PerRecordPipelineFailure when `result.success === false`", () => {
+    type N<R extends PerRecordPipelineResult> = R extends { success: false }
+      ? R
+      : never;
+    type N_F = N<Extract<PerRecordPipelineResult, { success: false }>>;
+    expectTypeOf<N_F>().toEqualTypeOf<PerRecordPipelineFailure>();
+  });
+
+  it("`PerRecordPipelineSuccess.output` is `unknown` (orchestrator owns shape)", () => {
+    expectTypeOf<PerRecordPipelineSuccess["output"]>().toEqualTypeOf<unknown>();
+  });
+
+  it("`PerRecordPipelineFailure.classification` is the locked 4-code subset", () => {
+    expectTypeOf<PerRecordPipelineFailure["classification"]>().toEqualTypeOf<
+      | "input_validation_failed"
+      | "transform_threw"
+      | "transform_timeout"
+      | "output_validation_failed"
+    >();
+    // It MUST NOT include any of the three run-level codes (those
+    // are the orchestrator's concern, not the pipeline's).
+    expectTypeOf<PerRecordPipelineFailure["classification"]>().not.toEqualTypeOf<
+      ErrorClassification
+    >();
+  });
+
+  it("`PerRecordPipelineFailure.chainIndex` is `number`", () => {
+    expectTypeOf<PerRecordPipelineFailure["chainIndex"]>().toEqualTypeOf<
+      number
+    >();
   });
 });
 
