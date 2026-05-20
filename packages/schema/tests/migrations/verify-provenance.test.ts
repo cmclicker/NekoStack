@@ -383,40 +383,133 @@ describe("verifyMigrationProvenance — mixed verdicts", () => {
     }
   });
 
-  it("mixed registry with drift counts every verdict and emits one Issue per drift/missing", () => {
+  it("mixed registry: one bound + one cosmetic_drift + one drift + one missing_endpoint", () => {
+    // Four migrations on the same schemaId at distinct triples, one
+    // per verdict class. Schema registry covers v1/v2/v3/v4 but
+    // NOT v5 → the 4.0.0 → 5.0.0 migration's toVersion endpoint
+    // is missing.
     const r = verifyMigrationProvenance({
       schemaRegistry: buildHandwrittenSchemaRegistry([
         makeRegistryEntry(SCHEMA_ID, "1.0.0", HASH_FROM_IR, HASH_FROM_SRC),
-        // No v2.0.0 entry → missing_endpoint for migrations referencing it.
-        makeRegistryEntry(SCHEMA_ID, "3.0.0", HASH_TO_IR, HASH_TO_SRC),
+        makeRegistryEntry(SCHEMA_ID, "2.0.0", HASH_TO_IR, HASH_TO_SRC),
+        makeRegistryEntry(SCHEMA_ID, "3.0.0", HASH_FROM_IR, HASH_FROM_SRC),
+        makeRegistryEntry(SCHEMA_ID, "4.0.0", HASH_FROM_IR, HASH_FROM_SRC),
+        // v5.0.0 deliberately absent.
       ]),
       migrationRegistry: buildMigrationRegistryFromEntries([
-        // bound: 1.0.0 → 1.0.0 (using identical hashes both sides) — but
-        // verification compares hashes per endpoint, so use a real drift
-        // case here instead:
+        // bound: hashes align at both endpoints.
         makeMigrationEntry({
           fromVersion: "1.0.0",
-          toVersion: "3.0.0",
+          toVersion: "2.0.0",
           fromIrHash: HASH_FROM_IR,
           toIrHash: HASH_TO_IR,
           fromSourceHash: HASH_FROM_SRC,
           toSourceHash: HASH_TO_SRC,
-        }), // bound
+          sourcePath: "bound.migration.ts",
+        }),
+        // cosmetic_drift: irHash matches both endpoints, toSourceHash diverges.
+        makeMigrationEntry({
+          fromVersion: "2.0.0",
+          toVersion: "3.0.0",
+          fromIrHash: HASH_TO_IR,
+          toIrHash: HASH_FROM_IR,
+          fromSourceHash: HASH_TO_SRC,
+          toSourceHash: WRONG_HASH,
+          sourcePath: "cosmetic.migration.ts",
+        }),
+        // drift: fromIrHash diverges from schema registry.
+        makeMigrationEntry({
+          fromVersion: "3.0.0",
+          toVersion: "4.0.0",
+          fromIrHash: WRONG_HASH,
+          toIrHash: HASH_FROM_IR,
+          fromSourceHash: HASH_FROM_SRC,
+          toSourceHash: HASH_FROM_SRC,
+          sourcePath: "drift.migration.ts",
+        }),
+        // missing_endpoint: toVersion 5.0.0 absent from the schema registry.
+        makeMigrationEntry({
+          fromVersion: "4.0.0",
+          toVersion: "5.0.0",
+          sourcePath: "missing.migration.ts",
+        }),
+      ]),
+    });
+    expect(r.success).toBe(false);
+    if (!r.success) {
+      expect(r.issues).toHaveLength(2);
+      const codes = r.issues.map((i) => i.code).sort();
+      expect(codes).toEqual([
+        "migration_drift",
+        "migration_missing_endpoint",
+      ]);
+    }
+    // The summary + verdicts live on the success branch only — the
+    // verifier collapses the result envelope when any drift /
+    // missing_endpoint exists. To assert the per-status counts and
+    // the verdict list explicitly, re-run against the same
+    // registries but with the failing migrations swapped out for
+    // bound ones — that confirms the verdict-counting logic is
+    // independent of the drop-to-failure logic.
+    //
+    // Here we just confirm the issue set carries the right
+    // distribution: exactly one drift and exactly one missing.
+  });
+
+  it("verdict array (success branch) has one entry per migration in deterministic order", () => {
+    // Build a registry with three migrations, all bound, in
+    // non-sorted insertion order — verify the verdicts come out in
+    // (schemaId, fromVersion, toVersion) order with `.length === 3`.
+    const r = verifyMigrationProvenance({
+      schemaRegistry: buildHandwrittenSchemaRegistry([
+        makeRegistryEntry(SCHEMA_ID, "1.0.0", HASH_FROM_IR, HASH_FROM_SRC),
+        makeRegistryEntry(SCHEMA_ID, "2.0.0", HASH_TO_IR, HASH_TO_SRC),
+        makeRegistryEntry(SCHEMA_ID, "3.0.0", HASH_FROM_IR, HASH_FROM_SRC),
+      ]),
+      migrationRegistry: buildMigrationRegistryFromEntries([
+        makeMigrationEntry({
+          fromVersion: "2.0.0",
+          toVersion: "3.0.0",
+          fromIrHash: HASH_TO_IR,
+          toIrHash: HASH_FROM_IR,
+          fromSourceHash: HASH_TO_SRC,
+          toSourceHash: HASH_FROM_SRC,
+          sourcePath: "second.migration.ts",
+        }),
+        makeMigrationEntry({
+          fromVersion: "1.0.0",
+          toVersion: "2.0.0",
+          fromIrHash: HASH_FROM_IR,
+          toIrHash: HASH_TO_IR,
+          fromSourceHash: HASH_FROM_SRC,
+          toSourceHash: HASH_TO_SRC,
+          sourcePath: "first.migration.ts",
+        }),
         makeMigrationEntry({
           fromVersion: "1.0.0",
           toVersion: "3.0.0",
-          fromIrHash: WRONG_HASH,
-          sourcePath: "drifting.migration.ts",
-        }), // drift (note: same triple as above; second entry overrides
-        //       in the hand-rolled builder, so this case can't actually
-        //       happen via `buildMigrationRegistry`. Use a distinct
-        //       triple instead.)
+          fromIrHash: HASH_FROM_IR,
+          toIrHash: HASH_FROM_IR,
+          fromSourceHash: HASH_FROM_SRC,
+          toSourceHash: HASH_FROM_SRC,
+          sourcePath: "skip.migration.ts",
+        }),
       ]),
     });
-    // The hand-rolled builder collapses duplicate triples (last write
-    // wins). The assertion just verifies the envelope shape — not the
-    // exact verdict mix.
-    expect(typeof r.success).toBe("boolean");
+    expect(r.success).toBe(true);
+    if (r.success) {
+      expect(r.data.verdicts).toHaveLength(3);
+      expect(r.data.summary).toEqual({
+        bound: 3,
+        cosmetic_drift: 0,
+        drift: 0,
+        missing_endpoint: 0,
+      });
+      // Sorted by (fromVersion, toVersion) within the schemaId.
+      expect(
+        r.data.verdicts.map((v) => `${v.fromVersion}→${v.toVersion}`),
+      ).toEqual(["1.0.0→2.0.0", "1.0.0→3.0.0", "2.0.0→3.0.0"]);
+    }
   });
 
   it("multiple distinct drift verdicts each emit their own Issue", () => {
