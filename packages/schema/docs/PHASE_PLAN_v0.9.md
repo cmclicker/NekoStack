@@ -195,19 +195,19 @@ Rationale:
 - Authors are advised in [`docs/MIGRATIONS.md`](./MIGRATIONS.md) (existing v0.8 contract) to keep `transform` pure, side-effect-free, and synchronous (the schema-side type pins it as sync — `(input: Input) => Output`). The runner's `transformTimeoutMs` (Decision #8) is a best-effort backstop only — it cannot preempt a CPU-bound sync transform mid-execution.
 - Production-grade isolation (per-record V8 isolate, etc.) is a future v0.9.X+ concern, gated by its own thesis-fit audit.
 
-### Decision #8 — Transform timeout + cancellation (best-effort, sync-bounded).
+### Decision #8 — Transform timeout + cancellation (sync-only, post-hoc measurement).
 
-**Locked: sync-first, best-effort cancellation only.**
+**Locked: v0.9 does NOT preempt synchronous transforms.**
 
-The v0.8 `Migration.transform` signature is **synchronous** (`(input: Input) => Output`). A synchronous in-process function call CANNOT be preempted from the same thread; CPU-bound code holds the event loop until it returns. v0.9 does not change the schema-side type, so it cannot promise true per-transform interruption.
+The v0.8 `Migration.transform` signature is `(input: Input) => Output` — **synchronous, in-process**. A synchronous in-process function call cannot be preempted from the same thread; CPU-bound code holds the event loop until it returns. v0.9 does not change the schema-side type, so it cannot offer true per-transform interruption. Anything claiming otherwise would be a lie.
 
-What v0.9 does ship:
+What v0.9 actually ships:
 
-- **Run-level `AbortSignal`** (`RunOpts.signal`). The runner checks the signal **between records** — after a per-record pipeline completes (or fails) and before pulling the next input. Aborting stops the next iteration cleanly; it does not unwind a transform already in flight.
-- **`transformTimeoutMs` as a soft guard.** A per-record `setTimeout(transformTimeoutMs)` runs alongside the pipeline. If the timeout fires before the per-record pipeline resolves, the record is classified as `transform_timeout` and the partial-failure policy (Decision #10) applies. Because the transform itself runs synchronously on the same thread, the timeout cannot interrupt a CPU-bound transform mid-execution — it can only mark the record post-hoc once control returns to the runner. The flag is useful for transforms that yield at microtask boundaries, iterate generators, or await downstream validators; it is a backstop, not a hard kill.
-- **No subprocess / worker / V8-isolate execution in v0.9.** True preemption requires moving `transform` out-of-process. That's a future amendment (see Decision #7 + non-goals).
+- **`RunOpts.signal` is checked before starting each record and between records only.** Aborting the signal stops the next iteration cleanly. It does NOT interrupt an in-flight synchronous transform. A `transform` already executing when the signal fires will run to completion before the runner sees the abort.
+- **`RunOpts.transformTimeoutMs` is a wall-clock measurement around the synchronous transform call.** The runner reads the clock immediately before invoking `transform`, invokes it, reads the clock immediately after control returns, and computes elapsed time. If `elapsed > transformTimeoutMs`, the record is classified as `transform_timeout` and the partial-failure policy (Decision #10) applies. The runner cannot interrupt the call while it is running — the classification is **strictly post-hoc** and exists to record "this transform was slower than the budget" so the partial-failure policy can act on it.
+- **No subprocess, worker thread, or V8-isolate execution in v0.9.** True timeout preemption requires moving `transform` out-of-process to a runtime that can be killed. That is deferred behind its own thesis-fit audit and is explicitly listed in the non-goals.
 
-Authors who need hard timeout discipline must keep `transform` cheap, deterministic, and non-blocking. The plan explicitly states (and [`docs/MIGRATIONS.md`](./MIGRATIONS.md) already documents) that `transform` should be pure and side-effect-free.
+Authors who need hard timeout discipline must keep `transform` cheap, deterministic, and non-blocking. [`docs/MIGRATIONS.md`](./MIGRATIONS.md) already documents that `transform` should be pure and side-effect-free.
 
 ### Decision #9 — Dry-run + validate-only modes.
 
@@ -285,7 +285,18 @@ If the runner ships a thin CLI alongside the library, the CLI maps these to the 
 
 ### Decision #15 — Provenance re-check before execution.
 
-**Locked.** Restated from Decision #5 for emphasis: `verifyMigrationProvenance` runs immediately before the runner walks the input stream. If anything but `bound` (or `bound` / `cosmetic_drift` with explicit opt-in) → refuse to run. This is the load-bearing safety check that ties v0.9 execution to the v0.8 verifier contract.
+**Locked.** Restated from Decision #5 for emphasis. The pre-flight verification is **chain-scoped**, not workspace-wide:
+
+```ts
+verifyMigrationsHandler({
+  schemaRegistry,
+  migrationRegistry: chainScopedRegistry,   // built from plan.chain only
+})
+```
+
+This call runs immediately after `planMigrationHandler` returns `Result.success` and immediately before the runner walks the input stream. If any chain entry verifies as anything other than `bound` (or `bound` / `cosmetic_drift` when `RunOpts.allowCosmeticDrift === true`) → refuse to run; `transform` is never invoked.
+
+**The runner never verifies the whole workspace migration registry and filters afterward.** Workspace-wide verification can return `Result.failure` because of a migration outside the planned chain (v0.8's `verifyMigrationProvenance` drops verdicts on the failure branch), which would prevent the runner from reasoning about chain entries reliably. Chain-scoping the registry before verifying eliminates that failure mode entirely. This is the load-bearing safety check that ties v0.9 execution to the v0.8 verifier contract.
 
 ### Decision #16 — Audit log shape.
 
