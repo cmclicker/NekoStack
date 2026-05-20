@@ -16,11 +16,16 @@
     {
       "name": "@nekostack/schema",
       "dir": "packages/schema",
-      "latest_release": "schema-v0.7.0",
-      "latest_release_date": "2026-05-19",
-      "active_target": "v0.8 — Schema-data migrations: planning + verification + stub generation",
-      "test_count": 871,
+      "latest_release": "schema-v0.8.0",
+      "latest_release_date": "2026-05-20",
+      "active_target": "v0.9+ — Active target placeholder",
+      "test_count": 1292,
       "milestones": [
+        {
+          "tag": "schema-v0.8.0",
+          "date": "2026-05-20",
+          "summary": "Schema-data migration planning + provenance verification + stub generation."
+        },
         {
           "tag": "schema-v0.7.0",
           "date": "2026-05-19",
@@ -40,18 +45,13 @@
           "tag": "schema-v0.4.0",
           "date": "2026-05-17",
           "summary": "Fourth generator on the v0.1 IR foundation."
-        },
-        {
-          "tag": "schema-v0.3.0",
-          "date": "2026-05-17",
-          "summary": "Third generator on the v0.1 IR foundation."
         }
       ]
     }
   ],
   "next_actions": [
-    "Open the v0.7 phase-plan PR for @nekostack/schema — Registry-lite + CLI; consumes v0.2 irHash and the new sourceHash for freshness.",
-    "Land the v0.7 CLI runtime in @nekostack/cli; the v0.6 runtime stays the engine behind it.",
-    "Apply the thesis-fit audit gate to the v0.7 phase plan before any implementation PR."
+    "schema-v0.8.0 shipped (PR #28, tag schema-v0.8.0 at ec742e8). Active target placeholder: v0.9+. No implementation has started; no phase plan exists yet.",
+    "If a migration runner / apply path is proposed for v0.9, raise it as a separate plan-only PR with thesis-fit audit. The v0.8 hard-locks (no apply in @nekostack/schema, forward-only, one schemaId per migration, no DDL) remain in force regardless of what v0.9 picks up.",
+    "Apply the thesis-fit audit gate to any v0.9 phase plan before any implementation PR."
   ]
 }
