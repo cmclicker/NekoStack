@@ -41,11 +41,17 @@ import * as RunnerNamespace from "../src/index.js";
 import type {
   AuditAdapter,
   AuditEntry,
+  DiffSeverity,
   ErrorClassification,
   InputAdapter,
   MigrationEntry,
   MigrationRegistry,
   OutputAdapter,
+  PlanNote,
+  PreFlightFailure,
+  PreFlightOpts,
+  PreFlightResult,
+  PreFlightSuccess,
   Registry,
   ResumeCursor,
   RunFailure,
@@ -70,11 +76,17 @@ import type {
 import type {
   AuditAdapter as IndexAuditAdapter,
   AuditEntry as IndexAuditEntry,
+  DiffSeverity as IndexDiffSeverity,
   ErrorClassification as IndexErrorClassification,
   InputAdapter as IndexInputAdapter,
   MigrationEntry as IndexMigrationEntry,
   MigrationRegistry as IndexMigrationRegistry,
   OutputAdapter as IndexOutputAdapter,
+  PlanNote as IndexPlanNote,
+  PreFlightFailure as IndexPreFlightFailure,
+  PreFlightOpts as IndexPreFlightOpts,
+  PreFlightResult as IndexPreFlightResult,
+  PreFlightSuccess as IndexPreFlightSuccess,
   Registry as IndexRegistry,
   ResumeCursor as IndexResumeCursor,
   RunFailure as IndexRunFailure,
@@ -165,6 +177,83 @@ describe("public-entry re-export gate: every locked type round-trips through `sr
     expectTypeOf<IndexRunSuccess>().toEqualTypeOf<RunSuccess>();
     expectTypeOf<IndexRunFailure>().toEqualTypeOf<RunFailure>();
     expectTypeOf<IndexRunResult>().toEqualTypeOf<RunResult>();
+  });
+
+  it("`PreFlightOpts` / `PreFlightSuccess` / `PreFlightFailure` / `PreFlightResult` re-export through the index (Step 3)", () => {
+    expectTypeOf<IndexPreFlightOpts>().toEqualTypeOf<PreFlightOpts>();
+    expectTypeOf<IndexPreFlightSuccess>().toEqualTypeOf<PreFlightSuccess>();
+    expectTypeOf<IndexPreFlightFailure>().toEqualTypeOf<PreFlightFailure>();
+    expectTypeOf<IndexPreFlightResult>().toEqualTypeOf<PreFlightResult>();
+  });
+
+  it("`DiffSeverity` / `PlanNote` re-export through the index", () => {
+    expectTypeOf<IndexDiffSeverity>().toEqualTypeOf<DiffSeverity>();
+    expectTypeOf<IndexPlanNote>().toEqualTypeOf<PlanNote>();
+  });
+});
+
+// =============================================================================
+// Pre-flight types (Step 3)
+// =============================================================================
+
+describe("PreFlightOpts carries the locked Step 3 input shape", () => {
+  it("has the operand triple + both registries", () => {
+    expectTypeOf<PreFlightOpts["schemaRegistry"]>().toEqualTypeOf<Registry>();
+    expectTypeOf<PreFlightOpts["migrationRegistry"]>().toEqualTypeOf<MigrationRegistry>();
+    expectTypeOf<PreFlightOpts["schemaId"]>().toEqualTypeOf<string>();
+    expectTypeOf<PreFlightOpts["fromVersion"]>().toEqualTypeOf<string>();
+    expectTypeOf<PreFlightOpts["toVersion"]>().toEqualTypeOf<string>();
+  });
+
+  it("`allowCosmeticDrift` is optional with safe default", () => {
+    expectTypeOf<PreFlightOpts["allowCosmeticDrift"]>().toEqualTypeOf<
+      boolean | undefined
+    >();
+  });
+});
+
+describe("PreFlightResult is a `success`-discriminated union", () => {
+  it("narrows to PreFlightSuccess when `result.success === true`", () => {
+    type N<R extends PreFlightResult> = R extends { success: true }
+      ? R
+      : never;
+    type N_S = N<Extract<PreFlightResult, { success: true }>>;
+    expectTypeOf<N_S>().toEqualTypeOf<PreFlightSuccess>();
+  });
+
+  it("narrows to PreFlightFailure when `result.success === false`", () => {
+    type N<R extends PreFlightResult> = R extends { success: false }
+      ? R
+      : never;
+    type N_F = N<Extract<PreFlightResult, { success: false }>>;
+    expectTypeOf<N_F>().toEqualTypeOf<PreFlightFailure>();
+  });
+
+  it("`PreFlightSuccess` carries the locked chain + chain-scoped registry", () => {
+    expectTypeOf<PreFlightSuccess["chain"]>().toEqualTypeOf<
+      readonly MigrationEntry[]
+    >();
+    expectTypeOf<PreFlightSuccess["chainScopedRegistry"]>().toEqualTypeOf<
+      MigrationRegistry
+    >();
+    expectTypeOf<PreFlightSuccess["worstSeverity"]>().toEqualTypeOf<
+      DiffSeverity | null
+    >();
+    expectTypeOf<PreFlightSuccess["notes"]>().toEqualTypeOf<
+      readonly PlanNote[]
+    >();
+    expectTypeOf<PreFlightSuccess["versionPath"]>().toEqualTypeOf<
+      readonly string[]
+    >();
+  });
+
+  it("`PreFlightFailure.classification` is always the literal `\"pre_flight_failed\"`", () => {
+    expectTypeOf<PreFlightFailure["classification"]>().toEqualTypeOf<
+      "pre_flight_failed"
+    >();
+    expectTypeOf<PreFlightFailure["classification"]>().not.toEqualTypeOf<
+      ErrorClassification
+    >();
   });
 });
 

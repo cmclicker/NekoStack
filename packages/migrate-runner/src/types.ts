@@ -27,10 +27,13 @@
  */
 
 import type {
+  DiffSeverity,
   MigrationEntry,
   MigrationRegistry,
+  PlanNote,
   Registry,
 } from "@nekostack/schema/cli";
+import type { Issue } from "@nekostack/schema";
 
 // =============================================================================
 // Run mode (Decision #9)
@@ -295,7 +298,80 @@ export interface RunFailure {
 export type RunResult = RunSuccess | RunFailure;
 
 // =============================================================================
+// Pre-flight (Step 3 — Decision #5 + #15)
+// =============================================================================
+
+/**
+ * Input to `preFlight(opts)`. Pure; no I/O. The runner orchestrator
+ * (Step 6) will call this before walking the input stream.
+ */
+export interface PreFlightOpts {
+  readonly schemaRegistry: Registry;
+  readonly migrationRegistry: MigrationRegistry;
+  readonly schemaId: string;
+  readonly fromVersion: string;
+  readonly toVersion: string;
+  /**
+   * When `true`, the chain-scoped verifier accepts `cosmetic_drift`
+   * as success-compatible (warning-class). Default: `false`
+   * (strict — OQ-5 resolved in the v0.9 plan round-2).
+   */
+  readonly allowCosmeticDrift?: boolean;
+}
+
+/**
+ * Pre-flight success — the planner and the chain-scoped verifier
+ * both accepted. Carries the **frozen** chain the runner walks plus
+ * the chain-scoped `MigrationRegistry` it was verified against (so
+ * the per-record pipeline doesn't re-derive it).
+ *
+ * `chain.length === 0` when the diff is null / cosmetic / additive-
+ * without-migration. The `notes` field preserves the planner's
+ * `over_specified` / `additive_no_migration` discriminators so the
+ * orchestrator can surface them.
+ */
+export interface PreFlightSuccess {
+  readonly success: true;
+  readonly schemaId: string;
+  readonly fromVersion: string;
+  readonly toVersion: string;
+  readonly chain: readonly MigrationEntry[];
+  readonly versionPath: readonly string[];
+  readonly worstSeverity: DiffSeverity | null;
+  readonly notes: readonly PlanNote[];
+  /**
+   * Three-level `Map` carrying ONLY the migrations on the resolved
+   * chain. Built by `preFlight` from `plan.chain`. The verifier ran
+   * against this registry, not the workspace one (Decision #15).
+   * Empty when the chain is empty.
+   */
+  readonly chainScopedRegistry: MigrationRegistry;
+}
+
+/**
+ * Pre-flight failure — planner refused, chain-scoped verifier
+ * refused, or `cosmetic_drift` was present without
+ * `allowCosmeticDrift: true`.
+ *
+ * `classification` is always `"pre_flight_failed"` (Decision #14).
+ * The original `Issue[]` from the schema-side handlers is preserved
+ * verbatim in `issues`; the orchestrator decides whether to surface
+ * the first one or aggregate.
+ *
+ * **`migration.transform` is never invoked on this branch.** The
+ * runner has no chain to walk.
+ */
+export interface PreFlightFailure {
+  readonly success: false;
+  readonly classification: "pre_flight_failed";
+  readonly errorMessage: string;
+  readonly issues: readonly Issue[];
+}
+
+export type PreFlightResult = PreFlightSuccess | PreFlightFailure;
+
+// =============================================================================
 // Re-export schema-side types the runner consumes (for caller convenience)
 // =============================================================================
 
-export type { Registry, MigrationRegistry, MigrationEntry };
+export type { Registry, MigrationRegistry, MigrationEntry, PlanNote, DiffSeverity };

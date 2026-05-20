@@ -52,11 +52,17 @@ export const PACKAGE_NAME = "@nekostack/migrate-runner" as const;
 export type {
   AuditAdapter,
   AuditEntry,
+  DiffSeverity,
   ErrorClassification,
   InputAdapter,
   MigrationEntry,
   MigrationRegistry,
   OutputAdapter,
+  PlanNote,
+  PreFlightFailure,
+  PreFlightOpts,
+  PreFlightResult,
+  PreFlightSuccess,
   Registry,
   ResumeCursor,
   RunFailure,
@@ -66,3 +72,9 @@ export type {
   RunSuccess,
   RunnerOptions,
 } from "./types.js";
+
+// =============================================================================
+// Step 3 — pre-flight (chain-scoped plan + verify)
+// =============================================================================
+
+export { preFlight } from "./pre-flight.js";
