@@ -28,6 +28,16 @@
 
 import { describe, expectTypeOf, it } from "vitest";
 import * as RunnerNamespace from "../src/index.js";
+
+// -----------------------------------------------------------------------------
+// Source-contract imports — straight from `src/types.ts`.
+//
+// These prove the *source of truth* carries every locked field /
+// every locked union shape. The public-entry positive gate below
+// proves the *package entry* (`src/index.ts`) re-exports them all
+// identity-preserving.
+// -----------------------------------------------------------------------------
+
 import type {
   AuditAdapter,
   AuditEntry,
@@ -45,6 +55,35 @@ import type {
   RunSuccess,
   RunnerOptions,
 } from "../src/types.js";
+
+// -----------------------------------------------------------------------------
+// Public-entry imports — straight from `src/index.ts`.
+//
+// Aliased to `Index<Name>` so the positive public-entry gate (round-2
+// cleanup on Step 2) can `toEqualTypeOf` against the source-contract
+// types and prove the re-export bridge is identity-preserving. A
+// future edit that breaks `src/index.ts`'s `export type { ... }`
+// block trips this gate immediately — without it, the source-contract
+// checks would stay green even with a broken public surface.
+// -----------------------------------------------------------------------------
+
+import type {
+  AuditAdapter as IndexAuditAdapter,
+  AuditEntry as IndexAuditEntry,
+  ErrorClassification as IndexErrorClassification,
+  InputAdapter as IndexInputAdapter,
+  MigrationEntry as IndexMigrationEntry,
+  MigrationRegistry as IndexMigrationRegistry,
+  OutputAdapter as IndexOutputAdapter,
+  Registry as IndexRegistry,
+  ResumeCursor as IndexResumeCursor,
+  RunFailure as IndexRunFailure,
+  RunMode as IndexRunMode,
+  RunOpts as IndexRunOpts,
+  RunResult as IndexRunResult,
+  RunSuccess as IndexRunSuccess,
+  RunnerOptions as IndexRunnerOptions,
+} from "../src/index.js";
 
 // =============================================================================
 // Public-surface presence
@@ -71,6 +110,61 @@ describe("@nekostack/migrate-runner — Step 2 type surface", () => {
     expectTypeOf<Registry>().not.toBeAny();
     expectTypeOf<MigrationRegistry>().not.toBeAny();
     expectTypeOf<MigrationEntry>().toBeObject();
+  });
+});
+
+// =============================================================================
+// Public-entry positive gate (round-2 cleanup)
+// =============================================================================
+//
+// Each row asserts `import type X from "../src/index.js"` resolves
+// to exactly the same type as `import type X from "../src/types.js"`.
+// This proves the public surface (the package entry) re-exports the
+// full Step 2 type list identity-preserving — not just that the
+// source-of-truth file declares them. A future edit that drops a
+// `export type X` line from `src/index.ts` trips this gate.
+
+describe("public-entry re-export gate: every locked type round-trips through `src/index.ts`", () => {
+  it("`Registry` and `MigrationRegistry` re-export through the index", () => {
+    expectTypeOf<IndexRegistry>().toEqualTypeOf<Registry>();
+    expectTypeOf<IndexMigrationRegistry>().toEqualTypeOf<MigrationRegistry>();
+    expectTypeOf<IndexMigrationEntry>().toEqualTypeOf<MigrationEntry>();
+  });
+
+  it("`RunMode` re-exports through the index", () => {
+    expectTypeOf<IndexRunMode>().toEqualTypeOf<RunMode>();
+  });
+
+  it("`ErrorClassification` re-exports through the index", () => {
+    expectTypeOf<IndexErrorClassification>().toEqualTypeOf<ErrorClassification>();
+  });
+
+  it("`InputAdapter` / `OutputAdapter` / `AuditAdapter` re-export through the index", () => {
+    expectTypeOf<IndexInputAdapter>().toEqualTypeOf<InputAdapter>();
+    expectTypeOf<IndexOutputAdapter>().toEqualTypeOf<OutputAdapter>();
+    expectTypeOf<IndexAuditAdapter>().toEqualTypeOf<AuditAdapter>();
+  });
+
+  it("`AuditEntry` re-exports through the index", () => {
+    expectTypeOf<IndexAuditEntry>().toEqualTypeOf<AuditEntry>();
+  });
+
+  it("`ResumeCursor` re-exports through the index", () => {
+    expectTypeOf<IndexResumeCursor>().toEqualTypeOf<ResumeCursor>();
+  });
+
+  it("`RunnerOptions` re-exports through the index", () => {
+    expectTypeOf<IndexRunnerOptions>().toEqualTypeOf<RunnerOptions>();
+  });
+
+  it("`RunOpts` re-exports through the index", () => {
+    expectTypeOf<IndexRunOpts>().toEqualTypeOf<RunOpts>();
+  });
+
+  it("`RunSuccess` / `RunFailure` / `RunResult` re-export through the index", () => {
+    expectTypeOf<IndexRunSuccess>().toEqualTypeOf<RunSuccess>();
+    expectTypeOf<IndexRunFailure>().toEqualTypeOf<RunFailure>();
+    expectTypeOf<IndexRunResult>().toEqualTypeOf<RunResult>();
   });
 });
 
