@@ -27,17 +27,23 @@
  *     helper that guarantees `__auditSchemaVersion: "1"`. Pure;
  *     append-only; never logs / touches fs / touches process. See
  *     [`./audit.ts`](./audit.ts) for the contract.
+ *   - **`createMigrationRunner`** (Step 6) — factory returning a
+ *     `MigrationRunner` handle. The handle exposes the audit
+ *     adapter (for inspection) and a `run(opts)` method that
+ *     wires pre-flight → input-stream walk → per-record pipeline →
+ *     audit → optional output persist + flush. Never calls
+ *     `migration.transform` directly; every transform invocation
+ *     flows through `runRecordPipeline`. See
+ *     [`./runner.ts`](./runner.ts) for the full contract.
  *   - **Type-only re-exports** from [`./types.ts`](./types.ts) covering
  *     the locked v0.9 contract (`RunnerOptions`, `RunOpts`, `RunMode`,
  *     `RunResult` / `RunSuccess` / `RunFailure`, `ErrorClassification`,
  *     `AuditEntry`, the three adapter interfaces, `MemoryAuditAdapter`,
- *     `ResumeCursor`, the four `PreFlight*` shapes, and the four
- *     `PerRecordPipeline*` shapes).
+ *     `MigrationRunner`, `ResumeCursor`, the four `PreFlight*`
+ *     shapes, and the four `PerRecordPipeline*` shapes).
  *
  * ## Still ahead (sequenced behind audit gates)
  *
- *   - Step 6 — orchestrator (`./runner.ts`) exporting
- *     `createMigrationRunner(...)`.
  *   - Step 7 — JSON-file reference adapters (incl. the persistent
  *     JSONL audit adapter, separate from the in-memory default
  *     shipped in Step 5).
@@ -79,6 +85,7 @@ export type {
   InputAdapter,
   MemoryAuditAdapter,
   MigrationEntry,
+  MigrationRunner,
   MigrationRegistry,
   NonEmptyChain,
   OutputAdapter,
@@ -120,3 +127,9 @@ export { runRecordPipeline } from "./per-record-pipeline.js";
 // =============================================================================
 
 export { createMemoryAuditAdapter, makeAuditEntry } from "./audit.js";
+
+// =============================================================================
+// Step 6 — runner orchestrator (the public `createMigrationRunner` factory)
+// =============================================================================
+
+export { createMigrationRunner } from "./runner.js";

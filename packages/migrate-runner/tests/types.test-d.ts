@@ -47,6 +47,7 @@ import type {
   MemoryAuditAdapter,
   MigrationEntry,
   MigrationRegistry,
+  MigrationRunner,
   NonEmptyChain,
   OutputAdapter,
   PerRecordPipelineFailure,
@@ -88,6 +89,7 @@ import type {
   MemoryAuditAdapter as IndexMemoryAuditAdapter,
   MigrationEntry as IndexMigrationEntry,
   MigrationRegistry as IndexMigrationRegistry,
+  MigrationRunner as IndexMigrationRunner,
   NonEmptyChain as IndexNonEmptyChain,
   OutputAdapter as IndexOutputAdapter,
   PerRecordPipelineFailure as IndexPerRecordPipelineFailure,
@@ -213,6 +215,28 @@ describe("public-entry re-export gate: every locked type round-trips through `sr
 
   it("`MemoryAuditAdapter` re-exports through the index (Step 5)", () => {
     expectTypeOf<IndexMemoryAuditAdapter>().toEqualTypeOf<MemoryAuditAdapter>();
+  });
+
+  it("`MigrationRunner` re-exports through the index (Step 6)", () => {
+    expectTypeOf<IndexMigrationRunner>().toEqualTypeOf<MigrationRunner>();
+  });
+});
+
+// =============================================================================
+// MigrationRunner shape (Step 6)
+// =============================================================================
+
+describe("MigrationRunner exposes the locked Step 6 surface", () => {
+  it("has `auditAdapter: AuditAdapter`", () => {
+    expectTypeOf<MigrationRunner["auditAdapter"]>().toEqualTypeOf<
+      AuditAdapter
+    >();
+  });
+
+  it("`run(opts: RunOpts): Promise<RunResult>` signature locked", () => {
+    expectTypeOf<MigrationRunner["run"]>().toEqualTypeOf<
+      (opts: RunOpts) => Promise<RunResult>
+    >();
   });
 });
 

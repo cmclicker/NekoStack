@@ -473,6 +473,30 @@ export interface MemoryAuditAdapter extends AuditAdapter {
 }
 
 // =============================================================================
+// Runner (Step 6 — Decision #4)
+// =============================================================================
+
+/**
+ * The runner handle returned by `createMigrationRunner(options)`.
+ *
+ * Exposes the audit adapter so callers and tests can inspect the
+ * audit log (the in-memory default produces a `MemoryAuditAdapter`
+ * with an `entries` view; a custom adapter exposes whatever its
+ * interface supports).
+ */
+export interface MigrationRunner {
+  /** Audit adapter the runner writes to. Either the caller-
+   *  supplied `RunnerOptions.auditAdapter` or the in-memory
+   *  default created by `createMemoryAuditAdapter()`. */
+  readonly auditAdapter: AuditAdapter;
+  /** Invoke a single run. Pure with respect to the runner's own
+   *  state — multiple invocations share the same audit adapter,
+   *  but each invocation generates its own `runId` (or honors the
+   *  one supplied via `RunOpts.resumeFrom`). */
+  run(opts: RunOpts): Promise<RunResult>;
+}
+
+// =============================================================================
 // Re-export schema-side types the runner consumes (for caller convenience)
 // =============================================================================
 
