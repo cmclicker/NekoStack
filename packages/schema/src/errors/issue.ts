@@ -44,6 +44,19 @@ export const ISSUE_CODES = [
   "duplicate_schema_id",
   "schema_not_found",
   "version_not_found",
+  // v0.8 — migration codes. Added per the Master plan Decision #15
+  // change-control rule, at each code's first use site:
+  // - `duplicate_migration` — first constructed by
+  //   `migrations/build-migration-registry.ts` (Step 3) when the same
+  //   `(schemaId, fromVersion, toVersion)` triple appears in more than
+  //   one `MigrationSourceEntry`. Mirrors `duplicate_schema_id` from
+  //   v0.7; the planner / verifier rely on the triple being unique.
+  // Remaining v0.8 codes (`migration_not_found`,
+  // `migration_chain_broken`, `migration_drift`,
+  // `migration_cosmetic_drift`, `migration_ambiguous_chain`,
+  // `migration_missing_endpoint`) land at their own first-use sites
+  // in Steps 4 (planner) and 5 (verifier).
+  "duplicate_migration",
 ] as const;
 
 export type IssueCode = (typeof ISSUE_CODES)[number];
