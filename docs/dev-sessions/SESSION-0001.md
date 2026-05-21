@@ -8,7 +8,7 @@
 | Date | 2026-05-21 |
 | Repo | cmclicker/NekoStack |
 | Branch | audit/repo-state-0001 |
-| PR | docs(repo): add operational audit session record |
+| PR | #33 — docs(repo): add operational audit session record |
 | Operator | Claude Code |
 | Validator | ChatGPT |
 | Status | ready_for_validation |
@@ -114,7 +114,7 @@ Validation request for SESSION-0001.
 
 Repo: cmclicker/NekoStack
 Branch: audit/repo-state-0001 (from clean main)
-PR: docs(repo): add operational audit session record
+PR: #33 — docs(repo): add operational audit session record
 Stacked PR: none
 Authorization honored: AUTHORIZED_DOCS_ONLY
 
