@@ -18,10 +18,10 @@
  * the full test matrix (Step 8) — see PR body for the locked
  * checklist.
  */
-import { readFileSync, readdirSync, statSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { fileURLToPath } from "node:url";
-import { dirname, join, sep } from "node:path";
+import { dirname, join } from "node:path";
 import { PACKAGE_NAME } from "../src/index.js";
 
 // =============================================================================
@@ -116,111 +116,13 @@ const FORBIDDEN: { name: string; pattern: RegExp }[] = [
 ];
 
 describe("@nekostack/migrate-runner — Step 1 source discipline (static scan)", () => {
+  // Locality fail-fast on the public entry. Package-wide boundary
+  // rules (transform / fs / cli imports across every src file) live
+  // in `tests/purity.test.ts` as the canonical authority.
   it.each(FORBIDDEN)(
     "`src/index.ts` does not contain `$name`",
     ({ pattern }) => {
       expect(STRIPPED).not.toMatch(pattern);
     },
   );
-});
-
-// =============================================================================
-// Cross-cutting boundary scan (added in Step 7 — adapters introduce
-// fs imports for the first time)
-// =============================================================================
-//
-// The package-wide boundary contract is:
-//
-//   - `.transform(` lives ONLY in `src/per-record-pipeline.ts`.
-//     Every other source file in `src/` is transform-free.
-//   - `node:fs/promises` (and any `node:fs*` import) lives ONLY
-//     under `src/adapters/`. No fs imports in pipeline / runner /
-//     pre-flight / audit / types / index.
-//
-// Per-file scans in each step's test file enforce these rules
-// locally; this block walks every `.ts` under `src/` and enforces
-// them globally so a future new file can't smuggle in either
-// pattern unnoticed.
-
-const SRC_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "src");
-
-function listSourceFiles(dir: string): string[] {
-  const out: string[] = [];
-  for (const name of readdirSync(dir)) {
-    const full = join(dir, name);
-    const st = statSync(full);
-    if (st.isDirectory()) {
-      out.push(...listSourceFiles(full));
-    } else if (name.endsWith(".ts")) {
-      out.push(full);
-    }
-  }
-  return out;
-}
-
-const ALL_SOURCE_FILES = listSourceFiles(SRC_ROOT);
-
-function relSrc(path: string): string {
-  const idx = path.indexOf(`src${sep}`);
-  if (idx < 0) return path;
-  return path.slice(idx).split(sep).join("/");
-}
-
-function strip(src: string): string {
-  return src.replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/.*$/gm, "");
-}
-
-describe("cross-cutting boundary — `.transform(` lives ONLY in per-record-pipeline.ts", () => {
-  it("scan covers every `.ts` under src/", () => {
-    // Sentinel: keep an eye on the file inventory so future steps
-    // don't accidentally narrow / widen it.
-    const rels = ALL_SOURCE_FILES.map(relSrc).sort();
-    expect(rels).toEqual([
-      "src/adapters/index.ts",
-      "src/adapters/json-file-input.ts",
-      "src/adapters/json-file-output.ts",
-      "src/adapters/jsonl-audit.ts",
-      "src/audit.ts",
-      "src/index.ts",
-      "src/per-record-pipeline.ts",
-      "src/pre-flight.ts",
-      "src/runner.ts",
-      "src/types.ts",
-    ]);
-  });
-
-  for (const file of ALL_SOURCE_FILES) {
-    const rel = relSrc(file);
-    if (rel === "src/per-record-pipeline.ts") {
-      it(`\`${rel}\` IS allowed to contain \`.transform(\``, () => {
-        const stripped = strip(readFileSync(file, "utf8"));
-        expect(stripped).toMatch(/\.transform\s*\(/);
-      });
-    } else {
-      it(`\`${rel}\` contains NO \`.transform(\``, () => {
-        const stripped = strip(readFileSync(file, "utf8"));
-        expect(stripped).not.toMatch(/\.transform\s*\(/);
-      });
-    }
-  }
-});
-
-describe("cross-cutting boundary — fs imports live ONLY under `src/adapters/`", () => {
-  const FS_IMPORT = /\bfrom\s+["'](?:node:)?fs(?:\/|["'])/;
-
-  for (const file of ALL_SOURCE_FILES) {
-    const rel = relSrc(file);
-    if (rel.startsWith("src/adapters/")) {
-      // Adapters are the data boundary. The reference adapters
-      // (json-file-input / json-file-output / jsonl-audit) MUST
-      // import fs; the barrel `adapters/index.ts` doesn't have to.
-      // We assert nothing-positive here — the per-adapter test
-      // files exercise behavior. We just allow fs imports.
-      continue;
-    }
-    it(`\`${rel}\` contains NO fs import`, () => {
-      const stripped = strip(readFileSync(file, "utf8"));
-      expect(stripped).not.toMatch(FS_IMPORT);
-    });
-  }
 });
