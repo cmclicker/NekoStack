@@ -20,7 +20,7 @@ The v0.8 migration contract ([`MIGRATIONS.md`](../schema/docs/MIGRATIONS.md)) sh
 
 ```
 @nekostack/schema   →  Migration<Id, From, To>  type + planMigrationHandler + verifyMigrationsHandler + stubs
-@nekostack/cli      →  neko schema migrate {plan|verify|stub|status}   (no apply, no execute)
+@nekostack/cli      →  neko schema migrate {list|plan|verify|stub}   (no apply, no execute)
 @nekostack/migrate-runner   →  invokes migration.transform(input) per record
 ```
 

@@ -6,7 +6,7 @@
 
 v0.1 of `@nekostack/migrate-runner` ships migration **execution** only. It does **NOT**:
 
-- Add a `neko schema migrate apply` verb (Decision #2). `@nekostack/cli` stays at four verbs: `plan` / `verify` / `stub` / `status`.
+- Add a `neko schema migrate apply` verb (Decision #2). `@nekostack/cli` stays at four verbs: `list` / `plan` / `verify` / `stub`.
 - Make `@nekostack/schema` execute transforms (Decision #3). The v0.8 schema-side purity gate ([`packages/schema/tests/migrations/handler-purity.test.ts`](../../schema/tests/migrations/handler-purity.test.ts)) remains in force.
 - Import from `@nekostack/cli`. The runner is an architectural **peer** to the CLI (Decision #1). Cross-cutting scan in [`tests/purity.test.ts`](../tests/purity.test.ts) gate #5 enforces this.
 - Widen `@nekostack/schema`'s `Migration` type. The runner uses a loose `AnyMigration` and runtime-validates input + output per record via the schema package's `parse`.
@@ -39,7 +39,7 @@ The 18 v0.9 plan decisions plus the five resolved OQs map to runner source as fo
 | 10 | `onError: continue` (default) / `stop`; cursor resume | [`src/runner.ts`](../src/runner.ts) |
 | 11 | No rollback. Forward-only. | Not implemented; gate-level non-goal |
 | 12 | Destructive migrations allowed in dry-run + execute; only execute persists | [`src/runner.ts`](../src/runner.ts) mode dispatch |
-| 13 | Sequential per-record `AsyncIterable` input | `InputAdapter.records()` shape in [`src/types.ts`](../src/types.ts) |
+| 13 | Sequential per-record `AsyncIterable` input | `InputAdapter.stream()` shape in [`src/types.ts`](../src/types.ts) |
 | 14 | 5 per-record + 3 run-level error codes | `ErrorClassification` in [`src/types.ts`](../src/types.ts) |
 | 15 | Chain-scoped verify runs immediately before record walk; never workspace-wide-then-filter | [`src/pre-flight.ts`](../src/pre-flight.ts) builds a chain-scoped `MigrationRegistry` |
 | 16 | Locked `AuditEntry` with `__auditSchemaVersion: "1"` | `AuditEntry` in [`src/types.ts`](../src/types.ts) + [`makeAuditEntry`](../src/audit.ts) |
@@ -106,7 +106,7 @@ pre-flight
   → validate-only short-circuit (RunSuccess { recordCount: 0 }; no audit writes)
   → resume cursor   (auditAdapter.cursor(runId); throw → adapter_init_failed)
   → pre-stream signal check  (if aborted → cancelled, counts all 0)
-  → for await record of inputAdapter.records():
+  → for await record of inputAdapter.stream():
       → between-records signal check  (if aborted → cancelled, counts to here)
       → cursor skip check  (already success on this runId)
       → runRecordPipeline
@@ -201,7 +201,7 @@ Three adapter interfaces, all in [`src/types.ts`](../src/types.ts). Reference im
 
 ```ts
 interface InputAdapter<T = unknown> {
-  records(): AsyncIterable<T>;
+  stream(): AsyncIterable<T>;
 }
 
 interface OutputAdapter<T = unknown> {
