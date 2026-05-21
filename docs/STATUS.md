@@ -4,12 +4,18 @@
 
 ## Active workstream
 
-- **Package:** @nekostack/schema
-- **Latest release:** [`schema-v0.8.0`](https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.8.0) — 2026-05-20
-- **Active target:** v0.9+ — Active target placeholder
+- **Package:** @nekostack/migrate-runner
+- **Latest release:** [`migrate-runner-v0.1.0`](https://github.com/cmclicker/NekoStack/releases/tag/migrate-runner-v0.1.0) — 2026-05-21
+- **Active target:** v0.1.X+ — Optional runner CLI + adapter expansion
 - **Doctrine in force:** [NekoStack — Product Thesis](../PRODUCT_THESIS.md)
 
 ## Latest milestones
+
+### @nekostack/migrate-runner
+
+| Tag | Date | Summary |
+|---|---|---|
+| [`migrate-runner-v0.1.0`](https://github.com/cmclicker/NekoStack/releases/tag/migrate-runner-v0.1.0) | 2026-05-21 | Schema-data migration runner library — the downstream package that executes authored migrations against real records. |
 
 ### @nekostack/schema
 
@@ -25,13 +31,16 @@
 
 Test counts come from each package's most recent CHANGELOG entry. After validating a release, update the package CHANGELOG and run `npm run status:generate`.
 
+- **@nekostack/migrate-runner:** 405 tests recorded (latest: migrate-runner-v0.1.0)
 - **@nekostack/schema:** 1292 tests recorded (latest: schema-v0.8.0)
 
 ## Next actions
 
-1. schema-v0.8.0 shipped (PR #28, tag schema-v0.8.0 at ec742e8). Active target placeholder: v0.9+. No implementation has started; no phase plan exists yet.
-2. If a migration runner / apply path is proposed for v0.9, raise it as a separate plan-only PR with thesis-fit audit. The v0.8 hard-locks (no apply in @nekostack/schema, forward-only, one schemaId per migration, no DDL) remain in force regardless of what v0.9 picks up.
-3. Apply the thesis-fit audit gate to any v0.9 phase plan before any implementation PR.
+1. migrate-runner-v0.1.0 shipped (PR #31, merged at 53c0ba5; tag migrate-runner-v0.1.0; GitHub release published). The downstream schema-data migration runner library — the only package that invokes migration.transform — is accepted. Library surface only; no CLI.
+2. Optional Steps 11-12 (thin runner CLI under @nekostack/migrate-runner's own bin) are DEFERRED to v0.1.X+. Active target placeholder: v0.1.X+. No implementation has started; no phase plan exists yet. A runner CLI is never a fifth verb under `neko schema migrate *` (v0.9 Decision #18).
+3. The v0.1 runtime boundaries remain in force for any v0.1.X work: .transform( only in src/per-record-pipeline.ts, fs imports only under src/adapters/*, no @nekostack/cli import, no console/process/stdio in source, forward-only, no transform preemption, no DB adapters yet.
+4. schema-v0.8.0 remains the latest @nekostack/schema release; its v0.9+ active-target placeholder is independent of the runner and still open (no phase plan). The v0.8 hard-locks remain in force.
+5. Apply the thesis-fit audit gate to any v0.1.X (runner) or v0.9 (schema) phase plan before any implementation PR.
 
 ## How to refresh
 

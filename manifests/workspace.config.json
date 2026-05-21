@@ -1,8 +1,15 @@
 {
   "$comment": "Hand-edited control-plane config. Drives scripts/generate-status.mjs. Edit this file (and the per-package ROADMAP/CHANGELOG) to update what STATUS.md shows.",
-  "active_workstream": "@nekostack/schema",
+  "active_workstream": "@nekostack/migrate-runner",
   "doctrine": "PRODUCT_THESIS.md",
   "packages": [
+    {
+      "name": "@nekostack/migrate-runner",
+      "dir": "packages/migrate-runner",
+      "tag_prefix": "migrate-runner-v",
+      "roadmap": "packages/migrate-runner/docs/ROADMAP.md",
+      "changelog": "packages/migrate-runner/CHANGELOG.md"
+    },
     {
       "name": "@nekostack/schema",
       "dir": "packages/schema",
@@ -12,8 +19,10 @@
     }
   ],
   "next_actions": [
-    "schema-v0.8.0 shipped (PR #28, tag schema-v0.8.0 at ec742e8). Active target placeholder: v0.9+. No implementation has started; no phase plan exists yet.",
-    "If a migration runner / apply path is proposed for v0.9, raise it as a separate plan-only PR with thesis-fit audit. The v0.8 hard-locks (no apply in @nekostack/schema, forward-only, one schemaId per migration, no DDL) remain in force regardless of what v0.9 picks up.",
-    "Apply the thesis-fit audit gate to any v0.9 phase plan before any implementation PR."
+    "migrate-runner-v0.1.0 shipped (PR #31, merged at 53c0ba5; tag migrate-runner-v0.1.0; GitHub release published). The downstream schema-data migration runner library — the only package that invokes migration.transform — is accepted. Library surface only; no CLI.",
+    "Optional Steps 11-12 (thin runner CLI under @nekostack/migrate-runner's own bin) are DEFERRED to v0.1.X+. Active target placeholder: v0.1.X+. No implementation has started; no phase plan exists yet. A runner CLI is never a fifth verb under `neko schema migrate *` (v0.9 Decision #18).",
+    "The v0.1 runtime boundaries remain in force for any v0.1.X work: .transform( only in src/per-record-pipeline.ts, fs imports only under src/adapters/*, no @nekostack/cli import, no console/process/stdio in source, forward-only, no transform preemption, no DB adapters yet.",
+    "schema-v0.8.0 remains the latest @nekostack/schema release; its v0.9+ active-target placeholder is independent of the runner and still open (no phase plan). The v0.8 hard-locks remain in force.",
+    "Apply the thesis-fit audit gate to any v0.1.X (runner) or v0.9 (schema) phase plan before any implementation PR."
   ]
 }
