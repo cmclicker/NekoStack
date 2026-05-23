@@ -1,8 +1,8 @@
 # NekoStack — Repository Operational Audit
 
-> Operational snapshot of the repository's DevOps posture: git/worktree state, PR/stack state, source-of-truth map, governance coverage, validation surface, and CI status. This is a point-in-time audit artifact, not a generated file. Pairs with the session record in [`dev-sessions/SESSION-0001.md`](./dev-sessions/SESSION-0001.md).
+> Operational snapshot of the repository's DevOps posture: git/worktree state, PR/stack state, source-of-truth map, governance coverage, validation surface, and CI status. This is a point-in-time audit artifact, not a generated file. Pairs with the session record in [`dev-sessions/SESSION-0002.md`](./dev-sessions/SESSION-0002.md).
 >
-> **Latest audit:** SESSION-0001 — 2026-05-21 — HEAD `7538e2a`.
+> **Latest audit:** SESSION-0002 — 2026-05-23 — HEAD `d3e6db1`.
 
 ## 1. Scope of this document
 
@@ -26,11 +26,11 @@ This audit covers repository **operations** (branch safety, worktree hygiene, PR
 | Branch (at audit) | `main` (default) |
 | Worktree | clean — 0 modified, 0 staged, 0 untracked |
 | Sync | even with `origin/main` (not ahead/behind) |
-| HEAD | `7538e2a` — attached (not detached) |
+| HEAD | `d3e6db1` — attached (not detached) |
 | In-progress git op | none (no rebase/merge/cherry-pick) |
-| Last commit | `7538e2a docs(migrate-runner): close v0.1 release cycle (#32)` |
+| Last commit | `d3e6db1 docs(repo): add operational audit session record (#33)` |
 
-Recent history (most recent first): `#32` migrate-runner v0.1 close-out → `#31` migrate-runner v0.1 candidate → `#30` schema v0.9 plan → `#29` schema v0.8 close-out → `#28` schema v0.8 candidate.
+Recent history (most recent first): `#33` operational audit session record → `#32` migrate-runner v0.1 close-out → `#31` migrate-runner v0.1 candidate → `#30` schema v0.9 plan → `#29` schema v0.8 close-out.
 
 ## 4. Mode classification
 
@@ -42,7 +42,9 @@ Consequence: per the operational hard-stop rules, **no edits are permitted direc
 
 ## 5. Active PR / stack state
 
-**None.** Zero open PRs in the repository at audit time. No stacked branches. The five most recent cycles (`#28`–`#32`) are all merged.
+**None.** Zero open PRs at audit time (`gh pr list --state open` → empty). No stacked branches. The six most recent cycles (`#28`–`#33`) are all merged — including SESSION-0001's docs PR `#33` (now HEAD `d3e6db1`).
+
+**GitHub objects (SESSION-0002 re-audit):** 33 open issues (`#35`–`#67`) — all routine "tracker" coordination issues created 2026-05-22; none is a work order for this audit. The earlier "20" was a `gh issue list` default `--limit 20` truncation (it returned only `#48`–`#67`); the unbounded query confirms 33. Repo-level **Projects, milestones, branch protection, and security / Dependabot state were not queried this session and remain `unknown`** (not inferred). Labels: none exist (per issue #56).
 
 ## 6. Source-of-truth map
 
@@ -114,3 +116,4 @@ Gaps vs. an enterprise ideal: no aggregate verify target, no root e2e/smoke targ
 | Session | Date | HEAD | Mode | Outcome |
 |---|---|---|---|---|
 | [SESSION-0001](./dev-sessions/SESSION-0001.md) | 2026-05-21 | `7538e2a` | `clean_no_active_pr` (+ `default_branch_risk`) | Docs-only audit snapshot; governance gaps catalogued; CI deferred to a separate PR |
+| [SESSION-0002](./dev-sessions/SESSION-0002.md) | 2026-05-23 | `d3e6db1` | `clean_no_active_pr` (+ `default_branch_risk`) | Re-audit + ledger correction (SESSION-0001 → `complete`); open-issue count reconciled to 33; `format:check` found known-red (pre-existing docs drift); unknowns preserved |
