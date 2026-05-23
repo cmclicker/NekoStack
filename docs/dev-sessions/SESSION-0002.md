@@ -8,7 +8,7 @@
 | Date | 2026-05-23 |
 | Repo | cmclicker/NekoStack |
 | Branch | audit/repo-state-0002 |
-| PR | #TBD — docs(repo): SESSION-0002 operational audit + ledger correction |
+| PR | #68 — docs(repo): SESSION-0002 operational audit + ledger correction |
 | Operator | Claude Code |
 | Validator | ChatGPT |
 | Status | ready_for_validation |
@@ -128,7 +128,7 @@ Validation request for SESSION-0002.
 
 Repo: cmclicker/NekoStack (private)
 Branch: audit/repo-state-0002 (from clean main, HEAD d3e6db1)
-PR: #TBD — docs(repo): SESSION-0002 operational audit + ledger correction
+PR: #68 — docs(repo): SESSION-0002 operational audit + ledger correction
 Stacked PR: none
 Authorization honored: AUTHORIZED_DOCS_ONLY — proceed SESSION-0002
 
