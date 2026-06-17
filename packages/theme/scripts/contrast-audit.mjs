@@ -55,3 +55,10 @@ for (const [theme, themeData] of Object.entries(tokens.themes)) {
 }
 
 console.log(`\n${failures} hard fails (< 3:1), ${largeOnly} large-text-only passes (3–4.5:1)`);
+
+if (failures > 0) {
+  console.error(`\n❌ Audit failed: ${failures} inaccessible color pairs found.`);
+  process.exit(1);
+} else {
+  console.log(`\n✅ All colors pass accessibility checks!`);
+}
