@@ -3,7 +3,29 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const tokens = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'src', 'tokens.json'), 'utf8'));
+const tokensRaw = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'src', 'tokens.json'), 'utf8'));
+
+function resolveValue(val, root) {
+  if (typeof val === 'string' && val.startsWith('{') && val.endsWith('}')) {
+    const pathStr = val.slice(1, -1);
+    const resolved = pathStr.split('.').reduce((acc, curr) => acc?.[curr], root);
+    if (resolved === undefined) throw new Error(`Alias not found: ${val}`);
+    return resolveValue(resolved, root);
+  }
+  return val;
+}
+
+function resolveTokens(obj, root) {
+  if (typeof obj === 'string') return resolveValue(obj, root);
+  if (obj !== null && typeof obj === 'object' && !Array.isArray(obj)) {
+    const out = {};
+    for (const [k, v] of Object.entries(obj)) out[k] = resolveTokens(v, root);
+    return out;
+  }
+  return obj;
+}
+
+const tokens = resolveTokens(tokensRaw, tokensRaw);
 
 function hexToRgb(h) {
   h = h.replace('#', '');

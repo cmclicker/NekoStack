@@ -9,20 +9,45 @@ const srcPath = path.join(rootDir, 'src', 'tokens.json');
 const distDir = path.join(rootDir, 'dist');
 
 if (!fs.existsSync(distDir)) fs.mkdirSync(distDir, { recursive: true });
-const tokens = JSON.parse(fs.readFileSync(srcPath, 'utf8'));
+const tokensRaw = JSON.parse(fs.readFileSync(srcPath, 'utf8'));
 
-if (!tokens.base || typeof tokens.base !== 'object') {
+if (!tokensRaw.base || typeof tokensRaw.base !== 'object') {
   console.error("❌ Critical Error: tokens.json is missing a 'base' object.");
   process.exit(1);
 }
-if (!tokens.themes || typeof tokens.themes !== 'object') {
+if (!tokensRaw.themes || typeof tokensRaw.themes !== 'object') {
   console.error("❌ Critical Error: tokens.json is missing a 'themes' object.");
   process.exit(1);
 }
-if (Object.keys(tokens.themes).length === 0) {
+if (Object.keys(tokensRaw.themes).length === 0) {
   console.error("❌ Critical Error: 'themes' in tokens.json is empty.");
   process.exit(1);
 }
+
+function resolveValue(val, root) {
+  if (typeof val === 'string' && val.startsWith('{') && val.endsWith('}')) {
+    const pathStr = val.slice(1, -1);
+    const resolved = pathStr.split('.').reduce((acc, curr) => acc?.[curr], root);
+    if (resolved === undefined) {
+      console.error(`❌ Critical Error: Could not resolve alias "${val}"`);
+      process.exit(1);
+    }
+    return resolveValue(resolved, root);
+  }
+  return val;
+}
+
+function resolveTokens(obj, root) {
+  if (typeof obj === 'string') return resolveValue(obj, root);
+  if (obj !== null && typeof obj === 'object' && !Array.isArray(obj)) {
+    const out = {};
+    for (const [k, v] of Object.entries(obj)) out[k] = resolveTokens(v, root);
+    return out;
+  }
+  return obj;
+}
+
+const tokens = resolveTokens(tokensRaw, tokensRaw);
 
 const defaultTheme = tokens.meta?.default_theme ?? Object.keys(tokens.themes)[0];
 const defaultMode = tokens.meta?.default_mode ?? Object.keys(tokens.themes[defaultTheme].modes)[0];
