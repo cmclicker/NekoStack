@@ -6,18 +6,22 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const tokensRaw = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'src', 'tokens.json'), 'utf8'));
 
 function resolveValue(val, root) {
-  if (typeof val === 'string' && val.startsWith('{') && val.endsWith('}')) {
-    const pathStr = val.slice(1, -1);
+  const v = (val !== null && typeof val === 'object' && 'value' in val) ? val.value : val;
+
+  if (typeof v === 'string' && v.startsWith('{') && v.endsWith('}')) {
+    const pathStr = v.slice(1, -1);
     const resolved = pathStr.split('.').reduce((acc, curr) => acc?.[curr], root);
-    if (resolved === undefined) throw new Error(`Alias not found: ${val}`);
+    if (resolved === undefined) throw new Error(`Alias not found: ${v}`);
     return resolveValue(resolved, root);
   }
-  return val;
+  return v;
 }
 
 function resolveTokens(obj, root) {
-  if (typeof obj === 'string') return resolveValue(obj, root);
   if (obj !== null && typeof obj === 'object' && !Array.isArray(obj)) {
+    if ('value' in obj) {
+      return { ...obj, value: resolveValue(obj, root) };
+    }
     const out = {};
     for (const [k, v] of Object.entries(obj)) out[k] = resolveTokens(v, root);
     return out;
@@ -53,9 +57,9 @@ for (const [theme, themeData] of Object.entries(tokens.themes)) {
     const s = modeData.color.semantic;
     console.log(`\n=== ${theme} · ${mode} ===`);
     for (const r of ROLES) {
-      const bg = s[r];
-      const fg = s[r + '-content'];
-      if (!bg || !fg || bg.startsWith('rgba')) continue;
+      const bg = s[r]?.value ?? s[r];
+      const fg = s[r + '-content']?.value ?? s[r + '-content'];
+      if (!bg || !fg || (typeof bg === 'string' && bg.startsWith('rgba'))) continue;
       const ra = ratio(bg, fg);
       const pass = ra >= 4.5 ? 'OK' : ra >= 3.0 ? 'AA-LARGE' : 'FAIL';
       const flag = ra >= 4.5 ? '   ' : ra >= 3.0 ? ' ! ' : 'XXX';
@@ -63,9 +67,9 @@ for (const [theme, themeData] of Object.entries(tokens.themes)) {
       if (ra < 3.0) failures++;
       console.log(`  ${flag} ${r.padEnd(10)} ${bg} on ${fg} = ${ra.toFixed(2)}:1  [${pass}]`);
     }
-    const bgBase = s['bg-base'];
+    const bgBase = modeData.color.semantic['bg-base']?.value ?? modeData.color.semantic['bg-base'];
     for (const tk of ['text-base', 'text-muted', 'text-subtle']) {
-      const fg = s[tk];
+      const fg = s[tk]?.value ?? s[tk];
       const ra = ratio(bgBase, fg);
       const pass = ra >= 4.5 ? 'OK' : ra >= 3.0 ? 'AA-LARGE' : 'FAIL';
       const flag = ra >= 4.5 ? '   ' : ra >= 3.0 ? ' ! ' : 'XXX';

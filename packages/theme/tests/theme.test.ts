@@ -37,12 +37,12 @@ describe('Design tokens — themes × modes', () => {
 
 describe('Design tokens — base', () => {
   it('has comfortable spacing values', () => {
-    expect(tokens.base.spacing['4']).toBe('16px');
-    expect(tokens.base.spacing['8']).toBe('32px');
+    expect(tokens.base.spacing['4'].value).toBe('16px');
+    expect(tokens.base.spacing['8'].value).toBe('32px');
   });
   it('keeps neutrals as theme-invariant Dracula-derived ramp', () => {
-    expect(tokens.base.color.neutral['900']).toBe('#282a36');
-    expect(tokens.base.color.neutral['50']).toBe('#f8f8f2');
+    expect(tokens.base.color.neutral['900'].value).toBe('#282a36');
+    expect(tokens.base.color.neutral['50'].value).toBe('#f8f8f2');
   });
 });
 
@@ -50,20 +50,24 @@ describe('Design tokens — WCAG AA contrast', () => {
   // WCAG 2.1 relative-luminance contrast — every (theme × mode × role) pair of
   // base/-content must clear 4.5:1 for normal-text AA. Also asserts text-base,
   // text-muted, and text-subtle vs bg-base.
-  function hexToRgb(h: string): [number, number, number] {
-    h = h.replace('#', '');
-    if (h.length === 3) h = h.split('').map((c) => c + c).join('');
-    return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
+  function hexToRgb(h: any): [number, number, number] {
+    const val = typeof h === 'object' ? h.value : h;
+    const hex = val.replace('#', '');
+    if (hex.length === 3) {
+      const expanded = hex.split('').map((c) => c + c).join('');
+      return [parseInt(expanded.slice(0, 2), 16), parseInt(expanded.slice(2, 4), 16), parseInt(expanded.slice(4, 6), 16)];
+    }
+    return [parseInt(hex.slice(0, 2), 16), parseInt(hex.slice(2, 4), 16), parseInt(hex.slice(4, 6), 16)];
   }
   function srgbToLin(c: number): number {
     c /= 255;
     return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
   }
-  function lum(hex: string): number {
+  function lum(hex: any): number {
     const [r, g, b] = hexToRgb(hex);
     return 0.2126 * srgbToLin(r) + 0.7152 * srgbToLin(g) + 0.0722 * srgbToLin(b);
   }
-  function ratio(a: string, b: string): number {
+  function ratio(a: any, b: any): number {
     const l1 = lum(a), l2 = lum(b);
     const lo = Math.min(l1, l2), hi = Math.max(l1, l2);
     return (hi + 0.05) / (lo + 0.05);
@@ -75,17 +79,21 @@ describe('Design tokens — WCAG AA contrast', () => {
 
   for (const [theme, themeData] of Object.entries(tokens.themes)) {
     for (const [mode, modeData] of Object.entries(themeData.modes)) {
-      const s: Record<string, string> = (modeData as { color: { semantic: Record<string, string> } }).color.semantic;
+      const s: Record<string, any> = (modeData as any).color.semantic;
       for (const role of ROLES) {
         it(`${theme} · ${mode}: ${role} on ${role}-content clears AA (4.5:1)`, () => {
           const r = ratio(s[role], s[`${role}-content`]);
-          expect(r, `${s[role]} on ${s[`${role}-content`]} = ${r.toFixed(2)}:1`).toBeGreaterThanOrEqual(AA_NORMAL);
+          const bg = s[role].value ?? s[role];
+          const fg = s[`${role}-content`].value ?? s[`${role}-content`];
+          expect(r, `${bg} on ${fg} = ${r.toFixed(2)}:1`).toBeGreaterThanOrEqual(AA_NORMAL);
         });
       }
       for (const tk of TEXT_ROLES) {
         it(`${theme} · ${mode}: ${tk} on bg-base clears AA (4.5:1)`, () => {
           const r = ratio(s[tk], s['bg-base']);
-          expect(r, `${s[tk]} on ${s['bg-base']} = ${r.toFixed(2)}:1`).toBeGreaterThanOrEqual(AA_NORMAL);
+          const fg = s[tk].value ?? s[tk];
+          const bg = s['bg-base'].value ?? s['bg-base'];
+          expect(r, `${fg} on ${bg} = ${r.toFixed(2)}:1`).toBeGreaterThanOrEqual(AA_NORMAL);
         });
       }
     }
