@@ -1,0 +1,205 @@
+/* mockup — decorative device/window frames + the artboard sizing primitive.
+   Defines: .neko-artboard (--phone/--phone-landscape/--tablet/--desktop),
+            .neko-mask (--circle/--square/--squircle/--hex/--diamond/--star/--heart),
+            .neko-mockup-window (+ __bar, __body),
+            .neko-mockup-browser (+ __bar, __url, __body),
+            .neko-mockup-phone (+ __notch, __body),
+            .neko-mockup-code (+ __line, __line--prompt). */
+
+/* ============================ artboard ============================ */
+/* Fixed device-sized canvas. Use as a wrapper around content you want previewed
+   at a specific physical viewport size. */
+.neko-artboard {
+  display: block;
+  margin: 0 auto;
+  background: var(--neko-color-semantic-bg-raised);
+  border: 1px solid var(--neko-color-semantic-border-base);
+  border-radius: var(--neko-radius-md);
+  overflow: hidden;
+}
+
+.neko-artboard--phone           { width: 320px;  height: 568px; }
+.neko-artboard--phone-landscape { width: 568px;  height: 320px; }
+.neko-artboard--tablet          { width: 768px;  height: 1024px; }
+.neko-artboard--tablet-landscape{ width: 1024px; height: 768px; }
+.neko-artboard--desktop         { width: 1280px; height: 800px; }
+
+/* ============================ mask ============================ */
+/* clip-path shape wrappers for images, avatars, decorative elements. */
+.neko-mask {
+  display: inline-block;
+  overflow: hidden;
+  background: var(--neko-color-semantic-bg-raised);
+}
+
+.neko-mask--circle   { clip-path: circle(50% at 50% 50%); border-radius: 0; }
+.neko-mask--square   { clip-path: inset(0); }
+.neko-mask--squircle { clip-path: path("M 50,0 C 75,0 100,25 100,50 C 100,75 75,100 50,100 C 25,100 0,75 0,50 C 0,25 25,0 50,0 Z"); }
+.neko-mask--hex      { clip-path: polygon(25% 5%, 75% 5%, 100% 50%, 75% 95%, 25% 95%, 0% 50%); }
+.neko-mask--diamond  { clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); }
+.neko-mask--star     { clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); }
+.neko-mask--heart    { clip-path: path("M50 90 C 10 60, -10 30, 25 20 C 40 15, 50 30, 50 30 C 50 30, 60 15, 75 20 C 110 30, 90 60, 50 90 Z"); }
+.neko-mask--triangle { clip-path: polygon(50% 0%, 100% 100%, 0% 100%); }
+.neko-mask--parallelogram { clip-path: polygon(25% 0%, 100% 0%, 75% 100%, 0% 100%); }
+
+/* ============================ mockup-window ============================ */
+.neko-mockup-window {
+  display: flex;
+  flex-direction: column;
+  background: var(--neko-color-semantic-bg-raised);
+  border: 1px solid var(--neko-color-semantic-border-base);
+  border-radius: var(--neko-radius-md);
+  overflow: hidden;
+  box-shadow: var(--neko-color-shadow-lg);
+}
+
+.neko-mockup-window__bar {
+  display: flex;
+  align-items: center;
+  gap: var(--neko-spacing-1);
+  padding: var(--neko-spacing-2) var(--neko-spacing-3);
+  background: var(--neko-color-semantic-bg-sunken);
+  border-bottom: 1px solid var(--neko-color-semantic-border-base);
+}
+
+.neko-mockup-window__bar::before,
+.neko-mockup-window__bar::after,
+.neko-mockup-window__bar > .neko-mockup-window__dot {
+  content: "";
+  display: inline-block;
+  width: 0.75em;
+  height: 0.75em;
+  border-radius: var(--neko-radius-pill);
+  background: var(--neko-color-semantic-border-strong);
+}
+
+.neko-mockup-window__bar::before { background: var(--neko-color-semantic-danger); }
+.neko-mockup-window__bar > .neko-mockup-window__dot { background: var(--neko-color-semantic-warning); }
+.neko-mockup-window__bar::after { background: var(--neko-color-semantic-success); }
+
+.neko-mockup-window__body {
+  flex: 1;
+  padding: var(--neko-spacing-4);
+  background: var(--neko-color-semantic-bg-base);
+  color: var(--neko-color-semantic-text-base);
+}
+
+/* ============================ mockup-browser ============================ */
+.neko-mockup-browser {
+  display: flex;
+  flex-direction: column;
+  background: var(--neko-color-semantic-bg-raised);
+  border: 1px solid var(--neko-color-semantic-border-base);
+  border-radius: var(--neko-radius-md);
+  overflow: hidden;
+  box-shadow: var(--neko-color-shadow-lg);
+}
+
+.neko-mockup-browser__bar {
+  display: flex;
+  align-items: center;
+  gap: var(--neko-spacing-2);
+  padding: var(--neko-spacing-2) var(--neko-spacing-3);
+  background: var(--neko-color-semantic-bg-sunken);
+  border-bottom: 1px solid var(--neko-color-semantic-border-base);
+}
+
+.neko-mockup-browser__bar::before {
+  content: "";
+  display: inline-flex;
+  gap: 0.25em;
+  width: 2.75em;
+  height: 0.75em;
+  background:
+    radial-gradient(circle 0.375em at 0.375em center, var(--neko-color-semantic-danger) 99%, transparent 100%),
+    radial-gradient(circle 0.375em at 1.375em center, var(--neko-color-semantic-warning) 99%, transparent 100%),
+    radial-gradient(circle 0.375em at 2.375em center, var(--neko-color-semantic-success) 99%, transparent 100%);
+}
+
+.neko-mockup-browser__url {
+  flex: 1;
+  padding: var(--neko-spacing-1) var(--neko-spacing-3);
+  font-family: var(--neko-font-mono);
+  font-size: var(--neko-font-size-xs);
+  color: var(--neko-color-semantic-text-muted);
+  background: var(--neko-color-semantic-bg-base);
+  border: 1px solid var(--neko-color-semantic-border-subtle);
+  border-radius: var(--neko-radius-pill);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.neko-mockup-browser__body {
+  padding: var(--neko-spacing-6) var(--neko-spacing-4);
+  background: var(--neko-color-semantic-bg-base);
+  color: var(--neko-color-semantic-text-base);
+}
+
+/* ============================ mockup-phone ============================ */
+.neko-mockup-phone {
+  position: relative;
+  display: inline-block;
+  width: 220px;
+  height: 460px;
+  padding: 18px 8px;
+  background: var(--neko-color-semantic-text-base);
+  border-radius: 32px;
+  box-shadow: var(--neko-color-shadow-xl);
+}
+
+.neko-mockup-phone__notch {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 16px;
+  background: var(--neko-color-semantic-bg-overlay);
+  border-radius: var(--neko-radius-pill);
+  z-index: 1;
+}
+
+.neko-mockup-phone__body {
+  width: 100%;
+  height: 100%;
+  padding: var(--neko-spacing-4);
+  background: var(--neko-color-semantic-bg-base);
+  color: var(--neko-color-semantic-text-base);
+  border-radius: 20px;
+  overflow: auto;
+}
+
+/* ============================ mockup-code ============================ */
+.neko-mockup-code {
+  display: block;
+  padding: var(--neko-spacing-4);
+  font-family: var(--neko-font-mono);
+  font-size: var(--neko-font-size-sm);
+  line-height: var(--neko-line-height-relaxed);
+  color: var(--neko-color-semantic-code-content);
+  background: var(--neko-color-semantic-code-bg);
+  border-radius: var(--neko-radius-md);
+  overflow-x: auto;
+  white-space: pre;
+}
+
+.neko-mockup-code__line {
+  display: block;
+  position: relative;
+  padding-left: var(--neko-spacing-5);
+}
+
+.neko-mockup-code__line::before {
+  content: attr(data-prefix);
+  position: absolute;
+  left: 0;
+  color: var(--neko-color-semantic-text-subtle);
+  user-select: none;
+}
+
+.neko-mockup-code__line--prompt { color: var(--neko-color-semantic-text-base); }
+.neko-mockup-code__line--success { color: var(--neko-color-semantic-success); }
+.neko-mockup-code__line--danger  { color: var(--neko-color-semantic-danger); }
+.neko-mockup-code__line--warning { color: var(--neko-color-semantic-warning); }

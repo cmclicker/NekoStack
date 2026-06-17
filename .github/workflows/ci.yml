@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      # fetch-depth: 0 is required — status:check derives releases from `git tag`,
+      # and a shallow clone has no tags (would report false drift / false red).
+      - name: Checkout (full history + tags)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      # Scoped to the implemented packages: the ~105 scaffold packages declare
+      # build/test scripts but lack tsconfig.json / test files, so an unscoped
+      # run would false-red. typecheck is declared only by these three.
+      - name: Typecheck + build + test (implemented packages)
+        run: npx turbo run typecheck build test --filter=@nekostack/schema --filter=@nekostack/cli --filter=@nekostack/migrate-runner
+
+      - name: Status drift gate
+        run: npm run status:check

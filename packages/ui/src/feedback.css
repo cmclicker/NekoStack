@@ -1,0 +1,263 @@
+/* feedback — status + loading affordances. Follows the button.css local-remap pattern.
+   Defines:
+     .neko-alert (+ __title; --info/--success/--warning/--danger)
+     .neko-badge (+ color variants: --secondary/--accent-1/--accent-2/--accent-3/
+                  --info/--success/--warning/--danger; --pill)
+     .neko-tag   (+ __remove; --removable)
+     .neko-toast (+ __title; --info/--success/--warning/--danger)
+     .neko-spinner (+ --sm/--lg)
+     .neko-progress (+ __bar; --indeterminate)
+     .neko-skeleton (+ --text/--circle) */
+
+/* ──────────────────────────────────────────────────────────────────────────
+   alert — block-level status message. Soft-tinted fill, accent left border.
+   Variants remap the three locals only.
+   ────────────────────────────────────────────────────────────────────────── */
+.neko-alert {
+  /* local remap targets — variants only touch these three */
+  --_alert-bg: var(--neko-color-semantic-primary-soft);
+  --_alert-accent: var(--neko-color-semantic-primary);
+  --_alert-title: var(--neko-color-semantic-primary);
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--neko-spacing-1);
+  padding: var(--neko-spacing-4);
+  font-family: var(--neko-font-sans);
+  font-size: var(--neko-font-size-base);
+  line-height: var(--neko-line-height-normal);
+  color: var(--neko-color-semantic-text-base);
+  background: var(--_alert-bg);
+  border: 1px solid var(--neko-color-semantic-border-base);
+  border-left: var(--neko-spacing-1) solid var(--_alert-accent);
+  border-radius: var(--neko-radius-sm);
+}
+
+.neko-alert__title {
+  margin: 0;
+  font-size: var(--neko-font-size-base);
+  font-weight: 700;
+  line-height: var(--neko-line-height-snug);
+  color: var(--_alert-title);
+}
+
+.neko-alert--info    { --_alert-bg: var(--neko-color-semantic-info-soft);    --_alert-accent: var(--neko-color-semantic-info);    --_alert-title: var(--neko-color-semantic-info); }
+.neko-alert--success { --_alert-bg: var(--neko-color-semantic-success-soft); --_alert-accent: var(--neko-color-semantic-success); --_alert-title: var(--neko-color-semantic-success); }
+.neko-alert--warning { --_alert-bg: var(--neko-color-semantic-warning-soft); --_alert-accent: var(--neko-color-semantic-warning); --_alert-title: var(--neko-color-semantic-warning); }
+.neko-alert--danger  { --_alert-bg: var(--neko-color-semantic-danger-soft);  --_alert-accent: var(--neko-color-semantic-danger);  --_alert-title: var(--neko-color-semantic-danger); }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   badge — small inline count / status label. Solid fill, remap two locals.
+   ────────────────────────────────────────────────────────────────────────── */
+.neko-badge {
+  /* local remap targets — variants only touch these two */
+  --_badge-bg: var(--neko-color-semantic-primary);
+  --_badge-fg: var(--neko-color-semantic-primary-content);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--neko-spacing-1);
+  padding: var(--neko-spacing-1) var(--neko-spacing-2);
+  font-family: var(--neko-font-sans);
+  font-size: var(--neko-font-size-xs);
+  font-weight: 600;
+  line-height: var(--neko-line-height-none);
+  white-space: nowrap;
+  color: var(--_badge-fg);
+  background: var(--_badge-bg);
+  border-radius: var(--neko-radius-xs);
+}
+
+.neko-badge--secondary { --_badge-bg: var(--neko-color-semantic-secondary); --_badge-fg: var(--neko-color-semantic-secondary-content); }
+.neko-badge--accent-1  { --_badge-bg: var(--neko-color-semantic-accent-1);  --_badge-fg: var(--neko-color-semantic-accent-1-content); }
+.neko-badge--accent-2  { --_badge-bg: var(--neko-color-semantic-accent-2);  --_badge-fg: var(--neko-color-semantic-accent-2-content); }
+.neko-badge--accent-3  { --_badge-bg: var(--neko-color-semantic-accent-3);  --_badge-fg: var(--neko-color-semantic-accent-3-content); }
+.neko-badge--info      { --_badge-bg: var(--neko-color-semantic-info);      --_badge-fg: var(--neko-color-semantic-info-content); }
+.neko-badge--success   { --_badge-bg: var(--neko-color-semantic-success);   --_badge-fg: var(--neko-color-semantic-success-content); }
+.neko-badge--warning   { --_badge-bg: var(--neko-color-semantic-warning);   --_badge-fg: var(--neko-color-semantic-warning-content); }
+.neko-badge--danger    { --_badge-bg: var(--neko-color-semantic-danger);    --_badge-fg: var(--neko-color-semantic-danger-content); }
+
+.neko-badge--pill { border-radius: var(--neko-radius-pill); padding-left: var(--neko-spacing-3); padding-right: var(--neko-spacing-3); }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   tag — soft, bordered chip (filter / selection). --removable adds a close btn.
+   ────────────────────────────────────────────────────────────────────────── */
+.neko-tag {
+  --_tag-bg: var(--neko-color-semantic-bg-raised);
+  --_tag-fg: var(--neko-color-semantic-text-base);
+  --_tag-border: var(--neko-color-semantic-border-base);
+
+  display: inline-flex;
+  align-items: center;
+  gap: var(--neko-spacing-2);
+  padding: var(--neko-spacing-1) var(--neko-spacing-3);
+  font-family: var(--neko-font-sans);
+  font-size: var(--neko-font-size-sm);
+  font-weight: 500;
+  line-height: var(--neko-line-height-none);
+  white-space: nowrap;
+  color: var(--_tag-fg);
+  background: var(--_tag-bg);
+  border: 1px solid var(--_tag-border);
+  border-radius: var(--neko-radius-pill);
+}
+
+.neko-tag--primary   { --_tag-bg: var(--neko-color-semantic-primary-soft);   --_tag-fg: var(--neko-color-semantic-primary);   --_tag-border: var(--neko-color-semantic-primary); }
+.neko-tag--secondary { --_tag-bg: var(--neko-color-semantic-secondary-soft); --_tag-fg: var(--neko-color-semantic-secondary); --_tag-border: var(--neko-color-semantic-secondary); }
+.neko-tag--accent-1  { --_tag-bg: var(--neko-color-semantic-accent-1-soft);  --_tag-fg: var(--neko-color-semantic-accent-1);  --_tag-border: var(--neko-color-semantic-accent-1); }
+.neko-tag--accent-2  { --_tag-bg: var(--neko-color-semantic-accent-2-soft);  --_tag-fg: var(--neko-color-semantic-accent-2);  --_tag-border: var(--neko-color-semantic-accent-2); }
+.neko-tag--accent-3  { --_tag-bg: var(--neko-color-semantic-accent-3-soft);  --_tag-fg: var(--neko-color-semantic-accent-3);  --_tag-border: var(--neko-color-semantic-accent-3); }
+.neko-tag--info      { --_tag-bg: var(--neko-color-semantic-info-soft);      --_tag-fg: var(--neko-color-semantic-info);      --_tag-border: var(--neko-color-semantic-info); }
+.neko-tag--success   { --_tag-bg: var(--neko-color-semantic-success-soft);   --_tag-fg: var(--neko-color-semantic-success);   --_tag-border: var(--neko-color-semantic-success); }
+.neko-tag--warning   { --_tag-bg: var(--neko-color-semantic-warning-soft);   --_tag-fg: var(--neko-color-semantic-warning);   --_tag-border: var(--neko-color-semantic-warning); }
+.neko-tag--danger    { --_tag-bg: var(--neko-color-semantic-danger-soft);    --_tag-fg: var(--neko-color-semantic-danger);    --_tag-border: var(--neko-color-semantic-danger); }
+
+.neko-tag--removable { padding-right: var(--neko-spacing-1); }
+
+.neko-tag__remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25em;
+  height: 1.25em;
+  padding: 0;
+  font-size: inherit;
+  line-height: var(--neko-line-height-none);
+  color: var(--neko-color-semantic-text-muted);
+  background: transparent;
+  border: 0;
+  border-radius: var(--neko-radius-pill);
+  cursor: pointer;
+  transition:
+    background var(--neko-motion-duration-fast) var(--neko-motion-easing-standard),
+    color var(--neko-motion-duration-fast) var(--neko-motion-easing-standard);
+}
+
+.neko-tag__remove:hover {
+  color: var(--neko-color-semantic-text-base);
+  background: var(--neko-color-semantic-bg-sunken);
+}
+
+.neko-tag__remove:focus-visible { outline: 2px solid var(--neko-color-semantic-focus-ring); outline-offset: 2px; }
+
+.neko-tag__remove:disabled,
+.neko-tag__remove[disabled],
+.neko-tag__remove[aria-disabled="true"] {
+  color: var(--neko-color-semantic-disabled-content);
+  background: transparent;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   toast — floating, raised notification. Status accent via left border + title.
+   ────────────────────────────────────────────────────────────────────────── */
+.neko-toast {
+  /* local remap targets — variants only touch these two */
+  --_toast-accent: var(--neko-color-semantic-primary);
+  --_toast-title: var(--neko-color-semantic-primary);
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--neko-spacing-1);
+  max-width: 28rem;
+  padding: var(--neko-spacing-4);
+  font-family: var(--neko-font-sans);
+  font-size: var(--neko-font-size-sm);
+  line-height: var(--neko-line-height-normal);
+  color: var(--neko-color-semantic-text-base);
+  background: var(--neko-color-semantic-bg-raised);
+  border: 1px solid var(--neko-color-semantic-border-base);
+  border-left: 3px solid var(--_toast-accent);
+  border-radius: var(--neko-radius-md);
+  box-shadow: var(--neko-color-shadow-lg);
+  z-index: var(--neko-z-index-toast);
+}
+
+.neko-toast__title {
+  margin: 0;
+  font-size: var(--neko-font-size-base);
+  font-weight: 700;
+  line-height: var(--neko-line-height-snug);
+  color: var(--_toast-title);
+}
+
+.neko-toast--info    { --_toast-accent: var(--neko-color-semantic-info);    --_toast-title: var(--neko-color-semantic-info); }
+.neko-toast--success { --_toast-accent: var(--neko-color-semantic-success); --_toast-title: var(--neko-color-semantic-success); }
+.neko-toast--warning { --_toast-accent: var(--neko-color-semantic-warning); --_toast-title: var(--neko-color-semantic-warning); }
+.neko-toast--danger  { --_toast-accent: var(--neko-color-semantic-danger);  --_toast-title: var(--neko-color-semantic-danger); }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   spinner — rotating ring. Reuses base.css @keyframes neko-spin.
+   ────────────────────────────────────────────────────────────────────────── */
+.neko-spinner {
+  display: inline-block;
+  width: var(--neko-spacing-6);
+  height: var(--neko-spacing-6);
+  border: 2px solid var(--neko-color-semantic-border-base);
+  border-top-color: var(--neko-color-semantic-primary);
+  border-radius: var(--neko-radius-pill);
+  animation: neko-spin var(--neko-motion-duration-slow) linear infinite;
+}
+
+.neko-spinner--sm { width: var(--neko-spacing-4); height: var(--neko-spacing-4); }
+.neko-spinner--lg { width: var(--neko-spacing-10); height: var(--neko-spacing-10); }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   progress — track + filled __bar. Determinate via inline width on the bar;
+   --indeterminate animates a sliding sliver (reuses neko-shimmer keyframes).
+   ────────────────────────────────────────────────────────────────────────── */
+.neko-progress {
+  display: block;
+  width: 100%;
+  height: var(--neko-spacing-2);
+  overflow: hidden;
+  background: var(--neko-color-semantic-bg-sunken);
+  border-radius: var(--neko-radius-pill);
+}
+
+.neko-progress__bar {
+  display: block;
+  width: 0;
+  height: 100%;
+  background: var(--neko-color-semantic-primary);
+  border-radius: inherit;
+  transition: width var(--neko-motion-duration-base) var(--neko-motion-easing-standard);
+}
+
+.neko-progress--indeterminate .neko-progress__bar {
+  width: 40%;
+  background: linear-gradient(
+    90deg,
+    var(--neko-color-semantic-primary-soft),
+    var(--neko-color-semantic-primary),
+    var(--neko-color-semantic-primary-soft)
+  );
+  background-size: 200% 100%;
+  animation: neko-shimmer var(--neko-motion-duration-slow) var(--neko-motion-easing-standard) infinite;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   skeleton — content placeholder. Reuses base.css @keyframes neko-pulse.
+   --text gives a single text-line shape; --circle an avatar placeholder.
+   ────────────────────────────────────────────────────────────────────────── */
+.neko-skeleton {
+  display: block;
+  width: 100%;
+  height: var(--neko-spacing-4);
+  background: var(--neko-color-semantic-bg-raised);
+  border-radius: var(--neko-radius-xs);
+  animation: neko-pulse var(--neko-motion-duration-slow) var(--neko-motion-easing-standard) infinite;
+}
+
+.neko-skeleton--text {
+  height: 1em;
+  border-radius: var(--neko-radius-xs);
+}
+
+.neko-skeleton--circle {
+  width: var(--neko-spacing-10);
+  height: var(--neko-spacing-10);
+  border-radius: var(--neko-radius-pill);
+}

@@ -1,0 +1,378 @@
+/* data — tabular + list + identity + stat + empty-state primitives.
+   Defines:
+     .neko-table (+ --striped, hover rows; __caption via <caption>; sticky <thead>)
+     .neko-list (+ __item, --divided, --inline)
+     .neko-avatar (+ __img, __initials, --sm/--lg, --circle)
+     .neko-stat (+ __label, __value, __delta with --up/--down)
+     .neko-empty (+ __icon, __title, __body, __action)
+   Consumes @nekostack/theme tokens. Loaded after base.css. */
+
+/* ===========================================================================
+   table — semantic data grid
+   =========================================================================== */
+.neko-table {
+  /* local remap targets — variants/states only touch these */
+  --_table-border: var(--neko-color-semantic-border-base);
+  --_table-cell-pad-y: var(--neko-spacing-3);
+  --_table-cell-pad-x: var(--neko-spacing-4);
+  --_table-row-hover: var(--neko-color-semantic-bg-raised);
+  --_table-stripe: var(--neko-color-semantic-bg-sunken);
+
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--neko-font-sans);
+  font-size: var(--neko-font-size-sm);
+  line-height: var(--neko-line-height-normal);
+  color: var(--neko-color-semantic-text-base);
+}
+
+.neko-table caption {
+  caption-side: top;
+  padding: var(--neko-spacing-2) var(--_table-cell-pad-x);
+  font-size: var(--neko-font-size-xs);
+  color: var(--neko-color-semantic-text-muted);
+  text-align: left;
+}
+
+.neko-table th,
+.neko-table td {
+  padding: var(--_table-cell-pad-y) var(--_table-cell-pad-x);
+  text-align: left;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--_table-border);
+}
+
+.neko-table thead th {
+  font-size: var(--neko-font-size-xs);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--neko-color-semantic-text-muted);
+  background: var(--neko-color-semantic-bg-base);
+  border-bottom: 2px solid var(--neko-color-semantic-border-strong);
+}
+
+.neko-table tfoot td {
+  font-weight: 600;
+  color: var(--neko-color-semantic-text-muted);
+  border-top: 2px solid var(--neko-color-semantic-border-strong);
+  border-bottom: 0;
+}
+
+.neko-table tbody tr {
+  transition: background var(--neko-motion-duration-fast) var(--neko-motion-easing-standard);
+}
+
+.neko-table tbody tr:hover {
+  background: var(--_table-row-hover);
+}
+
+/* striped — zebra the body rows; hover still wins via source order below */
+.neko-table--striped tbody tr:nth-child(even) {
+  background: var(--_table-stripe);
+}
+.neko-table--striped tbody tr:hover {
+  background: var(--_table-row-hover);
+}
+
+/* selected row — opt-in via aria-selected */
+.neko-table tbody tr[aria-selected="true"] {
+  background: var(--neko-color-semantic-selected);
+  color: var(--neko-color-semantic-selected-content);
+}
+
+/* sticky header — header stays pinned in a scroll container */
+.neko-table--sticky thead th {
+  position: sticky;
+  top: 0;
+  z-index: var(--neko-z-index-base);
+}
+
+/* compact size */
+.neko-table--sm {
+  --_table-cell-pad-y: var(--neko-spacing-2);
+  --_table-cell-pad-x: var(--neko-spacing-3);
+  font-size: var(--neko-font-size-xs);
+}
+
+/* sortable column headers — interactive, so full states */
+.neko-table th[aria-sort] {
+  cursor: pointer;
+  user-select: none;
+}
+.neko-table th[aria-sort]:hover {
+  color: var(--neko-color-semantic-text-base);
+  background: var(--neko-color-semantic-bg-raised);
+}
+.neko-table th[aria-sort]:focus-visible {
+  outline: 2px solid var(--neko-color-semantic-focus-ring);
+  outline-offset: 2px;
+}
+.neko-table th[aria-sort="ascending"],
+.neko-table th[aria-sort="descending"] {
+  color: var(--neko-color-semantic-primary);
+}
+
+/* ===========================================================================
+   list — vertical collection of items
+   =========================================================================== */
+.neko-list {
+  --_list-item-pad-y: var(--neko-spacing-2);
+  --_list-item-pad-x: var(--neko-spacing-3);
+
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--neko-font-sans);
+  font-size: var(--neko-font-size-base);
+  color: var(--neko-color-semantic-text-base);
+}
+
+.neko-list__item {
+  display: flex;
+  align-items: center;
+  gap: var(--neko-spacing-3);
+  padding: var(--_list-item-pad-y) var(--_list-item-pad-x);
+  color: inherit;
+}
+
+/* divided — hairlines between items */
+.neko-list--divided .neko-list__item + .neko-list__item {
+  border-top: 1px solid var(--neko-color-semantic-border-subtle);
+}
+
+/* inline — horizontal, wrapping row of items */
+.neko-list--inline {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: var(--neko-spacing-2);
+}
+.neko-list--inline .neko-list__item {
+  padding: 0;
+}
+
+/* interactive item — when an item is a link/button or carries a role */
+.neko-list__item:where(a, button),
+.neko-list__item[role="button"],
+.neko-list__item[tabindex] {
+  cursor: pointer;
+  text-decoration: none;
+  background: transparent;
+  border: 0;
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  border-radius: var(--neko-radius-xs);
+  transition: background var(--neko-motion-duration-fast) var(--neko-motion-easing-standard);
+}
+.neko-list__item:where(a, button):hover,
+.neko-list__item[role="button"]:hover,
+.neko-list__item[tabindex]:hover {
+  background: var(--neko-color-semantic-bg-raised);
+}
+.neko-list__item:where(a, button):focus-visible,
+.neko-list__item[role="button"]:focus-visible,
+.neko-list__item[tabindex]:focus-visible {
+  outline: 2px solid var(--neko-color-semantic-focus-ring);
+  outline-offset: 2px;
+}
+.neko-list__item[aria-current],
+.neko-list__item[aria-selected="true"] {
+  background: var(--neko-color-semantic-selected);
+  color: var(--neko-color-semantic-selected-content);
+}
+.neko-list__item:disabled,
+.neko-list__item[disabled],
+.neko-list__item[aria-disabled="true"] {
+  color: var(--neko-color-semantic-disabled-content);
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ===========================================================================
+   avatar — user / entity identity chip
+   =========================================================================== */
+.neko-avatar {
+  --_avatar-size: var(--neko-spacing-10);
+  --_avatar-font: var(--neko-font-size-sm);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: var(--_avatar-size);
+  height: var(--_avatar-size);
+  overflow: hidden;
+  font-family: var(--neko-font-sans);
+  font-size: var(--_avatar-font);
+  font-weight: 600;
+  line-height: var(--neko-line-height-none);
+  text-transform: uppercase;
+  background: var(--neko-color-semantic-bg-raised);
+  color: var(--neko-color-semantic-text-muted);
+  border: 1px solid var(--neko-color-semantic-border-base);
+  border-radius: var(--neko-radius-md);
+  user-select: none;
+}
+
+.neko-avatar__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.neko-avatar__initials {
+  display: block;
+}
+
+/* sizes */
+.neko-avatar--sm {
+  --_avatar-size: var(--neko-spacing-6);
+  --_avatar-font: var(--neko-font-size-xs);
+}
+.neko-avatar--lg {
+  --_avatar-size: var(--neko-spacing-16);
+  --_avatar-font: var(--neko-font-size-xl);
+}
+
+/* circular */
+.neko-avatar--circle {
+  border-radius: var(--neko-radius-pill);
+}
+
+/* interactive avatar — when wrapped in a link/button */
+.neko-avatar:where(a, button) {
+  cursor: pointer;
+  padding: 0;
+  transition:
+    border-color var(--neko-motion-duration-fast) var(--neko-motion-easing-standard),
+    box-shadow var(--neko-motion-duration-fast) var(--neko-motion-easing-standard);
+}
+.neko-avatar:where(a, button):hover {
+  border-color: var(--neko-color-semantic-border-strong);
+}
+.neko-avatar:where(a, button):focus-visible {
+  outline: 2px solid var(--neko-color-semantic-focus-ring);
+  outline-offset: 2px;
+}
+
+/* ===========================================================================
+   stat — labelled metric / KPI
+   =========================================================================== */
+.neko-stat {
+  display: flex;
+  flex-direction: column;
+  gap: var(--neko-spacing-1);
+  font-family: var(--neko-font-sans);
+  color: var(--neko-color-semantic-text-base);
+}
+
+.neko-stat__label {
+  font-size: var(--neko-font-size-xs);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--neko-color-semantic-text-muted);
+  line-height: var(--neko-line-height-snug);
+}
+
+.neko-stat__value {
+  font-size: var(--neko-font-size-3xl);
+  font-weight: 700;
+  line-height: var(--neko-line-height-tight);
+  color: var(--neko-color-semantic-text-base);
+}
+
+.neko-stat__delta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--neko-spacing-1);
+  font-size: var(--neko-font-size-sm);
+  font-weight: 600;
+  line-height: var(--neko-line-height-none);
+  color: var(--neko-color-semantic-text-muted);
+}
+.neko-stat__delta--up {
+  color: var(--neko-color-semantic-success);
+}
+.neko-stat__delta--down {
+  color: var(--neko-color-semantic-danger);
+}
+
+/* size */
+.neko-stat--sm .neko-stat__value {
+  font-size: var(--neko-font-size-xl);
+}
+.neko-stat--lg .neko-stat__value {
+  font-size: var(--neko-font-size-4xl);
+}
+
+/* ===========================================================================
+   empty — empty-state placeholder
+   =========================================================================== */
+.neko-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--neko-spacing-3);
+  padding: var(--neko-spacing-12) var(--neko-spacing-6);
+  text-align: center;
+  font-family: var(--neko-font-sans);
+  color: var(--neko-color-semantic-text-muted);
+}
+
+.neko-empty__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--neko-spacing-12);
+  height: var(--neko-spacing-12);
+  color: var(--neko-color-semantic-text-subtle);
+}
+
+.neko-empty__title {
+  margin: 0;
+  font-size: var(--neko-font-size-lg);
+  font-weight: 600;
+  line-height: var(--neko-line-height-snug);
+  color: var(--neko-color-semantic-text-base);
+}
+
+.neko-empty__body {
+  max-width: 48ch;
+  margin: 0;
+  font-size: var(--neko-font-size-sm);
+  line-height: var(--neko-line-height-relaxed);
+  color: var(--neko-color-semantic-text-muted);
+}
+
+.neko-empty__action {
+  margin-top: var(--neko-spacing-2);
+}
+
+/* ============================ kbd-combo ============================ */
+/* Group of <kbd> elements joined by separators. <span class="neko-kbd-combo">
+   <kbd class="neko-kbd">Ctrl</kbd><kbd class="neko-kbd">Shift</kbd><kbd class="neko-kbd">P</kbd>
+   </span> */
+.neko-kbd-combo {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--neko-spacing-1);
+  font-family: var(--neko-font-mono);
+  color: var(--neko-color-semantic-text-muted);
+}
+
+.neko-kbd-combo > .neko-kbd + .neko-kbd::before {
+  content: "+";
+  display: inline-block;
+  margin-right: var(--neko-spacing-1);
+  font-weight: 700;
+  color: var(--neko-color-semantic-text-subtle);
+}
+
+.neko-kbd-combo--then > .neko-kbd + .neko-kbd::before { content: "→"; }
+.neko-kbd-combo--space > .neko-kbd + .neko-kbd::before { content: ""; }

@@ -1,12 +1,38 @@
 {
   "name": "@nekostack/theme",
-  "version": "0.0.0",
-  "private": true,
-  "main": "./src/index.ts",
-  "types": "./src/index.ts",
+  "version": "0.1.0",
+  "description": "Dracula-seeded design tokens for the NekoStack portfolio. Ships CSS variables, typed JS, raw JSON, and an optional Tailwind preset.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./css": "./dist/neko.css",
+    "./tailwind": "./dist/tailwind.preset.cjs",
+    "./json": "./dist/tokens.json",
+    "./preview": "./preview.html"
+  },
+  "files": [
+    "dist",
+    "preview.html",
+    "README.md"
+  ],
   "scripts": {
-    "build": "tsc -b",
+    "build": "node scripts/build.mjs",
+    "build:tokens": "node scripts/build.mjs",
+    "typecheck": "tsc --noEmit",
     "test": "vitest run",
+    "preview": "node -e \"console.log('Open packages/theme/preview.html in a browser')\"",
     "lint": "eslint ."
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
   }
 }

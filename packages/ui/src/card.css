@@ -1,0 +1,104 @@
+/* card — surface containers. Follows button.css local-remap pattern.
+   Defines: .neko-card (+ __header/__body/__footer/__title, --interactive),
+   .neko-panel, .neko-surface. */
+
+.neko-card {
+  /* local remap targets — modifiers/surfaces only touch these */
+  --_card-bg: var(--neko-color-semantic-bg-raised);
+  --_card-fg: var(--neko-color-semantic-text-base);
+  --_card-border: var(--neko-color-semantic-border-base);
+  --_card-shadow: var(--neko-color-shadow-sm);
+  --_card-pad: var(--neko-spacing-6);
+  --_card-radius: var(--neko-radius-md);
+
+  display: flex;
+  flex-direction: column;
+  background: var(--_card-bg);
+  color: var(--_card-fg);
+  border: 1px solid var(--_card-border);
+  border-radius: var(--_card-radius);
+  box-shadow: var(--_card-shadow);
+  overflow: hidden;
+}
+
+/* sections — share the card's horizontal padding; header/footer set apart by borders */
+.neko-card__header {
+  padding: var(--_card-pad);
+  border-bottom: 1px solid var(--neko-color-semantic-border-subtle);
+}
+
+.neko-card__body {
+  padding: var(--_card-pad);
+  flex: 1 1 auto;
+}
+
+.neko-card__footer {
+  padding: var(--_card-pad);
+  border-top: 1px solid var(--neko-color-semantic-border-subtle);
+}
+
+.neko-card__title {
+  margin: 0;
+  font-family: var(--neko-font-sans);
+  font-size: var(--neko-font-size-xl);
+  font-weight: 700;
+  line-height: var(--neko-line-height-tight);
+  color: var(--neko-color-semantic-text-base);
+}
+
+/* interactive — clickable/linkable card; full hover/active/focus/disabled states */
+.neko-card--interactive {
+  cursor: pointer;
+  text-decoration: none;
+  transition:
+    background var(--neko-motion-duration-fast) var(--neko-motion-easing-standard),
+    border-color var(--neko-motion-duration-fast) var(--neko-motion-easing-standard),
+    box-shadow var(--neko-motion-duration-fast) var(--neko-motion-easing-standard),
+    transform var(--neko-motion-duration-fast) var(--neko-motion-easing-standard);
+}
+
+.neko-card--interactive:hover {
+  border-color: var(--neko-color-semantic-border-strong);
+  box-shadow: var(--neko-color-shadow-md);
+}
+
+.neko-card--interactive:active { transform: translateY(1px); }
+
+.neko-card--interactive:focus-visible {
+  outline: 2px solid var(--neko-color-semantic-focus-ring);
+  outline-offset: 2px;
+}
+
+.neko-card--interactive:disabled,
+.neko-card--interactive[disabled],
+.neko-card--interactive[aria-disabled="true"] {
+  background: var(--neko-color-semantic-disabled);
+  color: var(--neko-color-semantic-disabled-content);
+  border-color: transparent;
+  box-shadow: none;
+  cursor: not-allowed;
+  pointer-events: none;
+  transform: none;
+}
+
+/* panel — sunken, flat region (e.g. sidebars, inset groupings). Remap locals only. */
+.neko-panel {
+  --_card-bg: var(--neko-color-semantic-bg-sunken);
+  --_card-shadow: none;
+  display: flex;
+  flex-direction: column;
+  background: var(--_card-bg);
+  color: var(--neko-color-semantic-text-base);
+  border: 1px solid var(--neko-color-semantic-border-subtle);
+  border-radius: var(--neko-radius-md);
+  padding: var(--neko-spacing-5);
+}
+
+/* surface — minimal raised tile: background + radius, no border or shadow chrome. */
+.neko-surface {
+  display: block;
+  background: var(--neko-color-semantic-bg-raised);
+  color: var(--neko-color-semantic-text-base);
+  border-radius: var(--neko-radius-md);
+  padding: var(--neko-spacing-4);
+}

@@ -1,0 +1,128 @@
+/* base — reset, element defaults, .neko-prose, .neko-code, .neko-kbd, a11y helpers, shared keyframes.
+   Consumes @nekostack/theme tokens. Loaded first. */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+:where(html) {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  -moz-tab-size: 4;
+  tab-size: 4;
+}
+
+:where(body) {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--neko-font-sans);
+  font-size: var(--neko-font-size-base);
+  line-height: var(--neko-line-height-normal);
+  color: var(--neko-color-semantic-text-base);
+  background: var(--neko-color-semantic-bg-base);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+:where(h1, h2, h3, h4, h5, h6) { margin: 0; line-height: var(--neko-line-height-tight); font-weight: 700; }
+:where(p) { margin: 0; }
+:where(img, picture, video, canvas, svg) { display: block; max-width: 100%; }
+:where(input, button, textarea, select) { font: inherit; color: inherit; }
+:where(p, h1, h2, h3, h4, h5, h6) { overflow-wrap: break-word; }
+
+:where(a) { color: var(--neko-color-semantic-link); text-decoration: none; }
+:where(a:hover) { color: var(--neko-color-semantic-link-hover); text-decoration: underline; }
+
+:where(a, button, [tabindex], input, select, textarea):focus-visible {
+  outline: 2px solid var(--neko-color-semantic-focus-ring);
+  outline-offset: 2px;
+  border-radius: var(--neko-radius-xs);
+}
+
+:where(hr) {
+  border: 0;
+  border-top: 1px solid var(--neko-color-semantic-border-base);
+  margin: var(--neko-spacing-6) 0;
+}
+
+:where(:disabled) { cursor: not-allowed; }
+
+::selection {
+  background: var(--neko-color-semantic-selected);
+  color: var(--neko-color-semantic-selected-content);
+}
+
+/* inline code + kbd (foundational; also referenced by components) */
+:where(code, kbd, samp, pre) { font-family: var(--neko-font-mono); }
+
+.neko-code {
+  font-family: var(--neko-font-mono);
+  font-size: 0.9em;
+  background: var(--neko-color-semantic-code-bg);
+  color: var(--neko-color-semantic-code-content);
+  padding: 0.1em var(--neko-spacing-1);
+  border-radius: var(--neko-radius-xs);
+}
+
+.neko-kbd {
+  display: inline-block;
+  font-family: var(--neko-font-mono);
+  font-size: 0.8em;
+  line-height: 1;
+  background: var(--neko-color-semantic-bg-sunken);
+  color: var(--neko-color-semantic-text-base);
+  border: 1px solid var(--neko-color-semantic-border-base);
+  border-bottom-width: 2px;
+  border-radius: var(--neko-radius-xs);
+  padding: 0.25em var(--neko-spacing-2);
+  box-shadow: var(--neko-color-shadow-xs);
+}
+
+/* prose — long-form / markdown container */
+.neko-prose { max-width: 70ch; color: var(--neko-color-semantic-text-base); }
+.neko-prose > * + * { margin-top: var(--neko-spacing-4); }
+.neko-prose h1 { font-size: var(--neko-font-size-3xl); margin-top: var(--neko-spacing-8); }
+.neko-prose h2 { font-size: var(--neko-font-size-2xl); margin-top: var(--neko-spacing-8); }
+.neko-prose h3 { font-size: var(--neko-font-size-xl); margin-top: var(--neko-spacing-6); }
+.neko-prose a { color: var(--neko-color-semantic-link); text-decoration: underline; }
+.neko-prose ul, .neko-prose ol { padding-left: var(--neko-spacing-6); }
+.neko-prose li + li { margin-top: var(--neko-spacing-2); }
+.neko-prose blockquote {
+  border-left: 3px solid var(--neko-color-semantic-primary);
+  padding-left: var(--neko-spacing-4);
+  color: var(--neko-color-semantic-text-muted);
+}
+.neko-prose pre {
+  background: var(--neko-color-semantic-code-bg);
+  color: var(--neko-color-semantic-code-content);
+  padding: var(--neko-spacing-4);
+  border-radius: var(--neko-radius-md);
+  overflow-x: auto;
+}
+.neko-prose :not(pre) > code { background: var(--neko-color-semantic-code-bg); color: var(--neko-color-semantic-code-content); padding: 0.1em var(--neko-spacing-1); border-radius: var(--neko-radius-xs); }
+
+/* a11y helpers */
+.neko-visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/* shared keyframes — referenced by button, feedback, etc. (do not redefine elsewhere) */
+@keyframes neko-spin { to { transform: rotate(360deg); } }
+@keyframes neko-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+@keyframes neko-shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+@keyframes neko-bounce { 0%, 80%, 100% { transform: scale(0.6); opacity: 0.5; } 40% { transform: scale(1); opacity: 1; } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

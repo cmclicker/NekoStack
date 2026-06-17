@@ -1,0 +1,32 @@
+/* utilities — MINIMAL escape-hatch helpers (NOT a utility framework).
+   Defines: .neko-text-muted, .neko-text-subtle, .neko-text-center, .neko-text-left,
+   .neko-text-right, .neko-truncate, .neko-elevated, .neko-rounded, .neko-muted-surface.
+   Consumes @nekostack/theme tokens. Loaded after base.css. */
+
+/* text color — muted / subtle on the current surface */
+.neko-text-muted { color: var(--neko-color-semantic-text-muted); }
+.neko-text-subtle { color: var(--neko-color-semantic-text-subtle); }
+
+/* text alignment */
+.neko-text-center { text-align: center; }
+.neko-text-left { text-align: left; }
+.neko-text-right { text-align: right; }
+
+/* single-line truncation with ellipsis */
+.neko-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* elevation — medium drop shadow */
+.neko-elevated { box-shadow: var(--neko-color-shadow-md); }
+
+/* rounded corners */
+.neko-rounded { border-radius: var(--neko-radius-md); }
+
+/* muted surface — a recessed, low-emphasis fill with muted text */
+.neko-muted-surface {
+  background: var(--neko-color-semantic-bg-sunken);
+  color: var(--neko-color-semantic-text-muted);
+}

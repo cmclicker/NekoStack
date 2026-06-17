@@ -1,0 +1,89 @@
+/* layout — structural primitives. No interactive elements (no hover/focus/disabled states apply).
+   Defines: .neko-container (+ --sm/--lg/--full), .neko-stack (vertical gap),
+   .neko-cluster (horizontal wrap), .neko-grid (auto-fit), .neko-center,
+   .neko-divider (+ --vertical). */
+
+/* container — centered, max-width content well with responsive side padding */
+.neko-container {
+  /* local remap target — size modifiers only touch this */
+  --_container-max: 64rem;
+
+  width: 100%;
+  max-width: var(--_container-max);
+  margin-inline: auto;
+  padding-inline: var(--neko-spacing-4);
+}
+
+.neko-container--sm { --_container-max: 40rem; }
+.neko-container--lg { --_container-max: 80rem; }
+.neko-container--full { --_container-max: none; }
+
+/* stack — vertical flow with consistent gap between children */
+.neko-stack {
+  /* local remap target — keeps spacing overridable per instance */
+  --_stack-gap: var(--neko-spacing-4);
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--_stack-gap);
+}
+
+.neko-stack--sm { --_stack-gap: var(--neko-spacing-2); }
+.neko-stack--lg { --_stack-gap: var(--neko-spacing-8); }
+
+/* cluster — horizontal group that wraps; good for tag rows, action bars */
+.neko-cluster {
+  --_cluster-gap: var(--neko-spacing-3);
+
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--_cluster-gap);
+}
+
+.neko-cluster--sm { --_cluster-gap: var(--neko-spacing-2); }
+.neko-cluster--lg { --_cluster-gap: var(--neko-spacing-6); }
+
+/* grid — responsive auto-fit columns with a sensible minimum track */
+.neko-grid {
+  --_grid-min: 16rem;
+  --_grid-gap: var(--neko-spacing-4);
+
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(var(--_grid-min), 100%), 1fr));
+  gap: var(--_grid-gap);
+}
+
+.neko-grid--sm { --_grid-gap: var(--neko-spacing-2); }
+.neko-grid--lg { --_grid-gap: var(--neko-spacing-8); }
+
+/* center — centers content both axes (within available height) */
+.neko-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* divider — separator line; horizontal by default, vertical via modifier */
+.neko-divider {
+  /* local remap targets — --vertical swaps these */
+  --_divider-size: 100%;
+  --_divider-thickness: 1px;
+  --_divider-margin: var(--neko-spacing-4) 0;
+
+  border: 0;
+  align-self: stretch;
+  width: var(--_divider-size);
+  height: var(--_divider-thickness);
+  margin: var(--_divider-margin);
+  background: var(--neko-color-semantic-border-base);
+}
+
+.neko-divider--vertical {
+  --_divider-size: var(--neko-spacing-6);
+  --_divider-thickness: 1px;
+  --_divider-margin: 0 var(--neko-spacing-4);
+
+  width: var(--_divider-thickness);
+  height: var(--_divider-size);
+}

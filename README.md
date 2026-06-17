@@ -6,7 +6,7 @@ NekoStack is **not** a folder template, a boilerplate, or a Bash script generato
 
 ## What this is
 
-A monorepo of ~107 packages spanning every layer a full-stack solo developer needs to build games (NekoBattler, NekoGacha, Leytide), SaaS products (NekoSystems, NekoVibe, retail-ops simulators, EdTech), narrative tools (Mara Kane lore graphs, continuity validators), and AI agent runtimes — without renting infrastructure from a dozen third-party vendors.
+A monorepo of 108 packages spanning every layer a full-stack solo developer needs to build games (NekoBattler, NekoGacha, Leytide), SaaS products (NekoSystems, NekoVibe, retail-ops simulators, EdTech), narrative tools (Mara Kane lore graphs, continuity validators), and AI agent runtimes — without renting infrastructure from a dozen third-party vendors.
 
 **Five top-level governing documents:**
 - [`PRODUCT_THESIS.md`](PRODUCT_THESIS.md) — the doctrine: NekoStack is a workflow-replacement stack, not an adapter collection. Read first to decide whether a phase belongs at all.
@@ -56,7 +56,7 @@ NekoStack/
 │   ├── auth/                 # @nekostack/auth
 │   ├── telemetry/            # @nekostack/telemetry
 │   ├── ui/                   # @nekostack/ui
-│   └── ...                   # ~107 packages total
+│   └── ...                   # 108 packages total
 ├── apps/                     # optional demo / admin / docs apps
 │
 ├── starters/                 # scaffold-ready starting structures (consumed by packages/templates)
@@ -146,6 +146,7 @@ For the **canonical "which package owns which capability"** map, see [`BOUNDARIE
 - [@nekostack/events](packages/events/README.md) — Event sourcing / CQRS scaffolding
 - [@nekostack/cache](packages/cache/README.md) — Declarative multi-layer caching
 - [@nekostack/migrate](packages/migrate/README.md) — Schema + data migrations with rollback
+- [@nekostack/migrate-runner](packages/migrate-runner/README.md) — Executes authored schema-data migrations against real records (downstream of migrate)
 - [@nekostack/storage](packages/storage/README.md) — File upload + object storage abstraction
 - [@nekostack/fetch](packages/fetch/README.md) — Typed HTTP client with retry / circuit-breaker
 
@@ -259,7 +260,8 @@ Each project imports specific NekoStack packages as needed. There is no requirem
 
 ## Status
 
-- **Stage:** Bootstrap. Packages scaffolded with substantive READMEs. No implementation yet.
+- **Stage:** Foundation underway. Three packages are implemented and tested: **@nekostack/schema** (released through `schema-v0.8.0`, ~7,386 LOC of source, ~1,292 tests), **@nekostack/migrate-runner** (released at `migrate-runner-v0.1.0`, ~2,078 LOC, ~405 tests), and **@nekostack/cli** (~3,682 LOC across 19 test files). Ten git release tags exist (nine `schema-*`, one `migrate-runner-*`). The remaining ~105 packages are still scaffolded stubs with substantive READMEs but no implementation yet.
+- **Canonical status:** [`manifests/workspace-status.json`](manifests/workspace-status.json) is the machine-readable source of truth for release tags, active workstream, and per-package test counts. Regenerate it with `npm run status:generate` (and verify with `npm run status:check`) — do not hand-edit it.
 - **Owner:** Cody — solo developer.
 - **Versioning policy:** TBD. Likely locked-step across the monorepo until any individual package goes 1.0 for public release.
 - **License:** TBD. Each package documents its intended license posture (internal-only, MIT open-source, commercial-with-source-available, etc.) in its own README.

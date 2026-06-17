@@ -1,0 +1,738 @@
+/* media — visual / decorative components that don't fit feedback, nav, or data.
+   Defines: .neko-chat (+ __bubble, __header, __footer, --start/--end + 9 color variants),
+            .neko-indicator (+ __item, __item--top/--bottom/--start/--end/--center),
+            .neko-carousel (+ __item, --snap-center),
+            .neko-diff (+ __before, __after, __resizer),
+            .neko-hero (+ __content, __title, __body, __actions, --centered),
+            .neko-navbar (+ __brand, __menu, __actions, --sticky),
+            .neko-bottom-nav (+ __item, [aria-current="page"]),
+            .neko-footer (+ __group, __title, --centered),
+            .neko-timeline (+ __item, __marker, __content, --horizontal),
+            .neko-steps (+ __step, __marker, __label, --vertical, [data-state]),
+            .neko-rating (+ __star),
+            .neko-radial-progress,
+            .neko-countdown. */
+
+/* ============================ chat ============================ */
+.neko-chat {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--neko-spacing-1) var(--neko-spacing-3);
+  margin-bottom: var(--neko-spacing-3);
+}
+
+.neko-chat--end {
+  grid-template-columns: 1fr auto;
+  text-align: right;
+}
+
+.neko-chat__header {
+  grid-column: 2;
+  font-size: var(--neko-font-size-xs);
+  color: var(--neko-color-semantic-text-muted);
+}
+.neko-chat--end .neko-chat__header { grid-column: 1; }
+
+.neko-chat__bubble {
+  --_chat-bg: var(--neko-color-semantic-bg-raised);
+  --_chat-fg: var(--neko-color-semantic-text-base);
+
+  grid-column: 2;
+  display: inline-block;
+  max-width: 36ch;
+  padding: var(--neko-spacing-2) var(--neko-spacing-4);
+  font-family: var(--neko-font-sans);
+  font-size: var(--neko-font-size-sm);
+  line-height: var(--neko-line-height-snug);
+  color: var(--_chat-fg);
+  background: var(--_chat-bg);
+  border-radius: var(--neko-radius-md);
+  border-bottom-left-radius: var(--neko-radius-xs);
+}
+
+.neko-chat--end .neko-chat__bubble {
+  grid-column: 1;
+  justify-self: end;
+  border-bottom-left-radius: var(--neko-radius-md);
+  border-bottom-right-radius: var(--neko-radius-xs);
+}
+
+.neko-chat__footer {
+  grid-column: 2;
+  font-size: var(--neko-font-size-xs);
+  color: var(--neko-color-semantic-text-subtle);
+}
+.neko-chat--end .neko-chat__footer { grid-column: 1; }
+
+.neko-chat--primary   .neko-chat__bubble { --_chat-bg: var(--neko-color-semantic-primary);   --_chat-fg: var(--neko-color-semantic-primary-content); }
+.neko-chat--secondary .neko-chat__bubble { --_chat-bg: var(--neko-color-semantic-secondary); --_chat-fg: var(--neko-color-semantic-secondary-content); }
+.neko-chat--accent-1  .neko-chat__bubble { --_chat-bg: var(--neko-color-semantic-accent-1);  --_chat-fg: var(--neko-color-semantic-accent-1-content); }
+.neko-chat--accent-2  .neko-chat__bubble { --_chat-bg: var(--neko-color-semantic-accent-2);  --_chat-fg: var(--neko-color-semantic-accent-2-content); }
+.neko-chat--accent-3  .neko-chat__bubble { --_chat-bg: var(--neko-color-semantic-accent-3);  --_chat-fg: var(--neko-color-semantic-accent-3-content); }
+.neko-chat--info      .neko-chat__bubble { --_chat-bg: var(--neko-color-semantic-info);      --_chat-fg: var(--neko-color-semantic-info-content); }
+.neko-chat--success   .neko-chat__bubble { --_chat-bg: var(--neko-color-semantic-success);   --_chat-fg: var(--neko-color-semantic-success-content); }
+.neko-chat--warning   .neko-chat__bubble { --_chat-bg: var(--neko-color-semantic-warning);   --_chat-fg: var(--neko-color-semantic-warning-content); }
+.neko-chat--danger    .neko-chat__bubble { --_chat-bg: var(--neko-color-semantic-danger);    --_chat-fg: var(--neko-color-semantic-danger-content); }
+
+/* ============================ indicator ============================ */
+/* Position a small marker on the corner of a parent. Wrap a target; attach __item children. */
+.neko-indicator {
+  position: relative;
+  display: inline-flex;
+}
+
+.neko-indicator__item {
+  position: absolute;
+  top: 0;
+  right: 0;
+  transform: translate(50%, -50%);
+  z-index: 1;
+  white-space: nowrap;
+}
+
+.neko-indicator__item--top-start    { top: 0;          left: 0;          right: auto; transform: translate(-50%, -50%); }
+.neko-indicator__item--top-end      { top: 0;          right: 0;                       transform: translate(50%, -50%); }
+.neko-indicator__item--bottom-start { top: auto;       left: 0;          right: auto; bottom: 0; transform: translate(-50%, 50%); }
+.neko-indicator__item--bottom-end   { top: auto;       right: 0;         bottom: 0;   transform: translate(50%, 50%); }
+.neko-indicator__item--center-start { top: 50%;        left: 0;          right: auto; transform: translate(-50%, -50%); }
+.neko-indicator__item--center-end   { top: 50%;        right: 0;                       transform: translate(50%, -50%); }
+
+/* ============================ carousel ============================ */
+/* CSS scroll-snap based — no JS required for the core behavior. */
+.neko-carousel {
+  display: flex;
+  gap: var(--neko-spacing-3);
+  padding-bottom: var(--neko-spacing-2);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+}
+
+.neko-carousel__item {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+  border-radius: var(--neko-radius-md);
+  overflow: hidden;
+}
+
+.neko-carousel--snap-center .neko-carousel__item { scroll-snap-align: center; }
+
+/* ============================ diff ============================ */
+/* Two-pane before/after with a movable divider. Wrap two children. */
+.neko-diff {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--neko-spacing-1);
+  border: 1px solid var(--neko-color-semantic-border-base);
+  border-radius: var(--neko-radius-md);
+  overflow: hidden;
+}
+
+.neko-diff__before,
+.neko-diff__after {
+  padding: var(--neko-spacing-4);
+  font-family: var(--neko-font-mono);
+  font-size: var(--neko-font-size-sm);
+  line-height: var(--neko-line-height-relaxed);
+  white-space: pre-wrap;
+}
+
+.neko-diff__before {
+  background: var(--neko-color-semantic-danger-soft);
+  color: var(--neko-color-semantic-danger);
+  border-right: 1px solid var(--neko-color-semantic-border-base);
+}
+
+.neko-diff__after {
+  background: var(--neko-color-semantic-success-soft);
+  color: var(--neko-color-semantic-success);
+}
+
+/* ============================ hero ============================ */
+.neko-hero {
+  display: flex;
+  align-items: center;
+  min-height: 16rem;
+  padding: var(--neko-spacing-12) var(--neko-spacing-6);
+  background: var(--neko-color-semantic-bg-raised);
+  border-radius: var(--neko-radius-lg);
+  color: var(--neko-color-semantic-text-base);
+}
+
+.neko-hero--centered { justify-content: center; text-align: center; }
+
+.neko-hero__content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--neko-spacing-4);
+  max-width: 36rem;
+}
+
+.neko-hero__title {
+  margin: 0;
+  font-size: var(--neko-font-size-4xl);
+  font-weight: 700;
+  line-height: var(--neko-line-height-tight);
+}
+
+.neko-hero__body {
+  margin: 0;
+  font-size: var(--neko-font-size-lg);
+  line-height: var(--neko-line-height-relaxed);
+  color: var(--neko-color-semantic-text-muted);
+}
+
+.neko-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--neko-spacing-3);
+}
+.neko-hero--centered .neko-hero__actions { justify-content: center; }
+
+/* ============================ navbar ============================ */
+.neko-navbar {
+  display: flex;
+  align-items: center;
+  gap: var(--neko-spacing-4);
+  padding: var(--neko-spacing-3) var(--neko-spacing-4);
+  background: var(--neko-color-semantic-bg-raised);
+  border-bottom: 1px solid var(--neko-color-semantic-border-base);
+}
+
+.neko-navbar--sticky {
+  position: sticky;
+  top: 0;
+  z-index: var(--neko-z-index-popover);
+}
+
+.neko-navbar__brand {
+  font-family: var(--neko-font-sans);
+  font-size: var(--neko-font-size-lg);
+  font-weight: 700;
+  color: var(--neko-color-semantic-text-base);
+  text-decoration: none;
+}
+
+.neko-navbar__menu {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: var(--neko-spacing-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.neko-navbar__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--neko-spacing-2);
+  margin-left: auto;
+}
+
+/* ============================ bottom-nav ============================ */
+.neko-bottom-nav {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-around;
+  width: 100%;
+  background: var(--neko-color-semantic-bg-raised);
+  border-top: 1px solid var(--neko-color-semantic-border-base);
+}
+
+.neko-bottom-nav__item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--neko-spacing-1);
+  padding: var(--neko-spacing-2);
+  font-family: var(--neko-font-sans);
+  font-size: var(--neko-font-size-xs);
+  font-weight: 500;
+  color: var(--neko-color-semantic-text-muted);
+  text-decoration: none;
+  background: transparent;
+  border: 0;
+  border-top: 2px solid transparent;
+  cursor: pointer;
+  transition: color var(--neko-motion-duration-fast) var(--neko-motion-easing-standard);
+}
+
+.neko-bottom-nav__item:hover { color: var(--neko-color-semantic-text-base); }
+.neko-bottom-nav__item:focus-visible { outline: 2px solid var(--neko-color-semantic-focus-ring); outline-offset: -2px; }
+
+.neko-bottom-nav__item[aria-current="page"] {
+  color: var(--neko-color-semantic-primary);
+  border-top-color: var(--neko-color-semantic-primary);
+}
+
+/* ============================ footer ============================ */
+.neko-footer {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: var(--neko-spacing-6);
+  padding: var(--neko-spacing-8) var(--neko-spacing-4);
+  background: var(--neko-color-semantic-bg-sunken);
+  border-top: 1px solid var(--neko-color-semantic-border-base);
+  color: var(--neko-color-semantic-text-muted);
+  font-family: var(--neko-font-sans);
+  font-size: var(--neko-font-size-sm);
+}
+
+.neko-footer--centered { text-align: center; }
+
+.neko-footer__group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--neko-spacing-2);
+}
+
+.neko-footer__title {
+  margin: 0 0 var(--neko-spacing-2);
+  font-size: var(--neko-font-size-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--neko-color-semantic-text-base);
+}
+
+/* ============================ timeline ============================ */
+.neko-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: var(--neko-spacing-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.neko-timeline__item {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--neko-spacing-3);
+  padding-left: var(--neko-spacing-1);
+}
+
+.neko-timeline__item:not(:last-child)::before {
+  content: "";
+  position: absolute;
+  top: var(--neko-spacing-4);
+  left: calc(var(--neko-spacing-1) + 0.375em);
+  width: 2px;
+  height: calc(100% + var(--neko-spacing-4) - var(--neko-spacing-4));
+  background: var(--neko-color-semantic-border-base);
+}
+
+.neko-timeline__marker {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 0.875em;
+  height: 0.875em;
+  margin-top: 0.25em;
+  background: var(--neko-color-semantic-primary);
+  border-radius: var(--neko-radius-pill);
+  z-index: 1;
+}
+
+.neko-timeline__content {
+  font-family: var(--neko-font-sans);
+  font-size: var(--neko-font-size-sm);
+  line-height: var(--neko-line-height-snug);
+  color: var(--neko-color-semantic-text-base);
+}
+
+.neko-timeline--horizontal {
+  flex-direction: row;
+  align-items: flex-start;
+  overflow-x: auto;
+}
+
+.neko-timeline--horizontal .neko-timeline__item {
+  flex: 0 0 12rem;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto 1fr;
+}
+
+/* ============================ steps ============================ */
+.neko-steps {
+  display: flex;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: neko-step;
+}
+
+.neko-steps__step {
+  counter-increment: neko-step;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  position: relative;
+  font-family: var(--neko-font-sans);
+  font-size: var(--neko-font-size-sm);
+  color: var(--neko-color-semantic-text-muted);
+  text-align: center;
+}
+
+.neko-steps__step:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  top: 1em;
+  left: calc(50% + 1.25em);
+  right: calc(-50% + 1.25em);
+  height: 2px;
+  background: var(--neko-color-semantic-border-base);
+  z-index: 0;
+}
+
+.neko-steps__marker {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2em;
+  height: 2em;
+  margin-bottom: var(--neko-spacing-2);
+  font-weight: 700;
+  color: var(--neko-color-semantic-text-muted);
+  background: var(--neko-color-semantic-bg-raised);
+  border: 2px solid var(--neko-color-semantic-border-base);
+  border-radius: var(--neko-radius-pill);
+  z-index: 1;
+}
+
+.neko-steps__marker::before { content: counter(neko-step); }
+
+.neko-steps__step[data-state="current"] .neko-steps__marker {
+  color: var(--neko-color-semantic-primary-content);
+  background: var(--neko-color-semantic-primary);
+  border-color: var(--neko-color-semantic-primary);
+}
+
+.neko-steps__step[data-state="complete"] .neko-steps__marker {
+  color: var(--neko-color-semantic-success-content);
+  background: var(--neko-color-semantic-success);
+  border-color: var(--neko-color-semantic-success);
+}
+.neko-steps__step[data-state="complete"] .neko-steps__marker::before { content: "✓"; }
+.neko-steps__step[data-state="complete"]:not(:last-child)::after { background: var(--neko-color-semantic-success); }
+
+.neko-steps__step[data-state="current"] .neko-steps__label,
+.neko-steps__step[data-state="complete"] .neko-steps__label { color: var(--neko-color-semantic-text-base); }
+
+.neko-steps--vertical { flex-direction: column; align-items: flex-start; }
+.neko-steps--vertical .neko-steps__step { flex: 0 0 auto; flex-direction: row; gap: var(--neko-spacing-3); text-align: left; min-height: 3rem; }
+.neko-steps--vertical .neko-steps__step:not(:last-child)::after {
+  top: 2em;
+  bottom: calc(-2em + var(--neko-spacing-4));
+  left: 1em;
+  right: auto;
+  width: 2px;
+  height: auto;
+}
+.neko-steps--vertical .neko-steps__marker { margin-bottom: 0; }
+
+/* ============================ rating ============================ */
+.neko-rating {
+  display: inline-flex;
+  gap: var(--neko-spacing-1);
+  align-items: center;
+}
+
+.neko-rating > input[type="radio"] { position: absolute; opacity: 0; width: 0; height: 0; }
+
+.neko-rating__star {
+  display: inline-block;
+  width: 1.25em;
+  height: 1.25em;
+  cursor: pointer;
+  background: var(--neko-color-semantic-border-base);
+  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+  transition: background var(--neko-motion-duration-fast) var(--neko-motion-easing-standard);
+}
+
+.neko-rating > input[type="radio"]:checked ~ .neko-rating__star,
+.neko-rating > input[type="radio"]:checked + .neko-rating__star {
+  background: var(--neko-color-semantic-warning);
+}
+
+.neko-rating__star:hover { background: var(--neko-color-semantic-warning-hover); }
+
+.neko-rating:has(input:focus-visible) { outline: 2px solid var(--neko-color-semantic-focus-ring); outline-offset: 2px; border-radius: var(--neko-radius-xs); }
+
+/* ============================ radial-progress ============================ */
+/* Set --value (0–100) inline to control the arc. Uses conic-gradient. */
+.neko-radial-progress {
+  --value: 0;
+  --size: 5rem;
+  --thickness: 0.5rem;
+
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: var(--size);
+  height: var(--size);
+  font-family: var(--neko-font-sans);
+  font-size: var(--neko-font-size-sm);
+  font-weight: 600;
+  color: var(--neko-color-semantic-text-base);
+  background:
+    conic-gradient(
+      var(--neko-color-semantic-primary) calc(var(--value) * 1%),
+      var(--neko-color-semantic-bg-sunken) calc(var(--value) * 1%)
+    );
+  border-radius: var(--neko-radius-pill);
+}
+
+.neko-radial-progress::before {
+  content: "";
+  position: absolute;
+  inset: var(--thickness);
+  background: var(--neko-color-semantic-bg-base);
+  border-radius: var(--neko-radius-pill);
+}
+
+.neko-radial-progress > * { position: relative; z-index: 1; }
+
+/* ============================ countdown ============================ */
+/* Use inline style --value: <number>; for animated transitions, or just inject text. */
+.neko-countdown {
+  display: inline-flex;
+  gap: var(--neko-spacing-2);
+  font-family: var(--neko-font-mono);
+  font-size: var(--neko-font-size-2xl);
+  font-weight: 700;
+  color: var(--neko-color-semantic-text-base);
+  font-variant-numeric: tabular-nums;
+}
+
+.neko-countdown > span {
+  display: inline-grid;
+  place-items: center;
+  min-width: 2ch;
+  padding: var(--neko-spacing-2) var(--neko-spacing-3);
+  background: var(--neko-color-semantic-bg-raised);
+  border-radius: var(--neko-radius-sm);
+}
+
+/* ============================ theme-controller ============================ */
+/* Pre-styled swap that toggles data-mode on <html>. Pair with JS to wire to localStorage.
+   <label class="neko-theme-controller">
+     <input type="checkbox" />
+     <span class="neko-theme-controller__track"></span>
+   </label> */
+.neko-theme-controller {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+.neko-theme-controller > input { position: absolute; opacity: 0; pointer-events: none; }
+
+.neko-theme-controller__track {
+  position: relative;
+  width: 3rem;
+  height: 1.5rem;
+  background: var(--neko-color-semantic-bg-sunken);
+  border: 1px solid var(--neko-color-semantic-border-base);
+  border-radius: var(--neko-radius-pill);
+  transition: background var(--neko-motion-duration-base) var(--neko-motion-easing-standard);
+}
+
+.neko-theme-controller__track::before {
+  content: "☀";
+  position: absolute;
+  top: 50%;
+  left: 0.125rem;
+  width: 1.125rem;
+  height: 1.125rem;
+  display: inline-grid;
+  place-items: center;
+  font-size: 0.75rem;
+  background: var(--neko-color-semantic-warning);
+  color: var(--neko-color-semantic-warning-content);
+  border-radius: var(--neko-radius-pill);
+  transform: translateY(-50%);
+  transition: transform var(--neko-motion-duration-base) var(--neko-motion-easing-standard);
+}
+
+.neko-theme-controller > input:checked ~ .neko-theme-controller__track::before {
+  content: "🌙";
+  background: var(--neko-color-semantic-secondary);
+  color: var(--neko-color-semantic-secondary-content);
+  transform: translate(1.5rem, -50%);
+}
+
+.neko-theme-controller:focus-within .neko-theme-controller__track { outline: 2px solid var(--neko-color-semantic-focus-ring); outline-offset: 2px; }
+
+/* ============================ banner ============================ */
+/* Full-width announcement above content. Distinct from .neko-alert (block-level dismissable). */
+.neko-banner {
+  --_banner-bg: var(--neko-color-semantic-primary);
+  --_banner-fg: var(--neko-color-semantic-primary-content);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--neko-spacing-3);
+  padding: var(--neko-spacing-2) var(--neko-spacing-4);
+  font-family: var(--neko-font-sans);
+  font-size: var(--neko-font-size-sm);
+  font-weight: 500;
+  color: var(--_banner-fg);
+  background: var(--_banner-bg);
+  width: 100%;
+}
+
+.neko-banner__action {
+  font-weight: 700;
+  color: inherit;
+  text-decoration: underline;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.neko-banner__close {
+  display: inline-grid;
+  place-items: center;
+  width: 1.5em;
+  height: 1.5em;
+  margin-left: auto;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  border-radius: var(--neko-radius-pill);
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity var(--neko-motion-duration-fast) var(--neko-motion-easing-standard);
+}
+.neko-banner__close:hover { opacity: 1; }
+
+.neko-banner--secondary { --_banner-bg: var(--neko-color-semantic-secondary); --_banner-fg: var(--neko-color-semantic-secondary-content); }
+.neko-banner--info      { --_banner-bg: var(--neko-color-semantic-info);      --_banner-fg: var(--neko-color-semantic-info-content); }
+.neko-banner--success   { --_banner-bg: var(--neko-color-semantic-success);   --_banner-fg: var(--neko-color-semantic-success-content); }
+.neko-banner--warning   { --_banner-bg: var(--neko-color-semantic-warning);   --_banner-fg: var(--neko-color-semantic-warning-content); }
+.neko-banner--danger    { --_banner-bg: var(--neko-color-semantic-danger);    --_banner-fg: var(--neko-color-semantic-danger-content); }
+
+/* ============================ status ============================ */
+/* Tiny inline status dot. Use next to text labels for live state. */
+.neko-status {
+  --_status-color: var(--neko-color-semantic-text-muted);
+
+  display: inline-block;
+  width: 0.625em;
+  height: 0.625em;
+  background: var(--_status-color);
+  border-radius: var(--neko-radius-pill);
+  vertical-align: middle;
+}
+
+.neko-status--primary   { --_status-color: var(--neko-color-semantic-primary); }
+.neko-status--secondary { --_status-color: var(--neko-color-semantic-secondary); }
+.neko-status--info      { --_status-color: var(--neko-color-semantic-info); }
+.neko-status--success   { --_status-color: var(--neko-color-semantic-success); }
+.neko-status--warning   { --_status-color: var(--neko-color-semantic-warning); }
+.neko-status--danger    { --_status-color: var(--neko-color-semantic-danger); }
+.neko-status--lg        { width: 0.875em; height: 0.875em; }
+.neko-status--sm        { width: 0.5em; height: 0.5em; }
+.neko-status--pulse     { animation: neko-pulse var(--neko-motion-duration-slow) var(--neko-motion-easing-standard) infinite; }
+
+/* ============================ loading-dots ============================ */
+/* Three-dot animated loading indicator. Alternative to spinner. */
+.neko-loading-dots {
+  display: inline-flex;
+  gap: var(--neko-spacing-1);
+  align-items: center;
+}
+
+.neko-loading-dots > span {
+  display: inline-block;
+  width: 0.5rem;
+  height: 0.5rem;
+  background: var(--neko-color-semantic-primary);
+  border-radius: var(--neko-radius-pill);
+  animation: neko-bounce var(--neko-motion-duration-slow) var(--neko-motion-easing-standard) infinite;
+}
+
+.neko-loading-dots > span:nth-child(2) { animation-delay: 0.1s; }
+.neko-loading-dots > span:nth-child(3) { animation-delay: 0.2s; }
+
+/* ============================ calendar ============================ */
+/* Static calendar grid primitive. Wire up day cells in app code. */
+.neko-calendar {
+  display: inline-flex;
+  flex-direction: column;
+  gap: var(--neko-spacing-2);
+  padding: var(--neko-spacing-4);
+  background: var(--neko-color-semantic-bg-raised);
+  border: 1px solid var(--neko-color-semantic-border-base);
+  border-radius: var(--neko-radius-md);
+  font-family: var(--neko-font-sans);
+  font-size: var(--neko-font-size-sm);
+}
+
+.neko-calendar__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 700;
+  color: var(--neko-color-semantic-text-base);
+  margin-bottom: var(--neko-spacing-2);
+}
+
+.neko-calendar__grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: var(--neko-spacing-1);
+}
+
+.neko-calendar__weekday {
+  font-size: var(--neko-font-size-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--neko-color-semantic-text-subtle);
+  text-align: center;
+  padding: var(--neko-spacing-1) 0;
+}
+
+.neko-calendar__day {
+  display: inline-grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  font-size: inherit;
+  color: var(--neko-color-semantic-text-base);
+  background: transparent;
+  border: 0;
+  border-radius: var(--neko-radius-xs);
+  cursor: pointer;
+  transition: background var(--neko-motion-duration-fast) var(--neko-motion-easing-standard);
+}
+
+.neko-calendar__day:hover { background: var(--neko-color-semantic-bg-sunken); }
+.neko-calendar__day:focus-visible { outline: 2px solid var(--neko-color-semantic-focus-ring); outline-offset: 1px; }
+
+.neko-calendar__day--muted { color: var(--neko-color-semantic-text-subtle); }
+.neko-calendar__day--today { font-weight: 700; color: var(--neko-color-semantic-primary); }
+.neko-calendar__day[aria-selected="true"] {
+  color: var(--neko-color-semantic-primary-content);
+  background: var(--neko-color-semantic-primary);
+}
+.neko-calendar__day:disabled,
+.neko-calendar__day[aria-disabled="true"] {
+  color: var(--neko-color-semantic-disabled-content);
+  cursor: not-allowed;
+  pointer-events: none;
+}

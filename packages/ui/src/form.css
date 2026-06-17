@@ -1,0 +1,492 @@
+/* form — form controls and their wrappers.
+   Defines: .neko-field, .neko-label, .neko-input, .neko-textarea, .neko-select,
+   .neko-checkbox, .neko-radio, .neko-switch, .neko-help, .neko-input-group,
+   .neko-fieldset, .neko-legend. Each input control: hover/focus-visible/disabled +
+   [aria-invalid="true"] danger border + --sm/--lg sizes. */
+
+/* field — vertical wrapper grouping label + control + help text */
+.neko-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--neko-spacing-2);
+}
+
+/* label — caption above a control */
+.neko-label {
+  font-family: var(--neko-font-sans);
+  font-size: var(--neko-font-size-sm);
+  font-weight: 600;
+  line-height: var(--neko-line-height-snug);
+  color: var(--neko-color-semantic-text-base);
+}
+.neko-label--required::after {
+  content: "*";
+  margin-left: var(--neko-spacing-1);
+  color: var(--neko-color-semantic-danger);
+}
+
+/* text controls — input / textarea / select share the local remap pattern.
+   Variants and states only touch these locals. */
+.neko-input,
+.neko-textarea,
+.neko-select {
+  --_control-bg: var(--neko-color-semantic-bg-raised);
+  --_control-fg: var(--neko-color-semantic-text-base);
+  --_control-border: var(--neko-color-semantic-border-base);
+  --_control-border-focus: var(--neko-color-semantic-primary);
+  --_control-pad-y: var(--neko-spacing-3);
+  --_control-pad-x: var(--neko-spacing-3);
+  --_control-font: var(--neko-font-size-base);
+
+  display: block;
+  width: 100%;
+  padding: var(--_control-pad-y) var(--_control-pad-x);
+  font-family: var(--neko-font-sans);
+  font-size: var(--_control-font);
+  line-height: var(--neko-line-height-normal);
+  color: var(--_control-fg);
+  background: var(--_control-bg);
+  border: 1px solid var(--_control-border);
+  border-radius: var(--neko-radius-sm);
+  transition:
+    border-color var(--neko-motion-duration-fast) var(--neko-motion-easing-standard),
+    background var(--neko-motion-duration-fast) var(--neko-motion-easing-standard);
+}
+
+.neko-input::placeholder,
+.neko-textarea::placeholder {
+  color: var(--neko-color-semantic-text-subtle);
+}
+
+.neko-input:hover,
+.neko-textarea:hover,
+.neko-select:hover {
+  border-color: var(--neko-color-semantic-border-strong);
+}
+
+.neko-input:focus-visible,
+.neko-textarea:focus-visible,
+.neko-select:focus-visible {
+  border-color: var(--_control-border-focus);
+  outline: 2px solid var(--neko-color-semantic-focus-ring);
+  outline-offset: 2px;
+}
+
+.neko-input[aria-invalid="true"],
+.neko-textarea[aria-invalid="true"],
+.neko-select[aria-invalid="true"] {
+  --_control-border: var(--neko-color-semantic-danger);
+  --_control-border-focus: var(--neko-color-semantic-danger);
+}
+
+.neko-input:disabled,
+.neko-input[disabled],
+.neko-input[aria-disabled="true"],
+.neko-textarea:disabled,
+.neko-textarea[disabled],
+.neko-textarea[aria-disabled="true"],
+.neko-select:disabled,
+.neko-select[disabled],
+.neko-select[aria-disabled="true"] {
+  background: var(--neko-color-semantic-disabled);
+  color: var(--neko-color-semantic-disabled-content);
+  border-color: var(--neko-color-semantic-border-subtle);
+  cursor: not-allowed;
+}
+
+/* sizes — remap padding + font only */
+.neko-input--sm,
+.neko-textarea--sm,
+.neko-select--sm {
+  --_control-pad-y: var(--neko-spacing-2);
+  --_control-pad-x: var(--neko-spacing-2);
+  --_control-font: var(--neko-font-size-sm);
+}
+.neko-input--lg,
+.neko-textarea--lg,
+.neko-select--lg {
+  --_control-pad-y: var(--neko-spacing-4);
+  --_control-pad-x: var(--neko-spacing-4);
+  --_control-font: var(--neko-font-size-lg);
+}
+
+/* textarea — multi-line, vertical resize only */
+.neko-textarea {
+  min-height: var(--neko-spacing-16);
+  resize: vertical;
+}
+
+/* select — native control with a caret affordance via padding */
+.neko-select {
+  padding-right: var(--neko-spacing-8);
+  cursor: pointer;
+}
+
+/* checkbox + radio — square / round togglers sharing the local remap pattern */
+.neko-checkbox,
+.neko-radio {
+  --_toggle-bg: var(--neko-color-semantic-bg-raised);
+  --_toggle-border: var(--neko-color-semantic-border-strong);
+  --_toggle-on: var(--neko-color-semantic-primary);
+  --_toggle-on-content: var(--neko-color-semantic-primary-content);
+
+  appearance: none;
+  -webkit-appearance: none;
+  flex-shrink: 0;
+  display: inline-grid;
+  place-content: center;
+  width: var(--neko-spacing-5);
+  height: var(--neko-spacing-5);
+  margin: 0;
+  background: var(--_toggle-bg);
+  border: 1px solid var(--_toggle-border);
+  cursor: pointer;
+  transition:
+    background var(--neko-motion-duration-fast) var(--neko-motion-easing-standard),
+    border-color var(--neko-motion-duration-fast) var(--neko-motion-easing-standard);
+}
+.neko-checkbox { border-radius: var(--neko-radius-xs); }
+.neko-radio { border-radius: var(--neko-radius-pill); }
+
+.neko-checkbox::before,
+.neko-radio::before {
+  content: "";
+  transform: scale(0);
+  transition: transform var(--neko-motion-duration-fast) var(--neko-motion-easing-decelerate);
+}
+/* checkmark drawn as a rotated border-corner glyph in the on-content color */
+.neko-checkbox::before {
+  width: var(--neko-spacing-2);
+  height: var(--neko-spacing-3);
+  border: solid var(--_toggle-on-content);
+  border-width: 0 2px 2px 0;
+  margin-top: -2px;
+  transform: scale(0) rotate(45deg);
+}
+.neko-radio::before {
+  width: var(--neko-spacing-2);
+  height: var(--neko-spacing-2);
+  border-radius: var(--neko-radius-pill);
+  background: var(--_toggle-on-content);
+}
+
+.neko-checkbox:hover,
+.neko-radio:hover {
+  border-color: var(--_toggle-on);
+}
+
+.neko-checkbox:checked,
+.neko-radio:checked {
+  background: var(--_toggle-on);
+  border-color: var(--_toggle-on);
+}
+.neko-checkbox:checked::before { transform: scale(1) rotate(45deg); }
+.neko-radio:checked::before { transform: scale(1); }
+
+.neko-checkbox:focus-visible,
+.neko-radio:focus-visible {
+  outline: 2px solid var(--neko-color-semantic-focus-ring);
+  outline-offset: 2px;
+}
+
+.neko-checkbox[aria-invalid="true"],
+.neko-radio[aria-invalid="true"] {
+  --_toggle-border: var(--neko-color-semantic-danger);
+}
+
+.neko-checkbox:disabled,
+.neko-checkbox[disabled],
+.neko-checkbox[aria-disabled="true"],
+.neko-radio:disabled,
+.neko-radio[disabled],
+.neko-radio[aria-disabled="true"] {
+  --_toggle-bg: var(--neko-color-semantic-disabled);
+  --_toggle-border: var(--neko-color-semantic-border-subtle);
+  --_toggle-on: var(--neko-color-semantic-disabled);
+  --_toggle-on-content: var(--neko-color-semantic-disabled-content);
+  cursor: not-allowed;
+}
+
+/* switch — pill toggle with a sliding knob */
+.neko-switch {
+  --_switch-off: var(--neko-color-semantic-border-strong);
+  --_switch-on: var(--neko-color-semantic-primary);
+  --_switch-knob: var(--neko-color-semantic-text-inverted);
+
+  appearance: none;
+  -webkit-appearance: none;
+  position: relative;
+  flex-shrink: 0;
+  width: var(--neko-spacing-10);
+  height: var(--neko-spacing-6);
+  margin: 0;
+  padding: 0;
+  background: var(--_switch-off);
+  border: 1px solid transparent;
+  border-radius: var(--neko-radius-pill);
+  cursor: pointer;
+  transition: background var(--neko-motion-duration-base) var(--neko-motion-easing-standard);
+}
+.neko-switch::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: var(--neko-spacing-1);
+  width: var(--neko-spacing-4);
+  height: var(--neko-spacing-4);
+  background: var(--_switch-knob);
+  border-radius: var(--neko-radius-pill);
+  transform: translate(0, -50%);
+  transition: transform var(--neko-motion-duration-base) var(--neko-motion-easing-standard);
+}
+.neko-switch:hover { background: var(--neko-color-semantic-border-base); }
+.neko-switch:checked { background: var(--_switch-on); }
+.neko-switch:checked:hover { background: var(--neko-color-semantic-primary-hover); }
+.neko-switch:checked::before { transform: translate(var(--neko-spacing-4), -50%); }
+.neko-switch:focus-visible {
+  outline: 2px solid var(--neko-color-semantic-focus-ring);
+  outline-offset: 2px;
+}
+.neko-switch[aria-invalid="true"] {
+  --_switch-off: var(--neko-color-semantic-danger);
+}
+.neko-switch:disabled,
+.neko-switch[disabled],
+.neko-switch[aria-disabled="true"] {
+  --_switch-off: var(--neko-color-semantic-disabled);
+  --_switch-on: var(--neko-color-semantic-disabled);
+  --_switch-knob: var(--neko-color-semantic-disabled-content);
+  cursor: not-allowed;
+}
+
+/* help — assistive / error text below a control */
+.neko-help {
+  font-family: var(--neko-font-sans);
+  font-size: var(--neko-font-size-sm);
+  line-height: var(--neko-line-height-snug);
+  color: var(--neko-color-semantic-text-muted);
+}
+.neko-help--error { color: var(--neko-color-semantic-danger); }
+
+/* input-group — segmented row of controls/addons sharing a border seam */
+.neko-input-group {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+}
+.neko-input-group > .neko-input,
+.neko-input-group > .neko-select {
+  border-radius: 0;
+}
+.neko-input-group > * + * {
+  margin-left: -1px;
+}
+.neko-input-group > :first-child {
+  border-top-left-radius: var(--neko-radius-sm);
+  border-bottom-left-radius: var(--neko-radius-sm);
+}
+.neko-input-group > :last-child {
+  border-top-right-radius: var(--neko-radius-sm);
+  border-bottom-right-radius: var(--neko-radius-sm);
+}
+/* focused control rises above its neighbours so its border seam is unbroken */
+.neko-input-group > .neko-input:focus-visible,
+.neko-input-group > .neko-select:focus-visible {
+  position: relative;
+  z-index: var(--neko-z-index-base);
+}
+
+/* input-group addon — static prefix/suffix label (e.g. "https://", "@") */
+.neko-input-group__addon {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--neko-spacing-3) var(--neko-spacing-3);
+  font-family: var(--neko-font-sans);
+  font-size: var(--neko-font-size-base);
+  white-space: nowrap;
+  color: var(--neko-color-semantic-text-muted);
+  background: var(--neko-color-semantic-bg-sunken);
+  border: 1px solid var(--neko-color-semantic-border-base);
+}
+
+/* fieldset + legend — grouped controls with a caption */
+.neko-fieldset {
+  margin: 0;
+  padding: var(--neko-spacing-4);
+  border: 1px solid var(--neko-color-semantic-border-base);
+  border-radius: var(--neko-radius-md);
+}
+.neko-fieldset:disabled,
+.neko-fieldset[disabled],
+.neko-fieldset[aria-disabled="true"] {
+  background: var(--neko-color-semantic-disabled);
+  color: var(--neko-color-semantic-disabled-content);
+  border-color: var(--neko-color-semantic-border-subtle);
+  cursor: not-allowed;
+}
+
+.neko-legend {
+  padding: 0 var(--neko-spacing-2);
+  font-family: var(--neko-font-sans);
+  font-size: var(--neko-font-size-sm);
+  font-weight: 600;
+  color: var(--neko-color-semantic-text-base);
+}
+
+/* ============================ range ============================ */
+/* Styled input[type=range]. Track + thumb match the theme. */
+.neko-range {
+  --_range-track: var(--neko-color-semantic-bg-sunken);
+  --_range-thumb: var(--neko-color-semantic-primary);
+
+  width: 100%;
+  height: 1.5rem;
+  background: transparent;
+  appearance: none;
+  cursor: pointer;
+}
+
+.neko-range::-webkit-slider-runnable-track {
+  height: 0.5rem;
+  background: var(--_range-track);
+  border-radius: var(--neko-radius-pill);
+}
+.neko-range::-moz-range-track {
+  height: 0.5rem;
+  background: var(--_range-track);
+  border-radius: var(--neko-radius-pill);
+}
+
+.neko-range::-webkit-slider-thumb {
+  appearance: none;
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-top: -0.375rem;
+  background: var(--_range-thumb);
+  border: 2px solid var(--neko-color-semantic-bg-base);
+  border-radius: var(--neko-radius-pill);
+  box-shadow: var(--neko-color-shadow-sm);
+  cursor: pointer;
+}
+.neko-range::-moz-range-thumb {
+  width: 1.25rem;
+  height: 1.25rem;
+  background: var(--_range-thumb);
+  border: 2px solid var(--neko-color-semantic-bg-base);
+  border-radius: var(--neko-radius-pill);
+  box-shadow: var(--neko-color-shadow-sm);
+  cursor: pointer;
+}
+
+.neko-range:focus-visible { outline: 2px solid var(--neko-color-semantic-focus-ring); outline-offset: 2px; border-radius: var(--neko-radius-xs); }
+
+.neko-range--secondary { --_range-thumb: var(--neko-color-semantic-secondary); }
+.neko-range--accent-1  { --_range-thumb: var(--neko-color-semantic-accent-1); }
+.neko-range--accent-2  { --_range-thumb: var(--neko-color-semantic-accent-2); }
+.neko-range--accent-3  { --_range-thumb: var(--neko-color-semantic-accent-3); }
+.neko-range--success   { --_range-thumb: var(--neko-color-semantic-success); }
+.neko-range--warning   { --_range-thumb: var(--neko-color-semantic-warning); }
+.neko-range--danger    { --_range-thumb: var(--neko-color-semantic-danger); }
+
+.neko-range:disabled,
+.neko-range[disabled] { opacity: 0.5; cursor: not-allowed; }
+
+/* ============================ file input ============================ */
+/* Styled input[type=file]. The native picker button gets themed via ::file-selector-button. */
+.neko-file {
+  display: inline-flex;
+  align-items: center;
+  width: 100%;
+  font-family: var(--neko-font-sans);
+  font-size: var(--neko-font-size-sm);
+  color: var(--neko-color-semantic-text-base);
+  background: var(--neko-color-semantic-bg-base);
+  border: 1px solid var(--neko-color-semantic-border-base);
+  border-radius: var(--neko-radius-sm);
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.neko-file::file-selector-button {
+  padding: var(--neko-spacing-2) var(--neko-spacing-4);
+  margin-right: var(--neko-spacing-3);
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: 600;
+  color: var(--neko-color-semantic-primary-content);
+  background: var(--neko-color-semantic-primary);
+  border: 0;
+  cursor: pointer;
+  transition: background var(--neko-motion-duration-fast) var(--neko-motion-easing-standard);
+}
+
+.neko-file::file-selector-button:hover { background: var(--neko-color-semantic-primary-hover); }
+
+.neko-file:focus-visible { outline: 2px solid var(--neko-color-semantic-focus-ring); outline-offset: 2px; }
+
+.neko-file:disabled,
+.neko-file[disabled] { opacity: 0.5; cursor: not-allowed; }
+.neko-file:disabled::file-selector-button { cursor: not-allowed; }
+
+/* ============================ stepper ============================ */
+/* Number input with +/- buttons. Wrap an input + two buttons:
+   <div class="neko-stepper">
+     <button class="neko-stepper__btn" aria-label="Decrease">−</button>
+     <input type="number" class="neko-stepper__input" value="0" />
+     <button class="neko-stepper__btn" aria-label="Increase">+</button>
+   </div> */
+.neko-stepper {
+  display: inline-flex;
+  align-items: stretch;
+  background: var(--neko-color-semantic-bg-base);
+  border: 1px solid var(--neko-color-semantic-border-base);
+  border-radius: var(--neko-radius-sm);
+  overflow: hidden;
+}
+
+.neko-stepper__btn {
+  display: inline-grid;
+  place-items: center;
+  width: 2.25rem;
+  padding: 0;
+  font-family: var(--neko-font-sans);
+  font-size: var(--neko-font-size-lg);
+  font-weight: 700;
+  color: var(--neko-color-semantic-text-base);
+  background: var(--neko-color-semantic-bg-raised);
+  border: 0;
+  cursor: pointer;
+  user-select: none;
+  transition: background var(--neko-motion-duration-fast) var(--neko-motion-easing-standard);
+}
+
+.neko-stepper__btn:hover { background: var(--neko-color-semantic-bg-sunken); }
+.neko-stepper__btn:focus-visible { outline: 2px solid var(--neko-color-semantic-focus-ring); outline-offset: -2px; }
+.neko-stepper__btn:disabled,
+.neko-stepper__btn[disabled] { color: var(--neko-color-semantic-disabled-content); cursor: not-allowed; }
+
+.neko-stepper__input {
+  width: 4rem;
+  padding: var(--neko-spacing-2) var(--neko-spacing-3);
+  font-family: var(--neko-font-sans);
+  font-size: var(--neko-font-size-base);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  color: var(--neko-color-semantic-text-base);
+  background: transparent;
+  border: 0;
+  border-left: 1px solid var(--neko-color-semantic-border-base);
+  border-right: 1px solid var(--neko-color-semantic-border-base);
+}
+
+.neko-stepper__input:focus-visible { outline: 2px solid var(--neko-color-semantic-focus-ring); outline-offset: -2px; }
+.neko-stepper__input:disabled { color: var(--neko-color-semantic-disabled-content); }
+/* hide native spinners */
+.neko-stepper__input::-webkit-outer-spin-button,
+.neko-stepper__input::-webkit-inner-spin-button { appearance: none; margin: 0; }
+.neko-stepper__input { appearance: textfield; -moz-appearance: textfield; }
+
+.neko-stepper--sm .neko-stepper__btn { width: 1.75rem; font-size: var(--neko-font-size-base); }
+.neko-stepper--sm .neko-stepper__input { width: 3rem; padding: var(--neko-spacing-1) var(--neko-spacing-2); font-size: var(--neko-font-size-sm); }
+.neko-stepper--lg .neko-stepper__btn { width: 2.75rem; }
+.neko-stepper--lg .neko-stepper__input { width: 5rem; font-size: var(--neko-font-size-lg); }

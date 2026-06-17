@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "lib": ["ES2022", "DOM"],
+    "types": ["node"],
+    "allowJs": true,
+    "moduleResolution": "bundler"
+  },
+  "include": ["src/**/*", "tests/**/*", "dist/tokens.d.ts", "dist/index.d.ts"],
+  "exclude": ["node_modules", "dist/*.css", "dist/*.json", "dist/*.cjs"]
+}

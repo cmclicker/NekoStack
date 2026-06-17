@@ -1,0 +1,320 @@
+/* overlay — backdrops, modals/dialogs, drawers, tooltips, popovers.
+   Defines:
+     .neko-backdrop
+     .neko-modal, .neko-dialog (+ __header/__body/__footer; native dialog.neko-dialog + ::backdrop)
+     .neko-drawer (+ __header/__body/__footer; --left/--right/--top/--bottom)
+     .neko-tooltip (+ __content; CSS-only on :hover/:focus-within; --top/--bottom/--left/--right)
+     .neko-popover (+ __header/__body/__footer)
+   Consumes @nekostack/theme tokens. Loaded after base.css. */
+
+/* ---------------------------------------------------------------------------
+   backdrop — dimmed scrim behind modals/drawers
+   --------------------------------------------------------------------------- */
+.neko-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: var(--neko-z-index-modal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--neko-spacing-4);
+  background: var(--neko-color-semantic-bg-overlay);
+  overflow-y: auto;
+}
+
+/* ---------------------------------------------------------------------------
+   modal / dialog — centered surface. Works as a plain element inside
+   .neko-backdrop OR as a native <dialog class="neko-dialog">.
+   --------------------------------------------------------------------------- */
+.neko-modal,
+.neko-dialog {
+  --_modal-pad: var(--neko-spacing-6);
+
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 32rem;
+  max-height: calc(100vh - var(--neko-spacing-16));
+  margin: auto;
+  padding: 0;
+  border: 1px solid var(--neko-color-semantic-border-base);
+  border-radius: var(--neko-radius-lg);
+  background: var(--neko-color-semantic-bg-raised);
+  color: var(--neko-color-semantic-text-base);
+  box-shadow: var(--neko-color-shadow-xl);
+  overflow: hidden;
+}
+
+/* native <dialog> resets — let the element control its own positioning */
+.neko-dialog {
+  position: fixed;
+  inset: 0;
+}
+
+.neko-dialog:not([open]) {
+  display: none;
+}
+
+.neko-dialog::backdrop {
+  background: var(--neko-color-semantic-bg-overlay);
+}
+
+/* the native dialog is focusable when opened via showModal() — keep a
+   token-based focus ring rather than leaving the UA default. */
+.neko-dialog:focus-visible {
+  outline: 2px solid var(--neko-color-semantic-focus-ring);
+  outline-offset: 2px;
+}
+
+.neko-modal__header,
+.neko-dialog__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--neko-spacing-3);
+  padding: var(--_modal-pad);
+  border-bottom: 1px solid var(--neko-color-semantic-border-subtle);
+  font-size: var(--neko-font-size-lg);
+  font-weight: 600;
+  line-height: var(--neko-line-height-snug);
+}
+
+.neko-modal__body,
+.neko-dialog__body {
+  flex: 1 1 auto;
+  padding: var(--_modal-pad);
+  color: var(--neko-color-semantic-text-muted);
+  line-height: var(--neko-line-height-normal);
+  overflow-y: auto;
+}
+
+.neko-modal__footer,
+.neko-dialog__footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--neko-spacing-3);
+  padding: var(--_modal-pad);
+  border-top: 1px solid var(--neko-color-semantic-border-subtle);
+}
+
+/* size modifiers */
+.neko-modal--sm,
+.neko-dialog--sm { max-width: 24rem; }
+.neko-modal--lg,
+.neko-dialog--lg { max-width: 48rem; }
+
+/* ---------------------------------------------------------------------------
+   drawer — surface anchored to a screen edge. Sits inside .neko-backdrop or
+   is positioned directly; defaults to the right edge.
+   --------------------------------------------------------------------------- */
+.neko-drawer {
+  --_drawer-pad: var(--neko-spacing-6);
+
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: var(--neko-z-index-modal);
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 24rem;
+  border-left: 1px solid var(--neko-color-semantic-border-base);
+  background: var(--neko-color-semantic-bg-raised);
+  color: var(--neko-color-semantic-text-base);
+  box-shadow: var(--neko-color-shadow-xl);
+  overflow: hidden;
+}
+
+.neko-drawer--right {
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: auto;
+  border-left: 1px solid var(--neko-color-semantic-border-base);
+}
+
+.neko-drawer--left {
+  top: 0;
+  right: auto;
+  bottom: 0;
+  left: 0;
+  border-left: 0;
+  border-right: 1px solid var(--neko-color-semantic-border-base);
+}
+
+.neko-drawer--top {
+  top: 0;
+  right: 0;
+  bottom: auto;
+  left: 0;
+  width: 100%;
+  max-width: none;
+  max-height: 24rem;
+  border-left: 0;
+  border-bottom: 1px solid var(--neko-color-semantic-border-base);
+}
+
+.neko-drawer--bottom {
+  top: auto;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  max-width: none;
+  max-height: 24rem;
+  border-left: 0;
+  border-top: 1px solid var(--neko-color-semantic-border-base);
+}
+
+.neko-drawer__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--neko-spacing-3);
+  padding: var(--_drawer-pad);
+  border-bottom: 1px solid var(--neko-color-semantic-border-subtle);
+  font-size: var(--neko-font-size-lg);
+  font-weight: 600;
+  line-height: var(--neko-line-height-snug);
+}
+
+.neko-drawer__body {
+  flex: 1 1 auto;
+  padding: var(--_drawer-pad);
+  color: var(--neko-color-semantic-text-muted);
+  line-height: var(--neko-line-height-normal);
+  overflow-y: auto;
+}
+
+.neko-drawer__footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--neko-spacing-3);
+  padding: var(--_drawer-pad);
+  border-top: 1px solid var(--neko-color-semantic-border-subtle);
+}
+
+/* ---------------------------------------------------------------------------
+   tooltip — CSS-only. Wrap the trigger; the bubble shows on :hover/:focus-within.
+   Markup: <span class="neko-tooltip">trigger<span class="neko-tooltip__content">…</span></span>
+   --------------------------------------------------------------------------- */
+.neko-tooltip {
+  position: relative;
+  display: inline-flex;
+}
+
+.neko-tooltip__content {
+  position: absolute;
+  bottom: calc(100% + var(--neko-spacing-2));
+  left: 50%;
+  z-index: var(--neko-z-index-tooltip);
+  max-width: 18rem;
+  width: max-content;
+  padding: var(--neko-spacing-1) var(--neko-spacing-2);
+  border-radius: var(--neko-radius-sm);
+  background: var(--neko-color-semantic-bg-overlay);
+  color: var(--neko-color-semantic-text-inverted);
+  font-size: var(--neko-font-size-sm);
+  line-height: var(--neko-line-height-snug);
+  white-space: normal;
+  text-align: center;
+  box-shadow: var(--neko-color-shadow-md);
+  opacity: 0;
+  transform: translate(-50%, var(--neko-spacing-1));
+  pointer-events: none;
+  transition:
+    opacity var(--neko-motion-duration-fast) var(--neko-motion-easing-standard),
+    transform var(--neko-motion-duration-fast) var(--neko-motion-easing-standard);
+}
+
+.neko-tooltip:hover > .neko-tooltip__content,
+.neko-tooltip:focus-within > .neko-tooltip__content {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+/* placement modifiers */
+.neko-tooltip--bottom > .neko-tooltip__content {
+  bottom: auto;
+  top: calc(100% + var(--neko-spacing-2));
+  transform: translate(-50%, calc(-1 * var(--neko-spacing-1)));
+}
+.neko-tooltip--bottom:hover > .neko-tooltip__content,
+.neko-tooltip--bottom:focus-within > .neko-tooltip__content {
+  transform: translate(-50%, 0);
+}
+
+.neko-tooltip--left > .neko-tooltip__content {
+  bottom: auto;
+  top: 50%;
+  left: auto;
+  right: calc(100% + var(--neko-spacing-2));
+  transform: translate(var(--neko-spacing-1), -50%);
+}
+.neko-tooltip--left:hover > .neko-tooltip__content,
+.neko-tooltip--left:focus-within > .neko-tooltip__content {
+  transform: translate(0, -50%);
+}
+
+.neko-tooltip--right > .neko-tooltip__content {
+  bottom: auto;
+  top: 50%;
+  left: calc(100% + var(--neko-spacing-2));
+  transform: translate(calc(-1 * var(--neko-spacing-1)), -50%);
+}
+.neko-tooltip--right:hover > .neko-tooltip__content,
+.neko-tooltip--right:focus-within > .neko-tooltip__content {
+  transform: translate(0, -50%);
+}
+
+/* ---------------------------------------------------------------------------
+   popover — richer floating panel (header/body/footer). Position via the
+   consumer; this styles the surface.
+   --------------------------------------------------------------------------- */
+.neko-popover {
+  --_popover-pad: var(--neko-spacing-4);
+
+  position: absolute;
+  z-index: var(--neko-z-index-popover);
+  display: flex;
+  flex-direction: column;
+  width: max-content;
+  max-width: 22rem;
+  border: 1px solid var(--neko-color-semantic-border-base);
+  border-radius: var(--neko-radius-md);
+  background: var(--neko-color-semantic-bg-raised);
+  color: var(--neko-color-semantic-text-base);
+  box-shadow: var(--neko-color-shadow-lg);
+  overflow: hidden;
+}
+
+.neko-popover__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--neko-spacing-2);
+  padding: var(--_popover-pad);
+  border-bottom: 1px solid var(--neko-color-semantic-border-subtle);
+  font-size: var(--neko-font-size-base);
+  font-weight: 600;
+  line-height: var(--neko-line-height-snug);
+}
+
+.neko-popover__body {
+  padding: var(--_popover-pad);
+  color: var(--neko-color-semantic-text-muted);
+  font-size: var(--neko-font-size-sm);
+  line-height: var(--neko-line-height-normal);
+}
+
+.neko-popover__footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--neko-spacing-2);
+  padding: var(--_popover-pad);
+  border-top: 1px solid var(--neko-color-semantic-border-subtle);
+}

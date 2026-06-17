@@ -1,0 +1,266 @@
+/* disclosure — show/hide primitives.
+   Defines: .neko-accordion (+ __summary, __content, [open]),
+            .neko-swap (+ __on, __off, --rotate, --flip),
+            .neko-dropdown (+ __trigger, __menu, [data-open], :focus-within). */
+
+/* ============================ accordion ============================ */
+/* Wraps native <details>/<summary>. Variant-free; uses semantic surfaces. */
+.neko-accordion {
+  --_acc-bg: var(--neko-color-semantic-bg-raised);
+  --_acc-border: var(--neko-color-semantic-border-base);
+
+  display: block;
+  background: var(--_acc-bg);
+  border: 1px solid var(--_acc-border);
+  border-radius: var(--neko-radius-sm);
+  overflow: hidden;
+}
+
+.neko-accordion + .neko-accordion { margin-top: var(--neko-spacing-2); }
+
+.neko-accordion__summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--neko-spacing-3);
+  padding: var(--neko-spacing-3) var(--neko-spacing-4);
+  font-family: var(--neko-font-sans);
+  font-size: var(--neko-font-size-base);
+  font-weight: 600;
+  color: var(--neko-color-semantic-text-base);
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+  transition: background var(--neko-motion-duration-fast) var(--neko-motion-easing-standard);
+}
+
+.neko-accordion__summary::-webkit-details-marker { display: none; }
+.neko-accordion__summary::after {
+  content: "";
+  width: 0.625em;
+  height: 0.625em;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg);
+  transition: transform var(--neko-motion-duration-base) var(--neko-motion-easing-standard);
+}
+
+.neko-accordion[open] .neko-accordion__summary::after { transform: rotate(-135deg); }
+
+.neko-accordion__summary:hover { background: var(--neko-color-semantic-bg-sunken); }
+.neko-accordion__summary:focus-visible { outline: 2px solid var(--neko-color-semantic-focus-ring); outline-offset: -2px; }
+
+.neko-accordion__content {
+  padding: var(--neko-spacing-4);
+  border-top: 1px solid var(--neko-color-semantic-border-subtle);
+  font-family: var(--neko-font-sans);
+  font-size: var(--neko-font-size-base);
+  line-height: var(--neko-line-height-normal);
+  color: var(--neko-color-semantic-text-muted);
+}
+
+/* ============================ swap ============================ */
+/* Two-state toggle. <label class="neko-swap"><input type="checkbox" hidden>
+   <span class="neko-swap__on">A</span><span class="neko-swap__off">B</span></label> */
+.neko-swap {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  cursor: pointer;
+  user-select: none;
+  vertical-align: middle;
+}
+
+.neko-swap > input { position: absolute; opacity: 0; pointer-events: none; }
+
+.neko-swap__on,
+.neko-swap__off {
+  grid-column: 1;
+  grid-row: 1;
+  transition:
+    opacity var(--neko-motion-duration-base) var(--neko-motion-easing-standard),
+    transform var(--neko-motion-duration-base) var(--neko-motion-easing-standard);
+}
+
+.neko-swap__on  { opacity: 0; }
+.neko-swap__off { opacity: 1; }
+.neko-swap > input:checked ~ .neko-swap__on  { opacity: 1; }
+.neko-swap > input:checked ~ .neko-swap__off { opacity: 0; }
+
+.neko-swap--rotate .neko-swap__on  { transform: rotate(-45deg); }
+.neko-swap--rotate .neko-swap__off { transform: rotate(0); }
+.neko-swap--rotate > input:checked ~ .neko-swap__on  { transform: rotate(0); }
+.neko-swap--rotate > input:checked ~ .neko-swap__off { transform: rotate(45deg); }
+
+.neko-swap--flip { perspective: 12rem; }
+.neko-swap--flip .neko-swap__on  { transform: rotateY(180deg); backface-visibility: hidden; }
+.neko-swap--flip .neko-swap__off { transform: rotateY(0); backface-visibility: hidden; }
+.neko-swap--flip > input:checked ~ .neko-swap__on  { transform: rotateY(0); }
+.neko-swap--flip > input:checked ~ .neko-swap__off { transform: rotateY(-180deg); }
+
+.neko-swap:focus-within { outline: 2px solid var(--neko-color-semantic-focus-ring); outline-offset: 2px; border-radius: var(--neko-radius-xs); }
+
+/* ============================ dropdown ============================ */
+/* CSS-only via :focus-within / :hover. JS can toggle [data-open] for click semantics. */
+.neko-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.neko-dropdown__menu {
+  position: absolute;
+  top: calc(100% + var(--neko-spacing-1));
+  left: 0;
+  z-index: var(--neko-z-index-popover);
+  min-width: 12rem;
+  padding: var(--neko-spacing-1);
+  margin: 0;
+  list-style: none;
+  font-family: var(--neko-font-sans);
+  font-size: var(--neko-font-size-sm);
+  color: var(--neko-color-semantic-text-base);
+  background: var(--neko-color-semantic-bg-raised);
+  border: 1px solid var(--neko-color-semantic-border-base);
+  border-radius: var(--neko-radius-sm);
+  box-shadow: var(--neko-color-shadow-md);
+  opacity: 0;
+  transform: translateY(-4px);
+  pointer-events: none;
+  transition:
+    opacity var(--neko-motion-duration-fast) var(--neko-motion-easing-standard),
+    transform var(--neko-motion-duration-fast) var(--neko-motion-easing-standard);
+}
+
+.neko-dropdown:hover > .neko-dropdown__menu,
+.neko-dropdown:focus-within > .neko-dropdown__menu,
+.neko-dropdown[data-open="true"] > .neko-dropdown__menu {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.neko-dropdown--end > .neko-dropdown__menu { left: auto; right: 0; }
+.neko-dropdown--top > .neko-dropdown__menu { top: auto; bottom: calc(100% + var(--neko-spacing-1)); transform: translateY(4px); }
+.neko-dropdown--top:hover > .neko-dropdown__menu,
+.neko-dropdown--top:focus-within > .neko-dropdown__menu,
+.neko-dropdown--top[data-open="true"] > .neko-dropdown__menu { transform: translateY(0); }
+
+/* ============================ collapse ============================ */
+/* Checkbox-controlled show/hide. Alternative to accordion when you don't want native <details>.
+   <div class="neko-collapse">
+     <input type="checkbox" class="neko-collapse__toggle">
+     <div class="neko-collapse__title">Click to expand</div>
+     <div class="neko-collapse__content">...</div>
+   </div> */
+.neko-collapse {
+  position: relative;
+  display: block;
+  background: var(--neko-color-semantic-bg-raised);
+  border: 1px solid var(--neko-color-semantic-border-base);
+  border-radius: var(--neko-radius-sm);
+  overflow: hidden;
+}
+
+.neko-collapse + .neko-collapse { margin-top: var(--neko-spacing-2); }
+
+.neko-collapse__toggle {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 3.25em;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.neko-collapse__title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--neko-spacing-3);
+  padding: var(--neko-spacing-3) var(--neko-spacing-4);
+  font-family: var(--neko-font-sans);
+  font-size: var(--neko-font-size-base);
+  font-weight: 600;
+  color: var(--neko-color-semantic-text-base);
+  user-select: none;
+}
+
+.neko-collapse__title::after {
+  content: "";
+  width: 0.625em;
+  height: 0.625em;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg);
+  transition: transform var(--neko-motion-duration-base) var(--neko-motion-easing-standard);
+}
+
+.neko-collapse__content {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--neko-motion-duration-base) var(--neko-motion-easing-standard);
+}
+
+.neko-collapse__content > * {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.neko-collapse__toggle:checked ~ .neko-collapse__title::after { transform: rotate(-135deg); }
+.neko-collapse__toggle:checked ~ .neko-collapse__content { grid-template-rows: 1fr; }
+.neko-collapse__toggle:checked ~ .neko-collapse__content > * { padding: var(--neko-spacing-4); border-top: 1px solid var(--neko-color-semantic-border-subtle); color: var(--neko-color-semantic-text-muted); }
+
+.neko-collapse__toggle:focus-visible ~ .neko-collapse__title { outline: 2px solid var(--neko-color-semantic-focus-ring); outline-offset: -2px; }
+
+/* ============================ tree ============================ */
+/* Nested expand/collapse list. Use native <details>/<summary> recursively. */
+.neko-tree {
+  font-family: var(--neko-font-sans);
+  font-size: var(--neko-font-size-sm);
+  color: var(--neko-color-semantic-text-base);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.neko-tree details { margin: 0; padding: 0; }
+.neko-tree summary {
+  display: flex;
+  align-items: center;
+  gap: var(--neko-spacing-2);
+  padding: var(--neko-spacing-1) var(--neko-spacing-2);
+  cursor: pointer;
+  border-radius: var(--neko-radius-xs);
+  list-style: none;
+  user-select: none;
+}
+.neko-tree summary::-webkit-details-marker { display: none; }
+.neko-tree summary::before {
+  content: "";
+  width: 0.5em;
+  height: 0.5em;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(-45deg);
+  transition: transform var(--neko-motion-duration-fast) var(--neko-motion-easing-standard);
+}
+.neko-tree details[open] > summary::before { transform: rotate(45deg); }
+.neko-tree summary:hover { background: var(--neko-color-semantic-bg-sunken); }
+.neko-tree summary:focus-visible { outline: 2px solid var(--neko-color-semantic-focus-ring); outline-offset: -2px; }
+
+.neko-tree__item {
+  display: flex;
+  align-items: center;
+  gap: var(--neko-spacing-2);
+  padding: var(--neko-spacing-1) var(--neko-spacing-2);
+  padding-left: calc(var(--neko-spacing-2) + 0.75em);
+  border-radius: var(--neko-radius-xs);
+  cursor: pointer;
+}
+.neko-tree__item:hover { background: var(--neko-color-semantic-bg-sunken); }
+.neko-tree__item[aria-selected="true"] { background: var(--neko-color-semantic-selected); color: var(--neko-color-semantic-selected-content); }
+
+.neko-tree details > * { padding-left: var(--neko-spacing-4); }
+.neko-tree > details > summary,
+.neko-tree > .neko-tree__item { padding-left: var(--neko-spacing-2); }
