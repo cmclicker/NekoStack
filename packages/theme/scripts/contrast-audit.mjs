@@ -48,6 +48,8 @@ function ratio(a, b) {
 }
 
 const ROLES = ['primary', 'secondary', 'accent-1', 'accent-2', 'accent-3', 'info', 'success', 'warning', 'danger'];
+// Tokens used as foreground text on surfaces — must clear 4.5:1 against bg-base.
+const ACCENT_TEXT_ROLES = ['primary', 'secondary', 'link'];
 
 let failures = 0;
 let largeOnly = 0;
@@ -75,6 +77,17 @@ for (const [theme, themeData] of Object.entries(tokens.themes)) {
       const flag = ra >= 4.5 ? '   ' : ra >= 3.0 ? ' ! ' : 'XXX';
       if (ra < 4.5 && ra >= 3.0) largeOnly++;
       if (ra < 3.0) failures++;
+      console.log(`  ${flag} ${tk.padEnd(10)} ${fg} on ${bgBase} = ${ra.toFixed(2)}:1  [${pass}]`);
+    }
+    console.log(`  -- accent-as-text on bg-base (4.5:1 required) --`);
+    for (const tk of ACCENT_TEXT_ROLES) {
+      const fg = s[tk]?.value ?? s[tk];
+      if (!fg || typeof fg !== 'string' || fg.startsWith('rgba') || fg.startsWith('rgb')) continue;
+      const ra = ratio(bgBase, fg);
+      const pass = ra >= 4.5 ? 'OK' : ra >= 3.0 ? 'AA-LARGE' : 'FAIL';
+      const flag = ra >= 4.5 ? '   ' : ra >= 3.0 ? ' ! ' : 'XXX';
+      if (ra < 4.5 && ra >= 3.0) largeOnly++;
+      if (ra < 4.5) failures++;
       console.log(`  ${flag} ${tk.padEnd(10)} ${fg} on ${bgBase} = ${ra.toFixed(2)}:1  [${pass}]`);
     }
   }

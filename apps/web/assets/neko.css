@@ -386,14 +386,14 @@
 }
 
 [data-theme="cupcake"][data-mode="light"] {
-  --neko-color-semantic-primary: #44ebd3;
-  --neko-color-semantic-primary-hover: #28d4bc;
-  --neko-color-semantic-primary-content: #005d58;
-  --neko-color-semantic-primary-soft: rgba(68, 235, 211, 0.12);
-  --neko-color-semantic-secondary: #f9cbe5;
-  --neko-color-semantic-secondary-hover: #f5a8d0;
-  --neko-color-semantic-secondary-content: #a0004a;
-  --neko-color-semantic-secondary-soft: rgba(249, 203, 229, 0.12);
+  --neko-color-semantic-primary: #00796b;
+  --neko-color-semantic-primary-hover: #00695c;
+  --neko-color-semantic-primary-content: #ffffff;
+  --neko-color-semantic-primary-soft: rgba(0, 121, 107, 0.12);
+  --neko-color-semantic-secondary: #be185d;
+  --neko-color-semantic-secondary-hover: #9d1252;
+  --neko-color-semantic-secondary-content: #ffffff;
+  --neko-color-semantic-secondary-soft: rgba(190, 24, 93, 0.12);
   --neko-color-semantic-accent-1: #ffd6a7;
   --neko-color-semantic-accent-1-hover: #ffbf70;
   --neko-color-semantic-accent-1-content: #9f2d00;
@@ -424,10 +424,10 @@
   --neko-color-semantic-danger-soft: rgba(254, 28, 85, 0.12);
   --neko-color-semantic-disabled: #e7e2df;
   --neko-color-semantic-disabled-content: #a09a94;
-  --neko-color-semantic-selected: rgba(68, 235, 211, 0.12);
+  --neko-color-semantic-selected: rgba(0, 121, 107, 0.18);
   --neko-color-semantic-selected-content: #291334;
-  --neko-color-semantic-link: #00a4f2;
-  --neko-color-semantic-link-hover: #0284c7;
+  --neko-color-semantic-link: #0369a1;
+  --neko-color-semantic-link-hover: #075985;
   --neko-color-semantic-bg-base: #faf7f5;
   --neko-color-semantic-bg-raised: #ffffff;
   --neko-color-semantic-bg-sunken: #efeae6;
@@ -439,7 +439,7 @@
   --neko-color-semantic-border-base: #e7e2df;
   --neko-color-semantic-border-strong: #d0cbc7;
   --neko-color-semantic-border-subtle: #f2efec;
-  --neko-color-semantic-focus-ring: #44ebd3;
+  --neko-color-semantic-focus-ring: #00796b;
   --neko-color-semantic-code-bg: #efeae6;
   --neko-color-semantic-code-content: #a0004a;
 }

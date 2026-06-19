@@ -75,6 +75,10 @@ describe('Design tokens — WCAG AA contrast', () => {
 
   const ROLES = ['primary', 'secondary', 'accent-1', 'accent-2', 'accent-3', 'info', 'success', 'warning', 'danger'];
   const TEXT_ROLES = ['text-base', 'text-muted', 'text-subtle'];
+  // These tokens are used as foreground colors on surfaces (eyebrow labels, gradient
+  // stat numbers, inline links). They must pass AA normal (4.5:1) against bg-base so
+  // they remain legible even when the accent is a light pastel on a light surface.
+  const ACCENT_TEXT_ROLES = ['primary', 'secondary', 'link'];
   const AA_NORMAL = 4.5;
 
   for (const [theme, themeData] of Object.entries(tokens.themes as Record<string, any>)) {
@@ -90,6 +94,14 @@ describe('Design tokens — WCAG AA contrast', () => {
       }
       for (const tk of TEXT_ROLES) {
         it(`${theme} · ${mode}: ${tk} on bg-base clears AA (4.5:1)`, () => {
+          const r = ratio(s[tk], s['bg-base']);
+          const fg = s[tk].value ?? s[tk];
+          const bg = s['bg-base'].value ?? s['bg-base'];
+          expect(r, `${fg} on ${bg} = ${r.toFixed(2)}:1`).toBeGreaterThanOrEqual(AA_NORMAL);
+        });
+      }
+      for (const tk of ACCENT_TEXT_ROLES) {
+        it(`${theme} · ${mode}: ${tk} used as text on bg-base clears AA (4.5:1)`, () => {
           const r = ratio(s[tk], s['bg-base']);
           const fg = s[tk].value ?? s[tk];
           const bg = s['bg-base'].value ?? s['bg-base'];
