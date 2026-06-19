@@ -197,10 +197,14 @@ $ neko schema <span class="tok-fn">generate</span></code></pre>
   <section id="packages" class="stat-band" style="border-bottom:0;">
     <div class="wrap">
       <span class="eyebrow">The suite</span>
-      <h2 class="section-title">Five packages, shipping today</h2>
+      <h2 class="section-title">Five shipped. A full stack in motion.</h2>
       <p class="section-lead">
-        Install the whole suite with <code>nekostack</code>, or pull scoped packages
-        à la carte. Every one is published to npm under Apache-2.0.
+        NekoStack isn't five packages — it's a 108-package, schema-first full stack,
+        designed under one IR-first design language so an app's data, API, UI, auth,
+        and tooling all speak the same dialect. Five are shipped at v1.0 today;
+        the rest are specced — each with a written capability boundary — and built
+        one vertical slice at a time. Install the suite with <code>nekostack</code>,
+        or pull scoped packages à la carte. All Apache-2.0.
       </p>
 
       <div class="pkg-grid">
@@ -251,6 +255,42 @@ $ neko schema <span class="tok-fn">generate</span></code></pre>
             <code class="pkg-card__install">npm i nekostack</code>
           </div>
         </article>
+      </div>
+
+      <div style="margin-top: var(--neko-spacing-12);">
+        <h3 class="section-title" style="font-size: var(--neko-font-size-2xl);">Where it's going</h3>
+        <p class="section-lead" style="margin-bottom: var(--neko-spacing-4);">
+          No invented dates — this is a solo build, shipped vertical-slice by vertical-slice.
+          But the shape is already designed: every package has a written boundary and a phased plan in the repo.
+        </p>
+
+        <div class="roadmap-tiers">
+          <div class="tier">
+            <span class="neko-badge neko-badge--success">Shipped · v1.0</span>
+            <ul class="tier__chips">
+              <li>schema</li><li>cli</li><li>migrate-runner</li><li>theme</li><li>ui</li>
+            </ul>
+          </div>
+          <div class="tier">
+            <span class="neko-badge neko-badge--secondary">Designed · building next</span>
+            <ul class="tier__chips">
+              <li>config</li><li>lint</li><li>test</li><li>api</li><li>auth</li><li>form</li><li>codex</li>
+            </ul>
+          </div>
+          <div class="tier">
+            <span class="neko-badge">On the map · ~108 total</span>
+            <ul class="tier__chips">
+              <li>data layer</li><li>SaaS</li><li>game systems</li><li>LLM tooling</li><li>content &amp; narrative</li><li>control-plane</li>
+            </ul>
+          </div>
+        </div>
+
+        <p class="muted" style="margin-top: var(--neko-spacing-5);">
+          Full phased plan:
+          <a href="https://github.com/cmclicker/NekoStack/blob/main/ROADMAP.md" style="color:var(--neko-color-semantic-link);">ROADMAP.md</a>
+          · capability-to-package map:
+          <a href="https://github.com/cmclicker/NekoStack/blob/main/BOUNDARIES.md" style="color:var(--neko-color-semantic-link);">BOUNDARIES.md</a>
+        </p>
       </div>
     </div>
   </section>
