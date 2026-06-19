@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="neko" data-mode="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NekoStack — define once, generate everything</title>
+  <meta name="description" content="An opinionated, schema-first full-stack utility suite. Define your data shape once and generate Zod, JSON Schema, OpenAPI, and TypeScript — plus a CLI, design tokens, and a token-pure component library." />
+
+  <meta property="og:title" content="NekoStack — define once, generate everything" />
+  <meta property="og:description" content="Schema-first full-stack utility suite. One IR, four outputs, zero drift." />
+  <meta property="og:type" content="website" />
+
+  <link rel="stylesheet" href="assets/neko.css" />
+  <link rel="stylesheet" href="assets/ui.css" />
+  <link rel="stylesheet" href="assets/site.css" />
+</head>
+<body>
+
+  <!-- ===== nav ===== -->
+  <header class="site-nav">
+    <div class="wrap site-nav__inner">
+      <a class="brand" href="#top">
+        <span class="brand__mark">N</span>
+        <span>Neko<span class="brand__pink">Stack</span></span>
+      </a>
+      <nav class="site-nav__links">
+        <a href="#packages">Packages</a>
+        <a href="#how">How it works</a>
+        <a href="#showcase">Showcase</a>
+        <a href="#install">Install</a>
+      </nav>
+      <div class="site-nav__actions">
+        <a class="neko-btn neko-btn--ghost neko-btn--sm" href="https://github.com/cmclicker/NekoStack">GitHub</a>
+        <a class="neko-btn neko-btn--sm" href="https://www.npmjs.com/package/nekostack">npm</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== hero ===== -->
+  <section class="hero" id="top">
+    <div class="wrap">
+      <div class="hero__badges">
+        <span class="neko-badge neko-badge--success neko-badge--pill">v1.0 released</span>
+        <span class="neko-badge neko-badge--secondary neko-badge--pill">5 packages</span>
+        <span class="neko-badge neko-badge--info neko-badge--pill">2,364 tests</span>
+        <span class="neko-badge neko-badge--pill">Apache-2.0</span>
+      </div>
+
+      <h1>Define once.<br /><span class="gradient-text">Generate everything.</span></h1>
+
+      <p class="hero__lead">
+        NekoStack is a schema-first, full-stack utility suite. Describe your data
+        shape one time and emit Zod validators, JSON Schema, OpenAPI, and TypeScript
+        from a single canonical IR — then ship it with a CLI, design tokens, and a
+        token-pure component library.
+      </p>
+
+      <div class="hero__cta">
+        <a class="neko-btn neko-btn--lg" href="#install">Get started</a>
+        <a class="neko-btn neko-btn--outline neko-btn--lg" href="https://github.com/cmclicker/NekoStack">View on GitHub</a>
+      </div>
+
+      <div class="install">
+        <span class="install__prompt">$</span>
+        <span class="install__cmd" id="install-cmd">npm install nekostack</span>
+        <button class="install__copy" data-copy="npm install nekostack">Copy</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== stat band ===== -->
+  <div class="stat-band">
+    <div class="wrap stat-band__grid">
+      <div>
+        <div class="stat-band__num">5</div>
+        <div class="stat-band__label">published packages</div>
+      </div>
+      <div>
+        <div class="stat-band__num">2,364</div>
+        <div class="stat-band__label">tests passing</div>
+      </div>
+      <div>
+        <div class="stat-band__num">4</div>
+        <div class="stat-band__label">outputs from one source</div>
+      </div>
+      <div>
+        <div class="stat-band__num">92</div>
+        <div class="stat-band__label">UI components</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== how it works ===== -->
+  <section id="how">
+    <div class="wrap feature-row">
+      <div>
+        <span class="eyebrow">The core idea</span>
+        <h2 class="section-title">One IR. Four outputs. Zero drift.</h2>
+        <p class="section-lead">
+          Every serious app defines the same shape in a TypeScript interface, a Zod
+          schema, a JSON Schema, and an OpenAPI spec — and they drift. NekoStack
+          normalizes one definition into a canonical intermediate representation, then
+          generates each output from that IR. Where an output can't be faithful, it
+          marks the gap instead of lying.
+        </p>
+        <ul class="feature-list">
+          <li><span class="tick">✓</span> Strict-by-default validation with structured, normalized error codes</li>
+          <li><span class="tick">✓</span> Deterministic, hash-tracked generated files — CI-checkable for staleness</li>
+          <li><span class="tick">✓</span> No vendor lock-in: emit Zod 3 syntax on your schedule, not theirs</li>
+          <li><span class="tick">✓</span> 1,294 tests on the schema package alone; public API frozen at v1.0</li>
+        </ul>
+      </div>
+
+      <div class="code-panel">
+        <div class="code-panel__bar">
+          <span class="code-panel__dot"></span>
+          <span class="code-panel__dot"></span>
+          <span class="code-panel__dot"></span>
+          <span class="code-panel__file">user.schema.ts</span>
+        </div>
+<pre><code><span class="tok-key">import</span> { s } <span class="tok-key">from</span> <span class="tok-str">'@nekostack/schema'</span>;
+
+<span class="tok-key">export const</span> User = s.<span class="tok-fn">object</span>({
+  id:          s.<span class="tok-fn">string</span>().<span class="tok-fn">uuid</span>(),
+  email:       s.<span class="tok-fn">string</span>().<span class="tok-fn">email</span>(),
+  displayName: s.<span class="tok-fn">string</span>().<span class="tok-fn">min</span>(<span class="tok-type">1</span>).<span class="tok-fn">max</span>(<span class="tok-type">50</span>),
+  createdAt:   s.<span class="tok-fn">isoDateTime</span>(),
+})
+  .<span class="tok-fn">id</span>(<span class="tok-str">"com.nekostack.auth.User"</span>)
+  .<span class="tok-fn">version</span>(<span class="tok-str">"1.0.0"</span>);
+
+<span class="tok-com">// → emits user.zod.ts, user.json,</span>
+<span class="tok-com">//   user.openapi.json, user.d.ts</span>
+$ neko schema <span class="tok-fn">generate</span></code></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== packages ===== -->
+  <section id="packages" class="stat-band" style="border-bottom:0;">
+    <div class="wrap">
+      <span class="eyebrow">The suite</span>
+      <h2 class="section-title">Five packages, shipping today</h2>
+      <p class="section-lead">
+        Install the whole suite with <code>nekostack</code>, or pull scoped packages
+        à la carte. Every one is published to npm under Apache-2.0.
+      </p>
+
+      <div class="pkg-grid">
+        <article class="neko-card pkg-card">
+          <div class="neko-card__body">
+            <h3 class="neko-card__title">@nekostack/schema</h3>
+            <p class="pkg-card__desc">Canonical IR + multi-output schema system. Zod, JSON Schema, OpenAPI, and TypeScript from one definition.</p>
+            <code class="pkg-card__install">npm i @nekostack/schema</code>
+          </div>
+        </article>
+
+        <article class="neko-card pkg-card">
+          <div class="neko-card__body">
+            <h3 class="neko-card__title">@nekostack/cli</h3>
+            <p class="pkg-card__desc">The <code>neko</code> command — schema validation, code generation, and migration management from one binary.</p>
+            <code class="pkg-card__install">npm i -g @nekostack/cli</code>
+          </div>
+        </article>
+
+        <article class="neko-card pkg-card">
+          <div class="neko-card__body">
+            <h3 class="neko-card__title">@nekostack/migrate-runner</h3>
+            <p class="pkg-card__desc">A schema-data migration state machine that executes authored migrations against real records.</p>
+            <code class="pkg-card__install">npm i @nekostack/migrate-runner</code>
+          </div>
+        </article>
+
+        <article class="neko-card pkg-card">
+          <div class="neko-card__body">
+            <h3 class="neko-card__title">@nekostack/theme</h3>
+            <p class="pkg-card__desc">W3C DTCG design-token pipeline. 3 themes × 2 modes, WCAG AA checked, emitted as CSS custom properties.</p>
+            <code class="pkg-card__install">npm i @nekostack/theme</code>
+          </div>
+        </article>
+
+        <article class="neko-card pkg-card">
+          <div class="neko-card__body">
+            <h3 class="neko-card__title">@nekostack/ui</h3>
+            <p class="pkg-card__desc">92-component vanilla CSS library. Zero JS, zero React, token-pure — every color is a theme variable.</p>
+            <code class="pkg-card__install">npm i @nekostack/ui</code>
+          </div>
+        </article>
+
+        <article class="neko-card pkg-card" style="border-color: var(--neko-color-semantic-primary);">
+          <div class="neko-card__body">
+            <h3 class="neko-card__title">nekostack</h3>
+            <p class="pkg-card__desc">The metapackage. One install pins version-locked, tested-together copies of all five primitives.</p>
+            <code class="pkg-card__install">npm i nekostack</code>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== showcase ===== -->
+  <section id="showcase">
+    <div class="wrap">
+      <span class="eyebrow">Dogfooded</span>
+      <h2 class="section-title">This page is built with the stack</h2>
+      <p class="section-lead">
+        Every element below is a real <code>@nekostack/ui</code> component styled by
+        <code>@nekostack/theme</code> tokens. No framework, no build step — just two
+        stylesheets and class names.
+      </p>
+
+      <div class="showcase-grid">
+        <div class="showcase-cell">
+          <span class="showcase-cell__label">Buttons</span>
+          <div class="neko-cluster" style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="neko-btn">Primary</button>
+            <button class="neko-btn neko-btn--secondary">Secondary</button>
+            <button class="neko-btn neko-btn--outline">Outline</button>
+            <button class="neko-btn neko-btn--ghost">Ghost</button>
+          </div>
+        </div>
+
+        <div class="showcase-cell">
+          <span class="showcase-cell__label">Badges &amp; tags</span>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+            <span class="neko-badge neko-badge--success">success</span>
+            <span class="neko-badge neko-badge--warning">warning</span>
+            <span class="neko-badge neko-badge--danger">danger</span>
+            <span class="neko-tag neko-tag--primary">primary</span>
+            <span class="neko-tag neko-tag--secondary">secondary</span>
+          </div>
+        </div>
+
+        <div class="showcase-cell">
+          <span class="showcase-cell__label">Brand palette</span>
+          <div class="swatches">
+            <span class="swatch" style="background:var(--neko-color-brand-pink)" title="#ff79c6"></span>
+            <span class="swatch" style="background:var(--neko-color-brand-purple)" title="#bd93f9"></span>
+            <span class="swatch" style="background:var(--neko-color-brand-cyan)" title="#8be9fd"></span>
+            <span class="swatch" style="background:var(--neko-color-brand-green)" title="#5ad4ad"></span>
+            <span class="swatch" style="background:var(--neko-color-brand-orange)" title="#ffb86c"></span>
+          </div>
+        </div>
+
+        <div class="showcase-cell">
+          <span class="showcase-cell__label">Alert</span>
+          <div class="neko-alert neko-alert--info">
+            <div class="neko-alert__title">Heads up</div>
+            Components consume only semantic tokens — restyle the whole site by swapping one theme.
+          </div>
+        </div>
+
+        <div class="showcase-cell">
+          <span class="showcase-cell__label">Inputs</span>
+          <input class="neko-input" type="text" placeholder="you@example.com" />
+        </div>
+
+        <div class="showcase-cell">
+          <span class="showcase-cell__label">Stat</span>
+          <div class="neko-stat">
+            <div class="neko-stat__label">Tests passing</div>
+            <div class="neko-stat__value">2,364</div>
+            <div class="neko-stat__delta neko-stat__delta--up">all green</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== install / quickstart ===== -->
+  <section id="install" class="stat-band" style="border-bottom:0;">
+    <div class="wrap feature-row">
+      <div>
+        <span class="eyebrow">Quickstart</span>
+        <h2 class="section-title">Up and running in a minute</h2>
+        <p class="section-lead">
+          Install the metapackage for everything, or just the scoped packages you
+          need. <code>zod</code> is a peer dependency — add it when you run generated
+          validators at runtime.
+        </p>
+        <ul class="feature-list">
+          <li><span class="tick">✓</span> Pure ESM, TypeScript-native, no global config</li>
+          <li><span class="tick">✓</span> Works in any Node project — framework-agnostic</li>
+          <li><span class="tick">✓</span> <code>neko</code> CLI available via npx, no install required</li>
+        </ul>
+      </div>
+
+      <div class="code-panel">
+        <div class="code-panel__bar">
+          <span class="code-panel__dot"></span>
+          <span class="code-panel__dot"></span>
+          <span class="code-panel__dot"></span>
+          <span class="code-panel__file">terminal</span>
+        </div>
+<pre><code><span class="tok-com"># everything, version-locked</span>
+$ npm install nekostack zod
+
+<span class="tok-com"># or à la carte</span>
+$ npm install @nekostack/schema
+$ npm install @nekostack/theme @nekostack/ui
+
+<span class="tok-com"># run the CLI without installing</span>
+$ npx neko schema check <span class="tok-str">"./schemas/**/*"</span></code></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== footer ===== -->
+  <footer class="site-footer">
+    <div class="wrap site-footer__grid">
+      <div>
+        <a class="brand" href="#top">
+          <span class="brand__mark">N</span>
+          <span>Neko<span class="brand__pink">Stack</span></span>
+        </a>
+        <p class="muted" style="margin-top:12px;max-width:32ch;">
+          A hand-crafted, opinionated full-stack utility suite. Built by one developer, in the open.
+        </p>
+      </div>
+      <nav class="site-footer__links">
+        <a href="https://www.npmjs.com/package/nekostack">npm</a>
+        <a href="https://github.com/cmclicker/NekoStack">GitHub</a>
+        <a href="#packages">Packages</a>
+        <a href="#how">How it works</a>
+        <a href="#install">Install</a>
+      </nav>
+    </div>
+    <div class="wrap" style="margin-top:32px;">
+      <p class="muted">© 2026 NekoStack · Apache-2.0 licensed</p>
+    </div>
+  </footer>
+
+  <script>
+    document.querySelectorAll('.install__copy').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        navigator.clipboard.writeText(btn.dataset.copy).then(function () {
+          var original = btn.textContent;
+          btn.textContent = 'Copied!';
+          setTimeout(function () { btn.textContent = original; }, 1500);
+        });
+      });
+    });
+  </script>
+</body>
+</html>

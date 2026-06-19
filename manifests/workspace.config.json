@@ -14,7 +14,7 @@
       "name": "@nekostack/schema",
       "dir": "packages/schema",
       "tag_prefix": "schema-v",
-      "roadmap": "packages/schema/docs/ROADMAP.md",
+      "roadmap": "packages/schema/docs/internal/ROADMAP.md",
       "changelog": "packages/schema/CHANGELOG.md"
     }
   ],
