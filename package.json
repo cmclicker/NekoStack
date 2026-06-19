@@ -9,7 +9,8 @@
   "packageManager": "npm@11.6.1",
   "workspaces": [
     "packages/*",
-    "apps/*"
+    "apps/*",
+    "docs/website"
   ],
   "scripts": {
     "build": "turbo run build",
@@ -19,8 +20,14 @@
     "clean": "turbo run clean && rimraf node_modules .turbo",
     "format": "prettier --write \"**/*.{ts,tsx,md,json}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,md,json}\"",
+    "docs": "npm run docs:dev",
+    "docs:dev": "npm run docs:dev -w @nekostack/website",
+    "docs:build": "npm run docs:build -w @nekostack/website",
     "status:generate": "node scripts/generate-status.mjs generate",
-    "status:check": "node scripts/generate-status.mjs check"
+    "status:check": "node scripts/generate-status.mjs check",
+    "evaluate": "node scripts/evaluate-readiness.mjs",
+    "evaluate:run": "node scripts/evaluate-readiness.mjs --run",
+    "gate": "node scripts/evaluate-readiness.mjs --gate"
   },
   "devDependencies": {
     "turbo": "^2.9.7",
