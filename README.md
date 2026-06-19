@@ -22,7 +22,6 @@ Each package is its own product surface. Each one is opinionated, schema-first w
 - A side project that exists for its own sake. Every package is built because at least one product consumes it.
 - A general-purpose framework. NekoStack is opinionated. Things that fall outside its design philosophy are intentionally out of scope.
 - A replacement for security-critical primitives (bcrypt, OAuth protocol internals, JWT signing crypto, TLS). Where touching cryptography directly is dangerous, NekoStack wraps battle-tested libraries and owns only the policy/composition layer above.
-- A 1.0 release. This is a long-horizon working stack.
 
 ## Why a monorepo
 
