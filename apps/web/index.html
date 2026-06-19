@@ -147,6 +147,33 @@ $ neko schema <span class="tok-fn">generate</span></code></pre>
     </div>
   </section>
 
+  <!-- ===== execution ===== -->
+  <section id="execution" class="stat-band">
+    <div class="wrap feature-row" style="align-items: center; gap: var(--neko-spacing-10);">
+      <div class="neko-mockup-code animate-fade-up" id="runner-terminal" style="font-size: var(--neko-font-size-sm); min-height: 280px; box-shadow: 0 10px 40px -10px color-mix(in srgb, var(--neko-color-semantic-primary) 30%, transparent);">
+        <span class="neko-mockup-code__line neko-mockup-code__line--prompt" data-prefix="$">neko schema migrate plan</span>
+        <div id="term-lines">
+          <!-- JS will populate these -->
+        </div>
+      </div>
+
+      <div class="animate-fade-up delay-200">
+        <span class="eyebrow">The Execution Layer</span>
+        <h2 class="section-title">Migrate Runner</h2>
+        <p class="section-lead" style="margin-bottom: var(--neko-spacing-6);">
+          The CLI plans the migration. The runner executes it. 
+          A rigorous separation of concerns where <code>@nekostack/schema</code> remains pure, 
+          and <code>@nekostack/migrate-runner</code> orchestrates the stream.
+        </p>
+        <ul class="feature-list">
+          <li><span class="tick">✓</span> Forward-only, append-only by design.</li>
+          <li><span class="tick">✓</span> Chain-scoped provenance checking before execution.</li>
+          <li><span class="tick">✓</span> Deterministic audit logs written per record.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
   <!-- ===== why ===== -->
   <section id="why">
     <div class="wrap">
@@ -768,6 +795,53 @@ $ npx neko schema check <span class="tok-str">"./schemas/**/*"</span></code></pr
 
       renderFields();
       update();
+    })();
+
+    /* ---- terminal animation ---- */
+    (function() {
+      var term = document.getElementById('runner-terminal');
+      var linesContainer = document.getElementById('term-lines');
+      if (!term || !linesContainer) return;
+      
+      var lines = [
+        { text: 'verifying chain provenance...', delay: 400, type: '' },
+        { text: '0x8f7a... bound to schema v1.0.0', delay: 300, type: 'success', prefix: '✓' },
+        { text: '0x2b9c... bound to schema v1.1.0', delay: 200, type: 'success', prefix: '✓' },
+        { text: 'provenance valid. ready for execution.', delay: 500, type: '' },
+        { text: 'neko schema migrate execute', delay: 1200, type: 'prompt', prefix: '$' },
+        { text: 'stream open. processing 1,402 records...', delay: 600, type: '' },
+        { text: 'audit log: append-only file mounted', delay: 300, type: 'info', prefix: 'i' },
+        { text: 'execution complete. 0 failures.', delay: 800, type: 'success', prefix: '✓' }
+      ];
+
+      var observer = new IntersectionObserver(function(entries) {
+        if (entries[0].isIntersecting) {
+          observer.disconnect();
+          runTerminal();
+        }
+      });
+      observer.observe(term);
+
+      function runTerminal() {
+        var current = 0;
+        function nextLine() {
+          if (current >= lines.length) return;
+          var l = lines[current];
+          var span = document.createElement('span');
+          span.className = 'neko-mockup-code__line animate-fade-up';
+          if (l.type) span.classList.add('neko-mockup-code__line--' + l.type);
+          if (l.prefix) span.setAttribute('data-prefix', l.prefix);
+          else span.setAttribute('data-prefix', '>');
+          span.textContent = l.text;
+          linesContainer.appendChild(span);
+          
+          current++;
+          if (current < lines.length) {
+            setTimeout(nextLine, l.delay);
+          }
+        }
+        setTimeout(nextLine, 500);
+      }
     })();
   </script>
 </body>
