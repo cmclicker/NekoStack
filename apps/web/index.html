@@ -33,9 +33,10 @@
         <span>Neko<span class="brand__pink">Stack</span></span>
       </a>
       <nav class="site-nav__links">
-        <a href="#packages">Packages</a>
         <a href="#how">How it works</a>
-        <a href="#showcase">Showcase</a>
+        <a href="#why">Why NekoStack</a>
+        <a href="#packages">Packages</a>
+        <a href="#benchmarks">Benchmarks</a>
         <a href="#install">Install</a>
       </nav>
       <div class="site-nav__actions">
@@ -142,6 +143,53 @@
 <span class="tok-com">//   user.openapi.json, user.d.ts</span>
 $ neko schema <span class="tok-fn">generate</span></code></pre>
       </div>
+    </div>
+  </section>
+
+  <!-- ===== why ===== -->
+  <section id="why">
+    <div class="wrap">
+      <span class="eyebrow">Why NekoStack</span>
+      <h2 class="section-title">Why not just use Zod — or hand-rolled types?</h2>
+      <p class="section-lead">
+        Zod is excellent, and NekoStack <em>generates</em> Zod. The difference is
+        what happens to all your <em>other</em> formats — the JSON Schema, the
+        OpenAPI spec, the TypeScript types. That's where drift lives.
+      </p>
+
+      <div class="pkg-grid">
+        <article class="neko-card">
+          <div class="neko-card__body">
+            <h3 class="neko-card__title" style="font-size:var(--neko-font-size-lg);">Hand-written everywhere</h3>
+            <p class="pkg-card__desc">A TS interface, a Zod schema, a JSON Schema, an OpenAPI spec — all maintained by hand. Add a field in one, forget the other three. The bugs stay silent until the unhappy path.</p>
+            <span class="neko-tag neko-tag--danger">drifts silently</span>
+          </div>
+        </article>
+
+        <article class="neko-card">
+          <div class="neko-card__body">
+            <h3 class="neko-card__title" style="font-size:var(--neko-font-size-lg);">Zod as the source</h3>
+            <p class="pkg-card__desc">Great at runtime — but every non-Zod consumer (OpenAPI clients, a Python backend, JSON Schema tooling) glues through adapters that drift, and you're locked to Zod's release cadence.</p>
+            <span class="neko-tag neko-tag--warning">one output only</span>
+          </div>
+        </article>
+
+        <article class="neko-card" style="border-color: var(--neko-color-semantic-primary);">
+          <div class="neko-card__body">
+            <h3 class="neko-card__title" style="font-size:var(--neko-font-size-lg);">NekoStack</h3>
+            <p class="pkg-card__desc">One canonical IR → Zod, JSON Schema, OpenAPI, and TypeScript, regenerated deterministically. Where an output can't be faithful, it marks the gap instead of lying.</p>
+            <span class="neko-tag neko-tag--success">one source, zero drift</span>
+          </div>
+        </article>
+      </div>
+
+      <ul class="feature-list" style="margin-top:var(--neko-spacing-10);">
+        <li><span class="tick">✓</span> One definition → four always-in-sync outputs, with honest semantic-loss markers (it never silently misrepresents stricter rules)</li>
+        <li><span class="tick">✓</span> Strict by default — unknown keys reject, composition conflicts reject — with stable, normalized <code>Issue</code> codes instead of a raw error tree</li>
+        <li><span class="tick">✓</span> Deterministic, hash-tracked generated files: <code>neko schema check</code> fails CI on stale output</li>
+        <li><span class="tick">✓</span> No vendor lock-in — emit Zod 3 syntax on your schedule, not theirs</li>
+        <li><span class="tick">✓</span> ~5% overhead vs raw Zod on the validation hot path — benchmarked, reproducible</li>
+      </ul>
     </div>
   </section>
 
@@ -273,6 +321,56 @@ $ neko schema <span class="tok-fn">generate</span></code></pre>
           </div>
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- ===== benchmarks ===== -->
+  <section id="benchmarks">
+    <div class="wrap">
+      <span class="eyebrow">Benchmarks</span>
+      <h2 class="section-title">High integrity, near-native speed</h2>
+      <p class="section-lead">
+        A common worry with an IR + normalized errors is overhead on the hot path.
+        Measured with <code>vitest bench</code> against a User schema (UUIDs, nested
+        objects, arrays). Reproduce it yourself — the suite ships in the repo.
+      </p>
+
+      <div class="stat-band__grid" style="text-align:left;">
+        <div>
+          <div class="stat-band__num">~840K</div>
+          <div class="stat-band__label">validations / second (<code>parse()</code>, cached hot path)</div>
+        </div>
+        <div>
+          <div class="stat-band__num">~5%</div>
+          <div class="stat-band__label">overhead vs raw Zod <code>safeParse</code></div>
+        </div>
+        <div>
+          <div class="stat-band__num">&lt;50ms</div>
+          <div class="stat-band__label">to generate all 4 outputs for 1,000 schemas</div>
+        </div>
+        <div>
+          <div class="stat-band__num">faster</div>
+          <div class="stat-band__label"><code>validate()</code> edges out raw Zod (stripped-defaults path)</div>
+        </div>
+      </div>
+
+      <div class="code-panel" style="margin-top:var(--neko-spacing-8);">
+        <div class="code-panel__bar">
+          <span class="code-panel__dot"></span>
+          <span class="code-panel__dot"></span>
+          <span class="code-panel__dot"></span>
+          <span class="code-panel__file">reproduce</span>
+        </div>
+<pre><code>$ cd packages/schema
+$ npm run build
+$ npx vitest bench tests/performance.bench.ts --run</code></pre>
+      </div>
+
+      <p class="muted" style="margin-top:var(--neko-spacing-4);">
+        Full methodology and per-generator numbers:
+        <a href="https://github.com/cmclicker/NekoStack/blob/main/packages/schema/docs/BENCHMARKS.md" style="color:var(--neko-color-semantic-link);">BENCHMARKS.md</a>.
+        Absolute figures vary by hardware; the ratios hold.
+      </p>
     </div>
   </section>
 
