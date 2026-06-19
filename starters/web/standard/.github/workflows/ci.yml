@@ -1,0 +1,26 @@
+name: NekoStack CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  schema-check:
+    name: "Architectural Integrity: Schema Check"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+      - run: npm ci
+      
+      # The "Proper Procedure" Gate
+      # This command hashes the source schemas, recomputes the IR, and verifies 
+      # that the generated artifacts in the PR exactly match.
+      # If a developer updated a schema but forgot to run `npm run neko:generate`,
+      # this catches the "Silent Lie" and fails the build.
+      - run: npm run neko:check

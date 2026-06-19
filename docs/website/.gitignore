@@ -1,0 +1,3 @@
+# VitePress build output + dependency pre-bundle cache (regenerated on dev/build)
+.vitepress/cache/
+.vitepress/dist/
