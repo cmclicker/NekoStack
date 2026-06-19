@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>@nekostack/theme · preview</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="assets/neko.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; min-height: 100%; }
+    body {
+      background: var(--neko-color-semantic-bg-base);
+      color:      var(--neko-color-semantic-text-base);
+      font-family: var(--neko-font-sans);
+      font-size:   var(--neko-font-size-base);
+      line-height: var(--neko-line-height-normal);
+      padding:     var(--neko-spacing-8);
+      transition:  background var(--neko-motion-duration-base) var(--neko-motion-easing-standard),
+                   color var(--neko-motion-duration-base) var(--neko-motion-easing-standard);
+    }
+    code {
+      background: var(--neko-color-semantic-code-bg);
+      color: var(--neko-color-semantic-code-content);
+      padding: 0 var(--neko-spacing-1);
+      border-radius: var(--neko-radius-xs);
+      font-family: var(--neko-font-mono);
+      font-size: 0.95em;
+    }
+    h1, h2, h3 { font-weight: 700; margin: 0 0 var(--neko-spacing-3); }
+    h1 { font-size: var(--neko-font-size-3xl); }
+    h2 { font-size: var(--neko-font-size-xl); color: var(--neko-color-semantic-text-muted);
+         margin-top: var(--neko-spacing-10);
+         border-top: 1px solid var(--neko-color-semantic-border-base);
+         padding-top: var(--neko-spacing-6); }
+    h3 { font-size: var(--neko-font-size-base); color: var(--neko-color-semantic-text-muted);
+         margin-top: var(--neko-spacing-6); }
+    main { max-width: 1100px; margin: 0 auto; }
+    .row { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+           gap: var(--neko-spacing-3); margin-bottom: var(--neko-spacing-3); }
+    .swatch {
+      border-radius: var(--neko-radius-md);
+      padding: var(--neko-spacing-4);
+      min-height: 88px;
+      display: flex; flex-direction: column; justify-content: space-between;
+      border: 1px solid var(--neko-color-semantic-border-base);
+      font-family: var(--neko-font-mono);
+      font-size: var(--neko-font-size-xs);
+    }
+    .swatch .name { font-weight: 600; }
+    .swatch .hex { opacity: 0.85; }
+    .header { display: flex; align-items: center; justify-content: space-between;
+              gap: var(--neko-spacing-4); margin-bottom: var(--neko-spacing-6);
+              flex-wrap: wrap; }
+    .controls { display: flex; gap: var(--neko-spacing-3); flex-wrap: wrap; }
+    .pill { display: inline-flex; align-items: center; gap: var(--neko-spacing-2);
+            padding: var(--neko-spacing-2) var(--neko-spacing-4);
+            border-radius: var(--neko-radius-pill);
+            background: var(--neko-color-semantic-bg-raised);
+            border: 1px solid var(--neko-color-semantic-border-base);
+            font-family: var(--neko-font-mono); font-size: var(--neko-font-size-xs); }
+    select {
+      background: var(--neko-color-semantic-bg-raised);
+      color: var(--neko-color-semantic-text-base);
+      border: 1px solid var(--neko-color-semantic-border-base);
+      border-radius: var(--neko-radius-sm);
+      padding: var(--neko-spacing-2) var(--neko-spacing-3);
+      font-family: var(--neko-font-sans);
+    }
+    .demo-btns { display: flex; flex-wrap: wrap; gap: var(--neko-spacing-3); margin-bottom: var(--neko-spacing-4); }
+    .btn {
+      border: 0;
+      padding: var(--neko-spacing-3) var(--neko-spacing-5);
+      border-radius: var(--neko-radius-sm);
+      font-family: var(--neko-font-sans);
+      font-weight: 600;
+      cursor: pointer;
+      transition: filter var(--neko-motion-duration-fast) var(--neko-motion-easing-standard);
+    }
+    .btn:hover:not([disabled]) { filter: brightness(1.1); }
+    .btn:focus-visible { outline: 2px solid var(--neko-color-semantic-focus-ring); outline-offset: 2px; }
+    .btn[disabled] {
+      background: var(--neko-color-semantic-disabled);
+      color: var(--neko-color-semantic-disabled-content);
+      cursor: not-allowed;
+    }
+    .btn--primary    { background: var(--neko-color-semantic-primary);    color: var(--neko-color-semantic-primary-content); }
+    .btn--secondary  { background: var(--neko-color-semantic-secondary);  color: var(--neko-color-semantic-secondary-content); }
+    .btn--accent-1   { background: var(--neko-color-semantic-accent-1);   color: var(--neko-color-semantic-accent-1-content); }
+    .btn--accent-2   { background: var(--neko-color-semantic-accent-2);   color: var(--neko-color-semantic-accent-2-content); }
+    .btn--accent-3   { background: var(--neko-color-semantic-accent-3);   color: var(--neko-color-semantic-accent-3-content); }
+    .btn--success    { background: var(--neko-color-semantic-success);    color: var(--neko-color-semantic-success-content); }
+    .btn--warning    { background: var(--neko-color-semantic-warning);    color: var(--neko-color-semantic-warning-content); }
+    .btn--danger     { background: var(--neko-color-semantic-danger);     color: var(--neko-color-semantic-danger-content); }
+    .btn--ghost      { background: transparent; color: var(--neko-color-semantic-text-base);
+                       border: 1px solid var(--neko-color-semantic-border-strong); }
+    .alert {
+      padding: var(--neko-spacing-4);
+      border-radius: var(--neko-radius-md);
+      border-left: 4px solid;
+      margin-bottom: var(--neko-spacing-3);
+    }
+    .alert--info    { border-color: var(--neko-color-semantic-info);    background: var(--neko-color-semantic-info-soft);    }
+    .alert--success { border-color: var(--neko-color-semantic-success); background: var(--neko-color-semantic-success-soft); }
+    .alert--warning { border-color: var(--neko-color-semantic-warning); background: var(--neko-color-semantic-warning-soft); }
+    .alert--danger  { border-color: var(--neko-color-semantic-danger);  background: var(--neko-color-semantic-danger-soft);  }
+    .scale-row { display: flex; flex-wrap: wrap; align-items: end; gap: var(--neko-spacing-3); }
+    .scale-row .box { background: var(--neko-color-semantic-bg-raised);
+                      border: 1px solid var(--neko-color-semantic-border-base);
+                      border-radius: var(--neko-radius-sm); padding: var(--neko-spacing-2);
+                      font-family: var(--neko-font-mono); font-size: var(--neko-font-size-xs);
+                      min-width: 60px; text-align: center; }
+    .type-sample { font-family: var(--neko-font-sans); display: flex; flex-direction: column; gap: var(--neko-spacing-2); }
+    .type-sample .row-t { display: flex; align-items: baseline; gap: var(--neko-spacing-4); }
+    .type-sample .label { color: var(--neko-color-semantic-text-subtle); font-family: var(--neko-font-mono); font-size: var(--neko-font-size-xs); min-width: 60px; }
+    .list-item {
+      padding: var(--neko-spacing-3) var(--neko-spacing-4);
+      border-bottom: 1px solid var(--neko-color-semantic-border-subtle);
+      cursor: pointer;
+    }
+    .list-item:hover { background: var(--neko-color-semantic-bg-raised); }
+    .list-item.selected { background: var(--neko-color-semantic-selected); color: var(--neko-color-semantic-selected-content); }
+    .shadow-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+                  gap: var(--neko-spacing-6); margin-top: var(--neko-spacing-4); }
+    .shadow-box {
+      background: var(--neko-color-semantic-bg-raised);
+      border-radius: var(--neko-radius-md);
+      padding: var(--neko-spacing-4);
+      text-align: center;
+      font-family: var(--neko-font-mono);
+      font-size: var(--neko-font-size-xs);
+      min-height: 70px;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="header">
+      <h1>@nekostack/theme</h1>
+    <a href="index.html" style="color:var(--neko-color-semantic-link); font-size:var(--neko-font-size-sm); margin-bottom:var(--neko-spacing-4); display:block; text-decoration:none;">&larr; Back to NekoStack</a>
+      <div class="controls">
+        <div class="pill">
+          <label for="theme-select">theme:</label>
+          <select id="theme-select"></select>
+        </div>
+        <div class="pill">
+          <label for="mode-select">mode:</label>
+          <select id="mode-select"></select>
+        </div>
+      </div>
+    </div>
+
+    <p style="color: var(--neko-color-semantic-text-muted); margin-bottom: var(--neko-spacing-8);">
+      <strong>Theme</strong> (brand personality) and <strong>mode</strong> (dark/light) are orthogonal —
+      switch each independently. A consumer site sets
+      <code>&lt;html data-theme="neko" data-mode="dark"&gt;</code> and the whole token set retargets.
+      Adding a new theme or mode is one key in <code>tokens.json</code> + rebuild.
+    </p>
+
+    <h2>Brand emphasis</h2>
+    <h3>Primary · Secondary · Accents (1, 2, 3)</h3>
+    <div class="row" id="emphasis-row"></div>
+
+    <h2>Status</h2>
+    <h3>Info · Success · Warning · Danger</h3>
+    <div class="row" id="status-row"></div>
+
+    <h2>Surfaces &amp; text</h2>
+    <div class="row" id="surface-row"></div>
+
+    <h2>States</h2>
+    <h3>Disabled · Selected · Focus · Link</h3>
+    <div class="row" id="states-row"></div>
+
+    <h2>Neutrals (theme-invariant ramp)</h2>
+    <div class="row" id="neutral-row"></div>
+
+    <h2>Components (sanity check)</h2>
+
+    <h3>Buttons</h3>
+    <div class="demo-btns">
+      <button class="btn btn--primary">Primary</button>
+      <button class="btn btn--secondary">Secondary</button>
+      <button class="btn btn--accent-1">Accent 1</button>
+      <button class="btn btn--accent-2">Accent 2</button>
+      <button class="btn btn--accent-3">Accent 3</button>
+      <button class="btn btn--success">Success</button>
+      <button class="btn btn--warning">Warning</button>
+      <button class="btn btn--danger">Danger</button>
+      <button class="btn btn--ghost">Ghost</button>
+      <button class="btn btn--primary" disabled>Disabled</button>
+    </div>
+
+    <h3>Alerts</h3>
+    <div class="alert alert--info">Info — informational status.</div>
+    <div class="alert alert--success">Success — operation completed.</div>
+    <div class="alert alert--warning">Warning — proceed with caution.</div>
+    <div class="alert alert--danger">Danger — something went wrong.</div>
+
+    <h3>Selected list (states · selected/selected-content)</h3>
+    <div style="border: 1px solid var(--neko-color-semantic-border-base); border-radius: var(--neko-radius-md); overflow: hidden;">
+      <div class="list-item">Plain row</div>
+      <div class="list-item selected">Selected row · uses <code>selected</code> + <code>selected-content</code></div>
+      <div class="list-item">Plain row</div>
+    </div>
+
+    <h3>Inline code &amp; <code>&lt;kbd&gt;</code></h3>
+    <p>Press <code>Ctrl + K</code> to open the command palette. The variable <code>--neko-color-semantic-code-bg</code> backs this style.</p>
+
+    <h2>Shadows (elevation scale)</h2>
+    <div class="shadow-row" id="shadow-row"></div>
+
+    <h2>Spacing scale</h2>
+    <div class="scale-row" id="spacing-row"></div>
+
+    <h2>Radius scale</h2>
+    <div class="scale-row" id="radius-row"></div>
+
+    <h2>Typography</h2>
+    <div class="type-sample" id="type-sample"></div>
+  </main>
+
+  <script src="./dist/tokens-window.js"></script>
+  <script>
+    (function () {
+      var tokens = window.NEKO_TOKENS;
+      var defaultTheme = window.NEKO_DEFAULT_THEME;
+      var defaultMode = window.NEKO_DEFAULT_MODE;
+      if (!tokens) {
+        document.body.innerHTML = '<div style="padding:24px;font-family:monospace;">Failed to load tokens — run <code>npm run build</code> in packages/theme/.</div>';
+        return;
+      }
+
+      var themeSel = document.getElementById('theme-select');
+      var modeSel = document.getElementById('mode-select');
+      themeSel.innerHTML = '';
+      modeSel.innerHTML = '';
+      Object.keys(tokens.themes).forEach(function (t) {
+        var o = new Option((tokens.themes[t].label || t), t);
+        if (t === defaultTheme) o.selected = true;
+        themeSel.add(o);
+      });
+      function renderModes() {
+        var t = themeSel.value;
+        var modes = Object.keys(tokens.themes[t].modes);
+        var preserved = modeSel.value;
+        modeSel.innerHTML = '';
+        modes.forEach(function (m) {
+          var label = m.charAt(0).toUpperCase() + m.slice(1);
+          var o = new Option(label, m);
+          modeSel.add(o);
+        });
+        if (modes.indexOf(preserved) >= 0) modeSel.value = preserved;
+        else modeSel.value = defaultMode;
+      }
+      function applyTheme() {
+        document.documentElement.setAttribute('data-theme', themeSel.value);
+        document.documentElement.setAttribute('data-mode', modeSel.value);
+      }
+      themeSel.addEventListener('change', function () { renderModes(); applyTheme(); render(); });
+      modeSel.addEventListener('change', function () { applyTheme(); render(); });
+      renderModes();
+      applyTheme();
+
+      function pickFg(hex) {
+        var h = (hex || '').replace('#', '');
+        if (h.length < 6) return '#000';
+        var r = parseInt(h.slice(0, 2), 16),
+            g = parseInt(h.slice(2, 4), 16),
+            b = parseInt(h.slice(4, 6), 16);
+        var L = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+        return L > 0.55 ? '#1e1f29' : '#f8f8f2';
+      }
+      function swatch(name, hex, varName) {
+        return '<div class="swatch" style="background: var(--' + varName + '); color: ' + pickFg(hex) + '">' +
+                 '<div class="name">' + name + '</div>' +
+                 '<div class="hex">' + hex + '</div>' +
+               '</div>';
+      }
+      function activeSemantic() {
+        return tokens.themes[themeSel.value].modes[modeSel.value].color.semantic;
+      }
+      function fillRow(id, keys) {
+        var sem = activeSemantic();
+        document.getElementById(id).innerHTML = keys.map(function (k) {
+          return swatch(k, sem[k], 'neko-color-semantic-' + k);
+        }).join('');
+      }
+
+      function render() {
+        fillRow('emphasis-row', ['primary', 'secondary', 'accent-1', 'accent-2', 'accent-3']);
+        fillRow('status-row',   ['info', 'success', 'warning', 'danger']);
+        fillRow('surface-row',  ['bg-base', 'bg-raised', 'bg-sunken', 'bg-overlay',
+                                 'text-base', 'text-muted', 'text-subtle', 'text-inverted',
+                                 'border-base', 'border-strong', 'border-subtle']);
+        fillRow('states-row',   ['disabled', 'disabled-content', 'selected', 'selected-content',
+                                 'focus-ring', 'link', 'link-hover']);
+      }
+
+      // Theme-invariant pieces — render once
+      var n = tokens.base.color.neutral;
+      document.getElementById('neutral-row').innerHTML =
+        Object.keys(n).map(function (k) { return swatch(k, n[k], 'neko-color-neutral-' + k); }).join('');
+
+      var sh = tokens.base.color.shadow || {};
+      document.getElementById('shadow-row').innerHTML =
+        Object.keys(sh).map(function (k) {
+          return '<div class="shadow-box" style="box-shadow: ' + sh[k] + '">shadow-' + k +
+                 '<br><span style="opacity:.6">' + sh[k] + '</span></div>';
+        }).join('');
+
+      var sp = tokens.base.spacing;
+      document.getElementById('spacing-row').innerHTML =
+        Object.keys(sp).map(function (k) {
+          return '<div class="box" style="height: ' + sp[k] + '; min-height: ' + sp[k] + ';">' + k + '<br>' + sp[k] + '</div>';
+        }).join('');
+
+      var rad = tokens.base.radius;
+      document.getElementById('radius-row').innerHTML =
+        Object.keys(rad).map(function (k) {
+          return '<div class="box" style="border-radius: ' + rad[k] + '; background: var(--neko-color-semantic-primary-soft); border-color: var(--neko-color-semantic-primary);">' + k + '<br>' + rad[k] + '</div>';
+        }).join('');
+
+      var sizes = tokens.base['font-size'];
+      document.getElementById('type-sample').innerHTML =
+        Object.keys(sizes).map(function (k) {
+          return '<div class="row-t"><span class="label">' + k + ' · ' + sizes[k] + '</span>' +
+                 '<span style="font-size: ' + sizes[k] + '">The quick brown fox jumps over the lazy dog</span></div>';
+        }).join('');
+
+      // theme-dependent first render
+      render();
+    })();
+  </script>
+</body>
+</html>

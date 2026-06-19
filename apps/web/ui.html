@@ -1,0 +1,1212 @@
+<!doctype html>
+<html lang="en" data-theme="neko" data-mode="dark">
+<head>
+  <meta charset="utf-8" />
+  <title>@nekostack/ui · component preview</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="assets/neko.css" />
+  <link rel="stylesheet" href="assets/ui.css" />
+  <style>
+    body { margin: 0; min-height: 100vh; display: grid; grid-template-columns: 16rem 1fr; }
+    .preview-sidebar {
+      position: sticky; top: 0; align-self: start; height: 100vh; overflow-y: auto;
+      padding: var(--neko-spacing-4);
+      background: var(--neko-color-semantic-bg-raised);
+      border-right: 1px solid var(--neko-color-semantic-border-base);
+    }
+    .preview-sidebar h1 { font-size: var(--neko-font-size-lg); margin: 0 0 var(--neko-spacing-3); }
+    .preview-controls { display: flex; flex-direction: column; gap: var(--neko-spacing-2); margin-bottom: var(--neko-spacing-4); padding-bottom: var(--neko-spacing-4); border-bottom: 1px solid var(--neko-color-semantic-border-subtle); }
+    .preview-controls label { font-size: var(--neko-font-size-xs); font-weight: 600; color: var(--neko-color-semantic-text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+    .preview-controls select { width: 100%; padding: var(--neko-spacing-1) var(--neko-spacing-2); font-size: var(--neko-font-size-sm); }
+    .preview-nav { list-style: none; margin: 0; padding: 0; }
+    .preview-nav__group { font-size: var(--neko-font-size-xs); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--neko-color-semantic-text-subtle); margin: var(--neko-spacing-3) 0 var(--neko-spacing-1); }
+    .preview-nav a {
+      display: block; padding: var(--neko-spacing-1) var(--neko-spacing-2);
+      font-size: var(--neko-font-size-sm); color: var(--neko-color-semantic-text-muted);
+      text-decoration: none; border-radius: var(--neko-radius-xs);
+    }
+    .preview-nav a:hover { color: var(--neko-color-semantic-text-base); background: var(--neko-color-semantic-bg-sunken); }
+    .preview-nav a.is-active { color: var(--neko-color-semantic-primary); background: var(--neko-color-semantic-primary-soft); font-weight: 600; }
+    .preview-main { padding: var(--neko-spacing-8); max-width: 64rem; }
+    .preview-main h2 { font-size: var(--neko-font-size-3xl); margin: 0 0 var(--neko-spacing-2); }
+    .preview-main h2 + p { color: var(--neko-color-semantic-text-muted); margin-top: 0; margin-bottom: var(--neko-spacing-6); }
+    .demo-section { display: none; }
+    .demo-section.is-active { display: block; }
+    .demo-label { font-size: var(--neko-font-size-xs); color: var(--neko-color-semantic-text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: var(--neko-spacing-6); margin-bottom: var(--neko-spacing-2); font-weight: 600; }
+    .demo-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--neko-spacing-3); }
+    .demo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: var(--neko-spacing-3); }
+    .demo-stack { display: flex; flex-direction: column; gap: var(--neko-spacing-3); max-width: 32rem; }
+  </style>
+</head>
+<body>
+
+  <aside class="preview-sidebar">
+    <h1>@nekostack/ui</h1>
+    <a href="index.html" style="color:var(--neko-color-semantic-link); font-size:var(--neko-font-size-sm); margin-bottom:var(--neko-spacing-4); display:block; text-decoration:none;">&larr; Back to NekoStack</a>
+    <div class="preview-controls">
+      <label>Theme
+        <select id="theme-select">
+          <option value="neko">Neko</option>
+          <option value="synthwave">Synthwave</option>
+          <option value="cupcake">Cupcake</option>
+        </select>
+      </label>
+      <label>Mode
+        <select id="mode-select">
+          <option value="dark">Dark</option>
+          <option value="light">Light</option>
+        </select>
+      </label>
+    </div>
+    <ul class="preview-nav" id="preview-nav"></ul>
+  </aside>
+
+  <main class="preview-main" id="preview-main">
+
+    <!-- =================== OVERVIEW =================== -->
+    <section class="demo-section" data-component="overview">
+      <h2>@nekostack/ui</h2>
+      <p>Vanilla CSS component library consuming <code>@nekostack/theme</code> tokens. 83 components, zero hardcoded colors, BEM-light naming.</p>
+      <div class="neko-hero neko-hero--centered">
+        <div class="neko-hero__content">
+          <h3 class="neko-hero__title">Pick a component from the sidebar</h3>
+          <p class="neko-hero__body">Each component renders standalone so you can compare it across themes and modes.</p>
+          <div class="neko-hero__actions">
+            <a href="#button" class="neko-btn">Start with Button</a>
+            <a href="#mockup-phone" class="neko-btn neko-btn--secondary">Or a Phone Mockup</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== BUTTON =================== -->
+    <section class="demo-section" data-component="button">
+      <h2>Button</h2>
+      <p>Default is primary. 9 color variants, 3 shape variants, sizes, states, group.</p>
+      <div class="demo-label">Colors</div>
+      <div class="demo-row">
+        <button class="neko-btn">Primary</button>
+        <button class="neko-btn neko-btn--secondary">Secondary</button>
+        <button class="neko-btn neko-btn--accent-1">Accent 1</button>
+        <button class="neko-btn neko-btn--accent-2">Accent 2</button>
+        <button class="neko-btn neko-btn--accent-3">Accent 3</button>
+        <button class="neko-btn neko-btn--info">Info</button>
+        <button class="neko-btn neko-btn--success">Success</button>
+        <button class="neko-btn neko-btn--warning">Warning</button>
+        <button class="neko-btn neko-btn--danger">Danger</button>
+      </div>
+      <div class="demo-label">Shapes</div>
+      <div class="demo-row">
+        <button class="neko-btn neko-btn--ghost">Ghost</button>
+        <button class="neko-btn neko-btn--outline">Outline</button>
+        <button class="neko-btn neko-btn--link">Link</button>
+        <button class="neko-btn neko-btn--pill neko-btn--secondary">Pill</button>
+        <button class="neko-btn neko-btn--icon" aria-label="Star">★</button>
+      </div>
+      <div class="demo-label">Sizes / states</div>
+      <div class="demo-row">
+        <button class="neko-btn neko-btn--sm">Small</button>
+        <button class="neko-btn">Default</button>
+        <button class="neko-btn neko-btn--lg">Large</button>
+        <button class="neko-btn" disabled>Disabled</button>
+        <button class="neko-btn" aria-busy="true">Loading</button>
+      </div>
+      <div class="demo-label">Group</div>
+      <div class="neko-btn-group">
+        <button class="neko-btn neko-btn--secondary">Left</button>
+        <button class="neko-btn neko-btn--secondary">Center</button>
+        <button class="neko-btn neko-btn--secondary">Right</button>
+      </div>
+    </section>
+
+    <!-- =================== INPUT =================== -->
+    <section class="demo-section" data-component="input">
+      <h2>Input</h2>
+      <p>Text/email/password input with sizes, invalid state, disabled state.</p>
+      <div class="demo-stack">
+        <div class="neko-field"><label class="neko-label">Email</label><input class="neko-input" type="email" placeholder="you@example.com" /></div>
+        <div class="neko-field"><label class="neko-label">Small</label><input class="neko-input neko-input--sm" placeholder="Compact" /></div>
+        <div class="neko-field"><label class="neko-label">Large</label><input class="neko-input neko-input--lg" placeholder="Spacious" /></div>
+        <div class="neko-field"><label class="neko-label">Invalid</label><input class="neko-input" aria-invalid="true" value="bad" /><span class="neko-help neko-help--error">Required.</span></div>
+        <div class="neko-field"><label class="neko-label">Disabled</label><input class="neko-input" disabled value="locked" /></div>
+        <div class="neko-input-group"><span class="neko-input-group__addon">https://</span><input class="neko-input" placeholder="example.com" /></div>
+      </div>
+    </section>
+
+    <!-- =================== TEXTAREA =================== -->
+    <section class="demo-section" data-component="textarea">
+      <h2>Textarea</h2>
+      <p>Multi-line input.</p>
+      <div class="neko-field" style="max-width:32rem"><label class="neko-label">Message</label><textarea class="neko-textarea" rows="5" placeholder="Write something..."></textarea></div>
+    </section>
+
+    <!-- =================== SELECT =================== -->
+    <section class="demo-section" data-component="select">
+      <h2>Select</h2>
+      <p>Native select, theme-aware via <code>color-scheme</code>.</p>
+      <div class="demo-stack">
+        <div class="neko-field"><label class="neko-label">Default</label><select class="neko-select"><option>Option A</option><option>Option B</option></select></div>
+        <div class="neko-field"><label class="neko-label">Disabled</label><select class="neko-select" disabled><option>Locked</option></select></div>
+      </div>
+    </section>
+
+    <!-- =================== CHECKBOX =================== -->
+    <section class="demo-section" data-component="checkbox">
+      <h2>Checkbox</h2>
+      <p>Native checkbox, themed.</p>
+      <div class="demo-row">
+        <label style="display:inline-flex;align-items:center;gap:var(--neko-spacing-2)"><input type="checkbox" class="neko-checkbox" checked /> Checked</label>
+        <label style="display:inline-flex;align-items:center;gap:var(--neko-spacing-2)"><input type="checkbox" class="neko-checkbox" /> Unchecked</label>
+        <label style="display:inline-flex;align-items:center;gap:var(--neko-spacing-2)"><input type="checkbox" class="neko-checkbox" disabled checked /> Disabled</label>
+      </div>
+    </section>
+
+    <!-- =================== RADIO =================== -->
+    <section class="demo-section" data-component="radio">
+      <h2>Radio</h2>
+      <div class="demo-row">
+        <label style="display:inline-flex;align-items:center;gap:var(--neko-spacing-2)"><input type="radio" name="r" class="neko-radio" checked /> A</label>
+        <label style="display:inline-flex;align-items:center;gap:var(--neko-spacing-2)"><input type="radio" name="r" class="neko-radio" /> B</label>
+        <label style="display:inline-flex;align-items:center;gap:var(--neko-spacing-2)"><input type="radio" name="r" class="neko-radio" disabled /> Disabled</label>
+      </div>
+    </section>
+
+    <!-- =================== SWITCH =================== -->
+    <section class="demo-section" data-component="switch">
+      <h2>Switch</h2>
+      <div class="demo-row">
+        <label style="display:inline-flex;align-items:center;gap:var(--neko-spacing-2)"><input type="checkbox" class="neko-switch" checked /> On</label>
+        <label style="display:inline-flex;align-items:center;gap:var(--neko-spacing-2)"><input type="checkbox" class="neko-switch" /> Off</label>
+      </div>
+    </section>
+
+    <!-- =================== RANGE =================== -->
+    <section class="demo-section" data-component="range">
+      <h2>Range</h2>
+      <p>Styled <code>input[type="range"]</code>. Track + thumb both themed.</p>
+      <div class="demo-stack">
+        <input type="range" class="neko-range" min="0" max="100" value="40" />
+        <input type="range" class="neko-range neko-range--secondary" min="0" max="100" value="60" />
+        <input type="range" class="neko-range neko-range--accent-1" min="0" max="100" value="75" />
+        <input type="range" class="neko-range neko-range--success" min="0" max="100" value="90" />
+        <input type="range" class="neko-range neko-range--danger" min="0" max="100" value="20" />
+        <input type="range" class="neko-range" min="0" max="100" value="50" disabled />
+      </div>
+    </section>
+
+    <!-- =================== FILE =================== -->
+    <section class="demo-section" data-component="file">
+      <h2>File Input</h2>
+      <p>Styled <code>input[type="file"]</code> via <code>::file-selector-button</code>.</p>
+      <div class="demo-stack">
+        <input type="file" class="neko-file" />
+        <input type="file" class="neko-file" disabled />
+      </div>
+    </section>
+
+    <!-- =================== RATING =================== -->
+    <section class="demo-section" data-component="rating">
+      <h2>Rating</h2>
+      <p>Star rating via hidden radios + clip-path stars.</p>
+      <div class="neko-rating">
+        <input type="radio" name="rate" id="r1" /><label class="neko-rating__star" for="r1"></label>
+        <input type="radio" name="rate" id="r2" /><label class="neko-rating__star" for="r2"></label>
+        <input type="radio" name="rate" id="r3" checked /><label class="neko-rating__star" for="r3"></label>
+        <input type="radio" name="rate" id="r4" /><label class="neko-rating__star" for="r4"></label>
+        <input type="radio" name="rate" id="r5" /><label class="neko-rating__star" for="r5"></label>
+      </div>
+    </section>
+
+    <!-- =================== CARD =================== -->
+    <section class="demo-section" data-component="card">
+      <h2>Card</h2>
+      <p>Header / body / footer with optional interactive variant.</p>
+      <div class="demo-grid">
+        <div class="neko-card">
+          <div class="neko-card__header"><h3 class="neko-card__title">Standard</h3><span class="neko-badge neko-badge--success">OK</span></div>
+          <div class="neko-card__body">A card with a header badge and footer actions.</div>
+          <div class="neko-card__footer"><button class="neko-btn neko-btn--ghost neko-btn--sm">Dismiss</button><button class="neko-btn neko-btn--sm">Open</button></div>
+        </div>
+        <a href="#button" class="neko-card neko-card--interactive">
+          <div class="neko-card__header"><h3 class="neko-card__title">Interactive</h3><span class="neko-badge neko-badge--accent-1">→</span></div>
+          <div class="neko-card__body">Whole card is a link with hover/focus states.</div>
+        </a>
+      </div>
+    </section>
+
+    <!-- =================== BADGE =================== -->
+    <section class="demo-section" data-component="badge">
+      <h2>Badge</h2>
+      <p>Solid-fill inline labels. 9 colors + pill modifier.</p>
+      <div class="demo-row">
+        <span class="neko-badge">Primary</span>
+        <span class="neko-badge neko-badge--secondary">Secondary</span>
+        <span class="neko-badge neko-badge--accent-1">Accent 1</span>
+        <span class="neko-badge neko-badge--accent-2">Accent 2</span>
+        <span class="neko-badge neko-badge--accent-3">Accent 3</span>
+        <span class="neko-badge neko-badge--info">Info</span>
+        <span class="neko-badge neko-badge--success">Success</span>
+        <span class="neko-badge neko-badge--warning">Warning</span>
+        <span class="neko-badge neko-badge--danger">Danger</span>
+        <span class="neko-badge neko-badge--pill neko-badge--accent-1">Pill</span>
+      </div>
+    </section>
+
+    <!-- =================== TAG =================== -->
+    <section class="demo-section" data-component="tag">
+      <h2>Tag</h2>
+      <p>Soft-tinted chips for filters / selections.</p>
+      <div class="demo-row">
+        <span class="neko-tag">Neutral</span>
+        <span class="neko-tag neko-tag--primary">Primary</span>
+        <span class="neko-tag neko-tag--secondary">Secondary</span>
+        <span class="neko-tag neko-tag--accent-1">Accent 1</span>
+        <span class="neko-tag neko-tag--accent-2">Accent 2</span>
+        <span class="neko-tag neko-tag--accent-3">Accent 3</span>
+        <span class="neko-tag neko-tag--info">Info</span>
+        <span class="neko-tag neko-tag--success">Success</span>
+        <span class="neko-tag neko-tag--warning">Warning</span>
+        <span class="neko-tag neko-tag--danger">Danger</span>
+      </div>
+      <div class="demo-label">Removable</div>
+      <div class="demo-row">
+        <span class="neko-tag neko-tag--removable neko-tag--primary">Remove me <button class="neko-tag__remove" aria-label="Remove">×</button></span>
+      </div>
+    </section>
+
+    <!-- =================== ALERT =================== -->
+    <section class="demo-section" data-component="alert">
+      <h2>Alert</h2>
+      <div class="demo-stack">
+        <div class="neko-alert"><p class="neko-alert__title">Primary</p>Default primary-toned alert.</div>
+        <div class="neko-alert neko-alert--info"><p class="neko-alert__title">Info</p>Heads up — something to know.</div>
+        <div class="neko-alert neko-alert--success"><p class="neko-alert__title">Success</p>Saved.</div>
+        <div class="neko-alert neko-alert--warning"><p class="neko-alert__title">Warning</p>Proceed with caution.</div>
+        <div class="neko-alert neko-alert--danger"><p class="neko-alert__title">Danger</p>Something went wrong.</div>
+      </div>
+    </section>
+
+    <!-- =================== TOAST =================== -->
+    <section class="demo-section" data-component="toast">
+      <h2>Toast</h2>
+      <p>Floating notification. Shown statically for preview.</p>
+      <div class="demo-stack">
+        <div class="neko-toast neko-toast--info" style="position:relative"><p class="neko-toast__title">Update available</p>v0.2 ready to install.</div>
+        <div class="neko-toast neko-toast--success" style="position:relative"><p class="neko-toast__title">Saved</p>All changes synced.</div>
+        <div class="neko-toast neko-toast--warning" style="position:relative"><p class="neko-toast__title">Slow connection</p>Retry?</div>
+        <div class="neko-toast neko-toast--danger" style="position:relative"><p class="neko-toast__title">Upload failed</p>Could not reach the server.</div>
+      </div>
+    </section>
+
+    <!-- =================== SPINNER =================== -->
+    <section class="demo-section" data-component="spinner">
+      <h2>Spinner</h2>
+      <div class="demo-row"><span class="neko-spinner neko-spinner--sm"></span><span class="neko-spinner"></span><span class="neko-spinner neko-spinner--lg"></span></div>
+    </section>
+
+    <!-- =================== PROGRESS =================== -->
+    <section class="demo-section" data-component="progress">
+      <h2>Progress</h2>
+      <div class="demo-stack">
+        <div class="neko-progress"><div class="neko-progress__bar" style="width:35%"></div></div>
+        <div class="neko-progress"><div class="neko-progress__bar" style="width:70%"></div></div>
+        <div class="neko-progress neko-progress--indeterminate"><div class="neko-progress__bar"></div></div>
+      </div>
+    </section>
+
+    <!-- =================== RADIAL PROGRESS =================== -->
+    <section class="demo-section" data-component="radial-progress">
+      <h2>Radial Progress</h2>
+      <p>Set <code>--value</code> inline (0–100). Uses conic-gradient.</p>
+      <div class="demo-row">
+        <div class="neko-radial-progress" style="--value:25">25%</div>
+        <div class="neko-radial-progress" style="--value:50">50%</div>
+        <div class="neko-radial-progress" style="--value:75">75%</div>
+        <div class="neko-radial-progress" style="--value:90;--size:7rem;--thickness:0.75rem">90%</div>
+      </div>
+    </section>
+
+    <!-- =================== SKELETON =================== -->
+    <section class="demo-section" data-component="skeleton">
+      <h2>Skeleton</h2>
+      <div class="demo-stack" style="max-width:24rem">
+        <div class="neko-skeleton neko-skeleton--circle"></div>
+        <div class="neko-skeleton neko-skeleton--text" style="width:80%"></div>
+        <div class="neko-skeleton neko-skeleton--text" style="width:60%"></div>
+        <div class="neko-skeleton" style="height:8rem"></div>
+      </div>
+    </section>
+
+    <!-- =================== COUNTDOWN =================== -->
+    <section class="demo-section" data-component="countdown">
+      <h2>Countdown</h2>
+      <p>Tabular-numeric clocked display with themed cells.</p>
+      <div class="neko-countdown"><span>02</span>:<span>34</span>:<span>56</span></div>
+    </section>
+
+    <!-- =================== ACCORDION =================== -->
+    <section class="demo-section" data-component="accordion">
+      <h2>Accordion</h2>
+      <p>Built on native <code>&lt;details&gt;</code>. Animated chevron, no JS needed.</p>
+      <div class="demo-stack" style="max-width:36rem">
+        <details class="neko-accordion" open>
+          <summary class="neko-accordion__summary">What's @nekostack/ui?</summary>
+          <div class="neko-accordion__content">A vanilla CSS component library consuming @nekostack/theme tokens. No framework dependency.</div>
+        </details>
+        <details class="neko-accordion">
+          <summary class="neko-accordion__summary">Does it require JavaScript?</summary>
+          <div class="neko-accordion__content">Most components are pure CSS. A few (dropdown click, carousel auto-rotate, countdown timer) accept optional JS for richer behavior but ship usable CSS-only fallbacks.</div>
+        </details>
+        <details class="neko-accordion">
+          <summary class="neko-accordion__summary">Can I theme it?</summary>
+          <div class="neko-accordion__content">Yes — switch themes using the sidebar selector to see Neko, Synthwave, and Cupcake all share the same components.</div>
+        </details>
+      </div>
+    </section>
+
+    <!-- =================== SWAP =================== -->
+    <section class="demo-section" data-component="swap">
+      <h2>Swap</h2>
+      <p>Two-state visual toggle. Click to switch.</p>
+      <div class="demo-row" style="font-size:var(--neko-font-size-2xl)">
+        <label class="neko-swap"><input type="checkbox" /><span class="neko-swap__on">🌙</span><span class="neko-swap__off">☀️</span></label>
+        <label class="neko-swap neko-swap--rotate"><input type="checkbox" /><span class="neko-swap__on">✕</span><span class="neko-swap__off">≡</span></label>
+        <label class="neko-swap neko-swap--flip"><input type="checkbox" /><span class="neko-swap__on">😺</span><span class="neko-swap__off">😻</span></label>
+      </div>
+    </section>
+
+    <!-- =================== DROPDOWN =================== -->
+    <section class="demo-section" data-component="dropdown">
+      <h2>Dropdown</h2>
+      <p>Hover or focus to open. Add <code>data-open="true"</code> via JS for click semantics.</p>
+      <div class="demo-row">
+        <div class="neko-dropdown">
+          <button class="neko-btn">Open ▾</button>
+          <ul class="neko-dropdown__menu neko-menu">
+            <li><button class="neko-menu__item">Profile</button></li>
+            <li><button class="neko-menu__item">Settings</button></li>
+            <li><hr class="neko-menu__divider" /></li>
+            <li><button class="neko-menu__item">Logout</button></li>
+          </ul>
+        </div>
+        <div class="neko-dropdown neko-dropdown--end">
+          <button class="neko-btn neko-btn--secondary">Aligned to end ▾</button>
+          <ul class="neko-dropdown__menu neko-menu">
+            <li><button class="neko-menu__item">One</button></li>
+            <li><button class="neko-menu__item">Two</button></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== CONTAINER/LAYOUT =================== -->
+    <section class="demo-section" data-component="container">
+      <h2>Container</h2>
+      <p>Max-width content wrapper.</p>
+      <div class="neko-container" style="border:1px dashed var(--neko-color-semantic-border-base);padding:var(--neko-spacing-4);border-radius:var(--neko-radius-md)">
+        Centered content with max-width and gutters.
+      </div>
+    </section>
+
+    <section class="demo-section" data-component="stack">
+      <h2>Stack</h2>
+      <p>Vertical gap between children.</p>
+      <div class="neko-stack" style="max-width:20rem">
+        <div class="neko-card"><div class="neko-card__body">Stack item 1</div></div>
+        <div class="neko-card"><div class="neko-card__body">Stack item 2</div></div>
+        <div class="neko-card"><div class="neko-card__body">Stack item 3</div></div>
+      </div>
+    </section>
+
+    <section class="demo-section" data-component="cluster">
+      <h2>Cluster</h2>
+      <p>Horizontal wrap with gap.</p>
+      <div class="neko-cluster">
+        <button class="neko-btn neko-btn--sm">A</button>
+        <button class="neko-btn neko-btn--sm neko-btn--secondary">B</button>
+        <button class="neko-btn neko-btn--sm neko-btn--accent-1">C</button>
+        <span class="neko-badge neko-badge--info">Status</span>
+        <span class="neko-tag neko-tag--success">Pass</span>
+      </div>
+    </section>
+
+    <section class="demo-section" data-component="grid">
+      <h2>Grid</h2>
+      <p>Auto-fit responsive columns.</p>
+      <div class="neko-grid">
+        <div class="neko-card"><div class="neko-card__body">Cell 1</div></div>
+        <div class="neko-card"><div class="neko-card__body">Cell 2</div></div>
+        <div class="neko-card"><div class="neko-card__body">Cell 3</div></div>
+        <div class="neko-card"><div class="neko-card__body">Cell 4</div></div>
+      </div>
+    </section>
+
+    <section class="demo-section" data-component="center">
+      <h2>Center</h2>
+      <div class="neko-center" style="height:8rem;border:1px dashed var(--neko-color-semantic-border-base);border-radius:var(--neko-radius-md)">
+        <span class="neko-badge neko-badge--secondary">Centered</span>
+      </div>
+    </section>
+
+    <section class="demo-section" data-component="divider">
+      <h2>Divider</h2>
+      <div class="neko-divider"></div>
+      <div style="display:flex;align-items:center;gap:var(--neko-spacing-3);margin-top:var(--neko-spacing-3)">
+        <span>Left</span><div class="neko-divider neko-divider--vertical"></div><span>Right</span>
+      </div>
+    </section>
+
+    <!-- =================== TABLE =================== -->
+    <section class="demo-section" data-component="table">
+      <h2>Table</h2>
+      <table class="neko-table neko-table--striped">
+        <caption>Q1 results</caption>
+        <thead><tr><th>Month</th><th>Revenue</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>January</td><td>$12.4k</td><td><span class="neko-badge neko-badge--success">On track</span></td></tr>
+          <tr><td>February</td><td>$14.2k</td><td><span class="neko-badge neko-badge--success">On track</span></td></tr>
+          <tr><td>March</td><td>$13.8k</td><td><span class="neko-badge neko-badge--warning">Dip</span></td></tr>
+          <tr aria-selected="true"><td>April</td><td>$16.1k</td><td><span class="neko-badge neko-badge--accent-1">Record</span></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- =================== LIST =================== -->
+    <section class="demo-section" data-component="list">
+      <h2>List</h2>
+      <ul class="neko-list neko-list--divided" style="max-width:22rem">
+        <li class="neko-list__item"><span class="neko-avatar neko-avatar--sm neko-avatar--circle"><span class="neko-avatar__initials">A</span></span><span>Alice</span><span class="neko-badge neko-badge--success neko-badge--pill" style="margin-left:auto">Online</span></li>
+        <li class="neko-list__item"><span class="neko-avatar neko-avatar--sm neko-avatar--circle"><span class="neko-avatar__initials">B</span></span><span>Bob</span><span class="neko-badge neko-badge--warning neko-badge--pill" style="margin-left:auto">Away</span></li>
+        <li class="neko-list__item"><span class="neko-avatar neko-avatar--sm neko-avatar--circle"><span class="neko-avatar__initials">C</span></span><span>Carol</span><span class="neko-badge neko-badge--danger neko-badge--pill" style="margin-left:auto">Offline</span></li>
+      </ul>
+    </section>
+
+    <!-- =================== AVATAR =================== -->
+    <section class="demo-section" data-component="avatar">
+      <h2>Avatar</h2>
+      <div class="demo-row">
+        <span class="neko-avatar neko-avatar--sm neko-avatar--circle"><span class="neko-avatar__initials">S</span></span>
+        <span class="neko-avatar neko-avatar--circle"><span class="neko-avatar__initials">CM</span></span>
+        <span class="neko-avatar neko-avatar--lg"><span class="neko-avatar__initials">LG</span></span>
+      </div>
+    </section>
+
+    <!-- =================== STAT =================== -->
+    <section class="demo-section" data-component="stat">
+      <h2>Stat</h2>
+      <div class="demo-row" style="gap:var(--neko-spacing-8)">
+        <div class="neko-stat"><span class="neko-stat__label">Users</span><span class="neko-stat__value">8,249</span><span class="neko-stat__delta neko-stat__delta--up">+12.3%</span></div>
+        <div class="neko-stat"><span class="neko-stat__label">Revenue</span><span class="neko-stat__value">$42k</span><span class="neko-stat__delta neko-stat__delta--down">-2.1%</span></div>
+        <div class="neko-stat neko-stat--sm"><span class="neko-stat__label">Uptime</span><span class="neko-stat__value">99.97%</span></div>
+      </div>
+    </section>
+
+    <!-- =================== EMPTY =================== -->
+    <section class="demo-section" data-component="empty">
+      <h2>Empty State</h2>
+      <div class="neko-empty" style="border:1px dashed var(--neko-color-semantic-border-base);border-radius:var(--neko-radius-md)">
+        <div class="neko-empty__icon">📦</div>
+        <h3 class="neko-empty__title">No items yet</h3>
+        <p class="neko-empty__body">When you create items, they'll appear here.</p>
+        <div class="neko-empty__action"><button class="neko-btn neko-btn--sm">Create first item</button></div>
+      </div>
+    </section>
+
+    <!-- =================== TABS =================== -->
+    <section class="demo-section" data-component="tabs">
+      <h2>Tabs</h2>
+      <div class="neko-tabs">
+        <button class="neko-tabs__tab" aria-selected="true">Active</button>
+        <button class="neko-tabs__tab">Tab 2</button>
+        <button class="neko-tabs__tab">Tab 3</button>
+        <button class="neko-tabs__tab" disabled>Disabled</button>
+      </div>
+    </section>
+
+    <!-- =================== LINK =================== -->
+    <section class="demo-section" data-component="link">
+      <h2>Link</h2>
+      <div class="demo-row">
+        <a href="#" class="neko-link">Default link</a>
+        <a href="#" class="neko-link neko-link--muted">Muted</a>
+        <a href="#" class="neko-link neko-link--subtle">Subtle</a>
+      </div>
+    </section>
+
+    <!-- =================== BREADCRUMB =================== -->
+    <section class="demo-section" data-component="breadcrumb">
+      <h2>Breadcrumb</h2>
+      <nav><ol class="neko-breadcrumb">
+        <li class="neko-breadcrumb__item"><a href="#">Home</a></li>
+        <li class="neko-breadcrumb__separator" aria-hidden="true">/</li>
+        <li class="neko-breadcrumb__item"><a href="#">Products</a></li>
+        <li class="neko-breadcrumb__separator" aria-hidden="true">/</li>
+        <li class="neko-breadcrumb__item" aria-current="page">Widget</li>
+      </ol></nav>
+    </section>
+
+    <!-- =================== MENU =================== -->
+    <section class="demo-section" data-component="menu">
+      <h2>Menu</h2>
+      <ul class="neko-menu" style="max-width:14rem">
+        <li><button class="neko-menu__item">Dashboard</button></li>
+        <li><button class="neko-menu__item" aria-selected="true">Settings</button></li>
+        <li><hr class="neko-menu__divider" /></li>
+        <li><button class="neko-menu__item" aria-disabled="true">Disabled</button></li>
+        <li><button class="neko-menu__item">Logout</button></li>
+      </ul>
+    </section>
+
+    <!-- =================== PAGINATION =================== -->
+    <section class="demo-section" data-component="pagination">
+      <h2>Pagination</h2>
+      <nav><ul class="neko-pagination">
+        <li><a href="#" class="neko-pagination__item" aria-disabled="true">Prev</a></li>
+        <li><a href="#" class="neko-pagination__item">1</a></li>
+        <li><a href="#" class="neko-pagination__item" aria-current="page">2</a></li>
+        <li><a href="#" class="neko-pagination__item">3</a></li>
+        <li><a href="#" class="neko-pagination__item">Next</a></li>
+      </ul></nav>
+    </section>
+
+    <!-- =================== NAVBAR =================== -->
+    <section class="demo-section" data-component="navbar">
+      <h2>Navbar</h2>
+      <p>Top navigation: brand + menu + actions.</p>
+      <nav class="neko-navbar">
+        <a href="#" class="neko-navbar__brand">🐱 NekoApp</a>
+        <ul class="neko-navbar__menu">
+          <li><a href="#" class="neko-link">Dashboard</a></li>
+          <li><a href="#" class="neko-link neko-link--muted">Projects</a></li>
+          <li><a href="#" class="neko-link neko-link--muted">Team</a></li>
+        </ul>
+        <div class="neko-navbar__actions">
+          <button class="neko-btn neko-btn--ghost neko-btn--sm">Sign in</button>
+          <button class="neko-btn neko-btn--sm">Sign up</button>
+        </div>
+      </nav>
+    </section>
+
+    <!-- =================== BOTTOM NAV =================== -->
+    <section class="demo-section" data-component="bottom-nav">
+      <h2>Bottom Navigation</h2>
+      <p>Mobile tab bar with active indicator.</p>
+      <div style="max-width:24rem;border:1px solid var(--neko-color-semantic-border-base);border-radius:var(--neko-radius-md);overflow:hidden">
+        <nav class="neko-bottom-nav">
+          <button class="neko-bottom-nav__item" aria-current="page">🏠<span>Home</span></button>
+          <button class="neko-bottom-nav__item">🔍<span>Search</span></button>
+          <button class="neko-bottom-nav__item">🔔<span>Alerts</span></button>
+          <button class="neko-bottom-nav__item">👤<span>Profile</span></button>
+        </nav>
+      </div>
+    </section>
+
+    <!-- =================== FOOTER =================== -->
+    <section class="demo-section" data-component="footer">
+      <h2>Footer</h2>
+      <footer class="neko-footer">
+        <div class="neko-footer__group">
+          <h4 class="neko-footer__title">Product</h4>
+          <a href="#" class="neko-link neko-link--muted">Features</a>
+          <a href="#" class="neko-link neko-link--muted">Pricing</a>
+        </div>
+        <div class="neko-footer__group">
+          <h4 class="neko-footer__title">Company</h4>
+          <a href="#" class="neko-link neko-link--muted">About</a>
+          <a href="#" class="neko-link neko-link--muted">Blog</a>
+        </div>
+        <div class="neko-footer__group">
+          <h4 class="neko-footer__title">Legal</h4>
+          <a href="#" class="neko-link neko-link--muted">Terms</a>
+          <a href="#" class="neko-link neko-link--muted">Privacy</a>
+        </div>
+      </footer>
+    </section>
+
+    <!-- =================== HERO =================== -->
+    <section class="demo-section" data-component="hero">
+      <h2>Hero</h2>
+      <div class="neko-hero neko-hero--centered">
+        <div class="neko-hero__content">
+          <h3 class="neko-hero__title">Build with @nekostack/ui</h3>
+          <p class="neko-hero__body">Vanilla CSS, fully themable, no framework required.</p>
+          <div class="neko-hero__actions">
+            <button class="neko-btn">Get started</button>
+            <button class="neko-btn neko-btn--ghost">Read docs</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== DIALOG =================== -->
+    <section class="demo-section" data-component="dialog">
+      <h2>Dialog</h2>
+      <p>Native <code>&lt;dialog&gt;</code> with backdrop.</p>
+      <button class="neko-btn" onclick="document.getElementById('demo-dialog').showModal()">Open dialog</button>
+      <dialog id="demo-dialog" class="neko-dialog">
+        <div class="neko-dialog__header">Create project<button class="neko-btn neko-btn--ghost neko-btn--icon neko-btn--sm" onclick="this.closest('dialog').close()" aria-label="Close">×</button></div>
+        <div class="neko-dialog__body"><div class="neko-field"><label class="neko-label">Name</label><input class="neko-input" /></div></div>
+        <div class="neko-dialog__footer"><button class="neko-btn neko-btn--ghost neko-btn--sm" onclick="this.closest('dialog').close()">Cancel</button><button class="neko-btn neko-btn--sm" onclick="this.closest('dialog').close()">Create</button></div>
+      </dialog>
+    </section>
+
+    <!-- =================== DRAWER =================== -->
+    <section class="demo-section" data-component="drawer">
+      <h2>Drawer</h2>
+      <p>Side-anchored panel. Demo shown statically.</p>
+      <div style="position:relative;height:14rem;border:1px solid var(--neko-color-semantic-border-base);border-radius:var(--neko-radius-md);overflow:hidden">
+        <div class="neko-drawer neko-drawer--start" style="position:absolute;left:0;top:0;bottom:0">
+          <h3>Drawer</h3>
+          <p>Slide-in sidebar pattern.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== TOOLTIP =================== -->
+    <section class="demo-section" data-component="tooltip">
+      <h2>Tooltip</h2>
+      <p>Hover or focus to reveal. 4 placements.</p>
+      <div class="demo-row" style="padding:var(--neko-spacing-8)">
+        <span class="neko-tooltip"><span class="neko-badge neko-badge--info">Top</span><span class="neko-tooltip__content">Default</span></span>
+        <span class="neko-tooltip neko-tooltip--bottom"><span class="neko-badge neko-badge--secondary">Bottom</span><span class="neko-tooltip__content">Below</span></span>
+        <span class="neko-tooltip neko-tooltip--left"><span class="neko-badge neko-badge--accent-2">Left</span><span class="neko-tooltip__content">Left side</span></span>
+        <span class="neko-tooltip neko-tooltip--right"><span class="neko-badge neko-badge--accent-1">Right</span><span class="neko-tooltip__content">Right side</span></span>
+      </div>
+    </section>
+
+    <!-- =================== POPOVER =================== -->
+    <section class="demo-section" data-component="popover">
+      <h2>Popover</h2>
+      <div class="neko-popover" style="position:relative">
+        <div class="neko-popover__header">Notifications <span class="neko-badge neko-badge--danger neko-badge--pill">3</span></div>
+        <div class="neko-popover__body">You have 3 unread messages and 1 pending invite.</div>
+        <div class="neko-popover__footer"><button class="neko-btn neko-btn--ghost neko-btn--sm">Dismiss</button><button class="neko-btn neko-btn--info neko-btn--sm">View all</button></div>
+      </div>
+    </section>
+
+    <!-- =================== CHAT =================== -->
+    <section class="demo-section" data-component="chat">
+      <h2>Chat Bubble</h2>
+      <p>Conversation message bubbles.</p>
+      <div class="demo-stack">
+        <div class="neko-chat"><div class="neko-chat__header">Alice · 12:42</div><div class="neko-chat__bubble">Hey, did you see the new component preview?</div></div>
+        <div class="neko-chat neko-chat--end neko-chat--primary"><div class="neko-chat__header">You · 12:43</div><div class="neko-chat__bubble">Yeah! The mockups are great.</div></div>
+        <div class="neko-chat neko-chat--success"><div class="neko-chat__bubble">Glad you like them.</div><div class="neko-chat__footer">Delivered</div></div>
+      </div>
+    </section>
+
+    <!-- =================== INDICATOR =================== -->
+    <section class="demo-section" data-component="indicator">
+      <h2>Indicator</h2>
+      <p>Position a marker on a corner of any element.</p>
+      <div class="demo-row" style="gap:var(--neko-spacing-6)">
+        <div class="neko-indicator"><span class="neko-indicator__item neko-indicator__item--top-end"><span class="neko-badge neko-badge--danger neko-badge--pill">9+</span></span><button class="neko-btn">Inbox</button></div>
+        <div class="neko-indicator"><span class="neko-indicator__item neko-indicator__item--top-start"><span class="neko-badge neko-badge--success neko-badge--pill">●</span></span><span class="neko-avatar neko-avatar--circle"><span class="neko-avatar__initials">AB</span></span></div>
+        <div class="neko-indicator"><span class="neko-indicator__item neko-indicator__item--bottom-end"><span class="neko-badge neko-badge--warning">NEW</span></span><div class="neko-card" style="width:8rem"><div class="neko-card__body">Card</div></div></div>
+      </div>
+    </section>
+
+    <!-- =================== CAROUSEL =================== -->
+    <section class="demo-section" data-component="carousel">
+      <h2>Carousel</h2>
+      <p>CSS scroll-snap. Drag/scroll horizontally.</p>
+      <div class="neko-carousel">
+        <div class="neko-carousel__item neko-card" style="min-width:14rem"><div class="neko-card__body">Slide 1</div></div>
+        <div class="neko-carousel__item neko-card" style="min-width:14rem"><div class="neko-card__body">Slide 2</div></div>
+        <div class="neko-carousel__item neko-card" style="min-width:14rem"><div class="neko-card__body">Slide 3</div></div>
+        <div class="neko-carousel__item neko-card" style="min-width:14rem"><div class="neko-card__body">Slide 4</div></div>
+        <div class="neko-carousel__item neko-card" style="min-width:14rem"><div class="neko-card__body">Slide 5</div></div>
+      </div>
+    </section>
+
+    <!-- =================== DIFF =================== -->
+    <section class="demo-section" data-component="diff">
+      <h2>Diff</h2>
+      <p>Side-by-side before/after, status-tinted.</p>
+      <div class="neko-diff">
+        <div class="neko-diff__before">- function add(a, b) {
+-   return a + b
+- }</div>
+        <div class="neko-diff__after">+ const add = (a, b) =&gt; a + b</div>
+      </div>
+    </section>
+
+    <!-- =================== TIMELINE =================== -->
+    <section class="demo-section" data-component="timeline">
+      <h2>Timeline</h2>
+      <ul class="neko-timeline">
+        <li class="neko-timeline__item"><span class="neko-timeline__marker"></span><div class="neko-timeline__content"><strong>Project created</strong><br><span class="neko-text-muted">Jan 4, 2026</span></div></li>
+        <li class="neko-timeline__item"><span class="neko-timeline__marker"></span><div class="neko-timeline__content"><strong>v0.1 published</strong><br><span class="neko-text-muted">Feb 12, 2026</span></div></li>
+        <li class="neko-timeline__item"><span class="neko-timeline__marker"></span><div class="neko-timeline__content"><strong>Cupcake theme added</strong><br><span class="neko-text-muted">Jun 15, 2026</span></div></li>
+        <li class="neko-timeline__item"><span class="neko-timeline__marker"></span><div class="neko-timeline__content"><strong>26 new components</strong><br><span class="neko-text-muted">Today</span></div></li>
+      </ul>
+    </section>
+
+    <!-- =================== STEPS =================== -->
+    <section class="demo-section" data-component="steps">
+      <h2>Steps</h2>
+      <p>Wizard progress indicator. <code>data-state</code> controls per-step.</p>
+      <ol class="neko-steps">
+        <li class="neko-steps__step" data-state="complete"><span class="neko-steps__marker"></span><span class="neko-steps__label">Account</span></li>
+        <li class="neko-steps__step" data-state="complete"><span class="neko-steps__marker"></span><span class="neko-steps__label">Plan</span></li>
+        <li class="neko-steps__step" data-state="current"><span class="neko-steps__marker"></span><span class="neko-steps__label">Payment</span></li>
+        <li class="neko-steps__step"><span class="neko-steps__marker"></span><span class="neko-steps__label">Confirm</span></li>
+      </ol>
+      <div class="demo-label">Vertical</div>
+      <ol class="neko-steps neko-steps--vertical" style="max-width:18rem">
+        <li class="neko-steps__step" data-state="complete"><span class="neko-steps__marker"></span><span class="neko-steps__label">Sign up</span></li>
+        <li class="neko-steps__step" data-state="current"><span class="neko-steps__marker"></span><span class="neko-steps__label">Configure</span></li>
+        <li class="neko-steps__step"><span class="neko-steps__marker"></span><span class="neko-steps__label">Deploy</span></li>
+      </ol>
+    </section>
+
+    <!-- =================== ARTBOARD =================== -->
+    <section class="demo-section" data-component="artboard">
+      <h2>Artboard</h2>
+      <p>Fixed-size device canvas for previewing content at exact viewport sizes.</p>
+      <div class="demo-label">Phone (320×568)</div>
+      <div class="neko-artboard neko-artboard--phone" style="padding:var(--neko-spacing-4)">
+        <h3 style="margin-top:0">Phone viewport</h3>
+        <p>Pre-sized for mobile previews — drop content in and see it at native dimensions.</p>
+      </div>
+    </section>
+
+    <!-- =================== MASK =================== -->
+    <section class="demo-section" data-component="mask">
+      <h2>Mask</h2>
+      <p>Shape clip-paths for images / avatars / decorative wrappers.</p>
+      <div class="demo-row">
+        <span class="neko-mask neko-mask--circle" style="width:5rem;height:5rem;background:var(--neko-color-semantic-primary)"></span>
+        <span class="neko-mask neko-mask--squircle" style="width:5rem;height:5rem;background:var(--neko-color-semantic-secondary)"></span>
+        <span class="neko-mask neko-mask--hex" style="width:5rem;height:5rem;background:var(--neko-color-semantic-accent-1)"></span>
+        <span class="neko-mask neko-mask--diamond" style="width:5rem;height:5rem;background:var(--neko-color-semantic-accent-2)"></span>
+        <span class="neko-mask neko-mask--star" style="width:5rem;height:5rem;background:var(--neko-color-semantic-warning)"></span>
+        <span class="neko-mask neko-mask--heart" style="width:5rem;height:5rem;background:var(--neko-color-semantic-danger)"></span>
+        <span class="neko-mask neko-mask--triangle" style="width:5rem;height:5rem;background:var(--neko-color-semantic-info)"></span>
+        <span class="neko-mask neko-mask--parallelogram" style="width:6rem;height:4rem;background:var(--neko-color-semantic-accent-3)"></span>
+      </div>
+    </section>
+
+    <!-- =================== MOCKUP WINDOW =================== -->
+    <section class="demo-section" data-component="mockup-window">
+      <h2>Mockup: Window</h2>
+      <p>OS window chrome with traffic-light controls.</p>
+      <div class="neko-mockup-window">
+        <div class="neko-mockup-window__bar"><span class="neko-mockup-window__dot"></span></div>
+        <div class="neko-mockup-window__body">
+          <h3 style="margin-top:0">App window</h3>
+          <p>Drop any content here and it renders inside the mockup frame.</p>
+          <button class="neko-btn neko-btn--sm">Action</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== MOCKUP BROWSER =================== -->
+    <section class="demo-section" data-component="mockup-browser">
+      <h2>Mockup: Browser</h2>
+      <p>Browser chrome with URL bar.</p>
+      <div class="neko-mockup-browser">
+        <div class="neko-mockup-browser__bar"><span class="neko-mockup-browser__url">https://nekostack.dev/ui</span></div>
+        <div class="neko-mockup-browser__body">
+          <h3 style="margin-top:0">Web page preview</h3>
+          <p>Use this to showcase a website inside docs or marketing pages.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== MOCKUP PHONE =================== -->
+    <section class="demo-section" data-component="mockup-phone">
+      <h2>Mockup: Phone</h2>
+      <p>Stylized phone with notch.</p>
+      <div class="neko-mockup-phone">
+        <div class="neko-mockup-phone__notch"></div>
+        <div class="neko-mockup-phone__body">
+          <h3 style="margin-top:0;font-size:var(--neko-font-size-base)">Mobile</h3>
+          <p style="font-size:var(--neko-font-size-sm)">Drop a mobile UI preview here.</p>
+          <button class="neko-btn neko-btn--sm neko-btn--block">Open</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== MOCKUP CODE =================== -->
+    <section class="demo-section" data-component="mockup-code">
+      <h2>Mockup: Code</h2>
+      <p>Terminal / code block with line prefixes.</p>
+      <div class="neko-mockup-code">
+        <span class="neko-mockup-code__line neko-mockup-code__line--prompt" data-prefix="$">npm install @nekostack/ui</span>
+        <span class="neko-mockup-code__line neko-mockup-code__line--success" data-prefix="✓">added 1 package in 2s</span>
+        <span class="neko-mockup-code__line" data-prefix=">">found 0 vulnerabilities</span>
+        <span class="neko-mockup-code__line neko-mockup-code__line--warning" data-prefix="!">peer @nekostack/theme not installed</span>
+      </div>
+    </section>
+
+    <!-- =================== PROSE / TYPOGRAPHY =================== -->
+    <section class="demo-section" data-component="prose">
+      <h2>Prose</h2>
+      <p>Long-form typography wrapper.</p>
+      <div class="neko-prose">
+        <h3>Headings, paragraphs, lists</h3>
+        <p>The <code>.neko-prose</code> class provides sensible long-form typography: capped line length, stacked margins, styled lists and blockquotes.</p>
+        <blockquote>Quoted content gets a primary accent border.</blockquote>
+        <ul><li>Unordered list item</li><li>Another list item</li></ul>
+      </div>
+    </section>
+
+    <section class="demo-section" data-component="code">
+      <h2>Code</h2>
+      <p>Inline code + keyboard keys.</p>
+      <div class="demo-row">
+        <code class="neko-code">const x = 42;</code>
+        <kbd class="neko-kbd">Ctrl</kbd> + <kbd class="neko-kbd">S</kbd>
+      </div>
+    </section>
+
+    <!-- =================== COLLAPSE =================== -->
+    <section class="demo-section" data-component="collapse">
+      <h2>Collapse</h2>
+      <p>Checkbox-controlled show/hide. Alternative to accordion when you don't want native <code>&lt;details&gt;</code>.</p>
+      <div class="demo-stack" style="max-width:36rem">
+        <div class="neko-collapse">
+          <input type="checkbox" class="neko-collapse__toggle" checked />
+          <div class="neko-collapse__title">Open by default</div>
+          <div class="neko-collapse__content"><div>This collapse starts open. Click the title to close.</div></div>
+        </div>
+        <div class="neko-collapse">
+          <input type="checkbox" class="neko-collapse__toggle" />
+          <div class="neko-collapse__title">Animated grid-template-rows</div>
+          <div class="neko-collapse__content"><div>Uses modern CSS grid animation for a smooth height transition.</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== TREE =================== -->
+    <section class="demo-section" data-component="tree">
+      <h2>Tree</h2>
+      <p>Nested expand/collapse list — built recursively on <code>&lt;details&gt;</code>.</p>
+      <ul class="neko-tree" style="max-width:24rem">
+        <details open>
+          <summary>📁 src</summary>
+          <details open>
+            <summary>📁 components</summary>
+            <div class="neko-tree__item">📄 button.css</div>
+            <div class="neko-tree__item" aria-selected="true">📄 card.css</div>
+            <div class="neko-tree__item">📄 form.css</div>
+          </details>
+          <details>
+            <summary>📁 themes</summary>
+            <div class="neko-tree__item">📄 neko.json</div>
+            <div class="neko-tree__item">📄 cupcake.json</div>
+          </details>
+          <div class="neko-tree__item">📄 index.ts</div>
+        </details>
+        <details>
+          <summary>📁 dist</summary>
+          <div class="neko-tree__item">📄 ui.css</div>
+          <div class="neko-tree__item">📄 ui.min.css</div>
+        </details>
+      </ul>
+    </section>
+
+    <!-- =================== THEME CONTROLLER =================== -->
+    <section class="demo-section" data-component="theme-controller">
+      <h2>Theme Controller</h2>
+      <p>Pre-styled dark/light toggle. Wire to <code>data-mode</code> in app code.</p>
+      <div class="demo-row">
+        <label class="neko-theme-controller">
+          <input type="checkbox" id="demo-tc" />
+          <span class="neko-theme-controller__track"></span>
+        </label>
+        <span class="neko-text-muted">Toggle dark / light</span>
+      </div>
+      <script>
+        document.getElementById('demo-tc').addEventListener('change', e => {
+          const mode = e.target.checked ? 'dark' : 'light';
+          document.documentElement.setAttribute('data-mode', mode);
+          document.getElementById('mode-select').value = mode;
+          localStorage.setItem('neko-preview-mode', mode);
+        });
+        document.getElementById('demo-tc').checked = document.documentElement.getAttribute('data-mode') === 'dark';
+      </script>
+    </section>
+
+    <!-- =================== BANNER =================== -->
+    <section class="demo-section" data-component="banner">
+      <h2>Banner</h2>
+      <p>Full-width announcement above content. Distinct from <code>.neko-alert</code> (which is block-level dismissable).</p>
+      <div class="demo-stack" style="max-width:none">
+        <div class="neko-banner">🎉 New release: v0.2 ships 26 new components! <button class="neko-banner__action">Read changelog</button><button class="neko-banner__close" aria-label="Close">×</button></div>
+        <div class="neko-banner neko-banner--info">ℹ️ Maintenance window scheduled for Saturday 2am UTC.<button class="neko-banner__close" aria-label="Close">×</button></div>
+        <div class="neko-banner neko-banner--success">✅ All systems operational.<button class="neko-banner__close" aria-label="Close">×</button></div>
+        <div class="neko-banner neko-banner--warning">⚠️ Your trial ends in 3 days. <button class="neko-banner__action">Upgrade</button></div>
+        <div class="neko-banner neko-banner--danger">🚨 Service disruption — investigating. <button class="neko-banner__action">Status</button></div>
+      </div>
+    </section>
+
+    <!-- =================== STATUS =================== -->
+    <section class="demo-section" data-component="status">
+      <h2>Status</h2>
+      <p>Tiny inline status dot. Use next to text labels for live state.</p>
+      <div class="demo-stack">
+        <div><span class="neko-status neko-status--success"></span> Operational</div>
+        <div><span class="neko-status neko-status--warning"></span> Degraded</div>
+        <div><span class="neko-status neko-status--danger neko-status--pulse"></span> Outage</div>
+        <div><span class="neko-status neko-status--info"></span> Provisioning</div>
+        <div><span class="neko-status"></span> Unknown</div>
+      </div>
+      <div class="demo-label">Sizes</div>
+      <div class="demo-row">
+        <span class="neko-status neko-status--sm neko-status--success"></span>
+        <span class="neko-status neko-status--success"></span>
+        <span class="neko-status neko-status--lg neko-status--success"></span>
+      </div>
+    </section>
+
+    <!-- =================== LOADING DOTS =================== -->
+    <section class="demo-section" data-component="loading-dots">
+      <h2>Loading Dots</h2>
+      <p>Three-dot bouncing loader. Alternative to spinner.</p>
+      <div class="demo-row">
+        <span class="neko-loading-dots"><span></span><span></span><span></span></span>
+        <span>Loading…</span>
+      </div>
+    </section>
+
+    <!-- =================== CALENDAR =================== -->
+    <section class="demo-section" data-component="calendar">
+      <h2>Calendar</h2>
+      <p>Static calendar grid primitive. Wire up day cells in app code.</p>
+      <div class="neko-calendar">
+        <div class="neko-calendar__header"><button class="neko-btn neko-btn--ghost neko-btn--icon neko-btn--sm" aria-label="Prev">‹</button><span>June 2026</span><button class="neko-btn neko-btn--ghost neko-btn--icon neko-btn--sm" aria-label="Next">›</button></div>
+        <div class="neko-calendar__grid">
+          <div class="neko-calendar__weekday">S</div><div class="neko-calendar__weekday">M</div><div class="neko-calendar__weekday">T</div><div class="neko-calendar__weekday">W</div><div class="neko-calendar__weekday">T</div><div class="neko-calendar__weekday">F</div><div class="neko-calendar__weekday">S</div>
+          <button class="neko-calendar__day neko-calendar__day--muted">31</button>
+          <button class="neko-calendar__day">1</button>
+          <button class="neko-calendar__day">2</button>
+          <button class="neko-calendar__day">3</button>
+          <button class="neko-calendar__day">4</button>
+          <button class="neko-calendar__day">5</button>
+          <button class="neko-calendar__day">6</button>
+          <button class="neko-calendar__day">7</button>
+          <button class="neko-calendar__day">8</button>
+          <button class="neko-calendar__day">9</button>
+          <button class="neko-calendar__day">10</button>
+          <button class="neko-calendar__day">11</button>
+          <button class="neko-calendar__day">12</button>
+          <button class="neko-calendar__day">13</button>
+          <button class="neko-calendar__day">14</button>
+          <button class="neko-calendar__day neko-calendar__day--today">15</button>
+          <button class="neko-calendar__day" aria-selected="true">16</button>
+          <button class="neko-calendar__day">17</button>
+          <button class="neko-calendar__day">18</button>
+          <button class="neko-calendar__day">19</button>
+          <button class="neko-calendar__day">20</button>
+          <button class="neko-calendar__day">21</button>
+          <button class="neko-calendar__day">22</button>
+          <button class="neko-calendar__day">23</button>
+          <button class="neko-calendar__day">24</button>
+          <button class="neko-calendar__day">25</button>
+          <button class="neko-calendar__day">26</button>
+          <button class="neko-calendar__day">27</button>
+          <button class="neko-calendar__day">28</button>
+          <button class="neko-calendar__day">29</button>
+          <button class="neko-calendar__day">30</button>
+          <button class="neko-calendar__day neko-calendar__day--muted">1</button>
+          <button class="neko-calendar__day neko-calendar__day--muted">2</button>
+          <button class="neko-calendar__day neko-calendar__day--muted">3</button>
+          <button class="neko-calendar__day neko-calendar__day--muted">4</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== STEPPER =================== -->
+    <section class="demo-section" data-component="stepper">
+      <h2>Stepper</h2>
+      <p>Number input with +/- buttons. Native spinners hidden.</p>
+      <div class="demo-label">Sizes</div>
+      <div class="demo-row">
+        <div class="neko-stepper neko-stepper--sm">
+          <button class="neko-stepper__btn" aria-label="Decrease">−</button>
+          <input type="number" class="neko-stepper__input" value="1" />
+          <button class="neko-stepper__btn" aria-label="Increase">+</button>
+        </div>
+        <div class="neko-stepper">
+          <button class="neko-stepper__btn" aria-label="Decrease">−</button>
+          <input type="number" class="neko-stepper__input" value="5" />
+          <button class="neko-stepper__btn" aria-label="Increase">+</button>
+        </div>
+        <div class="neko-stepper neko-stepper--lg">
+          <button class="neko-stepper__btn" aria-label="Decrease">−</button>
+          <input type="number" class="neko-stepper__input" value="10" />
+          <button class="neko-stepper__btn" aria-label="Increase">+</button>
+        </div>
+      </div>
+      <div class="demo-label">Disabled</div>
+      <div class="neko-stepper">
+        <button class="neko-stepper__btn" disabled aria-label="Decrease">−</button>
+        <input type="number" class="neko-stepper__input" value="0" disabled />
+        <button class="neko-stepper__btn" aria-label="Increase">+</button>
+      </div>
+    </section>
+
+    <!-- =================== KBD COMBO =================== -->
+    <section class="demo-section" data-component="kbd-combo">
+      <h2>Kbd Combo</h2>
+      <p>Group of <code>&lt;kbd&gt;</code> elements joined by separators (default <code>+</code>, modifier <code>→</code>).</p>
+      <div class="demo-stack">
+        <div><span class="neko-kbd-combo"><kbd class="neko-kbd">Ctrl</kbd><kbd class="neko-kbd">Shift</kbd><kbd class="neko-kbd">P</kbd></span> Command palette</div>
+        <div><span class="neko-kbd-combo"><kbd class="neko-kbd">⌘</kbd><kbd class="neko-kbd">K</kbd></span> Quick search</div>
+        <div><span class="neko-kbd-combo neko-kbd-combo--then"><kbd class="neko-kbd">G</kbd><kbd class="neko-kbd">D</kbd></span> Go to dashboard (Gmail-style)</div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    const NAV = [
+      { group: 'Get Started', items: [
+        { id: 'overview', label: 'Overview' },
+      ]},
+      { group: 'Form', items: [
+        { id: 'button', label: 'Button' },
+        { id: 'input', label: 'Input' },
+        { id: 'textarea', label: 'Textarea' },
+        { id: 'select', label: 'Select' },
+        { id: 'checkbox', label: 'Checkbox' },
+        { id: 'radio', label: 'Radio' },
+        { id: 'switch', label: 'Switch' },
+        { id: 'range', label: 'Range' },
+        { id: 'file', label: 'File Input' },
+        { id: 'rating', label: 'Rating' },
+        { id: 'stepper', label: 'Stepper' },
+        { id: 'calendar', label: 'Calendar' },
+      ]},
+      { group: 'Data Display', items: [
+        { id: 'card', label: 'Card' },
+        { id: 'badge', label: 'Badge' },
+        { id: 'tag', label: 'Tag' },
+        { id: 'table', label: 'Table' },
+        { id: 'list', label: 'List' },
+        { id: 'avatar', label: 'Avatar' },
+        { id: 'stat', label: 'Stat' },
+        { id: 'empty', label: 'Empty State' },
+      ]},
+      { group: 'Feedback', items: [
+        { id: 'alert', label: 'Alert' },
+        { id: 'banner', label: 'Banner' },
+        { id: 'toast', label: 'Toast' },
+        { id: 'spinner', label: 'Spinner' },
+        { id: 'loading-dots', label: 'Loading Dots' },
+        { id: 'progress', label: 'Progress' },
+        { id: 'radial-progress', label: 'Radial Progress' },
+        { id: 'skeleton', label: 'Skeleton' },
+        { id: 'countdown', label: 'Countdown' },
+        { id: 'status', label: 'Status' },
+      ]},
+      { group: 'Disclosure', items: [
+        { id: 'accordion', label: 'Accordion' },
+        { id: 'collapse', label: 'Collapse' },
+        { id: 'tree', label: 'Tree' },
+        { id: 'swap', label: 'Swap' },
+        { id: 'dropdown', label: 'Dropdown' },
+        { id: 'theme-controller', label: 'Theme Controller' },
+      ]},
+      { group: 'Layout', items: [
+        { id: 'container', label: 'Container' },
+        { id: 'stack', label: 'Stack' },
+        { id: 'cluster', label: 'Cluster' },
+        { id: 'grid', label: 'Grid' },
+        { id: 'center', label: 'Center' },
+        { id: 'divider', label: 'Divider' },
+      ]},
+      { group: 'Navigation', items: [
+        { id: 'tabs', label: 'Tabs' },
+        { id: 'link', label: 'Link' },
+        { id: 'breadcrumb', label: 'Breadcrumb' },
+        { id: 'menu', label: 'Menu' },
+        { id: 'pagination', label: 'Pagination' },
+        { id: 'navbar', label: 'Navbar' },
+        { id: 'bottom-nav', label: 'Bottom Nav' },
+        { id: 'footer', label: 'Footer' },
+        { id: 'hero', label: 'Hero' },
+      ]},
+      { group: 'Overlay', items: [
+        { id: 'dialog', label: 'Dialog' },
+        { id: 'drawer', label: 'Drawer' },
+        { id: 'tooltip', label: 'Tooltip' },
+        { id: 'popover', label: 'Popover' },
+      ]},
+      { group: 'Media', items: [
+        { id: 'chat', label: 'Chat Bubble' },
+        { id: 'indicator', label: 'Indicator' },
+        { id: 'carousel', label: 'Carousel' },
+        { id: 'diff', label: 'Diff' },
+        { id: 'timeline', label: 'Timeline' },
+        { id: 'steps', label: 'Steps' },
+      ]},
+      { group: 'Mockup', items: [
+        { id: 'artboard', label: 'Artboard' },
+        { id: 'mask', label: 'Mask' },
+        { id: 'mockup-window', label: 'Window' },
+        { id: 'mockup-browser', label: 'Browser' },
+        { id: 'mockup-phone', label: 'Phone' },
+        { id: 'mockup-code', label: 'Code' },
+      ]},
+      { group: 'Typography', items: [
+        { id: 'prose', label: 'Prose' },
+        { id: 'code', label: 'Code / Kbd' },
+        { id: 'kbd-combo', label: 'Kbd Combo' },
+      ]},
+    ];
+
+    // build sidebar
+    const nav = document.getElementById('preview-nav');
+    for (const group of NAV) {
+      const groupLi = document.createElement('li');
+      groupLi.className = 'preview-nav__group';
+      groupLi.textContent = group.group;
+      nav.appendChild(groupLi);
+      for (const item of group.items) {
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.href = '#' + item.id;
+        a.textContent = item.label;
+        a.dataset.id = item.id;
+        li.appendChild(a);
+        nav.appendChild(li);
+      }
+    }
+
+    // section routing
+    function showSection(id) {
+      if (!id) id = 'overview';
+      const sections = document.querySelectorAll('.demo-section');
+      let found = false;
+      sections.forEach(s => {
+        const active = s.dataset.component === id;
+        s.classList.toggle('is-active', active);
+        if (active) found = true;
+      });
+      if (!found) document.querySelector('[data-component="overview"]').classList.add('is-active');
+      document.querySelectorAll('.preview-nav a').forEach(a => {
+        a.classList.toggle('is-active', a.dataset.id === id);
+      });
+      window.scrollTo(0, 0);
+    }
+
+    function currentId() { return location.hash.replace(/^#/, '') || 'overview'; }
+    window.addEventListener('hashchange', () => showSection(currentId()));
+    showSection(currentId());
+
+    // theme + mode persistence
+    const html = document.documentElement;
+    const themeSel = document.getElementById('theme-select');
+    const modeSel = document.getElementById('mode-select');
+    const savedTheme = localStorage.getItem('neko-preview-theme');
+    const savedMode = localStorage.getItem('neko-preview-mode');
+    if (savedTheme) { html.setAttribute('data-theme', savedTheme); themeSel.value = savedTheme; }
+    if (savedMode) { html.setAttribute('data-mode', savedMode); modeSel.value = savedMode; }
+    themeSel.addEventListener('change', e => { html.setAttribute('data-theme', e.target.value); localStorage.setItem('neko-preview-theme', e.target.value); });
+    modeSel.addEventListener('change', e => { html.setAttribute('data-mode', e.target.value); localStorage.setItem('neko-preview-mode', e.target.value); });
+  </script>
+</body>
+</html>
