@@ -161,20 +161,23 @@ Explicitly **not** shipped — these are hard-locked non-goals, not deferred ite
 - **No transform-correctness proof** — the package never executes `transform`, so it has no opinion on whether the transform is correct. Verification covers provenance integrity only.
 - **No filesystem I/O, dynamic `import()`, stdout/stderr, exit codes** — owned by `@nekostack/cli`.
 
-## v0.9+ — Active target placeholder ← *active target*
+## v0.9 — Migration runner
 
-Status: **not started.** No implementation work, no phase plan, no PR. This is a planning placeholder only — the active-target marker exists so the workspace status surface (`docs/STATUS.md`) has a non-empty pointer; it does NOT mean v0.9 is in motion.
+Status: **shipped** ([#31](../../../pull/31), merged 2026-05-21). Shipped as a standalone downstream package [`@nekostack/migrate-runner`](../../migrate-runner).
 
-Likely focus areas (planning placeholder only — none committed to a phase plan; each requires a separate plan-only PR with thesis-fit audit before any implementation lands):
+- **Implementation boundary:** the schema package remains pure (planning + verification only). Execution logic (calling `transform`) lives exclusively in the runner package.
+- **Safety pass:** ironclad "Validation Sandwich" (pre-validate → transform → post-validate).
+- **Features:** dry-run, validate-only, resumability (audit cursor), forensic snapshots.
 
-- **Migration runner / `apply` safety plan.** If a runner ever ships, the v0.8 hard-locked contract means it cannot live in `@nekostack/schema` — it lives in a downstream package. The plan-only PR would need to spell out: who owns it; how `transform` is invoked (sandboxed? streaming? per-record?); pre/post validation against the endpoint schemas; idempotency; partial-failure resumability; observability; and how the v0.8 INVARIANTS continue to hold for the schema package itself even when a runner exists adjacent to it.
-- **Other v0.9 candidates** — open. No commitments. Each requires its own thesis-fit audit before becoming an active target.
+The v0.8 hard-locks remain in force: `@nekostack/schema` never mutates data.
 
-The v0.8 hard-locks ([`MIGRATIONS.md`](./MIGRATIONS.md) non-goals table) remain in force regardless of what v0.9 picks up: forward-only, one schemaId per migration, no rollback, no cross-schema, no DDL, no schema-package transform execution.
+## v1.0 — Stable API ← *active target*
 
-## v1.0 — Stable API
+Status: **in progress.** Final hardening phase.
 
-- Full docs, migration guide from Zod-as-source, perf benchmarks, frozen public surface
+- Full docs, [migration guide from Zod-as-source](./MIGRATION_GUIDE.md), [perf benchmarks](./BENCHMARKS.md), frozen public surface.
+- Resolve remaining "Still-open" decisions in package README.
+- **Completed:** Property-based / fuzz tests via `@nekostack/fuzz` (proves IR invariants and generator safety across 1000s of permutations).
 
 ---
 

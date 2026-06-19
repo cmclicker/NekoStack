@@ -2,7 +2,27 @@
 
 Per-milestone changes. Pairs with the git tags (`schema-vX.Y.Z`) and the [GitHub releases](https://github.com/cmclicker/NekoStack/releases). Format: newest first.
 
-This package is workspace-internal (`private: true`, version `0.0.0`). The milestone identifiers are git/release markers, not npm publications.
+Published to npm as `@nekostack/schema` (Apache-2.0). Milestone identifiers pair with the git tags (`schema-vX.Y.Z`).
+
+---
+
+## schema-v1.0.0 — 2026-06-19
+
+First stable release. **Public API frozen.** No source changes from v0.8.0 — this milestone freezes the exported surface and ships release metadata (Apache-2.0 license; the `nekostack` metapackage).
+
+### Test count
+
+- 1294 passing
+
+### Frozen surface
+
+- Builders, modifiers, portable refinements, composition, the four generators (TS / Zod / JSON Schema / OpenAPI), and runtime `parse` / `safeParse` / `validate`.
+- 1,294 tests passing; `tsc -b` clean.
+- `zod` is now a **peerDependency** (one shared instance) — consumers provide it.
+
+### Reserved for post-1.0
+
+- Unions, `lazy` / recursive refs, transforms, and date types are reserved IR capacity with no shipped builders. They arrive in post-1.0 minors and do not affect the frozen surface.
 
 ---
 

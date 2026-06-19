@@ -9,8 +9,8 @@
 | **Build tier** | Foundation primitive — build first |
 | **Depends on** | (none — foundational). External: TypeScript (dev/build). Peer: Zod (for runtime validation; not required at IR level). |
 | **Used by** | `api`, `cli`, `codex`, `auth`, `form`, `config`, `events`, `telemetry`, `validator`, `id`, `entitlements`, `lint` (rule authoring), and effectively everything else |
-| **Status** | Empty placeholder — not started. Design pass complete (see [`references/schema/design-audit-2026-05.md`](../../references/schema/design-audit-2026-05.md)). |
-| **Est. to v1.0** | 6–12 weeks focused / 4–8 months at solo-dev cadence (revised up from the original brief after the IR + semantic-loss design pass) |
+| **Status** | **v1.0 — released.** Canonical IR + Zod / JSON Schema / OpenAPI / TypeScript generators + runtime validation. 1,294 tests; public surface frozen. |
+| **Released** | [`schema-v1.0.0`](./CHANGELOG.md) — API frozen. Reserved-but-unbuilt IR capacity (unions, lazy/recursive refs, transforms, dates) lands in post-1.0 minors. |
 | **Sellable?** | Not as the package itself. It's the **technical substrate** for a future registry/governance product. Schema-as-a-service requires registry + diffing + history + governance + CI integration on top — see [Product potential](#product-potential). |
 
 ## Why this exists
@@ -353,7 +353,7 @@ schema_version_unsupported
 recursive_reference_unresolved
 ```
 
-A companion spec doc (to be written when implementation starts) will catalog the full set with descriptions, example messages, and Zod-to-NekoStack mappings. The runtime validator normalizes raw Zod issues into this shape; consumers (`form` error display, `api` error responses, `admin` diagnostics) all read the same structure.
+A [companion spec doc](./docs/ISSUE_CODES.md) catalogs the full set with descriptions, example messages, and Zod-to-NekoStack mappings. The runtime validator normalizes raw Zod issues into this shape; consumers (`form` error display, `api` error responses, `admin` diagnostics) all read the same structure.
 
 ### Generated artifact policy
 
@@ -623,29 +623,31 @@ That commercial product would be a separate offering (e.g., `@nekostack/schema-c
 
 **Estimated effort to v1.0:** 6–12 weeks of focused work; more realistically 4–8 months at solo-dev cadence. Revised up from the original 4–8 / 3–6 because the IR + semantic-loss + identity + parity-test work added scope.
 
+## Locked Design Decisions (v1.0 Freeze)
+
+These decisions were explicitly closed to harden the public API surface for v1.0. They are not up for debate.
+
+- **No Async Refinements.** `refineAsync` is explicitly rejected. Validation must remain a pure, synchronous, CPU-bound operation. If a check requires I/O (e.g., querying a database to see if a username is taken), it is **Business Logic**, not **Shape Validation**, and belongs in a Controller or Service.
+- **Recursive Schema Cycles (`A → B → A`).** `s.lazy()` MUST take a string ID representing the target schema (e.g., `s.lazy("com.nekostack.User")`). The compiler does not attempt to resolve this during definition. It is resolved safely at runtime by querying the `schemaRegistry`. If the ID doesn't exist, it throws `recursive_reference_unresolved`.
+- **Cross-package schema-id collision policy.** If `@nekostack/auth` and a consuming project both define `com.nekostack.auth.User@1.0.0` with different IR hashes, the registry `buildRegistry()` function will fail loudly with a `duplicate_schema_id` error. There is no silent overriding or "prefer local." The registry is the single source of truth.
+
 ## Still-open implementation decisions
 
 The Implementation contracts section pins the load-bearing decisions. The list below names what is **not yet** decided — labeled honestly rather than pretending everything is closed. Each item is a real choice that will need to land before or during the relevant phase.
 
-- **Transform vs default precedence.** When a field has both a `default` and a `transform`, does the default apply first (then transform sees the defaulted value) or transform see the raw input first? Decision deferred to v0.6 when concrete edge cases surface.
-- **Async refinements.** `s.string().refineAsync(async fn => ...)` — useful for cross-record uniqueness checks (e.g., username availability). Pollutes `validate`/`parse` signatures with Promises if added. Deferred; possibly v0.6 or post-v1.
 - **Discriminator value types.** Discriminated-union discriminators are presumed to be string literals (`s.literal("kind")`). Should we allow number literals too? Implications for OpenAPI emission TBD.
-- **Cross-package schema-id collision policy.** If `@nekostack/auth` and a consuming project both define `com.nekostack.auth.User@1.0.0`, what happens? Reject at registry-load time, prefer the package version, or require explicit aliasing? Decision deferred to v0.7.
 - **Workspace vs package vs hosted registry resolution.** Registry-lite (v0.7) is local-only. The path to a future hosted registry (a commercial offering above this package) needs a lookup-precedence rule. Deferred.
 - **Per-tenant schema overlays.** Some SaaS consumers may want tenant-specific schema extensions (extra fields per tenant). Out of scope for v1; possibly Phase-9 / `@nekostack/entitlements`-adjacent.
-- **Migration replay direction.** Forward-only or bidirectional? Affects whether down-migrations are required. Deferred to v0.8.
 - **Generator plugin contract.** Third-party generators (e.g., a future Prisma generator, GraphQL SDL emitter) need a stable contract. Deferred until v1.0 / post-v1.
-- **Performance budgets.** No explicit perf targets yet. Will be set against Zod / TypeBox baselines once v0.1 is implementable.
-- **Recursive schema cycle handling.** Direct self-reference is clear. Mutually recursive cycles (`A → B → A`) need explicit policy: lazy resolution always, eager-with-detection, or fail-on-construction? Deferred to when `s.lazy()` is implemented.
-- **JSON Schema `format` extensibility.** Custom format keywords (e.g., `tenant-slug`) — should they emit as `format: "x-tenant-slug"`, as `pattern` with an x-extension, or be rejected? Deferred to v0.3.
+- **Performance budgets.** No explicit perf targets yet. Will be set against Zod / TypeBox baselines.
 
 Items here should graduate into the Implementation contracts section once decided. The list itself is the artifact: hiding open questions is worse than naming them.
 
 ## Status
 
-- **Current:** Empty placeholder. Design pass complete; implementation not started.
+- **Current:** Foundation underway. **Released through schema-v0.8.0** (~7.4k LOC, 1.3k tests).
 - **Owner:** Cody (solo dev project).
-- **Priority tier:** Foundation primitive. **Among the first three packages to actually implement** because every other serious NekoStack module inherits its contracts.
+- **Priority tier:** Foundation primitive.
 - **Estimated learning return:** Very high. Schema-system design, type-level TypeScript, code-gen architecture, JSON Schema semantics, OpenAPI 3.1 internals, semantic-loss management, deterministic output discipline — all in one project.
 - **Source thinking:**
   - Initial audit: [`references/schema/design-audit-2026-05.md`](../../references/schema/design-audit-2026-05.md) — drove the IR / semantic-loss / identity / strict-by-default / migration-deferral additions.

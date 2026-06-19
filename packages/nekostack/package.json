@@ -1,0 +1,15 @@
+{
+  "name": "nekostack",
+  "version": "1.0.0",
+  "private": false,
+  "license": "Apache-2.0",
+  "description": "NekoStack Metapackage — The Single Source of Truth for Data Contracts.",
+  "type": "module",
+  "dependencies": {
+    "@nekostack/schema": "^1.0.0",
+    "@nekostack/migrate-runner": "^0.1.0"
+  },
+  "peerDependencies": {
+    "zod": "^3.22.0"
+  }
+}
