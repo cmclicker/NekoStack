@@ -1,6 +1,6 @@
 {
   "name": "nekostack",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "private": false,
   "license": "Apache-2.0",
   "description": "NekoStack — schema, migrations, CLI, design tokens, and UI components. Install the full suite or use scoped packages à la carte.",

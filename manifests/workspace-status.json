@@ -4,7 +4,7 @@
     "manifests/workspace.config.json",
     "packages/migrate-runner/docs/ROADMAP.md",
     "packages/migrate-runner/CHANGELOG.md",
-    "packages/schema/docs/ROADMAP.md",
+    "packages/schema/docs/internal/ROADMAP.md",
     "packages/schema/CHANGELOG.md",
     "git tags"
   ],
@@ -18,11 +18,16 @@
     {
       "name": "@nekostack/migrate-runner",
       "dir": "packages/migrate-runner",
-      "latest_release": "migrate-runner-v0.1.0",
-      "latest_release_date": "2026-05-21",
+      "latest_release": "migrate-runner-v1.0.0",
+      "latest_release_date": "2026-06-19",
       "active_target": "v0.1.X+ — Optional runner CLI + adapter expansion",
       "test_count": 405,
       "milestones": [
+        {
+          "tag": "migrate-runner-v1.0.0",
+          "date": "2026-06-19",
+          "summary": "[Tag](https://github.com/cmclicker/NekoStack/releases/tag/migrate-runner-v1.0.0) · Published to npm as `@nekostack/migrate-runner` (Apache-2.0)."
+        },
         {
           "tag": "migrate-runner-v0.1.0",
           "date": "2026-05-21",

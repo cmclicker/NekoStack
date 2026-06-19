@@ -15,6 +15,7 @@
 
 | Tag | Date | Summary |
 |---|---|---|
+| [`migrate-runner-v1.0.0`](https://github.com/cmclicker/NekoStack/releases/tag/migrate-runner-v1.0.0) | 2026-06-19 | [Tag](https://github.com/cmclicker/NekoStack/releases/tag/migrate-runner-v1.0.0) · Published to npm as `@nekostack/migrate-runner` (Apache-2.0). |
 | [`migrate-runner-v0.1.0`](https://github.com/cmclicker/NekoStack/releases/tag/migrate-runner-v0.1.0) | 2026-05-21 | Schema-data migration runner library — the downstream package that executes authored migrations against real records. |
 
 ### @nekostack/schema
@@ -31,7 +32,7 @@
 
 Test counts come from each package's most recent CHANGELOG entry. After validating a release, update the package CHANGELOG and run `npm run status:generate`.
 
-- **@nekostack/migrate-runner:** 405 tests recorded (latest: migrate-runner-v0.1.0)
+- **@nekostack/migrate-runner:** 405 tests recorded (latest: migrate-runner-v1.0.0)
 - **@nekostack/schema:** 1294 tests recorded (latest: schema-v1.0.0)
 
 ## Next actions

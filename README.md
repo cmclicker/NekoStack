@@ -260,11 +260,17 @@ Each project imports specific NekoStack packages as needed. There is no requirem
 
 ## Status
 
-- **Stage:** Foundation underway. Three packages are implemented and tested: **@nekostack/schema** (released through `schema-v0.8.0`, ~7,386 LOC of source, ~1,292 tests), **@nekostack/migrate-runner** (released at `migrate-runner-v0.1.0`, ~2,078 LOC, ~405 tests), and **@nekostack/cli** (~3,682 LOC across 19 test files). Ten git release tags exist (nine `schema-*`, one `migrate-runner-*`). The remaining ~105 packages are still scaffolded stubs with substantive READMEs but no implementation yet.
+- **Stage:** Five packages are published to npm at **v1.0**, with 2,364 passing tests between them:
+  - [**@nekostack/schema**](https://www.npmjs.com/package/@nekostack/schema) — `schema-v1.0.0`, public API frozen, 1,294 tests.
+  - [**@nekostack/migrate-runner**](https://www.npmjs.com/package/@nekostack/migrate-runner) — `migrate-runner-v1.0.0`, 405 tests.
+  - [**@nekostack/cli**](https://www.npmjs.com/package/@nekostack/cli) — `cli-v1.0.1`, the `neko` command, 504 tests.
+  - [**@nekostack/theme**](https://www.npmjs.com/package/@nekostack/theme) — `theme-v1.0.0`, W3C DTCG token pipeline, 78 tests.
+  - [**@nekostack/ui**](https://www.npmjs.com/package/@nekostack/ui) — `ui-v1.0.1`, 92-component vanilla CSS library, 83 tests.
+  - The [**nekostack**](https://www.npmjs.com/package/nekostack) metapackage bundles all five. The remaining ~103 packages are scaffolded stubs with substantive READMEs but no implementation yet.
 - **Canonical status:** [`manifests/workspace-status.json`](manifests/workspace-status.json) is the machine-readable source of truth for release tags, active workstream, and per-package test counts. Regenerate it with `npm run status:generate` (and verify with `npm run status:check`) — do not hand-edit it.
 - **Owner:** Cody — solo developer.
-- **Versioning policy:** TBD. Likely locked-step across the monorepo until any individual package goes 1.0 for public release.
-- **License:** TBD. Each package documents its intended license posture (internal-only, MIT open-source, commercial-with-source-available, etc.) in its own README.
+- **Versioning policy:** Per-package semver with independent release tags (e.g. `schema-v1.0.0`). The `nekostack` metapackage pins compatible versions of the published set.
+- **License:** **Apache-2.0** for all published packages. Unpublished scaffold packages document their intended license posture in their own README.
 
 ## How to contribute
 
