@@ -16,17 +16,19 @@
       background:
         radial-gradient(55% 40% at 50% 0%, var(--neko-color-semantic-primary-soft), transparent 70%);
     }
-    .page-hero h1 { margin: var(--neko-spacing-4) 0 var(--neko-spacing-3); font-size: var(--neko-font-size-3xl); }
+    .page-hero h1 { font-size: clamp(2.25rem, 6vw, 4rem); line-height: 1.05; font-weight: 800; letter-spacing: -0.02em; margin: 0 auto var(--neko-spacing-5); }
     .page-hero p  { color: var(--neko-color-semantic-text-muted); font-size: var(--neko-font-size-lg); max-width: 52ch; margin: 0 auto; }
 
     /* ── progress strip ── */
     .progress-strip {
+      padding-block: var(--neko-spacing-5);
+      background: var(--neko-color-semantic-bg-sunken);
+      border-bottom: 1px solid var(--neko-color-semantic-border-subtle);
+    }
+    .progress-strip__inner {
       display: flex;
       align-items: center;
       gap: var(--neko-spacing-6);
-      padding: var(--neko-spacing-5) var(--neko-spacing-8);
-      background: var(--neko-color-semantic-bg-sunken);
-      border-bottom: 1px solid var(--neko-color-semantic-border-subtle);
       flex-wrap: wrap;
     }
     .progress-strip__stats { display: flex; gap: var(--neko-spacing-6); flex-wrap: wrap; }
@@ -77,13 +79,13 @@
       0%, 100% { opacity: 1; box-shadow: 0 0 6px var(--neko-color-semantic-warning); }
       50%       { opacity: 0.5; box-shadow: 0 0 2px var(--neko-color-semantic-warning); }
     }
-    .section-title { font-size: var(--neko-font-size-xl); font-weight: 700; margin: 0 0 var(--neko-spacing-2); }
-    .section-sub   { color: var(--neko-color-semantic-text-muted); font-size: var(--neko-font-size-sm); margin: 0 0 var(--neko-spacing-8); max-width: 64ch; }
+    .section-title { margin: 0 0 var(--neko-spacing-2); }
+    .section-sub   { color: var(--neko-color-semantic-text-muted); font-size: var(--neko-font-size-lg); margin: 0 0 var(--neko-spacing-10); max-width: 60ch; }
 
     /* ── shipped cards ── */
     .shipped-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
       gap: var(--neko-spacing-4);
     }
     .shipped-card {
@@ -440,23 +442,25 @@
 
   <!-- ===== progress strip ===== -->
   <div class="progress-strip">
-    <div class="progress-strip__stats">
-      <div class="progress-stat">
-        <span class="progress-stat__num progress-stat__num--green">5</span>
-        <span class="progress-stat__label">packages shipped at v1.0+</span>
+    <div class="wrap progress-strip__inner">
+      <div class="progress-strip__stats">
+        <div class="progress-stat">
+          <span class="progress-stat__num progress-stat__num--green">5</span>
+          <span class="progress-stat__label">packages shipped at v1.0+</span>
+        </div>
+        <div class="progress-stat">
+          <span class="progress-stat__num progress-stat__num--amber">1</span>
+          <span class="progress-stat__label">package next up</span>
+        </div>
+        <div class="progress-stat">
+          <span class="progress-stat__num progress-stat__num--muted">101</span>
+          <span class="progress-stat__label">packages planned</span>
+        </div>
       </div>
-      <div class="progress-stat">
-        <span class="progress-stat__num progress-stat__num--amber">1</span>
-        <span class="progress-stat__label">package next up</span>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-track"><div class="progress-bar-fill"></div></div>
+        <div class="progress-bar-label">5 of 107 packages complete</div>
       </div>
-      <div class="progress-stat">
-        <span class="progress-stat__num progress-stat__num--muted">101</span>
-        <span class="progress-stat__label">packages planned</span>
-      </div>
-    </div>
-    <div class="progress-bar-wrap">
-      <div class="progress-bar-track"><div class="progress-bar-fill"></div></div>
-      <div class="progress-bar-label">5 of 107 packages complete</div>
     </div>
   </div>
 
