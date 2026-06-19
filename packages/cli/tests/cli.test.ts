@@ -194,7 +194,7 @@ describe("buildCli — shape", () => {
   it("registers the expected commands in declaration order", () => {
     const program = buildCli();
     const top = program.commands.map((c) => c.name());
-    expect(top).toEqual(["schema"]);
+    expect(top).toEqual(["init", "schema"]);
 
     const schema = program.commands.find((c) => c.name() === "schema");
     const verbs = schema?.commands.map((c) => c.name());

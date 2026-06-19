@@ -24,6 +24,7 @@
 
 import { createRequire } from "node:module";
 import { Command, CommanderError } from "commander";
+import { runInit } from "./commands/init.js";
 import { runCheck } from "./commands/schema/check.js";
 import { runDiff } from "./commands/schema/diff.js";
 import { runGenerate } from "./commands/schema/generate.js";
@@ -96,6 +97,20 @@ export function buildCli(opts: BuildCliOptions = {}): Command {
       writeOut,
       writeErr,
       outputError: (s, write) => write(s),
+    });
+
+  program
+    .command("init <name>")
+    .description("scaffold a new NekoStack project from a starter template")
+    .allowExcessArguments(false)
+    .action(async (name: string) => {
+      const code = await runInit({
+        name,
+        stdout: writeOut,
+      });
+      if (code !== EXIT_CODES.SUCCESS) {
+        throw new CommandActionError(code);
+      }
     });
 
   // `schema` command group — all four verbs (`list`, `diff`,

@@ -22,7 +22,7 @@ describe('@nekostack/ui build outputs', () => {
     const positions = order.map(name => css.indexOf(`/* ===================== ${name} ===================== */`));
     for (const pos of positions) expect(pos).toBeGreaterThan(-1);
     for (let i = 1; i < positions.length; i++) {
-      expect(positions[i]).toBeGreaterThan(positions[i - 1]);
+      expect(positions[i]!).toBeGreaterThan(positions[i - 1]!);
     }
   });
 });
@@ -39,6 +39,7 @@ describe('token purity', () => {
     const colorProps = [...noComments.matchAll(/((?:background|color|border(?:-\w+)?-color|outline-color|box-shadow)\s*:\s*)([^;]+)/g)];
     const allowed = /var\(--neko-|transparent|currentColor|inherit|initial|none|0/;
     for (const [, , value] of colorProps) {
+      if (!value) continue;
       const cleaned = value.replace(/var\(--[^)]+\)/g, '').replace(/\d+px/g, '').trim();
       if (cleaned && !/^[\s,0]+$/.test(cleaned)) {
         expect(value).toMatch(allowed);

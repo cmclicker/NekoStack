@@ -30,7 +30,11 @@
     "preview": "node -e \"console.log('Open packages/theme/preview.html in a browser')\"",
     "lint": "eslint ."
   },
+  "peerDependencies": {
+    "@nekostack/schema": "^1.0.0"
+  },
   "devDependencies": {
+    "@nekostack/schema": "*",
     "@types/node": "^22.10.0",
     "typescript": "^5.7.2",
     "vitest": "^2.1.8"

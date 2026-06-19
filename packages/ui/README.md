@@ -1,66 +1,58 @@
 # @nekostack/ui
 
-> The component library + design-system primitives every NekoStack frontend builds on. Headless where possible, themed via `@nekostack/theme`, accessible by default via `@nekostack/a11y`.
+> The Schema-Driven Component Library. Headless where possible, themed via `@nekostack/theme`, accessible by default.
+> **The v1.0 Invariant:** Every component prop is strictly bound to the Theme Schema Registry. End-to-end type safety from the data layer to the render layer.
 
 ## Quick reference
 
 | | |
 |---|---|
 | **Build tier** | Force multiplier — build after `theme`, `icons`, `a11y`, `motion` |
-| **Depends on** | `theme` (tokens), `icons` (iconography), `motion` (animations), `a11y` (accessibility primitives); optional substrate: Radix UI / React Aria |
-| **Used by** | NekoVibe (replaces current `packages/ui` over time), NekoBattler (combat HUD, wiki, profile), Leytide (every surface), NekoSystems (agent dashboards), future products |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 12–24 weeks focused (per-component small; cumulative ~30 components is large) |
-| **Sellable?** | Plausible MIT (solo-dev-optimized angle); UI library market crowded so independent commercial traction unlikely |
+| **Depends on** | `schema` (Prop-Registry), `theme` (tokens), `icons` (iconography), `motion` (animations), `a11y` |
+| **Used by** | NekoVibe, NekoBattler, Leytide, NekoSystems, future products |
+| **Status** | Empty placeholder — Formalizing |
+| **Est. to v1.0** | 12–24 weeks focused |
+
+## The "Prop-Registry" Invariant (v1.0 Architecture)
+
+Getting `ui` to v1.0 represents a massive logical shift: moving from data integrity to **computational aesthetics and state**.
+
+To maintain NekoStack's purity, UI components cannot be wildcards. The defining rule of `@nekostack/ui` is the **Prop-Registry Invariant**:
+- A component's stylistic props (variants, sizes, colors, spacing) are **not** hardcoded enums in a `.tsx` file.
+- They are dynamically restricted by the Intermediate Representation (IR) defined in `@nekostack/theme`.
+- If a component accepts data, that data's shape is verified by `@nekostack/schema`.
+
+**The "S-Tier" Flex:** You generate your UI component props from the same IR that defines your database. A change to the design system schema instantly updates the TypeScript compiler for every React component across the monorepo, guaranteeing that a UI component never receives an invalid state.
 
 ## Why this exists
 
-Every NekoStack frontend reaches for the same components: buttons, inputs, modals, tooltips, popovers, command palettes, toasts, tabs, accordions, navs, avatars, progress, sliders, switches. Without a shared library, each project reinvents them — slightly differently, with subtly different a11y behavior, drifting design tokens, and zero cross-project muscle memory.
+Every frontend reaches for the same components. Without a shared library governed by a strict schema, projects reinvent them with subtly different behaviors, drifting design tokens, and zero cross-project muscle memory.
 
-NekoVibe already has a `packages/ui` workspace package, and the design-tokens.css file we committed today is exactly the seed of this kind of system. The shape exists; it just needs to be lifted into a shared, reusable, opinionated place.
-
-`@nekostack/ui` is that place. Headless primitives (Radix-style — behavior and a11y, no opinions on visuals), styled defaults that match `@nekostack/theme`, and composable building blocks for the products to assemble their own surfaces. Crucially, it's not a "use our entire opinionated kit" lock-in — each component is independently consumable and replaceable.
-
-Building this yourself rather than adopting shadcn/ui, Radix, MUI, or Mantine is justified because:
-1. **You learn component design patterns end-to-end.** Render props, slot composition, controlled-vs-uncontrolled patterns, accessibility primitives, focus management, portal rendering — all transferable to any future UI work.
-2. **Tight design-token integration.** `@nekostack/theme` defines tokens; this library consumes them. No shadow-DOM hacks or theme-provider gymnastics.
-3. **Solo-friendly API.** Most major libraries optimize for team adoption. We optimize for "I wrote this six months ago and need to be productive in it now."
-4. **Replaceability without forking.** Want a different `Button`? Don't fork the whole library — drop in your own; the rest still composes.
+`@nekostack/ui` provides headless primitives (behavior and a11y) layered with styled defaults that are mathematically tied to `@nekostack/theme`. It optimizes for the solo developer who needs to trust that the components they wrote six months ago will perfectly accept the data models they are generating today.
 
 ## Scope
 
 ### In scope
-- Headless component primitives: behavior, state, accessibility. (Pattern: Radix UI or React Aria.)
-- Styled default implementations using `@nekostack/theme` tokens.
-- Composable building blocks: Slot, Portal, FocusTrap, VisuallyHidden, etc.
-- Common components: Button, Input, Textarea, Select, Combobox, Checkbox, RadioGroup, Switch, Slider, Tabs, Accordion, Dialog, Drawer, Popover, Tooltip, Toast, Avatar, Badge, Card, Skeleton, Progress, Spinner.
-- Layout primitives: Stack, Inline, Grid, Container, Divider.
-- Form primitives that integrate with `@nekostack/form`.
-- A11y discipline: keyboard navigation, ARIA roles, focus management, reduced-motion respect.
+- Headless component primitives: behavior, state, accessibility.
+- Styled default implementations strictly bound to `@nekostack/theme` tokens.
+- Composable building blocks: Slot, Portal, FocusTrap, VisuallyHidden.
+- Common components: Button, Input, Dialog, Popover, Toast, Avatar, Card, etc.
+- Layout primitives: Stack, Grid, Container.
+- Form primitives that natively consume `@nekostack/form` schemas.
+- Strict A11y discipline.
 
 ### Out of scope
-- Specific domain widgets (LeaderboardTable, CombatLog, PuzzleBoard). Those live in consuming projects.
-- Animation primitives — `@nekostack/motion` covers those, this library consumes them.
-- Charts — `@nekostack/chart`.
-- Data tables — `@nekostack/table`.
-- Rich text editing — `@nekostack/editor`.
-- Icons — `@nekostack/icons`.
-- Theme management — `@nekostack/theme`.
-- The kitchen sink. We avoid 50-prop components; prefer composition.
+- Domain widgets (e.g., CombatLog). Those live in consuming projects.
+- Untyped "style" prop injection. Inline overrides must still conform to the theme schema.
 
 ## Boundary
 
 > See [`BOUNDARIES.md`](../../BOUNDARIES.md) §36 for the full capability map.
 
 ### Owns
-- Headless component primitives (Slot, Portal, FocusTrap, VisuallyHidden, useControllable, useId)
+- Headless component primitives
 - Styled defaults consuming `theme` tokens
-- Common components: Button, Input, Textarea, Select, Combobox, Checkbox, RadioGroup, Switch, Slider
-- Overlays: Dialog, Drawer, Popover, Tooltip
-- Feedback: Toast, Skeleton, Spinner, Progress
-- Navigation: Tabs, Accordion, Breadcrumb
-- Data display: Avatar, Badge, Card
-- Layout primitives (Stack, Inline, Grid, Container, Divider) — layout sub-module
+- Common overlay, feedback, navigation, and layout components
 - Form bindings consuming `form` state
 
 ### Does NOT own
@@ -68,170 +60,23 @@ Building this yourself rather than adopting shadcn/ui, Radix, MUI, or Mantine is
 |---|---|
 | Theme tokens + dark mode + a11y variants | `theme` |
 | Animation + transition primitives | `motion` |
-| Accessibility utilities (focus / ARIA / keyboard / contrast) | `a11y` |
-| Charting / data viz | `chart` |
-| Data grids (sort / filter / virtualize / edit) | `table` |
-| Spatial UI / maps | `map` |
-| Canvas 2D scene management | `canvas` |
-| Icon system + SVG sprite pipeline | `icons` |
-| Markdown rendering | `md` |
-| Rich text editing | `editor` |
-| Form state management + validation | `form` (we consume bindings) |
-| Routing / navigation | external framework router (Next.js, Solid Router, etc.) |
-| Domain widgets (LeaderboardTable, CombatLog, PuzzleBoard) | consuming products |
-
-## Competitors and adjacent tools
-
-| Tool | What they do well | Where they fall short for us |
-|---|---|---|
-| **Radix UI** | Excellent headless primitives, a11y-first. | Headless only; no styled defaults. Great inspiration; we'd likely use it as a substrate for some primitives. |
-| **shadcn/ui** | Copy-paste components built on Radix + Tailwind. | Not a library; you re-author when you upgrade. Tailwind-coupled. |
-| **React Aria** | Adobe's a11y primitives. | Excellent but verbose; high learning curve. |
-| **MUI** | Mature, complete, well-documented. | Material-design opinionated, heavy bundle. |
-| **Mantine** | Modern, comprehensive, great defaults. | Strong opinions; theming is its own thing. |
-| **Chakra UI** | TS-friendly, themeable. | Heavier than needed; runtime-css overhead. |
-| **Ariakit** | Great a11y primitives. | Smaller ecosystem than Radix. |
-| **Headless UI** | Tailwind-team's headless components. | Small, Tailwind-flavored. |
-
-The right framing: `@nekostack/ui` is *headless behavior + styled defaults*, possibly using Radix or React Aria internally for the gnarly a11y bits, exposing a NekoStack-idiomatic API on top. We don't compete with Radix — we may **build on top of it**. The styled layer and the design-token integration are what we own.
-
-## How this fits the NekoStack
-
-**Depends on:**
-- `@nekostack/theme` — design tokens.
-- `@nekostack/icons` — iconography.
-- `@nekostack/motion` — animations.
-- (Optional) Radix UI / React Aria — substrate libraries.
-
-**Used by:**
-- **NekoVibe** — replaces its current `packages/ui` over time.
-- **NekoBattler** — wiki, combat HUD, profile screens.
-- **Leytide** — every UI surface.
-- **NekoSystems** — agent dashboards, prompt editing UIs.
-- Future products.
+| Accessibility utilities | `a11y` |
+| Form state management + validation | `form` |
 
 ## Design philosophy
 
+- **Prop-Registry Validation.** If it's a stylistic choice, it lives in the theme schema. If it's a data shape, it lives in the data schema.
 - **Composition over configuration.** Small components that compose, not one Button with 30 props.
-- **Headless underneath, styled by default.** You can drop down to the headless layer if our styled version doesn't fit.
-- **Accessibility is non-negotiable.** Keyboard nav, ARIA, focus, contrast — all default. Not an opt-in.
-- **Theme via tokens.** Components consume CSS variables from `@nekostack/theme`. No `theme={...}` prop drilling.
-- **Solo-friendly API.** Predictable props, minimal magic, code that reads as itself after six months away.
-- **Replaceable parts.** Don't like our `Button`? Drop in your own. The rest still composes.
-
-## Architecture sketch
-
-```
-packages/ui/
-├── src/
-│   ├── primitives/           # headless behavior
-│   │   ├── Slot.ts
-│   │   ├── Portal.ts
-│   │   ├── FocusTrap.ts
-│   │   ├── VisuallyHidden.ts
-│   │   ├── useId.ts
-│   │   └── useControllable.ts
-│   ├── form/                 # form-related controls
-│   │   ├── Button.tsx
-│   │   ├── Input.tsx
-│   │   ├── Textarea.tsx
-│   │   ├── Select.tsx
-│   │   ├── Combobox.tsx
-│   │   ├── Checkbox.tsx
-│   │   ├── RadioGroup.tsx
-│   │   ├── Switch.tsx
-│   │   └── Slider.tsx
-│   ├── layout/
-│   │   ├── Stack.tsx
-│   │   ├── Inline.tsx
-│   │   ├── Grid.tsx
-│   │   └── Container.tsx
-│   ├── feedback/
-│   │   ├── Toast.tsx
-│   │   ├── Skeleton.tsx
-│   │   ├── Spinner.tsx
-│   │   └── Progress.tsx
-│   ├── overlays/
-│   │   ├── Dialog.tsx
-│   │   ├── Drawer.tsx
-│   │   ├── Popover.tsx
-│   │   └── Tooltip.tsx
-│   ├── navigation/
-│   │   ├── Tabs.tsx
-│   │   ├── Accordion.tsx
-│   │   └── Breadcrumb.tsx
-│   ├── data-display/
-│   │   ├── Avatar.tsx
-│   │   ├── Badge.tsx
-│   │   └── Card.tsx
-│   └── styles/
-│       └── reset.css
-├── tests/
-└── README.md
-```
-
-Usage:
-
-```tsx
-import { Button, Stack, Dialog } from '@nekostack/ui';
-
-<Stack gap="md">
-  <Button variant="primary" onClick={() => openDialog()}>
-    Edit profile
-  </Button>
-  <Dialog open={isOpen} onClose={close}>
-    <Dialog.Title>Edit profile</Dialog.Title>
-    <Dialog.Body>{/* ... */}</Dialog.Body>
-  </Dialog>
-</Stack>
-```
+- **Headless underneath, styled by default.** Drop down to the headless layer if needed.
+- **Accessibility is non-negotiable.** Keyboard nav, ARIA, focus, contrast — all default.
 
 ## Roadmap
 
-### v0.1 — Primitives + Button
-- Slot, Portal, FocusTrap, VisuallyHidden.
-- Button with variants.
-- Theme token consumption working end-to-end.
-
-### v0.2 — Form controls
-- Input, Textarea, Select, Checkbox, Switch.
-
-### v0.3 — Layout
-- Stack, Inline, Grid, Container.
-
-### v0.4 — Overlays
-- Dialog, Drawer, Popover, Tooltip.
-
-### v0.5 — Feedback
-- Toast (works with `@nekostack/notify`), Skeleton, Spinner, Progress.
-
-### v0.6 — Navigation
-- Tabs, Accordion, Breadcrumb.
-
-### v0.7 — Data display
-- Avatar, Badge, Card.
-
-### v0.8 — Combobox / Command palette
-- Combobox, Command (Spotlight-style).
-
+### v0.1 — Primitives & The "Prop-Registry" Binding
+- Establish the connection between `@nekostack/schema`, `@nekostack/theme`, and React Component props.
+- Slot, Portal, FocusTrap.
+- Button with schema-validated variants.
+### v0.2 — Form controls (Input, Select, Switch)
+### v0.3 — Layout (Stack, Grid, Container)
+### v0.4 — Overlays (Dialog, Popover)
 ### v1.0 — Stable API
-- Documentation site (Storybook or custom).
-- A11y test suite (axe + manual audit).
-- Migration recipes from MUI / Mantine / shadcn.
-
-## Product potential
-
-**Internal use:** Essential. The shared frontend toolkit.
-
-**Open source release:** Plausible. UI libraries are crowded, but a "solo-dev-optimized, design-tokens-first, replaceable-parts" angle has room. MIT release as part of NekoStack ecosystem.
-
-**Commercial product:** Unlikely as a standalone product (the market is saturated with both free and paid options). Could be part of a broader "starter kit" sale.
-
-**Estimated effort to v1.0:** 12-24 weeks of focused work. Per-component effort is small; the cumulative weight of ~30 components with full a11y and tests is substantial.
-
-## Status
-
-- **Current:** Empty placeholder. Not started.
-- **Owner:** Cody (solo dev project).
-- **Priority tier:** Force multiplier. Build after `@nekostack/theme` since theme tokens are the substrate.
-- **Estimated learning return:** Very high. Component design patterns, headless architectures, a11y discipline, focus management — half of professional frontend work.

@@ -13,15 +13,15 @@ describe('Design tokens — themes × modes', () => {
   it('ships Neko, Synthwave, and Cupcake, each with dark and light modes', () => {
     expect(Object.keys(tokens.themes)).toEqual(['neko', 'synthwave', 'cupcake']);
     for (const theme of Object.keys(tokens.themes)) {
-      expect(Object.keys(tokens.themes[theme].modes)).toEqual(['dark', 'light']);
+      expect(Object.keys((tokens.themes as any)[theme].modes)).toEqual(['dark', 'light']);
     }
   });
 
   it('every (theme, mode) combination exposes the same semantic role set', () => {
     const reference = Object.keys(tokens.themes.neko.modes.dark.color.semantic).sort();
     for (const theme of Object.keys(tokens.themes)) {
-      for (const mode of Object.keys(tokens.themes[theme].modes)) {
-        const roles = Object.keys(tokens.themes[theme].modes[mode].color.semantic).sort();
+      for (const mode of Object.keys((tokens.themes as any)[theme].modes)) {
+        const roles = Object.keys((tokens.themes as any)[theme].modes[mode].color.semantic).sort();
         expect(roles, `${theme}.${mode}`).toEqual(reference);
       }
     }
@@ -29,9 +29,9 @@ describe('Design tokens — themes × modes', () => {
 
   it('themeOptions enumerates every (theme, mode) pair with labels', () => {
     expect(themeOptions.length).toBe(6);
-    expect(themeOptions.find((o) => o.isDefault)).toMatchObject({ theme: 'neko', mode: 'dark' });
-    expect(themeOptions.map((o) => o.label)).toContain('Neko · Dark');
-    expect(themeOptions.map((o) => o.label)).toContain('Synthwave · Light');
+    expect(themeOptions.find((o: any) => o.isDefault)).toMatchObject({ theme: 'neko', mode: 'dark' });
+    expect(themeOptions.map((o: any) => o.label)).toContain('Neko · Dark');
+    expect(themeOptions.map((o: any) => o.label)).toContain('Synthwave · Light');
   });
 });
 
@@ -54,7 +54,7 @@ describe('Design tokens — WCAG AA contrast', () => {
     const val = typeof h === 'object' ? h.value : h;
     const hex = val.replace('#', '');
     if (hex.length === 3) {
-      const expanded = hex.split('').map((c) => c + c).join('');
+      const expanded = hex.split('').map((c: string) => c + c).join('');
       return [parseInt(expanded.slice(0, 2), 16), parseInt(expanded.slice(2, 4), 16), parseInt(expanded.slice(4, 6), 16)];
     }
     return [parseInt(hex.slice(0, 2), 16), parseInt(hex.slice(2, 4), 16), parseInt(hex.slice(4, 6), 16)];
@@ -77,8 +77,8 @@ describe('Design tokens — WCAG AA contrast', () => {
   const TEXT_ROLES = ['text-base', 'text-muted', 'text-subtle'];
   const AA_NORMAL = 4.5;
 
-  for (const [theme, themeData] of Object.entries(tokens.themes)) {
-    for (const [mode, modeData] of Object.entries(themeData.modes)) {
+  for (const [theme, themeData] of Object.entries(tokens.themes as Record<string, any>)) {
+    for (const [mode, modeData] of Object.entries((themeData as any).modes)) {
       const s: Record<string, any> = (modeData as any).color.semantic;
       for (const role of ROLES) {
         it(`${theme} · ${mode}: ${role} on ${role}-content clears AA (4.5:1)`, () => {

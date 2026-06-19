@@ -28,9 +28,12 @@
     "lint": "eslint ."
   },
   "peerDependencies": {
-    "@nekostack/theme": "^0.1.0"
+    "@nekostack/theme": "^0.1.0",
+    "@nekostack/schema": "^1.0.0"
   },
   "devDependencies": {
+    "@nekostack/theme": "*",
+    "@nekostack/schema": "*",
     "vitest": "^2.1.8"
   }
 }
