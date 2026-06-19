@@ -4,9 +4,9 @@
 
 ## Active workstream
 
-- **Package:** @nekostack/migrate-runner
-- **Latest release:** [`migrate-runner-v0.1.0`](https://github.com/cmclicker/NekoStack/releases/tag/migrate-runner-v0.1.0) — 2026-05-21
-- **Active target:** v0.1.X+ — Optional runner CLI + adapter expansion
+- **Package:** @nekostack/schema
+- **Latest release:** [`schema-v1.0.0`](https://github.com/cmclicker/NekoStack/releases/tag/schema-v1.0.0) — 2026-06-19
+- **Active target:** v1.0 — Stable API
 - **Doctrine in force:** [NekoStack — Product Thesis](../PRODUCT_THESIS.md)
 
 ## Latest milestones
@@ -21,26 +21,26 @@
 
 | Tag | Date | Summary |
 |---|---|---|
+| [`schema-v1.0.0`](https://github.com/cmclicker/NekoStack/releases/tag/schema-v1.0.0) | 2026-06-19 | First stable release. **Public API frozen.** No source changes from v0.8.0 — this milestone freezes the exported surface and ships release metadata (Apache-2.0 license; the `nekostack` metapackage). |
 | [`schema-v0.8.0`](https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.8.0) | 2026-05-20 | Schema-data migration planning + provenance verification + stub generation. |
 | [`schema-v0.7.0`](https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.7.0) | 2026-05-19 | Registry-lite + `neko schema *`. |
 | [`schema-v0.6.0`](https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.6.0) | 2026-05-18 | Runtime validation as a NekoStack-owned workflow on the v0.2 source-generator + v0.5 composition foundation. |
 | [`schema-v0.5.0`](https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.5.0) | 2026-05-17 | Composition layer on the v0.1 IR foundation. |
-| [`schema-v0.4.0`](https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.4.0) | 2026-05-17 | Fourth generator on the v0.1 IR foundation. |
 
 ## Validation snapshot
 
 Test counts come from each package's most recent CHANGELOG entry. After validating a release, update the package CHANGELOG and run `npm run status:generate`.
 
 - **@nekostack/migrate-runner:** 405 tests recorded (latest: migrate-runner-v0.1.0)
-- **@nekostack/schema:** 1292 tests recorded (latest: schema-v0.8.0)
+- **@nekostack/schema:** 1294 tests recorded (latest: schema-v1.0.0)
 
 ## Next actions
 
-1. migrate-runner-v0.1.0 shipped (PR #31, merged at 53c0ba5; tag migrate-runner-v0.1.0; GitHub release published). The downstream schema-data migration runner library — the only package that invokes migration.transform — is accepted. Library surface only; no CLI.
-2. Optional Steps 11-12 (thin runner CLI under @nekostack/migrate-runner's own bin) are DEFERRED to v0.1.X+. Active target placeholder: v0.1.X+. No implementation has started; no phase plan exists yet. A runner CLI is never a fifth verb under `neko schema migrate *` (v0.9 Decision #18).
-3. The v0.1 runtime boundaries remain in force for any v0.1.X work: .transform( only in src/per-record-pipeline.ts, fs imports only under src/adapters/*, no @nekostack/cli import, no console/process/stdio in source, forward-only, no transform preemption, no DB adapters yet.
-4. schema-v0.8.0 remains the latest @nekostack/schema release; its v0.9+ active-target placeholder is independent of the runner and still open (no phase plan). The v0.8 hard-locks remain in force.
-5. Apply the thesis-fit audit gate to any v0.1.X (runner) or v0.9 (schema) phase plan before any implementation PR.
+1. migrate-runner v0.1.0 shipped and verified with 405 tests (full purity suite restored). schema v1.0.0 shipped — public API frozen, Apache-2.0, nekostack metapackage published.
+2. Pivot to v1.0 Hardening: Freeze the public API surface of @nekostack/schema and @nekostack/migrate-runner. No new feature work until v1.0 is stamped.
+3. Draft the 'Zod-to-NekoStack' migration guide and complete the IssueCode catalog documentation.
+4. Resolve the remaining 'Still-open' implementation decisions in the schema package README (Transform precedence, Async refinements).
+5. Identify performance benchmarks against Zod/TypeBox to prove production readiness.
 
 ## How to refresh
 
