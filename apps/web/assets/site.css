@@ -360,8 +360,11 @@ section {
   width: 11px;
   height: 11px;
   border-radius: 50%;
-  background: var(--neko-color-semantic-border-strong);
 }
+
+.code-panel__dot:nth-child(1) { background: var(--neko-color-semantic-danger); }
+.code-panel__dot:nth-child(2) { background: var(--neko-color-semantic-warning); }
+.code-panel__dot:nth-child(3) { background: var(--neko-color-semantic-success); }
 
 .code-panel__file {
   margin-left: var(--neko-spacing-3);
