@@ -21,15 +21,15 @@ The primary concern for any schema engine is the "Hot Path"—validating incomin
 
 **NekoStack achieves Near-Native Parity with Zod.**
 
-| Operation | Ops/sec (Hz) | Overhead vs Zod | Note |
+| Operation | Ops/sec (Hz) | vs Zod `safeParse` | Note |
 |---|---|---|---|
-| `z.safeParse()` (Raw Zod) | ~865,000 | Baseline | The fastest possible path. |
-| `z.parse()` (Raw Zod) | ~833,000 | 1.04x slower | Throws exceptions. |
-| **NekoStack `parse()`** | **~819,000** | **1.06x slower** | Includes WeakMap compile-cache lookup + Issue normalization. |
-| **NekoStack `validate()`** | **~764,000** | **1.13x slower** | Runs the stripped-defaults variant of the schema. |
+| `z.safeParse()` (Raw Zod) | ~883,000 | Baseline | The fastest possible path. |
+| `z.parse()` (Raw Zod) | ~868,000 | 1.02x slower | Throws exceptions. |
+| **NekoStack `parse()`** | **~844,000** | **1.05x slower** | Includes WeakMap compile-cache lookup + Issue normalization. |
+| **NekoStack `validate()`** | **~929,000** | **1.05x faster** | Runs the stripped-defaults variant — no default application or transforms. |
 
 ### The Verdict: S-Tier Performance
-NekoStack adds a mere **~6% overhead** to the hot path (`parse()`) compared to raw Zod `safeParse`. 
+NekoStack `parse()` adds only **~5% overhead** versus raw Zod `safeParse`. `validate()` — the read-only structural check — actually **edges out** raw Zod, because it executes a stripped-defaults variant of the schema (no default application, no transforms). 
 
 For that 6%, you get:
 1. Guarantee of structural purity (no Silent Lies).
@@ -46,10 +46,10 @@ NekoStack doesn't just parse data; it generates code. Generator speed matters fo
 
 | Generator | Ops/sec (Hz) | Time per 10k Schemas |
 |---|---|---|
-| `generateZod` | ~92,000 | ~108ms |
-| `generateTypeScript` | ~91,000 | ~110ms |
+| `generateTypeScript` | ~124,000 | ~81ms |
+| `generateZod` | ~115,000 | ~87ms |
+| `generateOpenApiSchemaComponent` | ~90,000 | ~111ms |
 | `generateJsonSchema` | ~83,000 | ~120ms |
-| `generateOpenApiSchemaComponent` | ~81,000 | ~122ms |
 
 ### The Verdict: Instantaneous Generation
 All four generators operate at >80,000 ops/sec. Generating the entire artifact suite (TS, Zod, OpenAPI, JSON Schema) for a massive 1,000-schema monorepo takes less than **50 milliseconds**.
