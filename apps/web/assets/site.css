@@ -253,6 +253,8 @@ section {
    so gradient-clipped numbers always meet WCAG AA contrast. */
 [data-mode="light"] .stat-band__num {
   background: linear-gradient(120deg, var(--neko-color-semantic-text-base), var(--neko-color-semantic-text-muted));
+  -webkit-background-clip: text;
+  background-clip: text;
 }
 
 .stat-band__label {
