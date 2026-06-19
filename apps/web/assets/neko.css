@@ -303,25 +303,25 @@
   --neko-color-semantic-danger-hover: #9f1239;
   --neko-color-semantic-danger-content: #ffffff;
   --neko-color-semantic-danger-soft: rgba(190, 18, 60, 0.10);
-  --neko-color-semantic-disabled: #f3e8d9;
-  --neko-color-semantic-disabled-content: #a89478;
+  --neko-color-semantic-disabled: #e8e0f4;
+  --neko-color-semantic-disabled-content: #9080b0;
   --neko-color-semantic-selected: rgba(190, 23, 111, 0.12);
   --neko-color-semantic-selected-content: #2d1b4e;
   --neko-color-semantic-link: #0e7490;
   --neko-color-semantic-link-hover: #155e75;
-  --neko-color-semantic-bg-base: #fdf4e3;
-  --neko-color-semantic-bg-raised: #fef9e7;
-  --neko-color-semantic-bg-sunken: #f9e5b0;
+  --neko-color-semantic-bg-base: #f0e8ff;
+  --neko-color-semantic-bg-raised: #f7f2ff;
+  --neko-color-semantic-bg-sunken: #e6d8ff;
   --neko-color-semantic-bg-overlay: rgba(45, 27, 78, 0.4);
   --neko-color-semantic-text-base: #2d1b4e;
   --neko-color-semantic-text-muted: #6b21a8;
   --neko-color-semantic-text-subtle: #7c3aed;
   --neko-color-semantic-text-inverted: #ffffff;
-  --neko-color-semantic-border-base: #f9c5d1;
-  --neko-color-semantic-border-strong: #e9a8b8;
-  --neko-color-semantic-border-subtle: #fce4ec;
+  --neko-color-semantic-border-base: #d4c8f0;
+  --neko-color-semantic-border-strong: #b8a8e0;
+  --neko-color-semantic-border-subtle: #eae4f8;
   --neko-color-semantic-focus-ring: #be176f;
-  --neko-color-semantic-code-bg: #fef9e7;
+  --neko-color-semantic-code-bg: #f7f2ff;
   --neko-color-semantic-code-content: #a21caf;
 }
 
