@@ -37,6 +37,7 @@
         <a href="#why">Why NekoStack</a>
         <a href="#packages">Packages</a>
         <a href="#benchmarks">Benchmarks</a>
+        <a href="#playground">Playground</a>
         <a href="#install">Install</a>
       </nav>
       <div class="site-nav__actions">
@@ -306,6 +307,18 @@ $ neko schema <span class="tok-fn">generate</span></code></pre>
         stylesheets and class names.
       </p>
 
+      <div class="theme-swapper">
+        <span class="theme-swapper__label">Live theme switcher — restyle everything by changing one attribute on &lt;html&gt;</span>
+        <div class="theme-swapper__btns">
+          <button class="theme-btn" aria-pressed="true" data-theme="neko" data-mode="dark" style="--tb-bg:#282a36;--tb-fg:#ff79c6;--tb-bd:#ff79c6;">Neko Dark</button>
+          <button class="theme-btn" data-theme="neko" data-mode="light" style="--tb-bg:#f8f8f2;--tb-fg:#db2777;--tb-bd:#db2777;">Neko Light</button>
+          <button class="theme-btn" data-theme="synthwave" data-mode="dark" style="--tb-bg:#1a0b2e;--tb-fg:#ff2eaa;--tb-bd:#ff2eaa;">Synthwave</button>
+          <button class="theme-btn" data-theme="synthwave" data-mode="light" style="--tb-bg:#fdf4e3;--tb-fg:#be176f;--tb-bd:#be176f;">Synthwave Light</button>
+          <button class="theme-btn" data-theme="cupcake" data-mode="dark" style="--tb-bg:#1c1820;--tb-fg:#44ebd3;--tb-bd:#44ebd3;">Cupcake Dark</button>
+          <button class="theme-btn" data-theme="cupcake" data-mode="light" style="--tb-bg:#fce8f5;--tb-fg:#005d58;--tb-bd:#44ebd3;">Cupcake Light</button>
+        </div>
+      </div>
+
       <div class="showcase-grid">
         <div class="showcase-cell">
           <span class="showcase-cell__label">Buttons</span>
@@ -452,6 +465,63 @@ $ npx neko schema check <span class="tok-str">"./schemas/**/*"</span></code></pr
     </div>
   </section>
 
+  <!-- ===== playground ===== -->
+  <section id="playground">
+    <div class="wrap">
+      <span class="eyebrow">Live playground</span>
+      <h2 class="section-title">Define once. Watch everything generate.</h2>
+      <p class="section-lead">
+        Add fields, pick types, flip optional — TypeScript, Zod, JSON Schema, and
+        OpenAPI update live. No install, no build step required.
+      </p>
+
+      <div class="pg-layout">
+        <!-- builder -->
+        <div class="pg-builder">
+          <div class="pg-meta">
+            <div class="pg-meta__field">
+              <label class="pg-label" for="pg-id">Schema ID</label>
+              <input class="neko-input" id="pg-id" value="com.example.User" autocomplete="off" spellcheck="false" />
+            </div>
+            <div class="pg-meta__field">
+              <label class="pg-label" for="pg-version">Version</label>
+              <input class="neko-input" id="pg-version" value="1.0.0" autocomplete="off" spellcheck="false" />
+            </div>
+          </div>
+
+          <div class="pg-fields-header">
+            <span class="pg-label">Fields</span>
+            <button class="neko-btn neko-btn--sm" id="pg-add">+ Add field</button>
+          </div>
+          <div id="pg-fields"></div>
+
+          <p class="muted" style="margin-top:var(--neko-spacing-5);">
+            Runs entirely in the browser. The real CLI generates identical output from the same IR — install once, emit everywhere.
+          </p>
+        </div>
+
+        <!-- output -->
+        <div class="pg-output-area">
+          <div class="pg-tabs" role="tablist">
+            <button class="pg-tab pg-tab--active" role="tab" data-tab="ts">TypeScript</button>
+            <button class="pg-tab" role="tab" data-tab="zod">Zod</button>
+            <button class="pg-tab" role="tab" data-tab="json">JSON Schema</button>
+            <button class="pg-tab" role="tab" data-tab="openapi">OpenAPI</button>
+          </div>
+          <div class="code-panel pg-panel">
+            <div class="code-panel__bar">
+              <span class="code-panel__dot"></span>
+              <span class="code-panel__dot"></span>
+              <span class="code-panel__dot"></span>
+              <span class="code-panel__file" id="pg-filename">user.d.ts</span>
+            </div>
+            <pre style="margin:0;padding:var(--neko-spacing-5);font-family:var(--neko-font-mono);font-size:var(--neko-font-size-sm);line-height:var(--neko-line-height-relaxed);max-height:420px;overflow-y:auto;"><code id="pg-code"></code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- ===== footer ===== -->
   <footer class="site-footer">
     <div class="wrap site-footer__grid">
@@ -478,6 +548,7 @@ $ npx neko schema check <span class="tok-str">"./schemas/**/*"</span></code></pr
   </footer>
 
   <script>
+    /* ---- copy buttons ---- */
     document.querySelectorAll('.install__copy').forEach(function (btn) {
       btn.addEventListener('click', function () {
         navigator.clipboard.writeText(btn.dataset.copy).then(function () {
@@ -487,6 +558,216 @@ $ npx neko schema check <span class="tok-str">"./schemas/**/*"</span></code></pr
         });
       });
     });
+
+    /* ---- theme swapper ---- */
+    document.querySelectorAll('.theme-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        document.documentElement.setAttribute('data-theme', btn.dataset.theme);
+        document.documentElement.setAttribute('data-mode', btn.dataset.mode);
+        document.querySelectorAll('.theme-btn').forEach(function (b) {
+          b.setAttribute('aria-pressed', 'false');
+        });
+        btn.setAttribute('aria-pressed', 'true');
+      });
+    });
+
+    /* ---- playground ---- */
+    (function () {
+      var TYPE_META = {
+        uuid:        { ts: 'string',   zod: 'z.string().uuid()',                     json: { type: 'string', format: 'uuid' } },
+        email:       { ts: 'string',   zod: 'z.string().email()',                    json: { type: 'string', format: 'email' } },
+        string:      { ts: 'string',   zod: 'z.string()',                            json: { type: 'string' } },
+        number:      { ts: 'number',   zod: 'z.number()',                            json: { type: 'number' } },
+        integer:     { ts: 'number',   zod: 'z.number().int()',                      json: { type: 'integer' } },
+        boolean:     { ts: 'boolean',  zod: 'z.boolean()',                           json: { type: 'boolean' } },
+        isoDateTime: { ts: 'string',   zod: 'z.string().datetime({ offset: true })', json: { type: 'string', format: 'date-time' } },
+        url:         { ts: 'string',   zod: 'z.string().url()',                      json: { type: 'string', format: 'uri' } },
+        'string[]':  { ts: 'string[]', zod: 'z.array(z.string())',                  json: { type: 'array', items: { type: 'string' } } },
+        'number[]':  { ts: 'number[]', zod: 'z.array(z.number())',                  json: { type: 'array', items: { type: 'number' } } },
+      };
+      var TYPES = Object.keys(TYPE_META);
+
+      var FILENAMES = {
+        ts:      function (n) { return n.toLowerCase() + '.d.ts'; },
+        zod:     function (n) { return n.toLowerCase() + '.zod.ts'; },
+        json:    function (n) { return n.toLowerCase() + '.json'; },
+        openapi: function (n) { return n.toLowerCase() + '.openapi.json'; },
+      };
+
+      var fields = [
+        { name: 'id',          type: 'uuid',        optional: false },
+        { name: 'email',       type: 'email',       optional: false },
+        { name: 'displayName', type: 'string',      optional: false },
+        { name: 'age',         type: 'integer',     optional: true  },
+        { name: 'createdAt',   type: 'isoDateTime', optional: false },
+      ];
+      var activeTab = 'ts';
+
+      function entityName(id) {
+        var parts = (id || 'Schema').split('.');
+        var raw = parts[parts.length - 1] || 'Schema';
+        return raw.charAt(0).toUpperCase() + raw.slice(1);
+      }
+
+      function schema() {
+        return {
+          id:      (document.getElementById('pg-id').value || 'com.example.Schema').trim(),
+          version: (document.getElementById('pg-version').value || '1.0.0').trim(),
+          fields:  fields,
+        };
+      }
+
+      /* generators */
+      function genTs(name, s) {
+        var lines = s.fields.map(function (f) {
+          var t = (TYPE_META[f.type] || {}).ts || 'unknown';
+          return '  ' + f.name + (f.optional ? '?' : '') + ': ' + t + ';';
+        });
+        return [
+          '// @generated by @nekostack/schema — do not edit manually',
+          '// source: ' + s.id + ' v' + s.version,
+          '',
+          'export interface ' + name + ' {',
+        ].concat(lines).concat(['}']).join('\n');
+      }
+
+      function genZod(name, s) {
+        var lines = s.fields.map(function (f) {
+          var z = (TYPE_META[f.type] || {}).zod || 'z.unknown()';
+          if (f.optional) z += '.optional()';
+          return '  ' + f.name + ': ' + z + ',';
+        });
+        return [
+          '// @generated by @nekostack/schema — do not edit manually',
+          '// source: ' + s.id + ' v' + s.version,
+          'import { z } from "zod";',
+          '',
+          'export const ' + name + 'Schema = z.object({',
+        ].concat(lines).concat([
+          '}).strict();',
+          '',
+          'export type ' + name + ' = z.infer<typeof ' + name + 'Schema>;',
+        ]).join('\n');
+      }
+
+      function genJson(name, s) {
+        var required = s.fields.filter(function (f) { return !f.optional; }).map(function (f) { return f.name; });
+        var props = {};
+        s.fields.forEach(function (f) { props[f.name] = (TYPE_META[f.type] || {}).json || {}; });
+        return JSON.stringify({
+          '$schema': 'https://json-schema.org/draft/2020-12/schema',
+          '$id':     s.id,
+          title:     name,
+          type:      'object',
+          required:  required,
+          additionalProperties: false,
+          properties: props,
+        }, null, 2);
+      }
+
+      function genOpenApi(name, s) {
+        var required = s.fields.filter(function (f) { return !f.optional; }).map(function (f) { return f.name; });
+        var props = {};
+        s.fields.forEach(function (f) { props[f.name] = (TYPE_META[f.type] || {}).json || {}; });
+        var out = { components: { schemas: {} } };
+        out.components.schemas[name] = {
+          type: 'object',
+          required: required,
+          additionalProperties: false,
+          properties: props,
+        };
+        return (
+          '# @generated by @nekostack/schema — do not edit manually\n' +
+          '# source: ' + s.id + ' v' + s.version + '\n' +
+          JSON.stringify(out, null, 2)
+        );
+      }
+
+      function generate(tab, s) {
+        var name = entityName(s.id);
+        if (tab === 'ts')      return genTs(name, s);
+        if (tab === 'zod')     return genZod(name, s);
+        if (tab === 'json')    return genJson(name, s);
+        if (tab === 'openapi') return genOpenApi(name, s);
+        return '';
+      }
+
+      function update() {
+        var s = schema();
+        var name = entityName(s.id);
+        document.getElementById('pg-code').textContent = generate(activeTab, s);
+        document.getElementById('pg-filename').textContent = FILENAMES[activeTab](name);
+      }
+
+      function renderFields() {
+        var container = document.getElementById('pg-fields');
+        container.innerHTML = '';
+        fields.forEach(function (f, i) {
+          var row = document.createElement('div');
+          row.className = 'pg-field-row';
+          var opts = TYPES.map(function (t) {
+            return '<option value="' + t + '"' + (t === f.type ? ' selected' : '') + '>' + t + '</option>';
+          }).join('');
+          row.innerHTML =
+            '<input class="neko-input pg-fname" data-i="' + i + '" value="' + f.name + '" autocomplete="off" spellcheck="false" />' +
+            '<select class="neko-input pg-ftype" data-i="' + i + '">' + opts + '</select>' +
+            '<label class="pg-opt-label"><input type="checkbox" class="pg-fopt" data-i="' + i + '"' + (f.optional ? ' checked' : '') + '> opt</label>' +
+            '<button class="neko-btn neko-btn--ghost neko-btn--sm pg-fdel" data-i="' + i + '" title="Remove field">×</button>';
+          container.appendChild(row);
+        });
+
+        container.querySelectorAll('.pg-fname').forEach(function (el) {
+          el.addEventListener('input', function (e) {
+            fields[+e.target.dataset.i].name = e.target.value;
+            update();
+          });
+        });
+        container.querySelectorAll('.pg-ftype').forEach(function (el) {
+          el.addEventListener('change', function (e) {
+            fields[+e.target.dataset.i].type = e.target.value;
+            update();
+          });
+        });
+        container.querySelectorAll('.pg-fopt').forEach(function (el) {
+          el.addEventListener('change', function (e) {
+            fields[+e.target.dataset.i].optional = e.target.checked;
+            update();
+          });
+        });
+        container.querySelectorAll('.pg-fdel').forEach(function (el) {
+          el.addEventListener('click', function (e) {
+            fields.splice(+e.target.dataset.i, 1);
+            renderFields();
+            update();
+          });
+        });
+      }
+
+      document.getElementById('pg-id').addEventListener('input', update);
+      document.getElementById('pg-version').addEventListener('input', update);
+
+      document.getElementById('pg-add').addEventListener('click', function () {
+        fields.push({ name: 'newField', type: 'string', optional: false });
+        renderFields();
+        update();
+        var inputs = document.querySelectorAll('.pg-fname');
+        if (inputs.length) inputs[inputs.length - 1].select();
+      });
+
+      document.querySelectorAll('.pg-tab').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          activeTab = btn.dataset.tab;
+          document.querySelectorAll('.pg-tab').forEach(function (b) {
+            b.classList.remove('pg-tab--active');
+          });
+          btn.classList.add('pg-tab--active');
+          update();
+        });
+      });
+
+      renderFields();
+      update();
+    })();
   </script>
 </body>
 </html>

@@ -87,7 +87,7 @@ Real apps need real persistence and resilient networking. This phase makes the s
 
 | Package | Why now | Approximate effort |
 |---|---|---|
-| `migrate` | Schema + data migrations | 8–14 weeks |
+| `migrate` | Schema + data migrations | **Runner Shipped (v0.9)** |
 | `storage` | File upload / S3 abstraction | 6–10 weeks |
 | `cache` | Multi-layer caching | 6–10 weeks |
 | `events` | Event sourcing scaffolding | 10–16 weeks |
