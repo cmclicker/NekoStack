@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#ff79c6"/>
+      <stop offset="0.6" stop-color="#bd93f9"/>
+      <stop offset="1" stop-color="#8be9fd"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="#282a36"/>
+  <rect width="1200" height="8" fill="url(#accent)"/>
+
+  <rect x="80" y="80" width="64" height="64" rx="14" fill="#ff79c6"/>
+  <text x="112" y="128" font-family="Arial, sans-serif" font-size="42" font-weight="700" fill="#1e1f29" text-anchor="middle">N</text>
+  <text x="164" y="128" font-family="Arial, sans-serif" font-size="40" font-weight="700" fill="#f8f8f2">Neko<tspan fill="#ff79c6">Stack</tspan></text>
+
+  <text x="80" y="290" font-family="Arial, sans-serif" font-size="92" font-weight="800" fill="#f8f8f2">Define once.</text>
+  <text x="80" y="392" font-family="Arial, sans-serif" font-size="92" font-weight="800" fill="url(#accent)">Generate everything.</text>
+
+  <text x="80" y="470" font-family="Arial, sans-serif" font-size="34" fill="#b7bdd2">Schema-first, full-stack TypeScript suite — one IR, four outputs, zero drift.</text>
+
+  <g font-family="monospace" font-size="26" fill="#8be9fd">
+    <text x="80" y="556">@nekostack/schema</text>
+    <text x="392" y="556">· cli</text>
+    <text x="468" y="556">· migrate-runner</text>
+    <text x="748" y="556">· theme</text>
+    <text x="864" y="556">· ui</text>
+  </g>
+
+  <text x="1120" y="556" font-family="Arial, sans-serif" font-size="24" fill="#6272a4" text-anchor="end">npm install nekostack</text>
+</svg>
