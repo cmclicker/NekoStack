@@ -189,7 +189,7 @@ Construction:
 
 - [`makeAuditEntry(opts)`](../src/audit.ts) guarantees the `__auditSchemaVersion: "1"` literal and defaults `timestamp` to `new Date().toISOString()`.
 - The in-memory adapter ([`createMemoryAuditAdapter`](../src/audit.ts)) returns frozen defensive snapshots from `entries`; individual entry references are stable across calls. Append-only; no replace, no delete.
-- The JSONL adapter ([`createJsonlAuditAdapter`](../src/adapters/jsonl-audit.ts)) appends one JSON object per line to a `.jsonl` file. Tolerates blank lines. Missing file → empty cursor. **Fails loud on malformed audit-entry shape** — `cursor(runId)` runtime-validates each line via [`parseAuditEntryLine`](../src/adapters/jsonl-audit.ts): non-null object (not array), `__auditSchemaVersion === "1"`, `runId` string, `status ∈ { success, failure }`, `recordIndex` non-negative integer. Error format: `JSONL audit adapter: malformed entry on line N of <path> — field \`<name>\` (<detail>).`
+- The JSONL adapter ([`createJsonlAuditAdapter`](../src/adapters/jsonl-audit.ts)) appends one JSON object per line to a `.jsonl` file. Tolerates blank lines. Missing file → empty cursor. **Fails loud on malformed audit-entry shape** — `cursor(runId)` runtime-validates each line via [`parseAuditEntryLine`](../src/adapters/jsonl-audit.ts): non-null object (not array), `__auditSchemaVersion === "1"`, `runId` string, `status ∈ { success, failure }`, `recordIndex` non-negative integer. Error format: `JSONL audit adapter: malformed entry on line N of <path> — field "<name>" (<detail>).`
 
 Audit is the truth source for resume. A silent shape drift on resume would re-execute already-applied transforms; the runtime validator is the load-bearing defense.
 
