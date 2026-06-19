@@ -1,13 +1,16 @@
 {
   "name": "nekostack",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": false,
   "license": "Apache-2.0",
-  "description": "NekoStack Metapackage — The Single Source of Truth for Data Contracts.",
+  "description": "NekoStack — schema, migrations, CLI, design tokens, and UI components. Install the full suite or use scoped packages à la carte.",
   "type": "module",
   "dependencies": {
     "@nekostack/schema": "^1.0.0",
-    "@nekostack/migrate-runner": "^0.1.0"
+    "@nekostack/migrate-runner": "^1.0.0",
+    "@nekostack/cli": "^1.0.0",
+    "@nekostack/theme": "^1.0.0",
+    "@nekostack/ui": "^1.0.0"
   },
   "peerDependencies": {
     "zod": "^3.22.0"

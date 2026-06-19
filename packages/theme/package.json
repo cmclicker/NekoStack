@@ -1,7 +1,9 @@
 {
   "name": "@nekostack/theme",
-  "version": "0.1.0",
-  "description": "Dracula-seeded design tokens for the NekoStack portfolio. Ships CSS variables, typed JS, raw JSON, and an optional Tailwind preset.",
+  "version": "1.0.0",
+  "private": false,
+  "license": "Apache-2.0",
+  "description": "W3C DTCG design token pipeline — 3 themes × 2 modes, WCAG AA checked. Ships CSS custom properties, typed JS, raw JSON, and an optional Tailwind preset.",
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -20,6 +22,9 @@
   "files": [
     "dist",
     "preview.html",
+    "docs/*.md",
+    "CHANGELOG.md",
+    "LICENSE",
     "README.md"
   ],
   "scripts": {

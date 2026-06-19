@@ -10,40 +10,62 @@
 | **Build tier** | Force multiplier — build after `theme`, `icons`, `a11y`, `motion` |
 | **Depends on** | `schema` (Prop-Registry), `theme` (tokens), `icons` (iconography), `motion` (animations), `a11y` |
 | **Used by** | NekoVibe, NekoBattler, Leytide, NekoSystems, future products |
-| **Status** | Empty placeholder — Formalizing |
-| **Est. to v1.0** | 12–24 weeks focused |
+| **Status** | **v1.0 — released.** Vanilla CSS; 92 components; zero JS/React; token-pure. 83 tests. |
 
-## The "Prop-Registry" Invariant (v1.0 Architecture)
+## What this is
 
-Getting `ui` to v1.0 represents a massive logical shift: moving from data integrity to **computational aesthetics and state**.
+A vanilla CSS component library. 92 component classes. No JavaScript. No React. No build step required in your project — just import the stylesheet.
 
-To maintain NekoStack's purity, UI components cannot be wildcards. The defining rule of `@nekostack/ui` is the **Prop-Registry Invariant**:
-- A component's stylistic props (variants, sizes, colors, spacing) are **not** hardcoded enums in a `.tsx` file.
-- They are dynamically restricted by the Intermediate Representation (IR) defined in `@nekostack/theme`.
-- If a component accepts data, that data's shape is verified by `@nekostack/schema`.
+All color references consume `@nekostack/theme` CSS custom properties exclusively (`var(--neko-color-semantic-*)`). Zero hardcoded hex values in the compiled output. Every interactive component has `:hover`, `:focus-visible`, and `:disabled` states.
 
-**The "S-Tier" Flex:** You generate your UI component props from the same IR that defines your database. A change to the design system schema instantly updates the TypeScript compiler for every React component across the monorepo, guaranteeing that a UI component never receives an invalid state.
+## Install
 
-## Why this exists
+```bash
+npm install @nekostack/ui @nekostack/theme
+```
 
-Every frontend reaches for the same components. Without a shared library governed by a strict schema, projects reinvent them with subtly different behaviors, drifting design tokens, and zero cross-project muscle memory.
+```css
+@import "@nekostack/theme/css";  /* design tokens */
+@import "@nekostack/ui/css";     /* component classes */
+```
 
-`@nekostack/ui` provides headless primitives (behavior and a11y) layered with styled defaults that are mathematically tied to `@nekostack/theme`. It optimizes for the solo developer who needs to trust that the components they wrote six months ago will perfectly accept the data models they are generating today.
+```html
+<button class="neko-btn">Click</button>
+<div class="neko-card">...</div>
+<input class="neko-input" type="text" />
+```
+
+## Components (v1.0, 92 classes)
+
+| Category | Classes |
+|---|---|
+| Layout | `neko-container`, `neko-stack`, `neko-cluster`, `neko-grid`, `neko-center` |
+| Button | `neko-btn`, `neko-btn-group` |
+| Form | `neko-input`, `neko-select`, `neko-textarea`, `neko-checkbox`, `neko-radio`, `neko-switch`, `neko-range`, `neko-file`, `neko-label`, `neko-field`, `neko-fieldset`, `neko-legend`, `neko-input-group` |
+| Card / Surface | `neko-card`, `neko-surface`, `neko-elevated`, `neko-muted-surface`, `neko-panel` |
+| Feedback | `neko-alert`, `neko-badge`, `neko-tag`, `neko-toast`, `neko-spinner`, `neko-progress`, `neko-skeleton`, `neko-status`, `neko-loading-dots` |
+| Navigation | `neko-tabs`, `neko-link`, `neko-breadcrumb`, `neko-menu`, `neko-pagination`, `neko-navbar`, `neko-bottom-nav`, `neko-footer` |
+| Overlay | `neko-modal`, `neko-dialog`, `neko-drawer`, `neko-tooltip`, `neko-popover`, `neko-backdrop`, `neko-dropdown` |
+| Data | `neko-table`, `neko-list`, `neko-avatar`, `neko-stat`, `neko-empty` |
+| Disclosure | `neko-accordion`, `neko-collapse`, `neko-swap` |
+| Media | `neko-carousel`, `neko-diff`, `neko-hero`, `neko-banner`, `neko-indicator`, `neko-mask` |
+| Mockup | `neko-mockup-browser`, `neko-mockup-window`, `neko-mockup-phone`, `neko-mockup-code` |
+| Typography | `neko-prose`, `neko-code`, `neko-kbd`, `neko-kbd-combo`, `neko-divider` |
+| Utilities | `neko-visually-hidden`, `neko-truncate`, `neko-rounded`, `neko-text-center`, `neko-text-left`, `neko-text-right`, `neko-text-muted`, `neko-text-subtle` |
+| Complex | `neko-chat`, `neko-tree`, `neko-timeline`, `neko-steps`, `neko-stepper`, `neko-rating`, `neko-radial-progress`, `neko-countdown`, `neko-calendar`, `neko-theme-controller` |
 
 ## Scope
 
-### In scope
-- Headless component primitives: behavior, state, accessibility.
-- Styled default implementations strictly bound to `@nekostack/theme` tokens.
-- Composable building blocks: Slot, Portal, FocusTrap, VisuallyHidden.
-- Common components: Button, Input, Dialog, Popover, Toast, Avatar, Card, etc.
-- Layout primitives: Stack, Grid, Container.
-- Form primitives that natively consume `@nekostack/form` schemas.
-- Strict A11y discipline.
+### In scope (v1.0)
+- CSS-only component classes (zero JS)
+- Token-pure color references
+- WCAG accessible interactive states
 
-### Out of scope
-- Domain widgets (e.g., CombatLog). Those live in consuming projects.
-- Untyped "style" prop injection. Inline overrides must still conform to the theme schema.
+### Out of scope (v1.0)
+- JavaScript behavior primitives
+- React / framework bindings
+- Icon integration (`@nekostack/icons`)
+- Animation primitives (`@nekostack/motion`)
 
 ## Boundary
 
@@ -70,13 +92,9 @@ Every frontend reaches for the same components. Without a shared library governe
 - **Headless underneath, styled by default.** Drop down to the headless layer if needed.
 - **Accessibility is non-negotiable.** Keyboard nav, ARIA, focus, contrast — all default.
 
-## Roadmap
+## Design philosophy
 
-### v0.1 — Primitives & The "Prop-Registry" Binding
-- Establish the connection between `@nekostack/schema`, `@nekostack/theme`, and React Component props.
-- Slot, Portal, FocusTrap.
-- Button with schema-validated variants.
-### v0.2 — Form controls (Input, Select, Switch)
-### v0.3 — Layout (Stack, Grid, Container)
-### v0.4 — Overlays (Dialog, Popover)
-### v1.0 — Stable API
+- **CSS is the product.** Import one stylesheet, use class names. No framework required.
+- **Semantic tokens only.** Components never use raw color values — always `--neko-color-semantic-*`.
+- **Accessibility is structural.** `:hover`, `:focus-visible`, `:disabled` are part of every interactive component, not optional.
+- **Token purity is machine-enforced.** The test suite fails the build on any hardcoded hex color.

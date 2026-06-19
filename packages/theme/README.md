@@ -10,8 +10,7 @@
 | **Build tier** | Frontend depth — UI substrate |
 | **Depends on** | `schema` (theme shape) |
 | **Used by** | `ui`, `motion`, `editor`, `chart`, `table`, `map`, `icons`, every UI consumer |
-| **Status** | Empty placeholder — Formalizing |
-| **Est. to v1.0** | 4–8 weeks focused |
+| **Status** | **v1.0 — released.** W3C DTCG pipeline; 3 themes × 2 modes; WCAG AA. 78 tests. |
 
 ## The "Prop-Registry" Invariant (v1.0 Architecture)
 
@@ -60,12 +59,15 @@ In NekoStack, a theme isn't just a collection of CSS variables; it is a **comput
 - **Semantic > raw.** Components use `surface.primary`, not `purple.500`.
 - **Accessibility variants first-class.** High-contrast and reduced-motion are themes, not afterthoughts.
 
-## Roadmap
+## What ships in v1.0
 
-### v0.1 — Schema-Driven Token Primitives
-- Define the Token Schema using `@nekostack/schema`.
-- Generate TypeScript interfaces and CSS variables from the IR.
-### v0.2 — Dark mode switching
-### v0.3 — Accessibility variants
-### v0.4 — Per-user storage
-### v1.0 — Stable API
+- W3C DTCG token pipeline (`src/tokens.json` → `dist/neko.css`, typed JS, Tailwind preset)
+- 3 themes (Neko, Synthwave, Cupcake) × 2 modes (dark, light) in a single CSS file
+- WCAG 2.1 AA contrast verified across all 6 theme × mode combinations (78 tests)
+- `prefers-reduced-motion` respected at the CSS layer
+
+## Deferred to future releases
+
+- Per-user theme storage (localStorage / db)
+- High-contrast accessibility variant
+- Animation / motion tokens (`@nekostack/motion`)

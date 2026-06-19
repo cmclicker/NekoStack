@@ -1,6 +1,6 @@
 {
   "name": "@nekostack/migrate-runner",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": false,
   "license": "Apache-2.0",
   "type": "module",
@@ -14,8 +14,9 @@
   },
   "files": [
     "dist/src",
-    "docs",
-    "CHANGELOG.md"
+    "docs/*.md",
+    "CHANGELOG.md",
+    "LICENSE"
   ],
   "scripts": {
     "build": "tsc -b",
