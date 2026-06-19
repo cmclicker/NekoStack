@@ -150,10 +150,16 @@ $ neko schema <span class="tok-fn">generate</span></code></pre>
   <!-- ===== execution ===== -->
   <section id="execution" class="stat-band">
     <div class="wrap feature-row" style="align-items: center; gap: var(--neko-spacing-10);">
-      <div class="neko-mockup-code animate-fade-up" id="runner-terminal" style="font-size: var(--neko-font-size-sm); min-height: 280px; box-shadow: 0 10px 40px -10px color-mix(in srgb, var(--neko-color-semantic-primary) 30%, transparent);">
-        <span class="neko-mockup-code__line neko-mockup-code__line--prompt" data-prefix="$">neko schema migrate plan</span>
-        <div id="term-lines">
-          <!-- JS will populate these -->
+      <div class="code-panel animate-fade-up" style="box-shadow: 0 10px 40px -10px color-mix(in srgb, var(--neko-color-semantic-primary) 30%, transparent);">
+        <div class="code-panel__bar">
+          <span class="code-panel__dot"></span><span class="code-panel__dot"></span><span class="code-panel__dot"></span>
+          <span class="code-panel__file">migrate-runner</span>
+        </div>
+        <div class="neko-mockup-code" id="runner-terminal" style="font-size: var(--neko-font-size-sm); min-height: 240px; border-radius: 0; border: none; background: transparent;">
+          <span class="neko-mockup-code__line neko-mockup-code__line--prompt" data-prefix="$">neko schema migrate plan</span>
+          <div id="term-lines">
+            <!-- JS will populate these -->
+          </div>
         </div>
       </div>
 
@@ -323,15 +329,15 @@ $ neko schema <span class="tok-fn">generate</span></code></pre>
     </div>
   </section>
 
-  <!-- ===== showcase ===== -->
-  <section id="showcase">
+  <!-- ===== presentation layer ===== -->
+  <section id="presentation">
     <div class="wrap">
-      <span class="eyebrow">Dogfooded</span>
-      <h2 class="section-title">This page is built with the stack</h2>
+      <span class="eyebrow">The Presentation Layer</span>
+      <h2 class="section-title">Theme Pipeline &amp; UI Primitives</h2>
       <p class="section-lead">
-        Every element below is a real <code>@nekostack/ui</code> component styled by
-        <code>@nekostack/theme</code> tokens. No framework, no build step — just two
-        stylesheets and class names.
+        <code>@nekostack/theme</code> is a W3C DTCG-aligned design token pipeline. 
+        <code>@nekostack/ui</code> is a 92-component library that consumes it. 
+        Zero JavaScript. Zero framework lock-in. Just raw semantic power.
       </p>
 
       <div class="theme-swapper">
@@ -612,6 +618,7 @@ $ npx neko schema check <span class="tok-str">"./schemas/**/*"</span></code></pr
         url:         { ts: 'string',   zod: 'z.string().url()',                      json: { type: 'string', format: 'uri' } },
         'string[]':  { ts: 'string[]', zod: 'z.array(z.string())',                  json: { type: 'array', items: { type: 'string' } } },
         'number[]':  { ts: 'number[]', zod: 'z.array(z.number())',                  json: { type: 'array', items: { type: 'number' } } },
+        'custom (refinement)': { ts: 'string', zod: 'z.string().refine(v => v.includes("@acme"))', json: { type: 'string', 'x-nekostack-semantic-loss': 'runtime_refinement_unsupported' } },
       };
       var TYPES = Object.keys(TYPE_META);
 
@@ -626,7 +633,7 @@ $ npx neko schema check <span class="tok-str">"./schemas/**/*"</span></code></pr
         { name: 'id',          type: 'uuid',        optional: false },
         { name: 'email',       type: 'email',       optional: false },
         { name: 'displayName', type: 'string',      optional: false },
-        { name: 'age',         type: 'integer',     optional: true  },
+        { name: 'orgToken',    type: 'custom (refinement)', optional: true  },
         { name: 'createdAt',   type: 'isoDateTime', optional: false },
       ];
       var activeTab = 'ts';
@@ -720,10 +727,25 @@ $ npx neko schema check <span class="tok-str">"./schemas/**/*"</span></code></pr
         return '';
       }
 
+      function escapeHtml(unsafe) {
+        return unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+      }
+
       function update() {
         var s = schema();
         var name = entityName(s.id);
-        document.getElementById('pg-code').textContent = generate(activeTab, s);
+        var raw = generate(activeTab, s);
+        var safe = escapeHtml(raw);
+        
+        // Cinematic Semantic Loss Highlight
+        if (activeTab === 'json' || activeTab === 'openapi') {
+          safe = safe.replace(
+            /(&quot;x-nekostack-semantic-loss&quot;: &quot;[^&]+&quot;)/g, 
+            '<span style="color: var(--neko-color-semantic-warning); font-weight: bold; background: color-mix(in srgb, var(--neko-color-semantic-warning) 20%, transparent); padding: 2px 4px; border-radius: 4px; box-shadow: 0 0 10px var(--neko-color-semantic-warning-soft);">$1</span>'
+          );
+        }
+        
+        document.getElementById('pg-code').innerHTML = safe;
         document.getElementById('pg-filename').textContent = FILENAMES[activeTab](name);
       }
 
