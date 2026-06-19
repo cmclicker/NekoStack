@@ -1,4 +1,4 @@
-# @nekostack/codex
+﻿# @nekostack/codex
 
 > A graph-based content registry with typed entities and typed relationships. The shared knowledge layer behind games, narrative work, business systems, and AI agents.
 
@@ -6,20 +6,19 @@
 
 | | |
 |---|---|
-| **Build tier** | Force multiplier — strategically most important package in the stack |
+| **Build tier** | Force multiplier â€” strategically most important package in the stack |
 | **Depends on** | `schema` (entity definitions), `cli` (CLI subcommands), `graph` (substrate for traversal/cycle detection), optionally `storage` (binary asset refs) |
-| **Used by** | NekoBattler (champions/abilities/traits), Mara Kane (lore graph), NekoVibe (puzzle metadata), NekoGacha (collection), Leytide (world entities), NekoSystems (business entities), NekoLife (activities) — every content-heavy project |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 8–16 weeks focused |
-| **Sellable?** | Strong: OSS embedded-graph niche is genuinely undersupplied; commercial worldbuilding-SaaS angle (World Anvil but graph-typed) plausible |
+| **Used by** | NekoBattler (champions/abilities/traits), Mara Kane (lore graph), NekoVibe (puzzle metadata), NekoGacha (collection), Leytide (world entities), NekoSystems (business entities), NekoLife (activities) â€” every content-heavy project |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 8â€“16 weeks focused |
 
 ## Why this exists
 
-Every content-heavy project ends up rediscovering the same problem: you have *things* (characters, items, abilities, factions, locations, lessons, business units, workflows) and *relationships between them* (depends_on, counters, belongs_to, foreshadows, teaches). The naive solution is to invent your own ad-hoc structures in each project — typically nested JSON or fields-on-rows in a relational schema. Then you discover, painfully, that:
+Every content-heavy project ends up rediscovering the same problem: you have *things* (characters, items, abilities, factions, locations, lessons, business units, workflows) and *relationships between them* (depends_on, counters, belongs_to, foreshadows, teaches). The naive solution is to invent your own ad-hoc structures in each project â€” typically nested JSON or fields-on-rows in a relational schema. Then you discover, painfully, that:
 
 1. You can't query relationships efficiently.
-2. Cross-project lookups are impossible — NekoBattler's "Cinderclaw faction" and Mara Kane's "Cinderclaw faction" are unrelated strings.
-3. Cross-references silently rot — a champion references an ability that was renamed in a different file three weeks ago.
+2. Cross-project lookups are impossible â€” NekoBattler's "Cinderclaw faction" and Mara Kane's "Cinderclaw faction" are unrelated strings.
+3. Cross-references silently rot â€” a champion references an ability that was renamed in a different file three weeks ago.
 4. There's no validation that a "depends_on" target actually exists.
 5. Visualizing the entity network is impossible without writing a custom export every time.
 
@@ -47,13 +46,13 @@ Building this yourself rather than using Neo4j or a knowledge graph database is 
 ### Out of scope
 - Distributed graph queries across multiple machines.
 - Multi-billion-node scale. Codex is for thousands-to-low-millions of entities.
-- Full-text search on entity properties — that's `@nekostack/search`. Codex indexes by id and relationship, not free-form text.
-- Real-time collaboration on entity editing — out of initial scope; could come later.
+- Full-text search on entity properties â€” that's `@nekostack/search`. Codex indexes by id and relationship, not free-form text.
+- Real-time collaboration on entity editing â€” out of initial scope; could come later.
 - Visualization rendering. Codex exports to formats; rendering happens in `@nekostack/canvas` or external tools (Graphviz, Obsidian Canvas, etc.).
 
 ## Boundary
 
-> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §39, §48 for the full capability map.
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) Â§39, Â§48 for the full capability map.
 
 ### Owns
 - `defineKind()` typed entity kinds with schemas
@@ -90,7 +89,7 @@ Building this yourself rather than using Neo4j or a knowledge graph database is 
 | **Dgraph** | Distributed graph DB. | Same scale-mismatch issue. |
 | **Memgraph** | In-memory graph DB. | External service, learning Cypher, no schema integration with rest of stack. |
 | **JanusGraph / TigerGraph** | Enterprise graph DBs. | Vastly oversized. |
-| **Apollo Federation / GraphQL** | Federated typed graph queries. | Different problem — federated query layer over services, not entity persistence. |
+| **Apollo Federation / GraphQL** | Federated typed graph queries. | Different problem â€” federated query layer over services, not entity persistence. |
 | **Prisma** | Type-safe ORM. | Relational-first. Relationships are FKs, not first-class typed edges. |
 | **TinkerPop / Gremlin** | Graph traversal language standard. | Implementation-agnostic spec; we'd build our own implementation anyway. |
 | **Ad-hoc nested JSON** | Easy to start. | Becomes the problem this package solves. |
@@ -100,18 +99,18 @@ The right framing: Codex is a **lightweight in-process typed entity graph for co
 ## How this fits the NekoStack
 
 **Depends on:**
-- `@nekostack/schema` — entity kind definitions use the schema DSL.
-- `@nekostack/cli` — `neko codex` subcommands for export, validate, query.
+- `@nekostack/schema` â€” entity kind definitions use the schema DSL.
+- `@nekostack/cli` â€” `neko codex` subcommands for export, validate, query.
 - (Optional) `@nekostack/storage` for binary asset references on entities.
 
 **Used by:**
-- **NekoBattler** — champions, traits, abilities, items, factions, encounters.
-- **Mara Kane** — characters, factions, locations, timelines, canon-rules.
-- **NekoVibe** — puzzle types, clues, difficulty metadata, tags.
-- **NekoGacha** — characters, banners, rarity, pull pools.
-- **Leytide** — world entities (NPCs, locations, quests, items, recipes).
-- **NekoSystems** — business entities, workflows, policy contracts.
-- **NekoLife** — activities (already JSON-organized; could be Codex-native).
+- **NekoBattler** â€” champions, traits, abilities, items, factions, encounters.
+- **Mara Kane** â€” characters, factions, locations, timelines, canon-rules.
+- **NekoVibe** â€” puzzle types, clues, difficulty metadata, tags.
+- **NekoGacha** â€” characters, banners, rarity, pull pools.
+- **Leytide** â€” world entities (NPCs, locations, quests, items, recipes).
+- **NekoSystems** â€” business entities, workflows, policy contracts.
+- **NekoLife** â€” activities (already JSON-organized; could be Codex-native).
 
 ## Design philosophy
 
@@ -126,31 +125,31 @@ The right framing: Codex is a **lightweight in-process typed entity graph for co
 
 ```
 packages/codex/
-├── src/
-│   ├── core/
-│   │   ├── kind.ts           # defineKind() — kind + schema + relationship spec
-│   │   ├── entity.ts         # Entity type, id format, namespace
-│   │   ├── relation.ts       # Relation type + cardinality
-│   │   └── graph.ts          # Graph<T> — the registry itself
-│   ├── storage/
-│   │   ├── memory.ts         # in-process Map-backed
-│   │   ├── sqlite.ts         # better-sqlite3 backend
-│   │   └── jsonfile.ts       # human-editable JSON flat-file
-│   ├── query/
-│   │   ├── lookup.ts         # by id
-│   │   ├── traverse.ts       # follow relationships
-│   │   ├── filter.ts         # predicate-based filtering
-│   │   └── path.ts           # path queries (Character → Faction → Members)
-│   ├── manifest/
-│   │   ├── format.ts         # codex.json manifest spec
-│   │   ├── ingest.ts         # ingest external manifests
-│   │   └── export.ts         # JSON, DOT, Cypher-like
-│   ├── validators/
-│   │   ├── schema.ts         # schema conformance
-│   │   └── refs.ts           # reference integrity
-│   └── cli.ts                # `neko codex export/validate/query`
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ core/
+â”‚   â”‚   â”œâ”€â”€ kind.ts           # defineKind() â€” kind + schema + relationship spec
+â”‚   â”‚   â”œâ”€â”€ entity.ts         # Entity type, id format, namespace
+â”‚   â”‚   â”œâ”€â”€ relation.ts       # Relation type + cardinality
+â”‚   â”‚   â””â”€â”€ graph.ts          # Graph<T> â€” the registry itself
+â”‚   â”œâ”€â”€ storage/
+â”‚   â”‚   â”œâ”€â”€ memory.ts         # in-process Map-backed
+â”‚   â”‚   â”œâ”€â”€ sqlite.ts         # better-sqlite3 backend
+â”‚   â”‚   â””â”€â”€ jsonfile.ts       # human-editable JSON flat-file
+â”‚   â”œâ”€â”€ query/
+â”‚   â”‚   â”œâ”€â”€ lookup.ts         # by id
+â”‚   â”‚   â”œâ”€â”€ traverse.ts       # follow relationships
+â”‚   â”‚   â”œâ”€â”€ filter.ts         # predicate-based filtering
+â”‚   â”‚   â””â”€â”€ path.ts           # path queries (Character â†’ Faction â†’ Members)
+â”‚   â”œâ”€â”€ manifest/
+â”‚   â”‚   â”œâ”€â”€ format.ts         # codex.json manifest spec
+â”‚   â”‚   â”œâ”€â”€ ingest.ts         # ingest external manifests
+â”‚   â”‚   â””â”€â”€ export.ts         # JSON, DOT, Cypher-like
+â”‚   â”œâ”€â”€ validators/
+â”‚   â”‚   â”œâ”€â”€ schema.ts         # schema conformance
+â”‚   â”‚   â””â”€â”€ refs.ts           # reference integrity
+â”‚   â””â”€â”€ cli.ts                # `neko codex export/validate/query`
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 Defining a kind:
@@ -182,34 +181,34 @@ const factionMembers = codex.traverse(faction).has_members.all();
 
 ## Roadmap
 
-### v0.1 — Bootstrap
+### v0.1 â€” Bootstrap
 - `defineKind`, in-memory graph, basic insert/get/update.
 - Schema integration via `@nekostack/schema`.
 
-### v0.2 — Relationships
+### v0.2 â€” Relationships
 - Typed relations with cardinality.
 - Reference integrity validation.
 
-### v0.3 — Query API
+### v0.3 â€” Query API
 - Traversal API, filter predicates, path queries.
 
-### v0.4 — Storage backends
+### v0.4 â€” Storage backends
 - SQLite backing for durable persistence.
 - JSON flat-file backing for human-editable graphs (small datasets).
 
-### v0.5 — Manifests
+### v0.5 â€” Manifests
 - Manifest format for projects that aren't Codex-native.
 - Ingest pipeline producing read-only indexed projections.
 
-### v0.6 — Export
+### v0.6 â€” Export
 - JSON, DOT, Cypher-like.
 - CLI integration (`neko codex export`).
 
-### v0.7 — Versioning + migrations
+### v0.7 â€” Versioning + migrations
 - Schema versioning via `@nekostack/schema`.
 - Migration pipelines for evolving entity shapes.
 
-### v1.0 — Stable API
+### v1.0 â€” Stable API
 - Documentation site with tutorials per project type.
 - Performance benchmarks at 10K / 100K / 1M entities.
 
@@ -217,9 +216,8 @@ const factionMembers = codex.traverse(faction).has_members.all();
 
 **Internal use:** Very high. The unifying content layer across every content-heavy project.
 
-**Open source release:** Strong. The "lightweight embedded graph" niche is genuinely undersupplied — most options are either heavyweight DBs (Neo4j) or note-taking apps (Obsidian, Roam, Logseq). An open-source typed embedded graph for games + content systems could attract real users. MIT or Apache.
+**Open source release:** Strong. The "lightweight embedded graph" niche is genuinely undersupplied â€” most options are either heavyweight DBs (Neo4j) or note-taking apps (Obsidian, Roam, Logseq). An open-source typed embedded graph for games + content systems could attract real users. MIT or Apache.
 
-**Commercial product:** Plausible at the **"hosted Codex for writers and worldbuilders"** angle — a SaaS where the user gets a hosted graph, web editor, collaboration, and exports. Similar in product shape to World Anvil but graph-typed. Distinct opportunity from open-source Codex; the hosted product would compete in the worldbuilding-SaaS space.
 
 **Estimated effort to v1.0:** 8-16 weeks of focused work. The data model is straightforward; the query API and the storage layers are where real time goes.
 
@@ -227,5 +225,5 @@ const factionMembers = codex.traverse(faction).has_members.all();
 
 - **Current:** Empty placeholder. Not started.
 - **Owner:** Cody (solo dev project).
-- **Priority tier:** Force multiplier. The most strategically important package in the stack — it changes how every content-heavy project organizes data.
-- **Estimated learning return:** Very high. Graph data modeling, query language design, storage abstractions, schema-driven validation — all transferable to any future data-modeling work.
+- **Priority tier:** Force multiplier. The most strategically important package in the stack â€” it changes how every content-heavy project organizes data.
+- **Estimated learning return:** Very high. Graph data modeling, query language design, storage abstractions, schema-driven validation â€” all transferable to any future data-modeling work.

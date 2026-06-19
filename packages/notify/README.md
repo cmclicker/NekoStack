@@ -1,4 +1,4 @@
-# @nekostack/notify
+﻿# @nekostack/notify
 
 > Unified notification routing across email + push + in-app + SMS. Per-user channel preferences, batching, digesting, in-app notification center. The router; specific channels live in their own packages.
 
@@ -9,9 +9,8 @@
 | **Build tier** | SaaS layer |
 | **Depends on** | `schema` (notification types), `email` (email channel), `audit` (notification dispatch audited), `time` (digest scheduling), `auth` (per-user prefs), `tenant` (tenant-scoped templates) |
 | **Used by** | every product surface that notifies users: NekoVibe (puzzle reminders, achievement unlocks), Leytide (friend invites, party invites), NekoSystems (tenant + workflow notifications), `billing` (receipts, dunning), every SaaS |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 8–12 weeks focused |
-| **Sellable?** | Plausible OSS — unified notification routers are surprisingly absent; commercial as part of broader SaaS platform |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 8â€“12 weeks focused |
 
 ## Why this exists
 
@@ -47,7 +46,7 @@ Every product reinvents notification logic per channel: "for this event, send em
 
 ## Boundary
 
-> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §14 for the full capability map.
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) Â§14 for the full capability map.
 
 ### Owns
 - Multi-channel notification routing
@@ -97,51 +96,51 @@ Every product reinvents notification logic per channel: "for this event, send em
 
 ```
 packages/notify/
-├── src/
-│   ├── notification/
-│   │   ├── type.ts          # Notification catalog
-│   │   └── catalog.ts
-│   ├── router/
-│   │   ├── route.ts         # per-user prefs → channels
-│   │   └── dispatch.ts
-│   ├── channels/
-│   │   ├── email.ts         # delegates to @nekostack/email
-│   │   ├── push.ts          # Web Push
-│   │   ├── in-app.ts        # in-app center
-│   │   └── sms.ts           # TBD
-│   ├── preferences/
-│   │   ├── user-prefs.ts
-│   │   └── opt-out.ts
-│   ├── digest/
-│   │   ├── batch.ts
-│   │   └── schedule.ts
-│   ├── inbox/
-│   │   ├── center.ts
-│   │   └── feed.ts          # activity feed folded
-│   ├── quiet-hours/
-│   │   └── policy.ts
-│   ├── unsubscribe/
-│   │   └── link.ts
-│   └── cli.ts
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ notification/
+â”‚   â”‚   â”œâ”€â”€ type.ts          # Notification catalog
+â”‚   â”‚   â””â”€â”€ catalog.ts
+â”‚   â”œâ”€â”€ router/
+â”‚   â”‚   â”œâ”€â”€ route.ts         # per-user prefs â†’ channels
+â”‚   â”‚   â””â”€â”€ dispatch.ts
+â”‚   â”œâ”€â”€ channels/
+â”‚   â”‚   â”œâ”€â”€ email.ts         # delegates to @nekostack/email
+â”‚   â”‚   â”œâ”€â”€ push.ts          # Web Push
+â”‚   â”‚   â”œâ”€â”€ in-app.ts        # in-app center
+â”‚   â”‚   â””â”€â”€ sms.ts           # TBD
+â”‚   â”œâ”€â”€ preferences/
+â”‚   â”‚   â”œâ”€â”€ user-prefs.ts
+â”‚   â”‚   â””â”€â”€ opt-out.ts
+â”‚   â”œâ”€â”€ digest/
+â”‚   â”‚   â”œâ”€â”€ batch.ts
+â”‚   â”‚   â””â”€â”€ schedule.ts
+â”‚   â”œâ”€â”€ inbox/
+â”‚   â”‚   â”œâ”€â”€ center.ts
+â”‚   â”‚   â””â”€â”€ feed.ts          # activity feed folded
+â”‚   â”œâ”€â”€ quiet-hours/
+â”‚   â”‚   â””â”€â”€ policy.ts
+â”‚   â”œâ”€â”€ unsubscribe/
+â”‚   â”‚   â””â”€â”€ link.ts
+â”‚   â””â”€â”€ cli.ts
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — Notification catalog + email channel only
-### v0.2 — Web Push channel
-### v0.3 — In-app inbox / activity feed
-### v0.4 — Per-user preferences
-### v0.5 — Digesting + batching
-### v0.6 — Quiet hours
-### v0.7 — Delivery receipts
-### v1.0 — Stable API
+### v0.1 â€” Notification catalog + email channel only
+### v0.2 â€” Web Push channel
+### v0.3 â€” In-app inbox / activity feed
+### v0.4 â€” Per-user preferences
+### v0.5 â€” Digesting + batching
+### v0.6 â€” Quiet hours
+### v0.7 â€” Delivery receipts
+### v1.0 â€” Stable API
 
 ## Product potential
 
 **Internal:** Useful across every SaaS-shaped product.
-**Open source release:** Plausible — Novu territory.
+**Open source release:** Plausible â€” Novu territory.
 **Commercial:** Plausible at lower price than Knock / Courier.
 
 ## Status

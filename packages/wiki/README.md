@@ -1,4 +1,4 @@
-# @nekostack/wiki
+﻿# @nekostack/wiki
 
 > Wiki engine: knowledge pages, cross-linking, history, hierarchy. The page-rendering layer for game lore (NekoBattler wiki), narrative codex browsing (Mara Kane), tenant knowledge bases (NekoSystems).
 
@@ -8,10 +8,9 @@
 |---|---|
 | **Build tier** | Content / narrative |
 | **Depends on** | `schema`, `cms` (content lifecycle), `md`, `codex` (entity references), `search`, `ui`, `audit` |
-| **Used by** | NekoBattler (champion wiki — already partially exists), Mara Kane (narrative codex browsing), NekoSystems (tenant knowledge / customer-facing docs), Leytide (in-game help), any product with reference content |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 10–16 weeks focused |
-| **Sellable?** | Modest — Confluence / Notion dominate; game-wiki niche less crowded |
+| **Used by** | NekoBattler (champion wiki â€” already partially exists), Mara Kane (narrative codex browsing), NekoSystems (tenant knowledge / customer-facing docs), Leytide (in-game help), any product with reference content |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 10â€“16 weeks focused |
 
 ## Why this exists
 
@@ -24,7 +23,7 @@ Wikis are everywhere in content-rich projects. NekoBattler already has wiki page
 - Cross-page linking with broken-link detection.
 - Page hierarchy (parent / child).
 - Page history (versioned via `cms`).
-- Entity-to-page links (Codex entity → wiki page).
+- Entity-to-page links (Codex entity â†’ wiki page).
 - Search integration (via `search`).
 - Tags / categories (via `taxonomy`).
 - Recent-changes feed.
@@ -79,49 +78,49 @@ Wikis are everywhere in content-rich projects. NekoBattler already has wiki page
 
 - **Cross-linked by default.** Page links are typed; broken links flagged.
 - **Hierarchy explicit.** Pages have parents; navigation reflects structure.
-- **Entity-aware.** Codex entity → its wiki page is a one-click navigation.
+- **Entity-aware.** Codex entity â†’ its wiki page is a one-click navigation.
 - **Search is first-class.** Wiki without search is read-only docs.
 
 ## Architecture sketch
 
 ```
 packages/wiki/
-├── src/
-│   ├── page/
-│   │   ├── render.tsx          # via md
-│   │   └── hierarchy.ts
-│   ├── linking/
-│   │   ├── cross-page.ts
-│   │   └── broken-detect.ts
-│   ├── entity/
-│   │   └── codex-link.ts
-│   ├── history/
-│   │   └── via-cms.ts
-│   ├── search/
-│   │   └── via-search.ts
-│   ├── recent-changes/
-│   │   └── feed.ts
-│   ├── watchlist/
-│   │   └── via-notify.ts
-│   └── cli.ts
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ page/
+â”‚   â”‚   â”œâ”€â”€ render.tsx          # via md
+â”‚   â”‚   â””â”€â”€ hierarchy.ts
+â”‚   â”œâ”€â”€ linking/
+â”‚   â”‚   â”œâ”€â”€ cross-page.ts
+â”‚   â”‚   â””â”€â”€ broken-detect.ts
+â”‚   â”œâ”€â”€ entity/
+â”‚   â”‚   â””â”€â”€ codex-link.ts
+â”‚   â”œâ”€â”€ history/
+â”‚   â”‚   â””â”€â”€ via-cms.ts
+â”‚   â”œâ”€â”€ search/
+â”‚   â”‚   â””â”€â”€ via-search.ts
+â”‚   â”œâ”€â”€ recent-changes/
+â”‚   â”‚   â””â”€â”€ feed.ts
+â”‚   â”œâ”€â”€ watchlist/
+â”‚   â”‚   â””â”€â”€ via-notify.ts
+â”‚   â””â”€â”€ cli.ts
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — Page rendering + hierarchy
-### v0.2 — Cross-linking + broken-link detection
-### v0.3 — Codex entity linking
-### v0.4 — Search integration
-### v0.5 — Recent changes
-### v0.6 — Watchlists
-### v1.0 — Stable API
+### v0.1 â€” Page rendering + hierarchy
+### v0.2 â€” Cross-linking + broken-link detection
+### v0.3 â€” Codex entity linking
+### v0.4 â€” Search integration
+### v0.5 â€” Recent changes
+### v0.6 â€” Watchlists
+### v1.0 â€” Stable API
 
 ## Product potential
 
 **Internal:** NekoBattler wiki, Mara Kane codex, NekoSystems knowledge.
-**Open source release:** Modest — game-wiki niche less crowded than general wiki.
+**Open source release:** Modest â€” game-wiki niche less crowded than general wiki.
 **Commercial:** Marginal.
 
 ## Status

@@ -1,4 +1,4 @@
-# @nekostack/migrate
+﻿# @nekostack/migrate
 
 > Schema + data migrations with rollback strategy. Zero-downtime patterns. Backward-compatibility windows. The "evolve the database without breaking production" layer.
 
@@ -9,9 +9,8 @@
 | **Build tier** | Data layer |
 | **Depends on** | `schema` (version declarations), `audit` (migrations audited), `cli` (`neko migrate up`); external: Prisma migrate / Drizzle Kit as substrate |
 | **Used by** | every backend with a database; `import` (uses migration definitions during archive import); `backup` (snapshot before migrate) |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 8–14 weeks focused |
-| **Sellable?** | Modest — Prisma / Drizzle handle this; integration angle |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 8â€“14 weeks focused |
 
 ## Why this exists
 
@@ -44,7 +43,7 @@ Schema migrations are routine; the dangerous parts are:
 
 ## Boundary
 
-> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §25 for the full capability map.
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) Â§25 for the full capability map.
 
 ### Owns
 - Schema migration runner
@@ -94,49 +93,49 @@ Schema migrations are routine; the dangerous parts are:
 
 ```
 packages/migrate/
-├── src/
-│   ├── runner/
-│   │   ├── up.ts
-│   │   ├── down.ts            # rollback
-│   │   └── status.ts
-│   ├── data/
-│   │   ├── transform.ts       # row-level
-│   │   └── batch.ts
-│   ├── rollback/
-│   │   ├── strategy.ts
-│   │   └── forward-fix.ts
-│   ├── patterns/
-│   │   ├── zero-downtime.ts   # add-then-remove templates
-│   │   └── expand-contract.ts
-│   ├── audit/
-│   │   └── emit.ts
-│   ├── backup-hook/
-│   │   └── pre-migrate.ts
-│   ├── test/
-│   │   └── against-fixture.ts
-│   ├── adapters/
-│   │   ├── prisma.ts
-│   │   └── drizzle.ts
-│   └── cli.ts
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ runner/
+â”‚   â”‚   â”œâ”€â”€ up.ts
+â”‚   â”‚   â”œâ”€â”€ down.ts            # rollback
+â”‚   â”‚   â””â”€â”€ status.ts
+â”‚   â”œâ”€â”€ data/
+â”‚   â”‚   â”œâ”€â”€ transform.ts       # row-level
+â”‚   â”‚   â””â”€â”€ batch.ts
+â”‚   â”œâ”€â”€ rollback/
+â”‚   â”‚   â”œâ”€â”€ strategy.ts
+â”‚   â”‚   â””â”€â”€ forward-fix.ts
+â”‚   â”œâ”€â”€ patterns/
+â”‚   â”‚   â”œâ”€â”€ zero-downtime.ts   # add-then-remove templates
+â”‚   â”‚   â””â”€â”€ expand-contract.ts
+â”‚   â”œâ”€â”€ audit/
+â”‚   â”‚   â””â”€â”€ emit.ts
+â”‚   â”œâ”€â”€ backup-hook/
+â”‚   â”‚   â””â”€â”€ pre-migrate.ts
+â”‚   â”œâ”€â”€ test/
+â”‚   â”‚   â””â”€â”€ against-fixture.ts
+â”‚   â”œâ”€â”€ adapters/
+â”‚   â”‚   â”œâ”€â”€ prisma.ts
+â”‚   â”‚   â””â”€â”€ drizzle.ts
+â”‚   â””â”€â”€ cli.ts
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — Prisma adapter + up/down
-### v0.2 — Data migration with batching
-### v0.3 — Migration audit
-### v0.4 — Pre-migrate backup hook
-### v0.5 — Zero-downtime templates
-### v0.6 — Drizzle adapter
-### v0.7 — Test-against-fixture
-### v1.0 — Stable API
+### v0.1 â€” Prisma adapter + up/down
+### v0.2 â€” Data migration with batching
+### v0.3 â€” Migration audit
+### v0.4 â€” Pre-migrate backup hook
+### v0.5 â€” Zero-downtime templates
+### v0.6 â€” Drizzle adapter
+### v0.7 â€” Test-against-fixture
+### v1.0 â€” Stable API
 
 ## Product potential
 
 **Internal:** Required for any product with a database.
-**Open source release:** Modest — wraps mature substrates.
+**Open source release:** Modest â€” wraps mature substrates.
 **Commercial:** None.
 
 ## Status
@@ -144,4 +143,4 @@ packages/migrate/
 - **Current:** Empty placeholder.
 - **Owner:** Cody (solo dev).
 - **Priority tier:** Data layer.
-- **Estimated learning return:** High. Zero-downtime migration patterns, rollback strategies, expand-contract approach — production data engineering.
+- **Estimated learning return:** High. Zero-downtime migration patterns, rollback strategies, expand-contract approach â€” production data engineering.

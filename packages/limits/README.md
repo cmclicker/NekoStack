@@ -1,4 +1,4 @@
-# @nekostack/limits
+﻿# @nekostack/limits
 
 > Rate limiting, concurrency caps, abuse detection. The "too much, slow down" layer. Feeds denial input into `auth.AccessDecision`.
 
@@ -9,9 +9,8 @@
 | **Build tier** | Security |
 | **Depends on** | `schema` (limit policies), `auth` (rate-limit denials feed AccessDecision), `tenant` (per-tenant limits), `entitlements` (plan-based limits), `cache` / Redis (counters), `telemetry` (rate-limit hits) |
 | **Used by** | `api` (per-endpoint rate limiting), `auth` (login attempt limits), `webhooks` (per-source limits), `email` (send-rate limits), any product with abuse exposure |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 4–8 weeks focused |
-| **Sellable?** | Low — rate-limiter-flexible / Upstash dominate; library-level addition |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 4â€“8 weeks focused |
 
 ## Why this exists
 
@@ -43,7 +42,7 @@ Rate limits gate "too many requests" rather than "no permission." They're distin
 
 ## Boundary
 
-> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §13 for the full capability map.
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) Â§13 for the full capability map.
 
 ### Owns
 - Rate limit policies + algorithms
@@ -89,38 +88,38 @@ Rate limits gate "too many requests" rather than "no permission." They're distin
 
 ```
 packages/limits/
-├── src/
-│   ├── policy/
-│   │   └── policy.ts
-│   ├── algorithms/
-│   │   ├── token-bucket.ts
-│   │   └── sliding-window.ts
-│   ├── concurrency/
-│   │   └── cap.ts
-│   ├── burst/
-│   │   └── window.ts
-│   ├── abuse/
-│   │   ├── spike.ts
-│   │   └── repeat-offender.ts
-│   ├── decision/
-│   │   └── input.ts          # feeds auth
-│   ├── adapters/
-│   │   ├── nest.ts
-│   │   └── express.ts
-│   └── cli.ts
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ policy/
+â”‚   â”‚   â””â”€â”€ policy.ts
+â”‚   â”œâ”€â”€ algorithms/
+â”‚   â”‚   â”œâ”€â”€ token-bucket.ts
+â”‚   â”‚   â””â”€â”€ sliding-window.ts
+â”‚   â”œâ”€â”€ concurrency/
+â”‚   â”‚   â””â”€â”€ cap.ts
+â”‚   â”œâ”€â”€ burst/
+â”‚   â”‚   â””â”€â”€ window.ts
+â”‚   â”œâ”€â”€ abuse/
+â”‚   â”‚   â”œâ”€â”€ spike.ts
+â”‚   â”‚   â””â”€â”€ repeat-offender.ts
+â”‚   â”œâ”€â”€ decision/
+â”‚   â”‚   â””â”€â”€ input.ts          # feeds auth
+â”‚   â”œâ”€â”€ adapters/
+â”‚   â”‚   â”œâ”€â”€ nest.ts
+â”‚   â”‚   â””â”€â”€ express.ts
+â”‚   â””â”€â”€ cli.ts
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — Token bucket
-### v0.2 — Sliding window
-### v0.3 — Tenant + entitlement awareness
-### v0.4 — Concurrency limits
-### v0.5 — Abuse detection
-### v0.6 — Framework adapters
-### v1.0 — Stable API
+### v0.1 â€” Token bucket
+### v0.2 â€” Sliding window
+### v0.3 â€” Tenant + entitlement awareness
+### v0.4 â€” Concurrency limits
+### v0.5 â€” Abuse detection
+### v0.6 â€” Framework adapters
+### v1.0 â€” Stable API
 
 ## Product potential
 

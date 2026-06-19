@@ -44,7 +44,7 @@ Building this rather than adopting Zod is justified because:
 - GraphQL SDL output — could be a future generator; not in 1.0.
 - Runtime validation *library implementation* — we generate Zod schemas; we don't reimplement Zod's runtime.
 - Form rendering — `@nekostack/form`'s job; it consumes our schemas.
-- Schema *registry as a service* (hosted history, team permissions, governance) — future commercial layer above this package.
+- Schema *registry as a service* (hosted history, team permissions, governance) — out of scope for this package; belongs in a future hosted layer.
 
 ## Boundary
 
@@ -535,7 +535,7 @@ These are stable API contracts guaranteed not to change in v1.x.
 The Implementation contracts section pins the load-bearing decisions. The list below names what is **not yet** decided — labeled honestly rather than pretending everything is closed. Each item is a real choice that will need to land before or during the relevant phase.
 
 - **Discriminator value types.** Discriminated-union discriminators are presumed to be string literals (`s.literal("kind")`). Should we allow number literals too? Implications for OpenAPI emission TBD.
-- **Workspace vs package vs hosted registry resolution.** Registry-lite (v0.7) is local-only. The path to a future hosted registry (a commercial offering above this package) needs a lookup-precedence rule. Deferred.
+- **Workspace vs package vs hosted registry resolution.** Registry-lite (v0.7) is local-only. The path to a future hosted registry needs a lookup-precedence rule. Deferred.
 - **Per-tenant schema overlays.** Some SaaS consumers may want tenant-specific schema extensions (extra fields per tenant). Out of scope for v1; possibly Phase-9 / `@nekostack/entitlements`-adjacent.
 - **Generator plugin contract.** Third-party generators (e.g., a future Prisma generator, GraphQL SDL emitter) need a stable contract. Deferred until v1.0 / post-v1.
 - **Performance budgets.** No explicit perf targets yet. Will be set against Zod / TypeBox baselines.

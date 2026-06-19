@@ -1,4 +1,4 @@
-# @nekostack/motion
+﻿# @nekostack/motion
 
 > Animation + transition primitives. Spring physics, choreography, gesture-driven motion. Reduced-motion respect baked in.
 
@@ -9,13 +9,12 @@
 | **Build tier** | Frontend depth |
 | **Depends on** | `schema`, `theme` (reduced-motion variant), `a11y` |
 | **Used by** | `ui`, `editor`, `chart`, every UI surface with motion |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 6–10 weeks focused |
-| **Sellable?** | Low — Framer Motion dominates |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 6â€“10 weeks focused |
 
 ## Why this exists
 
-UI motion done right takes a real library. Framer Motion is excellent but heavyweight. `motion` is the NekoStack-conventional motion layer — lighter, integrates with theme, respects reduced-motion by default.
+UI motion done right takes a real library. Framer Motion is excellent but heavyweight. `motion` is the NekoStack-conventional motion layer â€” lighter, integrates with theme, respects reduced-motion by default.
 
 ## Scope
 
@@ -76,36 +75,36 @@ UI motion done right takes a real library. Framer Motion is excellent but heavyw
 
 ```
 packages/motion/
-├── src/
-│   ├── spring/
-│   │   └── physics.ts
-│   ├── tween/
-│   │   └── ease.ts
-│   ├── choreography/
-│   │   ├── sequence.ts
-│   │   └── parallel.ts
-│   ├── gesture/
-│   │   ├── drag.ts
-│   │   └── scroll.ts
-│   ├── reduced-motion/
-│   │   └── respect.ts
-│   ├── layout/
-│   │   └── flip.ts
-│   └── transition/
-│       ├── enter.ts
-│       └── exit.ts
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ spring/
+â”‚   â”‚   â””â”€â”€ physics.ts
+â”‚   â”œâ”€â”€ tween/
+â”‚   â”‚   â””â”€â”€ ease.ts
+â”‚   â”œâ”€â”€ choreography/
+â”‚   â”‚   â”œâ”€â”€ sequence.ts
+â”‚   â”‚   â””â”€â”€ parallel.ts
+â”‚   â”œâ”€â”€ gesture/
+â”‚   â”‚   â”œâ”€â”€ drag.ts
+â”‚   â”‚   â””â”€â”€ scroll.ts
+â”‚   â”œâ”€â”€ reduced-motion/
+â”‚   â”‚   â””â”€â”€ respect.ts
+â”‚   â”œâ”€â”€ layout/
+â”‚   â”‚   â””â”€â”€ flip.ts
+â”‚   â””â”€â”€ transition/
+â”‚       â”œâ”€â”€ enter.ts
+â”‚       â””â”€â”€ exit.ts
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — Spring + tween
-### v0.2 — Choreography
-### v0.3 — Gesture
-### v0.4 — Reduced-motion
-### v0.5 — Layout animations
-### v1.0 — Stable API
+### v0.1 â€” Spring + tween
+### v0.2 â€” Choreography
+### v0.3 â€” Gesture
+### v0.4 â€” Reduced-motion
+### v0.5 â€” Layout animations
+### v1.0 â€” Stable API
 
 ## Product potential
 

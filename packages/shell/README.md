@@ -1,4 +1,4 @@
-# @nekostack/shell
+﻿# @nekostack/shell
 
 > Tauri / Electron native wrapping patterns. Native bridges, packaging, code-signing, auto-update. The "ship a web app as a desktop / mobile native" layer.
 
@@ -9,9 +9,8 @@
 | **Build tier** | Cross-platform |
 | **Depends on** | `schema`, `secrets` (signing certificates), `audit`; external: Tauri or Electron |
 | **Used by** | NekoBattler (already has `src-tauri`!), NekoVibe (desktop wrapper), Leytide (native client option), any web project shipping native |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 8–14 weeks focused |
-| **Sellable?** | Low — Tauri / Electron are the substrates |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 8â€“14 weeks focused |
 
 ## Why this exists
 
@@ -22,7 +21,7 @@ NekoBattler already uses Tauri. Wrapping a web app native is more than `tauri in
 ### In scope
 - Tauri adapter (primary).
 - Electron adapter (alternative).
-- Native ↔ JS bridge patterns.
+- Native â†” JS bridge patterns.
 - Packaging for macOS / Windows / Linux.
 - Code-signing.
 - Auto-update channels (stable / beta / canary).
@@ -77,42 +76,42 @@ NekoBattler already uses Tauri. Wrapping a web app native is more than `tauri in
 
 ```
 packages/shell/
-├── src/
-│   ├── tauri/
-│   │   ├── bridge.ts
-│   │   └── config.ts
-│   ├── electron/
-│   │   └── adapter.ts
-│   ├── bridge/
-│   │   └── ipc.ts
-│   ├── packaging/
-│   │   ├── macos.ts
-│   │   ├── windows.ts
-│   │   └── linux.ts
-│   ├── signing/
-│   │   └── code-sign.ts
-│   ├── auto-update/
-│   │   ├── channels.ts
-│   │   └── delivery.ts
-│   ├── deep-links/
-│   │   └── handle.ts
-│   └── native/
-│       ├── menu.ts
-│       └── tray.ts
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ tauri/
+â”‚   â”‚   â”œâ”€â”€ bridge.ts
+â”‚   â”‚   â””â”€â”€ config.ts
+â”‚   â”œâ”€â”€ electron/
+â”‚   â”‚   â””â”€â”€ adapter.ts
+â”‚   â”œâ”€â”€ bridge/
+â”‚   â”‚   â””â”€â”€ ipc.ts
+â”‚   â”œâ”€â”€ packaging/
+â”‚   â”‚   â”œâ”€â”€ macos.ts
+â”‚   â”‚   â”œâ”€â”€ windows.ts
+â”‚   â”‚   â””â”€â”€ linux.ts
+â”‚   â”œâ”€â”€ signing/
+â”‚   â”‚   â””â”€â”€ code-sign.ts
+â”‚   â”œâ”€â”€ auto-update/
+â”‚   â”‚   â”œâ”€â”€ channels.ts
+â”‚   â”‚   â””â”€â”€ delivery.ts
+â”‚   â”œâ”€â”€ deep-links/
+â”‚   â”‚   â””â”€â”€ handle.ts
+â”‚   â””â”€â”€ native/
+â”‚       â”œâ”€â”€ menu.ts
+â”‚       â””â”€â”€ tray.ts
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — Tauri adapter
-### v0.2 — Native bridge patterns
-### v0.3 — Packaging (macOS / Windows / Linux)
-### v0.4 — Code-signing
-### v0.5 — Auto-update
-### v0.6 — Deep links
-### v0.7 — Electron adapter
-### v1.0 — Stable API
+### v0.1 â€” Tauri adapter
+### v0.2 â€” Native bridge patterns
+### v0.3 â€” Packaging (macOS / Windows / Linux)
+### v0.4 â€” Code-signing
+### v0.5 â€” Auto-update
+### v0.6 â€” Deep links
+### v0.7 â€” Electron adapter
+### v1.0 â€” Stable API
 
 ## Product potential
 

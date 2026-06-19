@@ -1,4 +1,4 @@
-# @nekostack/seed
+﻿# @nekostack/seed
 
 > Seed data + fixtures + demo content. Plausible test/demo data for any NekoStack project.
 
@@ -9,9 +9,8 @@
 | **Build tier** | Documentation / scaffolding |
 | **Depends on** | `schema` (seed data shapes), `test` (factory primitives), `random`, `id`, `tenant` |
 | **Used by** | dev environment bootstrap, demo deployments, tests, `templates` includes seeds |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 2–4 weeks focused |
-| **Sellable?** | Low — small support module |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 2â€“4 weeks focused |
 
 ## Why this exists
 
@@ -25,7 +24,7 @@ Note: smaller scope than other packages. Could be a few files inside each projec
 - Seed data factories per domain (users / tenants / champions / etc.).
 - Demo-content generators (realistic-looking data).
 - Multi-tenant seed (populate multiple tenants).
-- Deterministic seeding (same seed → same dataset).
+- Deterministic seeding (same seed â†’ same dataset).
 - CLI: `neko seed apply` / `seed clear`.
 
 ### Out of scope
@@ -68,36 +67,36 @@ Note: smaller scope than other packages. Could be a few files inside each projec
 
 - **Plausible, not random.** Real-looking names, real-looking data.
 - **Multi-tenant by default.** Most products are multi-tenant; seed both.
-- **Deterministic.** Same seed → same dataset.
+- **Deterministic.** Same seed â†’ same dataset.
 
 ## Architecture sketch
 
 ```
 packages/seed/
-├── src/
-│   ├── factories/
-│   │   ├── users.ts
-│   │   ├── tenants.ts
-│   │   └── domain-specific.ts
-│   ├── demo/
-│   │   └── content.ts
-│   ├── multi-tenant/
-│   │   └── populate.ts
-│   ├── deterministic/
-│   │   └── seed.ts             # via random
-│   └── cli.ts                  # `neko seed apply / clear`
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ factories/
+â”‚   â”‚   â”œâ”€â”€ users.ts
+â”‚   â”‚   â”œâ”€â”€ tenants.ts
+â”‚   â”‚   â””â”€â”€ domain-specific.ts
+â”‚   â”œâ”€â”€ demo/
+â”‚   â”‚   â””â”€â”€ content.ts
+â”‚   â”œâ”€â”€ multi-tenant/
+â”‚   â”‚   â””â”€â”€ populate.ts
+â”‚   â”œâ”€â”€ deterministic/
+â”‚   â”‚   â””â”€â”€ seed.ts             # via random
+â”‚   â””â”€â”€ cli.ts                  # `neko seed apply / clear`
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — Basic factories (users / tenants)
-### v0.2 — Domain-specific seeds per consumer
-### v0.3 — Demo content
-### v0.4 — Multi-tenant
-### v0.5 — CLI
-### v1.0 — Stable API
+### v0.1 â€” Basic factories (users / tenants)
+### v0.2 â€” Domain-specific seeds per consumer
+### v0.3 â€” Demo content
+### v0.4 â€” Multi-tenant
+### v0.5 â€” CLI
+### v1.0 â€” Stable API
 
 ## Product potential
 
@@ -109,5 +108,5 @@ packages/seed/
 
 - **Current:** Empty placeholder.
 - **Owner:** Cody (solo dev).
-- **Priority tier:** Documentation / scaffolding — supporting.
+- **Priority tier:** Documentation / scaffolding â€” supporting.
 - **Estimated learning return:** Moderate. Realistic data generation, deterministic seeding.

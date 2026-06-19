@@ -1,4 +1,4 @@
-# @nekostack/map
+﻿# @nekostack/map
 
 > Spatial UI / pan-zoom / map rendering. Real-world geographic maps and abstract zoomable canvases. Distinct from `tilemap` (game-tile grids).
 
@@ -9,9 +9,8 @@
 | **Build tier** | Frontend depth |
 | **Depends on** | `schema`, `ui`, `theme`, `canvas`, `motion` (smooth zoom), `a11y` |
 | **Used by** | Leytide (world maps for non-tile views), NekoSystems (process maps), business-ops (location maps), narrative tools (story maps), retail-ops (store layouts) |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 10–14 weeks focused |
-| **Sellable?** | Modest — MapLibre / Leaflet dominate geographic; abstract-map niche less crowded |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 10â€“14 weeks focused |
 
 ## Why this exists
 
@@ -81,43 +80,43 @@ Two distinct "map" use cases:
 
 ```
 packages/map/
-├── src/
-│   ├── viewport/
-│   │   ├── pan.ts
-│   │   └── zoom.ts
-│   ├── tiles/
-│   │   ├── geographic.ts
-│   │   └── custom.ts
-│   ├── markers/
-│   │   ├── marker.tsx
-│   │   └── cluster.ts
-│   ├── overlays/
-│   │   └── render.tsx
-│   ├── interaction/
-│   │   ├── click.ts
-│   │   └── hover.ts
-│   ├── coordinates/
-│   │   └── transform.ts
-│   └── a11y/
-│       └── kbd-nav.ts
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ viewport/
+â”‚   â”‚   â”œâ”€â”€ pan.ts
+â”‚   â”‚   â””â”€â”€ zoom.ts
+â”‚   â”œâ”€â”€ tiles/
+â”‚   â”‚   â”œâ”€â”€ geographic.ts
+â”‚   â”‚   â””â”€â”€ custom.ts
+â”‚   â”œâ”€â”€ markers/
+â”‚   â”‚   â”œâ”€â”€ marker.tsx
+â”‚   â”‚   â””â”€â”€ cluster.ts
+â”‚   â”œâ”€â”€ overlays/
+â”‚   â”‚   â””â”€â”€ render.tsx
+â”‚   â”œâ”€â”€ interaction/
+â”‚   â”‚   â”œâ”€â”€ click.ts
+â”‚   â”‚   â””â”€â”€ hover.ts
+â”‚   â”œâ”€â”€ coordinates/
+â”‚   â”‚   â””â”€â”€ transform.ts
+â”‚   â””â”€â”€ a11y/
+â”‚       â””â”€â”€ kbd-nav.ts
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — Pan / zoom + custom imagery
-### v0.2 — Markers + overlays
-### v0.3 — Interaction (click, hover)
-### v0.4 — Clustering
-### v0.5 — Geographic tile servers
-### v0.6 — Accessibility
-### v1.0 — Stable API
+### v0.1 â€” Pan / zoom + custom imagery
+### v0.2 â€” Markers + overlays
+### v0.3 â€” Interaction (click, hover)
+### v0.4 â€” Clustering
+### v0.5 â€” Geographic tile servers
+### v0.6 â€” Accessibility
+### v1.0 â€” Stable API
 
 ## Product potential
 
 **Internal:** Leytide especially.
-**Open source release:** Plausible — abstract-map niche less crowded.
+**Open source release:** Plausible â€” abstract-map niche less crowded.
 **Commercial:** None.
 
 ## Status

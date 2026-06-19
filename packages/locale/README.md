@@ -1,4 +1,4 @@
-# @nekostack/locale
+﻿# @nekostack/locale
 
 > i18n / translation: catalogs, ICU MessageFormat, pluralization, date / number / currency formatting, RTL, fallback chains. The "this app speaks more than English" layer.
 
@@ -9,9 +9,8 @@
 | **Build tier** | Ops |
 | **Depends on** | `schema` (translation catalog shape), `audit` (translation changes); external: ICU MessageFormat library, Intl APIs |
 | **Used by** | every product going beyond English; `cms` (localized content), `email` (localized templates), `notify` (localized notifications), `form` (validation messages), `story` (narrative localization) |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 6–10 weeks focused |
-| **Sellable?** | Low — react-i18next / formatjs dominate |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 6â€“10 weeks focused |
 
 ## Why this exists
 
@@ -31,13 +30,13 @@ Localization seems easy ("just translate strings") and isn't:
 - Pluralization (CLDR rules).
 - Date / number / currency formatting (Intl APIs).
 - RTL support.
-- Locale fallback chains (en-US → en → default).
+- Locale fallback chains (en-US â†’ en â†’ default).
 - Translation extraction from code.
 - Missing-key detection.
 - Translation file generation (JSON / PO / XLIFF).
 
 ### Out of scope
-- Translation services (DeepL / Google Translate — external).
+- Translation services (DeepL / Google Translate â€” external).
 - Region / jurisdiction handling (`compliance`).
 - Audio dubbing.
 
@@ -86,43 +85,43 @@ Localization seems easy ("just translate strings") and isn't:
 
 ```
 packages/locale/
-├── src/
-│   ├── catalog/
-│   │   └── load.ts
-│   ├── icu/
-│   │   └── format.ts
-│   ├── plural/
-│   │   └── cldr.ts
-│   ├── format/
-│   │   ├── date.ts
-│   │   ├── number.ts
-│   │   └── currency.ts
-│   ├── rtl/
-│   │   └── direction.ts
-│   ├── fallback/
-│   │   └── chain.ts
-│   ├── extract/
-│   │   └── from-code.ts
-│   ├── missing/
-│   │   └── detect.ts
-│   └── files/
-│       ├── json.ts
-│       ├── po.ts
-│       └── xliff.ts
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ catalog/
+â”‚   â”‚   â””â”€â”€ load.ts
+â”‚   â”œâ”€â”€ icu/
+â”‚   â”‚   â””â”€â”€ format.ts
+â”‚   â”œâ”€â”€ plural/
+â”‚   â”‚   â””â”€â”€ cldr.ts
+â”‚   â”œâ”€â”€ format/
+â”‚   â”‚   â”œâ”€â”€ date.ts
+â”‚   â”‚   â”œâ”€â”€ number.ts
+â”‚   â”‚   â””â”€â”€ currency.ts
+â”‚   â”œâ”€â”€ rtl/
+â”‚   â”‚   â””â”€â”€ direction.ts
+â”‚   â”œâ”€â”€ fallback/
+â”‚   â”‚   â””â”€â”€ chain.ts
+â”‚   â”œâ”€â”€ extract/
+â”‚   â”‚   â””â”€â”€ from-code.ts
+â”‚   â”œâ”€â”€ missing/
+â”‚   â”‚   â””â”€â”€ detect.ts
+â”‚   â””â”€â”€ files/
+â”‚       â”œâ”€â”€ json.ts
+â”‚       â”œâ”€â”€ po.ts
+â”‚       â””â”€â”€ xliff.ts
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — Catalog loading + ICU MessageFormat
-### v0.2 — Date / number / currency formatting
-### v0.3 — Pluralization
-### v0.4 — RTL support
-### v0.5 — Fallback chains
-### v0.6 — Extraction + missing-key detection
-### v0.7 — File format generation
-### v1.0 — Stable API
+### v0.1 â€” Catalog loading + ICU MessageFormat
+### v0.2 â€” Date / number / currency formatting
+### v0.3 â€” Pluralization
+### v0.4 â€” RTL support
+### v0.5 â€” Fallback chains
+### v0.6 â€” Extraction + missing-key detection
+### v0.7 â€” File format generation
+### v1.0 â€” Stable API
 
 ## Product potential
 
@@ -135,4 +134,4 @@ packages/locale/
 - **Current:** Empty placeholder.
 - **Owner:** Cody (solo dev).
 - **Priority tier:** Ops.
-- **Estimated learning return:** High. ICU MessageFormat depth, pluralization, RTL, fallback chains — underrated production skills.
+- **Estimated learning return:** High. ICU MessageFormat depth, pluralization, RTL, fallback chains â€” underrated production skills.

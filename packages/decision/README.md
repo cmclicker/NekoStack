@@ -1,17 +1,16 @@
-# @nekostack/decision
+﻿# @nekostack/decision
 
-> Architectural and product decision records (ADRs) as first-class typed entities. Why did we pick this approach? What did we reject? When does the decision expire and need re-review? Decisions, rationale, and dependency between decisions — not buried in commit messages or chat history.
+> Architectural and product decision records (ADRs) as first-class typed entities. Why did we pick this approach? What did we reject? When does the decision expire and need re-review? Decisions, rationale, and dependency between decisions â€” not buried in commit messages or chat history.
 
 ## Quick reference
 
 | | |
 |---|---|
-| **Build tier** | Meta / control plane — load-bearing for solo dev with multi-year projects |
+| **Build tier** | Meta / control plane â€” load-bearing for solo dev with multi-year projects |
 | **Depends on** | `schema` (decision shape), `codex` (decisions as entities), `graph` (decision dependency DAG), `time` (review dates), `path` (decisions link to milestones), `provenance` (decisions cite source) |
 | **Used by** | `path` (milestones cite decisions), `governance` (policies cite decisions as rationale), `review` (decision approval), Claude sessions reading historical context, future-you returning to a project |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 6–10 weeks focused |
-| **Sellable?** | Plausible — ADRs-as-code is undersupplied; commercial "decision intelligence" angle exists but niche |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 6â€“10 weeks focused |
 
 ## Why this exists
 
@@ -53,7 +52,7 @@ Building this rather than using a `docs/adr/` folder with markdown is justified 
 
 ## Boundary
 
-> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §4 for the full capability map.
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) Â§4 for the full capability map.
 
 ### Owns
 - Architectural decision records (ADRs)
@@ -89,7 +88,7 @@ Building this rather than using a `docs/adr/` folder with markdown is justified 
 | **GitHub Discussions / issues** | Threaded. | Not decision-shaped; rationale rots. |
 | **Custom `docs/adr/` markdown** | Common practice. | What this package replaces with structure. |
 
-The right framing: **adr-tools' ergonomics + Backstage's structure + LLM-readable typed records + a dependency graph.** Closest analogue: imagine if every architectural decision in your codebase was a typed entity in `codex` — that's this.
+The right framing: **adr-tools' ergonomics + Backstage's structure + LLM-readable typed records + a dependency graph.** Closest analogue: imagine if every architectural decision in your codebase was a typed entity in `codex` â€” that's this.
 
 ## How this fits the NekoStack
 
@@ -115,26 +114,26 @@ The right framing: **adr-tools' ergonomics + Backstage's structure + LLM-readabl
 
 ```
 packages/decision/
-├── src/
-│   ├── record/
-│   │   ├── decision.ts       # Decision type
-│   │   ├── lifecycle.ts      # status enum + transitions
-│   │   └── supersession.ts   # chain handling
-│   ├── graph/
-│   │   ├── depends-on.ts     # decision-to-decision edges
-│   │   └── traverse.ts       # via @nekostack/graph
-│   ├── review/
-│   │   ├── schedule.ts       # review-date assignment
-│   │   └── due.ts            # which decisions are due for review
-│   ├── linkage/
-│   │   ├── milestone.ts      # path integration
-│   │   ├── policy.ts         # governance integration
-│   │   └── provenance.ts     # code-region linkage
-│   ├── search/
-│   │   └── query.ts          # by status, topic, age
-│   └── cli.ts                # `neko decision new / list / review`
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ record/
+â”‚   â”‚   â”œâ”€â”€ decision.ts       # Decision type
+â”‚   â”‚   â”œâ”€â”€ lifecycle.ts      # status enum + transitions
+â”‚   â”‚   â””â”€â”€ supersession.ts   # chain handling
+â”‚   â”œâ”€â”€ graph/
+â”‚   â”‚   â”œâ”€â”€ depends-on.ts     # decision-to-decision edges
+â”‚   â”‚   â””â”€â”€ traverse.ts       # via @nekostack/graph
+â”‚   â”œâ”€â”€ review/
+â”‚   â”‚   â”œâ”€â”€ schedule.ts       # review-date assignment
+â”‚   â”‚   â””â”€â”€ due.ts            # which decisions are due for review
+â”‚   â”œâ”€â”€ linkage/
+â”‚   â”‚   â”œâ”€â”€ milestone.ts      # path integration
+â”‚   â”‚   â”œâ”€â”€ policy.ts         # governance integration
+â”‚   â”‚   â””â”€â”€ provenance.ts     # code-region linkage
+â”‚   â”œâ”€â”€ search/
+â”‚   â”‚   â””â”€â”€ query.ts          # by status, topic, age
+â”‚   â””â”€â”€ cli.ts                # `neko decision new / list / review`
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 Example decision:
@@ -164,38 +163,38 @@ export const splitPermissionsFromAuth = defineDecision({
 
 ## Roadmap
 
-### v0.1 — Decision record DSL
+### v0.1 â€” Decision record DSL
 - Type + lifecycle states + persistence.
 
-### v0.2 — Supersession + dependencies
+### v0.2 â€” Supersession + dependencies
 - Chain handling.
 - Graph integration.
 
-### v0.3 — Review dates
+### v0.3 â€” Review dates
 - Scheduling + due-list query.
 
-### v0.4 — Linkage
+### v0.4 â€” Linkage
 - To milestones (`path`).
 - To policies (`governance`).
 - To code regions (`provenance`).
 
-### v0.5 — Search + filter
+### v0.5 â€” Search + filter
 - By status, topic, age, area.
 
-### v0.6 — CLI + structured output
+### v0.6 â€” CLI + structured output
 - `neko decision new` wizard.
 - JSON output for LLM consumption.
 
-### v0.7 — Markdown rendering
+### v0.7 â€” Markdown rendering
 - Decisions rendered for `wiki` / `docs` consumption.
 
-### v1.0 — Stable API
+### v1.0 â€” Stable API
 - Documentation site.
 - LLM session-context patterns.
 
 ## Product potential
 
-**Internal:** High — every multi-year project needs this to avoid re-litigating decisions every six months.
+**Internal:** High â€” every multi-year project needs this to avoid re-litigating decisions every six months.
 
 **Open source release:** Plausible. ADRs-as-code is genuinely undersupplied; most projects either skip ADRs or write free-form markdown that rots.
 
@@ -206,4 +205,4 @@ export const splitPermissionsFromAuth = defineDecision({
 - **Current:** Empty placeholder. Not started.
 - **Owner:** Cody (solo dev).
 - **Priority tier:** Meta / control plane. Build after `path` and `codex` since decisions are typed entities citing milestones.
-- **Estimated learning return:** High. ADR design patterns, decision lifecycle, supersession-vs-versioning models, LLM-readable typed records — all transferable.
+- **Estimated learning return:** High. ADR design patterns, decision lifecycle, supersession-vs-versioning models, LLM-readable typed records â€” all transferable.

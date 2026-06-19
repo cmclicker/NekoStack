@@ -1,4 +1,4 @@
-# @nekostack/id
+﻿# @nekostack/id
 
 > ID generation: UUID / ULID / nanoid / branded types / deterministic IDs / slugs / tenant-scoped IDs. The "what's the canonical ID format here?" layer.
 
@@ -9,9 +9,8 @@
 | **Build tier** | Utility primitives |
 | **Depends on** | `schema` (branded ID types), `tenant` (tenant-scoped IDs), `crypto` (cryptographic random); external: uuid, ulid, nanoid |
 | **Used by** | every package generating IDs |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 2–4 weeks focused |
-| **Sellable?** | Low — substrate |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 2â€“4 weeks focused |
 
 ## Why this exists
 
@@ -23,7 +22,7 @@ Every project generates IDs. Without a convention: some use UUID v4, some ULID, 
 - UUID v4 / v7 generation.
 - ULID generation (time-sortable).
 - nanoid (short, URL-safe).
-- Branded TypeScript IDs (`UserId`, `TenantId` — compile-error if mixed).
+- Branded TypeScript IDs (`UserId`, `TenantId` â€” compile-error if mixed).
 - Deterministic IDs (content-addressable hashes).
 - Slug generation from strings.
 - Tenant-scoped IDs (`<tenant>:<resource>:<id>`).
@@ -70,7 +69,7 @@ Every project generates IDs. Without a convention: some use UUID v4, some ULID, 
 
 ## Design philosophy
 
-- **Branded types catch bugs.** `UserId` ≠ `TenantId`; compiler enforces.
+- **Branded types catch bugs.** `UserId` â‰  `TenantId`; compiler enforces.
 - **Time-sortable when sensible.** ULID over UUID v4 for log-shaped data.
 - **Prefixes are conventions.** `usr_xxx` is more debuggable than `xxx`.
 - **Tenant-scoped IDs explicit.** Cross-tenant references can't collide.
@@ -79,40 +78,40 @@ Every project generates IDs. Without a convention: some use UUID v4, some ULID, 
 
 ```
 packages/id/
-├── src/
-│   ├── uuid/
-│   │   ├── v4.ts
-│   │   └── v7.ts
-│   ├── ulid/
-│   │   └── generate.ts
-│   ├── nanoid/
-│   │   └── generate.ts
-│   ├── branded/
-│   │   └── type.ts
-│   ├── deterministic/
-│   │   └── content-hash.ts     # via crypto
-│   ├── slug/
-│   │   └── generate.ts
-│   ├── tenant-scoped/
-│   │   └── format.ts           # via tenant
-│   ├── prefix/
-│   │   └── convention.ts
-│   └── validate/
-│       └── check.ts
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ uuid/
+â”‚   â”‚   â”œâ”€â”€ v4.ts
+â”‚   â”‚   â””â”€â”€ v7.ts
+â”‚   â”œâ”€â”€ ulid/
+â”‚   â”‚   â””â”€â”€ generate.ts
+â”‚   â”œâ”€â”€ nanoid/
+â”‚   â”‚   â””â”€â”€ generate.ts
+â”‚   â”œâ”€â”€ branded/
+â”‚   â”‚   â””â”€â”€ type.ts
+â”‚   â”œâ”€â”€ deterministic/
+â”‚   â”‚   â””â”€â”€ content-hash.ts     # via crypto
+â”‚   â”œâ”€â”€ slug/
+â”‚   â”‚   â””â”€â”€ generate.ts
+â”‚   â”œâ”€â”€ tenant-scoped/
+â”‚   â”‚   â””â”€â”€ format.ts           # via tenant
+â”‚   â”œâ”€â”€ prefix/
+â”‚   â”‚   â””â”€â”€ convention.ts
+â”‚   â””â”€â”€ validate/
+â”‚       â””â”€â”€ check.ts
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — UUID / ULID / nanoid wrappers
-### v0.2 — Branded types
-### v0.3 — Slug generation
-### v0.4 — Prefix conventions
-### v0.5 — Tenant-scoped IDs
-### v0.6 — Deterministic IDs
-### v0.7 — Validation
-### v1.0 — Stable API
+### v0.1 â€” UUID / ULID / nanoid wrappers
+### v0.2 â€” Branded types
+### v0.3 â€” Slug generation
+### v0.4 â€” Prefix conventions
+### v0.5 â€” Tenant-scoped IDs
+### v0.6 â€” Deterministic IDs
+### v0.7 â€” Validation
+### v1.0 â€” Stable API
 
 ## Product potential
 

@@ -1,4 +1,4 @@
-# @nekostack/admin
+﻿# @nekostack/admin
 
 > Admin dashboard starter. Drop-in surfaces for users, audit log, feature flags, entitlements, content moderation, system health. The internal-facing UI every product needs and no product wants to build twice.
 
@@ -6,29 +6,28 @@
 
 | | |
 |---|---|
-| **Build tier** | SaaS layer — build *after* underlying packages (auth, audit, flags, entitlements) so it has data to surface |
+| **Build tier** | SaaS layer â€” build *after* underlying packages (auth, audit, flags, entitlements) so it has data to surface |
 | **Depends on** | `ui`, `table`, `auth` (admin role gating + user data), `audit`, `flags`, `entitlements`, `health`, `jobs`, `tenant` |
 | **Used by** | every product with admin surface area: NekoVibe (user / cosmetic / abuse admin), NekoSystems (tenant / workflow / billing admin), Leytide (GM admin), retail-ops, future products |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 12–20 weeks focused |
-| **Sellable?** | Unlikely independent traction (Refine/React Admin/Tremor crowded); this is the package where **using Refine is a legitimate retreat** if it becomes a slog |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 12â€“20 weeks focused |
 
 ## Why this exists
 
 Every product, once it has any users, needs an admin surface. The basic needs:
 
-- **User management** — find users, view their state, suspend / unsuspend, impersonate.
-- **Audit log browser** — who did what, when, with what result. Filtered, searchable.
-- **Feature flags + entitlements editor** — toggle flags, change plans, override limits.
-- **Content moderation queue** — flagged content, abusive reports, review actions.
-- **System health** — service status, error rates, recent telemetry.
-- **Job + queue monitoring** — background job status, retries, dead letters.
-- **Tenant management** — for multi-tenant products, list and inspect tenants.
+- **User management** â€” find users, view their state, suspend / unsuspend, impersonate.
+- **Audit log browser** â€” who did what, when, with what result. Filtered, searchable.
+- **Feature flags + entitlements editor** â€” toggle flags, change plans, override limits.
+- **Content moderation queue** â€” flagged content, abusive reports, review actions.
+- **System health** â€” service status, error rates, recent telemetry.
+- **Job + queue monitoring** â€” background job status, retries, dead letters.
+- **Tenant management** â€” for multi-tenant products, list and inspect tenants.
 
 These are not unique per product. They are *exactly* the same across every NekoStack-shaped product, varying only in which schemas they show. A shared admin starter that auto-wires from `@nekostack/auth` users, `@nekostack/audit` records, `@nekostack/flags` toggles, etc., saves weeks per product.
 
 This is the package where the **honest call** from the earlier conversation lives: the wheel here is **close to round** in the React Admin / Refine / Tremor ecosystem. Building this yourself is justified primarily because:
-1. **Learning admin-UX patterns** — table virtualization, bulk actions, role-gated UI, audit log presentation, real-time monitoring dashboards.
+1. **Learning admin-UX patterns** â€” table virtualization, bulk actions, role-gated UI, audit log presentation, real-time monitoring dashboards.
 2. **Auto-wiring from the rest of the stack.** Refine and React Admin don't know about NekoStack's specific shapes; ours does.
 3. **No commercial-license headaches.** Some admin frameworks have non-trivial licensing.
 
@@ -53,7 +52,7 @@ But: if at any point this becomes a slog and Refine fits, **using Refine is a le
 
 ## Boundary
 
-> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §13 (admin sections across SaaS / observability tiers).
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) Â§13 (admin sections across SaaS / observability tiers).
 
 ### Owns
 - Admin shell (layout / nav / auth-gate)
@@ -97,14 +96,14 @@ The right framing: **Refine is the closest legitimate alternative.** Building ou
 ## How this fits the NekoStack
 
 **Depends on:**
-- `@nekostack/ui` — base components.
-- `@nekostack/table` — admin tables.
-- `@nekostack/auth` — admin role gating + user data.
-- `@nekostack/audit` — audit log surface.
-- `@nekostack/flags` — flag toggle surface.
-- `@nekostack/entitlements` — plan/limit surface.
-- `@nekostack/health` — health probe surface.
-- `@nekostack/jobs` — job monitoring surface.
+- `@nekostack/ui` â€” base components.
+- `@nekostack/table` â€” admin tables.
+- `@nekostack/auth` â€” admin role gating + user data.
+- `@nekostack/audit` â€” audit log surface.
+- `@nekostack/flags` â€” flag toggle surface.
+- `@nekostack/entitlements` â€” plan/limit surface.
+- `@nekostack/health` â€” health probe surface.
+- `@nekostack/jobs` â€” job monitoring surface.
 
 **Used by:**
 - Every product with administrative surface area: NekoVibe (user / cosmetic / abuse admin), NekoSystems (tenant / workflow / billing admin), retail-ops (operations admin), Leytide (GM admin), future products.
@@ -122,31 +121,31 @@ The right framing: **Refine is the closest legitimate alternative.** Building ou
 
 ```
 packages/admin/
-├── src/
-│   ├── surfaces/
-│   │   ├── users/
-│   │   ├── audit/
-│   │   ├── flags/
-│   │   ├── entitlements/
-│   │   ├── moderation/
-│   │   ├── health/
-│   │   ├── jobs/
-│   │   └── tenants/
-│   ├── shell/
-│   │   ├── layout.tsx
-│   │   ├── nav.tsx
-│   │   └── auth-gate.tsx
-│   ├── primitives/
-│   │   ├── data-table.tsx
-│   │   ├── bulk-action.tsx
-│   │   └── confirm-modal.tsx
-│   ├── impersonation/
-│   │   ├── token.ts
-│   │   └── banner.tsx
-│   ├── register.ts           # add custom surfaces
-│   └── theme.ts              # admin-specific theme overrides
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ surfaces/
+â”‚   â”‚   â”œâ”€â”€ users/
+â”‚   â”‚   â”œâ”€â”€ audit/
+â”‚   â”‚   â”œâ”€â”€ flags/
+â”‚   â”‚   â”œâ”€â”€ entitlements/
+â”‚   â”‚   â”œâ”€â”€ moderation/
+â”‚   â”‚   â”œâ”€â”€ health/
+â”‚   â”‚   â”œâ”€â”€ jobs/
+â”‚   â”‚   â””â”€â”€ tenants/
+â”‚   â”œâ”€â”€ shell/
+â”‚   â”‚   â”œâ”€â”€ layout.tsx
+â”‚   â”‚   â”œâ”€â”€ nav.tsx
+â”‚   â”‚   â””â”€â”€ auth-gate.tsx
+â”‚   â”œâ”€â”€ primitives/
+â”‚   â”‚   â”œâ”€â”€ data-table.tsx
+â”‚   â”‚   â”œâ”€â”€ bulk-action.tsx
+â”‚   â”‚   â””â”€â”€ confirm-modal.tsx
+â”‚   â”œâ”€â”€ impersonation/
+â”‚   â”‚   â”œâ”€â”€ token.ts
+â”‚   â”‚   â””â”€â”€ banner.tsx
+â”‚   â”œâ”€â”€ register.ts           # add custom surfaces
+â”‚   â””â”€â”€ theme.ts              # admin-specific theme overrides
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 Usage:
@@ -164,33 +163,33 @@ export default function Admin() {
 
 ## Roadmap
 
-### v0.1 — Shell + auth gate
+### v0.1 â€” Shell + auth gate
 - Layout, nav, role-gated routing.
 - Auth integration.
 
-### v0.2 — Users surface
+### v0.2 â€” Users surface
 - List, view, suspend.
 
-### v0.3 — Audit surface
+### v0.3 â€” Audit surface
 - Search, filter, export.
 
-### v0.4 — Flags + entitlements
+### v0.4 â€” Flags + entitlements
 - Toggle flags, change plans, override limits.
 
-### v0.5 — Health + jobs
+### v0.5 â€” Health + jobs
 - Service status, job monitoring.
 
-### v0.6 — Moderation
+### v0.6 â€” Moderation
 - Flagged-content queue.
 - Review actions.
 
-### v0.7 — Impersonation
+### v0.7 â€” Impersonation
 - Time-limited tokens, visible banner, audit.
 
-### v0.8 — Custom surface API
+### v0.8 â€” Custom surface API
 - Register custom admin pages.
 
-### v1.0 — Stable API
+### v1.0 â€” Stable API
 - Documentation site.
 - Theme customization recipes.
 
@@ -200,7 +199,6 @@ export default function Admin() {
 
 **Open source release:** Plausible but crowded. The Refine niche is dense. MIT release as part of NekoStack is fine; unlikely to gain independent traction.
 
-**Commercial product:** Unlikely. Admin frameworks rarely monetize directly.
 
 **Estimated effort to v1.0:** 12-20 weeks of focused work. Per-surface scope is small; cumulative weight of ~8 production-quality surfaces is large.
 
@@ -209,4 +207,4 @@ export default function Admin() {
 - **Current:** Empty placeholder. Not started.
 - **Owner:** Cody (solo dev project).
 - **Priority tier:** SaaS layer. Build *after* the underlying packages (auth, audit, flags, entitlements) so it has something to surface.
-- **Estimated learning return:** Moderate-to-high. Admin UX patterns are surprisingly deep. The wheel is closer to round here than elsewhere, so the learning return is lower than for foundational packages — but bulk actions, impersonation safety, audit-aware UI design are all transferable.
+- **Estimated learning return:** Moderate-to-high. Admin UX patterns are surprisingly deep. The wheel is closer to round here than elsewhere, so the learning return is lower than for foundational packages â€” but bulk actions, impersonation safety, audit-aware UI design are all transferable.

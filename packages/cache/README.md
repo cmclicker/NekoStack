@@ -1,4 +1,4 @@
-# @nekostack/cache
+﻿# @nekostack/cache
 
 > Declarative multi-layer caching: memory + Redis + CDN. Invalidation strategies. Stale-while-revalidate. The second-hardest problem in CS, packaged.
 
@@ -9,9 +9,8 @@
 | **Build tier** | Data layer |
 | **Depends on** | `schema` (cache key shape), `telemetry` (hit/miss metrics), `time` (TTLs); external: Redis |
 | **Used by** | every backend with non-trivial reads: `api` (response caching), `auth` (session cache), `entitlements` (decision cache), `codex` (entity cache), `search` (query result cache), every product |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 6–10 weeks focused |
-| **Sellable?** | Modest — caching libraries are mature; integration angle |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 6â€“10 weeks focused |
 
 ## Why this exists
 
@@ -48,7 +47,7 @@ Every product reinvents both. The typical messes:
 
 ## Boundary
 
-> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §24 for the full capability map.
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) Â§24 for the full capability map.
 
 ### Owns
 - Multi-layer cache (memory + Redis)
@@ -96,43 +95,43 @@ Every product reinvents both. The typical messes:
 
 ```
 packages/cache/
-├── src/
-│   ├── layers/
-│   │   ├── memory.ts
-│   │   └── redis.ts
-│   ├── wrapper/
-│   │   └── cached.ts          # declarative wrapper
-│   ├── ttl/
-│   │   ├── expiry.ts
-│   │   └── swr.ts             # stale-while-revalidate
-│   ├── invalidate/
-│   │   ├── tag.ts
-│   │   ├── event.ts           # via events package
-│   │   └── manual.ts
-│   ├── keys/
-│   │   └── typed.ts
-│   ├── metrics/
-│   │   └── emit.ts
-│   └── cli.ts
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ layers/
+â”‚   â”‚   â”œâ”€â”€ memory.ts
+â”‚   â”‚   â””â”€â”€ redis.ts
+â”‚   â”œâ”€â”€ wrapper/
+â”‚   â”‚   â””â”€â”€ cached.ts          # declarative wrapper
+â”‚   â”œâ”€â”€ ttl/
+â”‚   â”‚   â”œâ”€â”€ expiry.ts
+â”‚   â”‚   â””â”€â”€ swr.ts             # stale-while-revalidate
+â”‚   â”œâ”€â”€ invalidate/
+â”‚   â”‚   â”œâ”€â”€ tag.ts
+â”‚   â”‚   â”œâ”€â”€ event.ts           # via events package
+â”‚   â”‚   â””â”€â”€ manual.ts
+â”‚   â”œâ”€â”€ keys/
+â”‚   â”‚   â””â”€â”€ typed.ts
+â”‚   â”œâ”€â”€ metrics/
+â”‚   â”‚   â””â”€â”€ emit.ts
+â”‚   â””â”€â”€ cli.ts
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — Memory layer + cached() wrapper
-### v0.2 — Redis layer
-### v0.3 — TTL + SWR
-### v0.4 — Tag invalidation
-### v0.5 — Event-driven invalidation
-### v0.6 — Typed keys
-### v0.7 — Metrics
-### v1.0 — Stable API
+### v0.1 â€” Memory layer + cached() wrapper
+### v0.2 â€” Redis layer
+### v0.3 â€” TTL + SWR
+### v0.4 â€” Tag invalidation
+### v0.5 â€” Event-driven invalidation
+### v0.6 â€” Typed keys
+### v0.7 â€” Metrics
+### v1.0 â€” Stable API
 
 ## Product potential
 
 **Internal:** Used everywhere.
-**Open source release:** Plausible — declarative multi-layer cache is undersupplied.
+**Open source release:** Plausible â€” declarative multi-layer cache is undersupplied.
 **Commercial:** Marginal.
 
 ## Status

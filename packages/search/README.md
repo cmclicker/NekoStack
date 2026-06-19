@@ -1,38 +1,37 @@
-# @nekostack/search
+﻿# @nekostack/search
 
-> Full-text + faceted + fuzzy search for content-heavy projects. Wiki, codex, puzzle archives, narrative continuity, agent knowledge bases — anything searchable, here.
+> Full-text + faceted + fuzzy search for content-heavy projects. Wiki, codex, puzzle archives, narrative continuity, agent knowledge bases â€” anything searchable, here.
 
 ## Quick reference
 
 | | |
 |---|---|
-| **Build tier** | Project unblocker — content-heavy projects hit search needs past ~hundreds of items |
+| **Build tier** | Project unblocker â€” content-heavy projects hit search needs past ~hundreds of items |
 | **Depends on** | `schema` (index schemas), `codex` (first-class indexing of Codex entities), `taxonomy` (faceted filters by tag); SQLite (via `better-sqlite3` or `@libsql/client`) |
 | **Used by** | NekoBattler wiki, Mara Kane lore lookups, NekoVibe puzzle archive, Leytide world discovery, NekoSystems knowledge base, NekoLife activity catalog |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 8–12 weeks focused |
-| **Sellable?** | Strong OSS (embedded niche between MiniSearch and Meilisearch is empty); not a strong commercial direction (Algolia/Meilisearch dominate) |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 8â€“12 weeks focused |
 
 ## Why this exists
 
 Every content-heavy NekoStack project ends up needing search:
 
-- **NekoBattler** wiki — 565 champions, hundreds of abilities, dozens of traits. Players need to find "all fire-type champions with on-death triggers."
-- **Mara Kane** lore — characters across 20 books, factions, locations, timelines. The author needs to find "every mention of Penny Lane after chapter 14."
-- **NekoVibe** puzzle archive — past puzzles by date, by tier, by completion stats.
-- **NekoCodex** entity browser — query entities by tag, kind, relationship.
-- **NekoSystems** tenant content search — search across business documents, workflows, policies.
-- **NekoLife** activity catalog — find activities by domain, cadence, priority, time-of-day.
+- **NekoBattler** wiki â€” 565 champions, hundreds of abilities, dozens of traits. Players need to find "all fire-type champions with on-death triggers."
+- **Mara Kane** lore â€” characters across 20 books, factions, locations, timelines. The author needs to find "every mention of Penny Lane after chapter 14."
+- **NekoVibe** puzzle archive â€” past puzzles by date, by tier, by completion stats.
+- **NekoCodex** entity browser â€” query entities by tag, kind, relationship.
+- **NekoSystems** tenant content search â€” search across business documents, workflows, policies.
+- **NekoLife** activity catalog â€” find activities by domain, cadence, priority, time-of-day.
 
-The default answers — Postgres LIKE, ad-hoc JavaScript array filters, "I'll just remember where it is" — fall apart past a few hundred items. The next default — adopt Elasticsearch — is a hammer for a thumbtack. Elasticsearch is a wonderful tool and a wonderful operational burden.
+The default answers â€” Postgres LIKE, ad-hoc JavaScript array filters, "I'll just remember where it is" â€” fall apart past a few hundred items. The next default â€” adopt Elasticsearch â€” is a hammer for a thumbtack. Elasticsearch is a wonderful tool and a wonderful operational burden.
 
-`@nekostack/search` is the lightweight in-process search layer: typed index definitions, full-text with proper tokenization, faceted filtering, fuzzy matching, ranked results. It runs embedded — SQLite-FTS5 or MiniSearch-style — and scales fine into the millions of documents typical for personal projects.
+`@nekostack/search` is the lightweight in-process search layer: typed index definitions, full-text with proper tokenization, faceted filtering, fuzzy matching, ranked results. It runs embedded â€” SQLite-FTS5 or MiniSearch-style â€” and scales fine into the millions of documents typical for personal projects.
 
 Building this yourself rather than running Elasticsearch, Meilisearch, or Typesense is justified because:
 1. **Scale match.** Those tools are sized for production e-commerce. Your scale is personal projects.
 2. **Embedded ops.** No second service to deploy, monitor, and back up. Search lives in your process or as SQLite next to your DB.
 3. **Schema integration.** Indexes are defined against `@nekostack/schema` schemas and `@nekostack/codex` entity kinds. No double-typing.
-4. **Learning real IR.** Tokenization, stemming, BM25 scoring, inverted indexes, faceting — all genuine information retrieval theory.
+4. **Learning real IR.** Tokenization, stemming, BM25 scoring, inverted indexes, faceting â€” all genuine information retrieval theory.
 
 ## Scope
 
@@ -50,13 +49,13 @@ Building this yourself rather than running Elasticsearch, Meilisearch, or Typese
 
 ### Out of scope
 - Distributed search clusters. Single-process or single-SQLite-file only.
-- Semantic / vector search. That's `@nekostack/rag` — the embedding-based retrieval layer.
-- Real-time index updates from a stream of changes — could come, but not in v1.
+- Semantic / vector search. That's `@nekostack/rag` â€” the embedding-based retrieval layer.
+- Real-time index updates from a stream of changes â€” could come, but not in v1.
 - Geospatial queries. Different domain.
 
 ## Boundary
 
-> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §29 for the full capability map.
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) Â§29 for the full capability map.
 
 ### Owns
 - Typed index definitions against `schema`
@@ -88,7 +87,7 @@ Building this yourself rather than running Elasticsearch, Meilisearch, or Typese
 |---|---|---|
 | **Elasticsearch / OpenSearch** | Industry standard, deeply featured. | Operational burden, JVM, sized for production-scale. |
 | **Meilisearch** | Modern, friendly, embedded option. | Separate service. Good but heavier than needed for personal scale. |
-| **Typesense** | Similar to Meilisearch, fast. | Same — separate service. |
+| **Typesense** | Similar to Meilisearch, fast. | Same â€” separate service. |
 | **Algolia** | Hosted, polished. | Vendor lock, per-query pricing. |
 | **SQLite FTS5** | Embedded, fast, free. | Just the substrate. No facets, no fuzzy, no friendly schema layer. |
 | **MiniSearch** | Pure-JS embedded library. | Limited features; no FTS5-speed scaling. |
@@ -100,23 +99,23 @@ The right framing: `@nekostack/search` is **a thin TS layer over SQLite FTS5** (
 ## How this fits the NekoStack
 
 **Depends on:**
-- `@nekostack/schema` — index schemas.
-- `@nekostack/codex` — first-class indexing of Codex entities.
+- `@nekostack/schema` â€” index schemas.
+- `@nekostack/codex` â€” first-class indexing of Codex entities.
 - SQLite (via `better-sqlite3` or `@libsql/client`).
 
 **Used by:**
-- **NekoBattler** — wiki search across champions, abilities, traits, items.
-- **Mara Kane** — full-text search across drafts + narrative bible.
-- **NekoVibe** — past-puzzle archive browsing.
-- **Leytide** — in-game item/quest/NPC discovery.
-- **NekoSystems** — tenant content + knowledge-base search.
-- **NekoLife** — activity catalog filtering.
+- **NekoBattler** â€” wiki search across champions, abilities, traits, items.
+- **Mara Kane** â€” full-text search across drafts + narrative bible.
+- **NekoVibe** â€” past-puzzle archive browsing.
+- **Leytide** â€” in-game item/quest/NPC discovery.
+- **NekoSystems** â€” tenant content + knowledge-base search.
+- **NekoLife** â€” activity catalog filtering.
 
 ## Design philosophy
 
 - **Typed indexes.** An index is defined against a schema; documents are validated before indexing.
 - **Embedded by default.** No separate process. Index sits next to your data.
-- **Facets and full-text are co-equal.** Most user queries combine "search for X" and "filter to Y" — both have to be fast.
+- **Facets and full-text are co-equal.** Most user queries combine "search for X" and "filter to Y" â€” both have to be fast.
 - **Tokenization is configurable.** Different fields want different tokenizers (a name field wants edge-n-gram for autocomplete; a description wants stemmed full-text).
 - **Snippets and highlights are first-class.** Search UI requires them; the index produces them.
 
@@ -124,32 +123,32 @@ The right framing: `@nekostack/search` is **a thin TS layer over SQLite FTS5** (
 
 ```
 packages/search/
-├── src/
-│   ├── index/
-│   │   ├── define.ts         # defineIndex({ schema, fields, facets, ... })
-│   │   ├── insert.ts
-│   │   ├── update.ts
-│   │   └── rebuild.ts
-│   ├── backends/
-│   │   ├── sqlite-fts5.ts    # default backend
-│   │   └── memory.ts         # for tiny indexes / tests
-│   ├── tokenize/
-│   │   ├── whitespace.ts
-│   │   ├── ngram.ts
-│   │   ├── edge-ngram.ts
-│   │   └── stem.ts
-│   ├── query/
-│   │   ├── parse.ts          # query string → AST
-│   │   ├── execute.ts
-│   │   └── rank.ts           # BM25 + field weights
-│   ├── facet/
-│   │   └── compute.ts
-│   ├── highlight/
-│   │   ├── snippet.ts
-│   │   └── span.ts
-│   └── codex-adapter.ts      # auto-index from Codex
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ index/
+â”‚   â”‚   â”œâ”€â”€ define.ts         # defineIndex({ schema, fields, facets, ... })
+â”‚   â”‚   â”œâ”€â”€ insert.ts
+â”‚   â”‚   â”œâ”€â”€ update.ts
+â”‚   â”‚   â””â”€â”€ rebuild.ts
+â”‚   â”œâ”€â”€ backends/
+â”‚   â”‚   â”œâ”€â”€ sqlite-fts5.ts    # default backend
+â”‚   â”‚   â””â”€â”€ memory.ts         # for tiny indexes / tests
+â”‚   â”œâ”€â”€ tokenize/
+â”‚   â”‚   â”œâ”€â”€ whitespace.ts
+â”‚   â”‚   â”œâ”€â”€ ngram.ts
+â”‚   â”‚   â”œâ”€â”€ edge-ngram.ts
+â”‚   â”‚   â””â”€â”€ stem.ts
+â”‚   â”œâ”€â”€ query/
+â”‚   â”‚   â”œâ”€â”€ parse.ts          # query string â†’ AST
+â”‚   â”‚   â”œâ”€â”€ execute.ts
+â”‚   â”‚   â””â”€â”€ rank.ts           # BM25 + field weights
+â”‚   â”œâ”€â”€ facet/
+â”‚   â”‚   â””â”€â”€ compute.ts
+â”‚   â”œâ”€â”€ highlight/
+â”‚   â”‚   â”œâ”€â”€ snippet.ts
+â”‚   â”‚   â””â”€â”€ span.ts
+â”‚   â””â”€â”€ codex-adapter.ts      # auto-index from Codex
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 Defining an index and querying:
@@ -184,33 +183,33 @@ const results = await ChampionIndex.query('ember', {
 
 ## Roadmap
 
-### v0.1 — SQLite FTS5 backend
+### v0.1 â€” SQLite FTS5 backend
 - `defineIndex`, insert/update/delete.
 - Basic FTS5-backed query.
 
-### v0.2 — Tokenizers
+### v0.2 â€” Tokenizers
 - Whitespace, n-gram, edge-n-gram, stemmed.
 - Per-field tokenizer config.
 
-### v0.3 — Facets
+### v0.3 â€” Facets
 - Facet definition + pre-computed counts.
 - Filter API.
 
-### v0.4 — Ranking
+### v0.4 â€” Ranking
 - BM25 with configurable field weights.
 
-### v0.5 — Fuzzy + autocomplete
+### v0.5 â€” Fuzzy + autocomplete
 - Levenshtein fuzzy matching.
 - Edge-n-gram autocomplete patterns.
 
-### v0.6 — Highlights + snippets
+### v0.6 â€” Highlights + snippets
 - Snippet extraction with context window.
 - Highlight span marking for UI.
 
-### v0.7 — Codex adapter
+### v0.7 â€” Codex adapter
 - Auto-index from `@nekostack/codex` entities.
 
-### v1.0 — Stable API
+### v1.0 â€” Stable API
 - Documentation site.
 - Benchmarks (query latency at 10K / 100K / 1M documents).
 
@@ -220,7 +219,6 @@ const results = await ChampionIndex.query('ember', {
 
 **Open source release:** Strong. The embedded-search niche is undersupplied between MiniSearch (too small) and Meilisearch (too heavy). MIT release could attract real users.
 
-**Commercial product:** Modest. Search SaaS is dominated by Algolia and Meilisearch. Not a near-term commercial focus.
 
 **Estimated effort to v1.0:** 8-12 weeks of focused work. SQLite FTS5 is the heavy lifting; we wrap it and add the facet + ranking layer.
 
@@ -229,4 +227,4 @@ const results = await ChampionIndex.query('ember', {
 - **Current:** Empty placeholder. Not started.
 - **Owner:** Cody (solo dev project).
 - **Priority tier:** Project unblocker. Wiki/codex search becomes mandatory once content grows past a few hundred items.
-- **Estimated learning return:** High. Tokenization, inverted indexes, BM25, faceting — foundational information retrieval CS.
+- **Estimated learning return:** High. Tokenization, inverted indexes, BM25, faceting â€” foundational information retrieval CS.

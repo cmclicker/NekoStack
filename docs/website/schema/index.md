@@ -1,37 +1,36 @@
-# @nekostack/schema
+﻿# @nekostack/schema
 
-> An IR-backed multi-output schema system. Define types once; emit Zod validators, JSON Schema, OpenAPI, and TypeScript from a canonical intermediate representation. The implementation risk is not the DSL — it's semantic consistency across outputs.
+> An IR-backed multi-output schema system. Define types once; emit Zod validators, JSON Schema, OpenAPI, and TypeScript from a canonical intermediate representation. The implementation risk is not the DSL â€” it's semantic consistency across outputs.
 
 ## Quick reference
 
 | | |
 |---|---|
-| **Build tier** | Foundation primitive — build first |
-| **Depends on** | (none — foundational). External: TypeScript (dev/build). Peer: Zod (for runtime validation; not required at IR level). |
+| **Build tier** | Foundation primitive â€” build first |
+| **Depends on** | (none â€” foundational). External: TypeScript (dev/build). Peer: Zod (for runtime validation; not required at IR level). |
 | **Used by** | `api`, `cli`, `codex`, `auth`, `form`, `config`, `events`, `telemetry`, `validator`, `id`, `entitlements`, `lint` (rule authoring), and effectively everything else |
-| **Status** | Empty placeholder — not started. Design pass complete (see [`references/schema/design-audit-2026-05.md`](../../references/schema/design-audit-2026-05.md)). |
-| **Est. to v1.0** | 6–12 weeks focused / 4–8 months at solo-dev cadence (revised up from the original brief after the IR + semantic-loss design pass) |
-| **Sellable?** | Not as the package itself. It's the **technical substrate** for a future registry/governance product. Schema-as-a-service requires registry + diffing + history + governance + CI integration on top — see [Product potential](#product-potential). |
+| **Status** | Empty placeholder â€” not started. Design pass complete (see [`references/schema/design-audit-2026-05.md`](../../references/schema/design-audit-2026-05.md)). |
+| **Est. to v1.0** | 6â€“12 weeks focused / 4â€“8 months at solo-dev cadence (revised up from the original brief after the IR + semantic-loss design pass) |
 
 ## Why this exists
 
 Every non-trivial app defines the same data shape in multiple places: TypeScript `interface`, Zod schema, JSON Schema, OpenAPI spec, Prisma model, form schema. They drift. Always. A field gets added in one place and forgotten in three others, and the bugs that result are silent until someone hits the unhappy path.
 
-`@nekostack/schema` solves this the same way every serious schema-first stack does: **define the shape once in a single DSL, normalize to an internal representation, and generate every downstream form from that representation.** The unique value isn't the DSL — Zod, TypeBox, Effect-Schema, and io-ts all have nice DSLs. The unique value is the **canonical IR + semantic-loss discipline**: every generator consumes the IR (not builder internals), and where outputs cannot faithfully represent the IR (e.g., a custom refinement in JSON Schema), the system explicitly marks the gap rather than silently lying.
+`@nekostack/schema` solves this the same way every serious schema-first stack does: **define the shape once in a single DSL, normalize to an internal representation, and generate every downstream form from that representation.** The unique value isn't the DSL â€” Zod, TypeBox, Effect-Schema, and io-ts all have nice DSLs. The unique value is the **canonical IR + semantic-loss discipline**: every generator consumes the IR (not builder internals), and where outputs cannot faithfully represent the IR (e.g., a custom refinement in JSON Schema), the system explicitly marks the gap rather than silently lying.
 
 Building this rather than adopting Zod is justified because:
 
 1. **Zod is one output target, not the source.** A Zod-as-source architecture forces every non-Zod consumer to glue through adapters that drift.
-2. **You learn schema-system internals end-to-end** — IR design, generator architecture, type-level TypeScript, JSON Schema semantics, OpenAPI 3.1 nuances, semantic-loss management.
-3. **Outputs target NekoStack's specific consumers** — the Zod output knows about NekoStack's normalized `Issue` shape; the OpenAPI output knows how NekoStack APIs version themselves.
+2. **You learn schema-system internals end-to-end** â€” IR design, generator architecture, type-level TypeScript, JSON Schema semantics, OpenAPI 3.1 nuances, semantic-loss management.
+3. **Outputs target NekoStack's specific consumers** â€” the Zod output knows about NekoStack's normalized `Issue` shape; the OpenAPI output knows how NekoStack APIs version themselves.
 4. **No vendor coupling.** Zod 4 introduces a breaking change? The generator emits Zod 3 syntax until you choose to migrate.
 
 ## Scope
 
 ### In scope
 - DSL: object, array, primitives, union, enum, literal, recursive (via `s.lazy()`), optional/nullable/nullish/default, transform.
-- **Date typing** — explicit per use case: `s.isoDateTime()`, `s.isoDate()`, `s.epochMs()`, `s.dateObject()` (runtime-only).
-- **Two refinement classes** — *portable constraints* (min/max/regex/format/etc.) and *runtime-only* refinements (custom predicates).
+- **Date typing** â€” explicit per use case: `s.isoDateTime()`, `s.isoDate()`, `s.epochMs()`, `s.dateObject()` (runtime-only).
+- **Two refinement classes** â€” *portable constraints* (min/max/regex/format/etc.) and *runtime-only* refinements (custom predicates).
 - Canonical IR: every builder produces a normalized `SchemaNode` tree; generators consume only IR.
 - Generators: TypeScript types, Zod validators, JSON Schema (draft 2020-12), OpenAPI 3.1 component schemas.
 - Composition: `extend`, `omit`, `pick`, `partial`, `required`, and conflict-safe `merge` (with explicit `override`).
@@ -42,15 +41,15 @@ Building this rather than adopting Zod is justified because:
 - CLI commands (via `@nekostack/cli`): `schema generate`, `schema check`, `schema diff`.
 
 ### Out of scope
-- Database schema generation (DDL) — `@nekostack/migrate` territory.
-- GraphQL SDL output — could be a future generator; not in 1.0.
-- Runtime validation *library implementation* — we generate Zod schemas; we don't reimplement Zod's runtime.
-- Form rendering — `@nekostack/form`'s job; it consumes our schemas.
-- Schema *registry as a service* (hosted history, team permissions, governance) — future commercial layer above this package.
+- Database schema generation (DDL) â€” `@nekostack/migrate` territory.
+- GraphQL SDL output â€” could be a future generator; not in 1.0.
+- Runtime validation *library implementation* â€” we generate Zod schemas; we don't reimplement Zod's runtime.
+- Form rendering â€” `@nekostack/form`'s job; it consumes our schemas.
+- Schema *registry as a service* (hosted history, team permissions, governance) â€” out of scope for this package; belongs in a future hosted layer.
 
 ## Boundary
 
-> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §7 for the full capability map.
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) Â§7 for the full capability map.
 
 ### Owns
 - Canonical IR (`SchemaNode` AST)
@@ -72,7 +71,7 @@ Building this rather than adopting Zod is justified because:
 | Branded ID types (UUID/ULID/branded primitives) | `id` (uses us as substrate) |
 | ESLint rule authoring | `lint` |
 | GraphQL SDL output | external (not in v1; could be future generator) |
-| Runtime validation library *implementation* | external (Zod — we generate, we don't reimplement) |
+| Runtime validation library *implementation* | external (Zod â€” we generate, we don't reimplement) |
 | Schema **migration execution** at scale | future package or v0.8+ here, gated on production need |
 | Global CLI runtime, plugin discovery, terminal UX, workspace command orchestration | `cli` |
 
@@ -80,7 +79,7 @@ Building this rather than adopting Zod is justified because:
 
 `@nekostack/schema` may expose schema-specific CLI command **handlers**, but it does not own the global CLI runtime. Global command routing, plugin discovery, terminal UX, and workspace command orchestration belong to `@nekostack/cli`.
 
-Concretely: the `src/cli/` subdirectory in this package exports handler functions for `schema generate`, `schema check`, `schema diff`. These are registered with `@nekostack/cli` as plugin commands per its plugin contract. We do not own the `neko` binary, the argv parser, the interactive prompt UX, the help system, or any cross-package command orchestration — those are CLI-package concerns. This prevents future scope creep while keeping `schema generate / check / diff` available to users.
+Concretely: the `src/cli/` subdirectory in this package exports handler functions for `schema generate`, `schema check`, `schema diff`. These are registered with `@nekostack/cli` as plugin commands per its plugin contract. We do not own the `neko` binary, the argv parser, the interactive prompt UX, the help system, or any cross-package command orchestration â€” those are CLI-package concerns. This prevents future scope creep while keeping `schema generate / check / diff` available to users.
 
 ---
 
@@ -90,7 +89,7 @@ This section pins the load-bearing decisions that every implementer (including f
 
 ### Canonical Intermediate Representation (IR)
 
-Every schema builder produces a serializable, normalized `SchemaNode` AST. **Generators consume only the IR — never private builder internals.**
+Every schema builder produces a serializable, normalized `SchemaNode` AST. **Generators consume only the IR â€” never private builder internals.**
 
 ```ts
 type SchemaNode =
@@ -103,7 +102,7 @@ type SchemaNode =
   | ArrayNode
   | ObjectNode
   | UnionNode
-  | RefinementNode      // marks portable vs runtime-only — explicit
+  | RefinementNode      // marks portable vs runtime-only â€” explicit
   | RecursiveRefNode    // requires a stable schema id (see "Identity")
   | TransformNode;      // runtime-only; serialized as opaque metadata
 ```
@@ -112,7 +111,7 @@ The hard rule, repeated for emphasis:
 
 > **Builders create IR. Generators consume IR. Runtime validators execute the generated validator backed by IR.**
 
-Without this, the DSL is the source of truth in name only — every generator starts interpreting builder objects differently, and the four outputs drift. The IR is the single contract that prevents drift.
+Without this, the DSL is the source of truth in name only â€” every generator starts interpreting builder objects differently, and the four outputs drift. The IR is the single contract that prevents drift.
 
 ### Date types
 
@@ -123,7 +122,7 @@ Without this, the DSL is the source of truth in name only — every generator st
 | `s.isoDateTime()` | ISO 8601 string | string | `format: date-time` | **default for APIs / config / cross-system** |
 | `s.isoDate()` | YYYY-MM-DD string | string | `format: date` | date-only fields |
 | `s.epochMs()` | number | number | `integer, format: int64` | high-throughput logs, telemetry |
-| `s.dateObject()` | `Date` object | `Date` object | runtime-only metadata | in-process only — never serialized |
+| `s.dateObject()` | `Date` object | `Date` object | runtime-only metadata | in-process only â€” never serialized |
 
 `dateObject()` is the only one not portable to non-TS consumers; the IR marks it as runtime-only.
 
@@ -148,11 +147,11 @@ A refinement is either **portable** (representable in every output format) or **
 **Portable constraints** map to known output features:
 
 ```ts
-s.string().min(3)            // → JSON Schema minLength
-s.string().max(50)           // → maxLength
-s.string().regex(/^NEKO_/)   // → pattern
-s.string().email()           // → format: email
-s.number().int().min(0)      // → integer minimum
+s.string().min(3)            // â†’ JSON Schema minLength
+s.string().max(50)           // â†’ maxLength
+s.string().regex(/^NEKO_/)   // â†’ pattern
+s.string().email()           // â†’ format: email
+s.number().int().min(0)      // â†’ integer minimum
 ```
 
 **Runtime-only refinements** are custom predicates only Zod / our runtime can execute:
@@ -183,7 +182,7 @@ By default, every object schema is **strict**: unknown keys cause validation to 
 ```ts
 s.object({ email: s.string() })
 // Input: { email: "x@example.com", admin: true }
-// Result: ❌ Issue { code: "unknown_key", path: ["admin"] }
+// Result: âŒ Issue { code: "unknown_key", path: ["admin"] }
 ```
 
 Permissive behavior is opt-in:
@@ -215,7 +214,7 @@ Rules:
 - Every schema referenced by `s.lazy()` (i.e., recursive) **MUST** have an `.id()`. Unnamed recursive schemas are rejected at definition time.
 - IDs are globally unique within a NekoStack workspace. Two packages cannot both define `com.nekostack.auth.User` at the same version.
 - Generated JSON Schema uses `$id` + `$defs` based on the schema ID.
-- Cross-package references compose: `@nekostack/auth` schemas can reference `com.nekostack.tenant.Tenant` without import gymnastics — the JSON Schema output emits a `$ref` URL the consumer resolves through the local registry.
+- Cross-package references compose: `@nekostack/auth` schemas can reference `com.nekostack.tenant.Tenant` without import gymnastics â€” the JSON Schema output emits a `$ref` URL the consumer resolves through the local registry.
 - Schema versions participate in identity. `com.nekostack.auth.User@1.0.0` and `...@2.0.0` are distinct schemas; migrations bridge them (v0.8+).
 
 ### Composition conflict rules
@@ -226,7 +225,7 @@ Rules:
 const A = s.object({ id: s.string() });
 const B = s.object({ id: s.number() });
 
-A.merge(B);                         // ❌ throws: field 'id' conflict
+A.merge(B);                         // âŒ throws: field 'id' conflict
 A.merge(B, { conflict: "right" });  // explicit: right side wins
 A.merge(B, { conflict: "left" });   // explicit: left side wins
 A.override({ id: s.number() });     // explicit named override
@@ -238,7 +237,7 @@ Other composition operators (`extend`, `pick`, `omit`, `partial`, `required`) ca
 
 ### Transform semantics
 
-Transforms create two distinct types — the *input* the validator accepts and the *output* it returns:
+Transforms create two distinct types â€” the *input* the validator accepts and the *output* it returns:
 
 ```ts
 const ParsedAge = s.string().transform(v => Number(v));
@@ -256,7 +255,7 @@ s.infer<typeof ParsedAge>    // alias to output (Zod-compatible default)
 
 `s.infer` aliasing to **output** matches Zod ergonomics and what most consumers want ("the validated/parsed type"). For form bindings and API request shapes, `s.input` is the right type. The IR's `TransformNode` carries both annotations so generators can emit either side correctly.
 
-JSON Schema and OpenAPI outputs describe the **input** type (the wire format). The transformation only happens at runtime, so non-runtime outputs cannot represent it — semantic-loss metadata flags this.
+JSON Schema and OpenAPI outputs describe the **input** type (the wire format). The transformation only happens at runtime, so non-runtime outputs cannot represent it â€” semantic-loss metadata flags this.
 
 ### Union policy
 
@@ -271,7 +270,7 @@ Rules:
 
 - Plain unions are allowed but **discouraged for object variants**. Validation tries each branch in order and aggregates errors.
 - Object unions SHOULD use `discriminatedUnion`. Generated OpenAPI emits `oneOf` with `discriminator` metadata, producing cleaner client codegen and clearer error reporting.
-- **Issue reporting for unions:** the runtime returns issues from the *best-matching* branch (the branch that progressed furthest before failing). For `discriminatedUnion`, the discriminator-matched branch's issues are returned exclusively — no ambiguity about which variant the user intended.
+- **Issue reporting for unions:** the runtime returns issues from the *best-matching* branch (the branch that progressed furthest before failing). For `discriminatedUnion`, the discriminator-matched branch's issues are returned exclusively â€” no ambiguity about which variant the user intended.
 
 The IR's `UnionNode` tracks whether the union is discriminated and, if so, the discriminator field. Generators consume this to emit correct OpenAPI / JSON Schema.
 
@@ -288,11 +287,11 @@ parse(schema, input)      // validates + applies defaults + runs transforms; ret
 - **`parse`** answers "what is the normalized output?" It applies defaults, runs transforms, returns the **output** shape. Most consumers want `parse`.
 
 Use the right one:
-- **Config loading at boot** — `parse` (apply defaults so the config object is fully populated).
-- **API request bodies** — `parse` (canonical shape for downstream code).
-- **Form initialization** — `parse` (form starts pre-populated with defaults).
-- **Observability/audit inspection** — `validate` (don't mutate the value being recorded).
-- **Permission/entitlement decision input checks** — `validate` (input is data; don't transform it).
+- **Config loading at boot** â€” `parse` (apply defaults so the config object is fully populated).
+- **API request bodies** â€” `parse` (canonical shape for downstream code).
+- **Form initialization** â€” `parse` (form starts pre-populated with defaults).
+- **Observability/audit inspection** â€” `validate` (don't mutate the value being recorded).
+- **Permission/entitlement decision input checks** â€” `validate` (input is data; don't transform it).
 
 Generators emit code that supports both. Consumers pick.
 
@@ -302,15 +301,15 @@ Generators emit code that supports both. Consumers pick.
 
 ```ts
 const Age = s.number();
-parse(Age, "42");  // ❌ Issue { code: "invalid_type", expected: "number", received: "string" }
+parse(Age, "42");  // âŒ Issue { code: "invalid_type", expected: "number", received: "string" }
 ```
 
 Explicit coercion is opt-in via a separate constructor (not a chainable method on the base type):
 
 ```ts
-s.number().coerceFromString();       // accepts "42" → 42
-s.boolean().coerceFromString();      // accepts "true"/"false" → boolean (rejects "1"/"yes" — too forgiving)
-s.isoDateTime().coerceFromString();  // accepts ISO 8601 strings → normalized
+s.number().coerceFromString();       // accepts "42" â†’ 42
+s.boolean().coerceFromString();      // accepts "true"/"false" â†’ boolean (rejects "1"/"yes" â€” too forgiving)
+s.isoDateTime().coerceFromString();  // accepts ISO 8601 strings â†’ normalized
 ```
 
 Why no `s.coerce.number()` like Zod:
@@ -321,7 +320,7 @@ Why no `s.coerce.number()` like Zod:
 
 ### Error model
 
-Validation errors are structured `Issue` records — never raw strings, never raw Zod errors:
+Validation errors are structured `Issue` records â€” never raw strings, never raw Zod errors:
 
 ```ts
 type Issue = {
@@ -374,30 +373,30 @@ Every generated file includes a deterministic header:
 
 **Two hashes, distinguishing two different changes:**
 
-- **`sourceHash`** changes when the source file changes — including whitespace, comments, reorderings, anything textual.
-- **`irHash`** changes only when the normalized IR changes — i.e., the actual schema semantics.
+- **`sourceHash`** changes when the source file changes â€” including whitespace, comments, reorderings, anything textual.
+- **`irHash`** changes only when the normalized IR changes â€” i.e., the actual schema semantics.
 
 This distinction matters for review hygiene. CI can categorize a PR:
 
-- *Source changed, IR identical* — comment / whitespace / reorder only. Regeneration not required (header `sourceHash` is updated; output bytes don't change).
-- *Source changed, IR changed* — real schema change. Regeneration required; reviewers must inspect generated diffs.
-- *Generated output's `irHash` doesn't match current IR* — stale. CI fails.
+- *Source changed, IR identical* â€” comment / whitespace / reorder only. Regeneration not required (header `sourceHash` is updated; output bytes don't change).
+- *Source changed, IR changed* â€” real schema change. Regeneration required; reviewers must inspect generated diffs.
+- *Generated output's `irHash` doesn't match current IR* â€” stale. CI fails.
 
 Rules:
 
 - **Committed to git.** Generated files are tracked, not gitignored. Makes review possible, prevents "works on my machine" drift.
 - **Never manually edited.** CI verifies both `sourceHash` and `irHash` against current source. Manual edits would be silently overwritten by the next `neko schema generate`.
-- **Deterministic.** Same IR + same generator version → byte-identical output.
+- **Deterministic.** Same IR + same generator version â†’ byte-identical output.
 - **Freshness check.** `neko schema check` rehashes sources, recomputes IR, verifies generated artifacts match on both `sourceHash` and `irHash`. CI fails on stale output.
-- **Incremental.** Only schemas with changed `irHash` need regeneration (source-only changes update the header but produce identical bytes elsewhere — still rewritten so the header is fresh).
+- **Incremental.** Only schemas with changed `irHash` need regeneration (source-only changes update the header but produce identical bytes elsewhere â€” still rewritten so the header is fresh).
 - **Outputs separated.** TypeScript `.d.ts`, Zod `.ts`, JSON Schema `.json`, OpenAPI `.openapi.json` are distinct files. Allows each output to be consumed in isolation.
-- **Headers describe lineage.** Source path, schema ID, version, both hashes, generator version — all readable from the file itself.
+- **Headers describe lineage.** Source path, schema ID, version, both hashes, generator version â€” all readable from the file itself.
 
-A companion spec doc (deferred to v1.0) will detail header format, the exact hash algorithm (canonical JSON serialization → SHA-256), and the `neko schema check` exit-code contract.
+A companion spec doc (deferred to v1.0) will detail header format, the exact hash algorithm (canonical JSON serialization â†’ SHA-256), and the `neko schema check` exit-code contract.
 
 ### Dependency policy
 
-The package is foundational within NekoStack — no NekoStack-package dependencies. External dependencies are classified:
+The package is foundational within NekoStack â€” no NekoStack-package dependencies. External dependencies are classified:
 
 - **Runtime (in the published package):** none in the core; the IR + builders + generators are pure TS. Specific generators may pull tiny utility libs (e.g., a JSON Schema validator dependency for self-conformance tests stays dev-only).
 - **Peer:** Zod, when the consumer uses the generated Zod validator at runtime. Declared as peerDep so consumers control the Zod version.
@@ -417,65 +416,65 @@ The package can *generate* Zod without *requiring* Zod at runtime; consumers wan
 | **io-ts** | Mature, principled. | Verbose, weaker TS inference than Zod, declining ecosystem. |
 | **Valibot** | Tree-shakeable Zod alternative. | Same single-output limitation as Zod. |
 | **JSON Schema (raw)** | Universal interchange format. | Hand-written JSON is hostile to author and review. |
-| **TypeBox + zod-from-json-schema** | Multi-tool stack. | Toolchain becomes the spec — fragile, hard to evolve consistently. |
+| **TypeBox + zod-from-json-schema** | Multi-tool stack. | Toolchain becomes the spec â€” fragile, hard to evolve consistently. |
 
-The right framing — corrected from the original audit critique:
+The right framing â€” corrected from the original audit critique:
 
 > NekoStack is not "better Zod." It is a **schema IR + generator system** that emits Zod as one target alongside JSON Schema, OpenAPI, and TypeScript. The unique value is multi-output semantic consistency, not DSL ergonomics.
 
 ## How this fits the NekoStack
 
-**Depends on:** Nothing within NekoStack. This is foundational — every other package may depend on it.
+**Depends on:** Nothing within NekoStack. This is foundational â€” every other package may depend on it.
 
 **Used by:**
-- `@nekostack/api` — generates OpenAPI components.
-- `@nekostack/form` — drives form rendering + validation.
-- `@nekostack/cli` — validates command-line inputs.
-- `@nekostack/codex` — validates entity shape definitions.
-- `@nekostack/auth` — typifies token claims + `AccessDecision` shapes.
-- `@nekostack/config` — boot-time env + runtime config validation.
-- `@nekostack/events` — event payload shapes.
-- `@nekostack/telemetry` — typed event catalog shapes.
+- `@nekostack/api` â€” generates OpenAPI components.
+- `@nekostack/form` â€” drives form rendering + validation.
+- `@nekostack/cli` â€” validates command-line inputs.
+- `@nekostack/codex` â€” validates entity shape definitions.
+- `@nekostack/auth` â€” typifies token claims + `AccessDecision` shapes.
+- `@nekostack/config` â€” boot-time env + runtime config validation.
+- `@nekostack/events` â€” event payload shapes.
+- `@nekostack/telemetry` â€” typed event catalog shapes.
 - Effectively everything that crosses a system boundary.
 
 ## Design philosophy
 
 - **IR is the contract.** DSL produces IR; generators consume IR; runtime executes IR-backed validators. The DSL is replaceable; the IR is not.
-- **One source, many outputs — with honest semantic-loss tracking.** Outputs are derived. Where a derivation cannot be faithful, the system marks the gap explicitly.
+- **One source, many outputs â€” with honest semantic-loss tracking.** Outputs are derived. Where a derivation cannot be faithful, the system marks the gap explicitly.
 - **TS-native DSL.** Schemas are TypeScript code, not a separate IDL file. Inference works for free.
 - **Strict by default everywhere.** Unknown keys reject. Composition conflicts reject. Recursive schemas without IDs reject. Permissive behaviors are deliberate opt-ins.
 - **Structured errors, normalized codes.** No raw strings, no Zod-leaked codes. The `Issue` shape is the contract.
-- **Deterministic generated output.** Same source + same generator version → byte-identical output. Reviewable, diffable, CI-checkable.
+- **Deterministic generated output.** Same source + same generator version â†’ byte-identical output. Reviewable, diffable, CI-checkable.
 - **Versioned schemas.** Every schema can carry an ID + version. Migrations (v0.8+) bridge versions; pre-migration, version is metadata that surfaces in errors + outputs.
 
 ## Architecture sketch
 
 ```
 packages/schema/
-├── src/
-│   ├── ir/                      # SchemaNode AST + normalization
-│   │   ├── nodes.ts             # node type definitions
-│   │   ├── normalize.ts         # builder → IR
-│   │   └── serialize.ts         # IR ↔ JSON (for registry / hashing)
-│   ├── builders/                # public DSL: s.object(), s.string(), etc.
-│   ├── generators/              # IR → outputs
-│   │   ├── ts.ts                # → TypeScript .d.ts
-│   │   ├── zod.ts               # → Zod validator code
-│   │   ├── json-schema.ts       # → JSON Schema draft 2020-12
-│   │   ├── openapi.ts           # → OpenAPI 3.1 component
-│   │   └── header.ts            # deterministic generated-file header
-│   ├── runtime/                 # validate() — IR-backed runtime
-│   ├── composition/             # extend/pick/omit/partial/required/merge/override
-│   ├── identity/                # $id, version, registry lookup
-│   ├── errors/                  # Issue, IssueCode, normalizers
-│   └── cli/                     # `neko schema generate / check / diff`
-├── docs/                        # deeper spec docs (deferred — see Roadmap)
-├── tests/
-│   ├── ir/                      # IR normalization tests
-│   ├── generators/              # snapshot + execution tests
-│   ├── parity/                  # semantic-parity (Neko ↔ Zod ↔ JSON Schema ↔ OpenAPI)
-│   └── conformance/             # JSON Schema test suite, OpenAPI fixtures
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ ir/                      # SchemaNode AST + normalization
+â”‚   â”‚   â”œâ”€â”€ nodes.ts             # node type definitions
+â”‚   â”‚   â”œâ”€â”€ normalize.ts         # builder â†’ IR
+â”‚   â”‚   â””â”€â”€ serialize.ts         # IR â†” JSON (for registry / hashing)
+â”‚   â”œâ”€â”€ builders/                # public DSL: s.object(), s.string(), etc.
+â”‚   â”œâ”€â”€ generators/              # IR â†’ outputs
+â”‚   â”‚   â”œâ”€â”€ ts.ts                # â†’ TypeScript .d.ts
+â”‚   â”‚   â”œâ”€â”€ zod.ts               # â†’ Zod validator code
+â”‚   â”‚   â”œâ”€â”€ json-schema.ts       # â†’ JSON Schema draft 2020-12
+â”‚   â”‚   â”œâ”€â”€ openapi.ts           # â†’ OpenAPI 3.1 component
+â”‚   â”‚   â””â”€â”€ header.ts            # deterministic generated-file header
+â”‚   â”œâ”€â”€ runtime/                 # validate() â€” IR-backed runtime
+â”‚   â”œâ”€â”€ composition/             # extend/pick/omit/partial/required/merge/override
+â”‚   â”œâ”€â”€ identity/                # $id, version, registry lookup
+â”‚   â”œâ”€â”€ errors/                  # Issue, IssueCode, normalizers
+â”‚   â””â”€â”€ cli/                     # `neko schema generate / check / diff`
+â”œâ”€â”€ docs/                        # deeper spec docs (deferred â€” see Roadmap)
+â”œâ”€â”€ tests/
+â”‚   â”œâ”€â”€ ir/                      # IR normalization tests
+â”‚   â”œâ”€â”€ generators/              # snapshot + execution tests
+â”‚   â”œâ”€â”€ parity/                  # semantic-parity (Neko â†” Zod â†” JSON Schema â†” OpenAPI)
+â”‚   â””â”€â”€ conformance/             # JSON Schema test suite, OpenAPI fixtures
+â””â”€â”€ README.md
 ```
 
 Authoring a schema:
@@ -496,13 +495,13 @@ export const User = s.object({
 export type User = s.infer<typeof User>;
 ```
 
-`neko schema generate` produces `.gen/user.zod.ts`, `.gen/user.json`, `.gen/user.openapi.json`, `.gen/user.d.ts` — each with the deterministic header.
+`neko schema generate` produces `.gen/user.zod.ts`, `.gen/user.json`, `.gen/user.openapi.json`, `.gen/user.d.ts` â€” each with the deterministic header.
 
 ## Roadmap
 
 Revised after the design-audit pass. Migrations pushed from v0.5 to v0.8+ because the migration problem is much bigger than the original scope acknowledged.
 
-### v0.1 — Core IR + builders
+### v0.1 â€” Core IR + builders
 - `SchemaNode` IR + serialization.
 - Primitive builders (string / number / boolean / literal / enum).
 - Object builder (strict default), array builder, named schemas with `.id()` / `.version()` / `.describe()`.
@@ -511,39 +510,39 @@ Revised after the design-audit pass. Migrations pushed from v0.5 to v0.8+ becaus
 - TypeScript type inference (`s.infer<T>`).
 - Builder unit tests + type inference tests.
 
-### v0.2 — TypeScript + Zod generation
+### v0.2 â€” TypeScript + Zod generation
 - TS generator (`.d.ts` output).
 - Zod generator (Zod 3.x target initially).
 - Deterministic header.
 - Snapshot tests for generator output.
 - Zod-execution tests (generated validator runs and matches fixtures).
 
-### v0.3 — JSON Schema generation
+### v0.3 â€” JSON Schema generation
 - JSON Schema draft 2020-12 output.
 - `$id` / `$defs` / `$ref` per identity rules.
 - Portable constraint mapping (min/max/regex/format/etc.).
 - Semantic-loss metadata for runtime-only refinements (`x-nekostack-runtime-refinement`).
 - JSON Schema test-suite conformance.
 
-### v0.4 — OpenAPI 3.1 generation
+### v0.4 â€” OpenAPI 3.1 generation
 - OpenAPI 3.1 component schemas.
 - Integration fixtures for `@nekostack/api`.
 - Nullable / required mapping per the Absence Semantics table.
 - Round-trip tests with `@redocly/openapi-core`.
 
-### v0.5 — Composition
+### v0.5 â€” Composition
 - `extend`, `pick`, `omit`, `partial`, `required`.
 - Conflict-safe `merge` with explicit `override`.
 - Composition tests covering conflict cases.
 
-### v0.6 — Runtime validation
+### v0.6 â€” Runtime validation
 - `validate(schema, input)` returning `Result<T, Issue[]>`.
 - Unknown-key handling (strict / stripUnknown / passthrough).
 - Zod-backed execution (runtime delegates to generated Zod).
-- Issue normalization (raw Zod issues → NekoStack `Issue` codes).
-- Semantic-parity tests: same fixture validated against Neko runtime, generated Zod, JSON Schema validator, OpenAPI-compatible schema — expected failures match.
+- Issue normalization (raw Zod issues â†’ NekoStack `Issue` codes).
+- Semantic-parity tests: same fixture validated against Neko runtime, generated Zod, JSON Schema validator, OpenAPI-compatible schema â€” expected failures match.
 
-### v0.7 — Registry-lite
+### v0.7 â€” Registry-lite
 - Local schema registry (lookup by id + version).
 - Schema diffing between two versions.
 - Breaking-change detection per the matrix below.
@@ -556,19 +555,19 @@ Revised after the design-audit pass. Migrations pushed from v0.5 to v0.8+ becaus
 | Add optional field | non-breaking |
 | Add required field | **breaking** (clients sending old shape now fail) |
 | Remove field | **breaking** for consumers that read it |
-| Make required → optional | non-breaking for producers; breaking for consumers expecting field |
+| Make required â†’ optional | non-breaking for producers; breaking for consumers expecting field |
 | Add nullable (widen) | usually non-breaking for consumers |
 | Remove nullable (narrow) | **breaking** for producers that emitted null |
 | Widen enum (add value) | **breaking** for clients (must handle new value) |
 | Narrow enum (remove value) | **breaking** for producers |
-| Change scalar type (string → number) | **breaking** |
+| Change scalar type (string â†’ number) | **breaking** |
 | Add runtime-only refinement | **breaking** for runtime consumers; invisible to JSON Schema/OpenAPI outputs |
 | Rename field | **breaking** in all directions unless explicitly aliased |
 | Add discriminated-union branch | non-breaking for consumers using fallback; breaking otherwise |
 
 `neko schema diff <a> <b>` prints the change list with these annotations. CI in consuming projects can fail on any `breaking` change without a deliberate `--accept-breaking` flag.
 
-### v0.8+ — Migrations
+### v0.8+ â€” Migrations
 - Migration registry with version graph.
 - Forward migrations between versioned schemas.
 - Pre/post migration validation.
@@ -576,7 +575,7 @@ Revised after the design-audit pass. Migrations pushed from v0.5 to v0.8+ becaus
 - Failure behavior + downgrade policy.
 - Fixture tests per version pair.
 
-### v1.0 — Stable API
+### v1.0 â€” Stable API
 - Full documentation site.
 - Migration guide from Zod-as-source.
 - Performance benchmarks vs Zod and TypeBox.
@@ -588,13 +587,13 @@ Revised after the design-audit pass. Migrations pushed from v0.5 to v0.8+ becaus
 |---|---|---|
 | Builder unit tests | v0.1 | shape construction, basic validation |
 | Type inference tests | v0.1 | `expectTypeOf` / tsd-style assertions |
-| IR normalization tests | v0.1 | builder → expected IR |
+| IR normalization tests | v0.1 | builder â†’ expected IR |
 | Generator snapshot tests | v0.2+ | byte-identical output across runs |
 | Zod execution tests | v0.2 | generated Zod actually validates correctly |
 | JSON Schema conformance | v0.3 | passes JSON Schema test suite |
 | OpenAPI fixture tests | v0.4 | round-trip with `@redocly/openapi-core` |
-| **Semantic parity tests** | v0.6 | **most important** — same fixture validated four ways, failures match |
-| Error normalization tests | v0.6 | Zod errors → NekoStack Issue codes |
+| **Semantic parity tests** | v0.6 | **most important** â€” same fixture validated four ways, failures match |
+| Error normalization tests | v0.6 | Zod errors â†’ NekoStack Issue codes |
 | Recursive schema tests | v0.6 | `s.lazy()` references resolve through generators |
 | Composition tests | v0.5 | merge conflicts, override semantics |
 | Versioning + migration tests | v0.8+ | per-version fixtures, forward migration correctness |
@@ -602,41 +601,20 @@ Revised after the design-audit pass. Migrations pushed from v0.5 to v0.8+ becaus
 
 Semantic parity is the load-bearing test category. Where the four outputs cannot match (runtime-only refinements being the prime case), the test asserts the *expected gap*, not equality.
 
-## Product potential
-
-**Internal use:** Mandatory. The whole stack rests on this.
-
-**Open-source release:** Strong candidate. The multi-output semantic-consistency angle is genuinely undersupplied. MIT-licensed release with good docs could attract real users — particularly TS teams running multi-language stacks (TS frontend + Python backend, or generating SDKs for non-TS consumers).
-
-**Commercial product (corrected from the original brief):** `@nekostack/schema` is **not the commercial product by itself**. It is the technical substrate for a future registry/governance product. A schema package becomes commercially interesting only when paired with:
-
-- Hosted schema registry with version history
-- Cross-version diffing + breaking-change detection
-- SDK / codegen integration (à la Speakeasy / Stainless, but one layer earlier)
-- Schema governance + team permissions
-- CI integration (PR-level schema-change review)
-- Changelog generation
-- Compliance export
-- Migration tracking
-
-That commercial product would be a separate offering (e.g., `@nekostack/schema-cloud` or NekoSystems' enterprise tier consuming this) — built on top of this primitive. Not a near-term focus, but the path is real.
-
-**Estimated effort to v1.0:** 6–12 weeks of focused work; more realistically 4–8 months at solo-dev cadence. Revised up from the original 4–8 / 3–6 because the IR + semantic-loss + identity + parity-test work added scope.
-
 ## Locked Design Decisions (v1.0 Freeze)
 
 These decisions were explicitly closed to harden the public API surface for v1.0. They are not up for debate.
 
 - **No Async Refinements.** `refineAsync` is explicitly rejected. Validation must remain a pure, synchronous, CPU-bound operation. If a check requires I/O (e.g., querying a database to see if a username is taken), it is **Business Logic**, not **Shape Validation**, and belongs in a Controller or Service.
-- **Recursive Schema Cycles (`A → B → A`).** `s.lazy()` MUST take a string ID representing the target schema (e.g., `s.lazy("com.nekostack.User")`). The compiler does not attempt to resolve this during definition. It is resolved safely at runtime by querying the `schemaRegistry`. If the ID doesn't exist, it throws `recursive_reference_unresolved`.
+- **Recursive Schema Cycles (`A â†’ B â†’ A`).** `s.lazy()` MUST take a string ID representing the target schema (e.g., `s.lazy("com.nekostack.User")`). The compiler does not attempt to resolve this during definition. It is resolved safely at runtime by querying the `schemaRegistry`. If the ID doesn't exist, it throws `recursive_reference_unresolved`.
 - **Cross-package schema-id collision policy.** If `@nekostack/auth` and a consuming project both define `com.nekostack.auth.User@1.0.0` with different IR hashes, the registry `buildRegistry()` function will fail loudly with a `duplicate_schema_id` error. There is no silent overriding or "prefer local." The registry is the single source of truth.
 
 ## Still-open implementation decisions
 
-The Implementation contracts section pins the load-bearing decisions. The list below names what is **not yet** decided — labeled honestly rather than pretending everything is closed. Each item is a real choice that will need to land before or during the relevant phase.
+The Implementation contracts section pins the load-bearing decisions. The list below names what is **not yet** decided â€” labeled honestly rather than pretending everything is closed. Each item is a real choice that will need to land before or during the relevant phase.
 
 - **Discriminator value types.** Discriminated-union discriminators are presumed to be string literals (`s.literal("kind")`). Should we allow number literals too? Implications for OpenAPI emission TBD.
-- **Workspace vs package vs hosted registry resolution.** Registry-lite (v0.7) is local-only. The path to a future hosted registry (a commercial offering above this package) needs a lookup-precedence rule. Deferred.
+- **Workspace vs package vs hosted registry resolution.** Registry-lite (v0.7) is local-only. The path to a future hosted registry (an out-of-scope hosted capability) needs a lookup-precedence rule. Deferred.
 - **Per-tenant schema overlays.** Some SaaS consumers may want tenant-specific schema extensions (extra fields per tenant). Out of scope for v1; possibly Phase-9 / `@nekostack/entitlements`-adjacent.
 - **Generator plugin contract.** Third-party generators (e.g., a future Prisma generator, GraphQL SDL emitter) need a stable contract. Deferred until v1.0 / post-v1.
 - **Performance budgets.** No explicit perf targets yet. Will be set against Zod / TypeBox baselines.
@@ -648,9 +626,9 @@ Items here should graduate into the Implementation contracts section once decide
 - **Current:** Foundation underway. **Released through schema-v0.8.0** (~7.4k LOC, 1.3k tests).
 - **Owner:** Cody (solo dev project).
 - **Priority tier:** Foundation primitive.
-- **Estimated learning return:** Very high. Schema-system design, type-level TypeScript, code-gen architecture, JSON Schema semantics, OpenAPI 3.1 internals, semantic-loss management, deterministic output discipline — all in one project.
+- **Estimated learning return:** Very high. Schema-system design, type-level TypeScript, code-gen architecture, JSON Schema semantics, OpenAPI 3.1 internals, semantic-loss management, deterministic output discipline â€” all in one project.
 - **Source thinking:**
-  - Initial audit: [`references/schema/design-audit-2026-05.md`](../../references/schema/design-audit-2026-05.md) — drove the IR / semantic-loss / identity / strict-by-default / migration-deferral additions.
-  - Follow-up audit: [`references/schema/design-audit-2026-05-followup.md`](../../references/schema/design-audit-2026-05-followup.md) — drove the Transform input/output split, Union policy, validate-vs-parse, coercion policy, IR hash, breaking-change matrix, and the Still-open section.
+  - Initial audit: [`references/schema/design-audit-2026-05.md`](../../references/schema/design-audit-2026-05.md) â€” drove the IR / semantic-loss / identity / strict-by-default / migration-deferral additions.
+  - Follow-up audit: [`references/schema/design-audit-2026-05-followup.md`](../../references/schema/design-audit-2026-05-followup.md) â€” drove the Transform input/output split, Union policy, validate-vs-parse, coercion policy, IR hash, breaking-change matrix, and the Still-open section.
 
-  Future significant design changes should generate a similar audit document and link from here. The pattern is: audit → revise → preserve source thinking → label open decisions → repeat as design matures.
+  Future significant design changes should generate a similar audit document and link from here. The pattern is: audit â†’ revise â†’ preserve source thinking â†’ label open decisions â†’ repeat as design matures.

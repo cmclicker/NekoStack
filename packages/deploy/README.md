@@ -1,4 +1,4 @@
-# @nekostack/deploy
+﻿# @nekostack/deploy
 
 > CI/CD recipes + infrastructure-as-code templates + deployment automation. The "how does this actually ship?" layer.
 
@@ -9,9 +9,8 @@
 | **Build tier** | Ops |
 | **Depends on** | `schema` (deploy config), `secrets` (deploy credentials), `audit`, `governance` (deploy gates), `health` (pre-deploy checks), `backup` (pre-deploy snapshots), `migrate` (deploy-time migrations) |
 | **Used by** | every product getting deployed |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 10–16 weeks focused |
-| **Sellable?** | Modest — crowded space; opinionated NekoStack-conventional value |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 10â€“16 weeks focused |
 
 ## Why this exists
 
@@ -87,44 +86,44 @@ Deployment is the boundary where bugs become outages. Every product reinvents CI
 
 ```
 packages/deploy/
-├── src/
-│   ├── ci/
-│   │   ├── github-actions.ts
-│   │   └── gitlab-ci.ts
-│   ├── iac/
-│   │   ├── terraform.ts
-│   │   └── pulumi.ts
-│   ├── gates/
-│   │   ├── health.ts
-│   │   ├── smoke.ts
-│   │   └── governance.ts
-│   ├── rollout/
-│   │   ├── blue-green.ts
-│   │   └── canary.ts
-│   ├── hooks/
-│   │   ├── pre-backup.ts
-│   │   └── pre-migrate.ts
-│   ├── release/
-│   │   ├── semver.ts
-│   │   └── changelog.ts
-│   ├── rollback/
-│   │   └── runbook.ts
-│   └── container/
-│       └── build.ts
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ ci/
+â”‚   â”‚   â”œâ”€â”€ github-actions.ts
+â”‚   â”‚   â””â”€â”€ gitlab-ci.ts
+â”‚   â”œâ”€â”€ iac/
+â”‚   â”‚   â”œâ”€â”€ terraform.ts
+â”‚   â”‚   â””â”€â”€ pulumi.ts
+â”‚   â”œâ”€â”€ gates/
+â”‚   â”‚   â”œâ”€â”€ health.ts
+â”‚   â”‚   â”œâ”€â”€ smoke.ts
+â”‚   â”‚   â””â”€â”€ governance.ts
+â”‚   â”œâ”€â”€ rollout/
+â”‚   â”‚   â”œâ”€â”€ blue-green.ts
+â”‚   â”‚   â””â”€â”€ canary.ts
+â”‚   â”œâ”€â”€ hooks/
+â”‚   â”‚   â”œâ”€â”€ pre-backup.ts
+â”‚   â”‚   â””â”€â”€ pre-migrate.ts
+â”‚   â”œâ”€â”€ release/
+â”‚   â”‚   â”œâ”€â”€ semver.ts
+â”‚   â”‚   â””â”€â”€ changelog.ts
+â”‚   â”œâ”€â”€ rollback/
+â”‚   â”‚   â””â”€â”€ runbook.ts
+â”‚   â””â”€â”€ container/
+â”‚       â””â”€â”€ build.ts
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — GitHub Actions templates
-### v0.2 — Deploy gates
-### v0.3 — Pre-deploy backup + migration hooks
-### v0.4 — Blue-green rollout
-### v0.5 — Rollback runbooks
-### v0.6 — Release / changelog
-### v0.7 — IaC adapters
-### v1.0 — Stable API
+### v0.1 â€” GitHub Actions templates
+### v0.2 â€” Deploy gates
+### v0.3 â€” Pre-deploy backup + migration hooks
+### v0.4 â€” Blue-green rollout
+### v0.5 â€” Rollback runbooks
+### v0.6 â€” Release / changelog
+### v0.7 â€” IaC adapters
+### v1.0 â€” Stable API
 
 ## Product potential
 

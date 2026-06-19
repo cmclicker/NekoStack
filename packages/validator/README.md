@@ -1,4 +1,4 @@
-# @nekostack/validator
+﻿# @nekostack/validator
 
 > Cross-reference + continuity + content validation. Lint-style architecture for non-code artifacts. The "did anyone break canon?" layer.
 
@@ -9,9 +9,8 @@
 | **Build tier** | Content / narrative |
 | **Depends on** | `schema` (validation rules), `codex` (entities to cross-validate), `audit`, `provenance` (stale-artifact detection) |
 | **Used by** | Mara Kane (narrative continuity checks across 20 books), NekoBattler (champion balance + ability consistency), Leytide (world consistency), `story`, `cms` (publish-time validation), CI pipelines |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 8–14 weeks focused |
-| **Sellable?** | Plausible OSS — content-validation library is undersupplied |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 8â€“14 weeks focused |
 
 ## Why this exists
 
@@ -24,9 +23,9 @@ Content has rules. A character introduced in book 3 can't appear in book 1. A ch
 ### In scope
 - Validation rule DSL.
 - Rule registration + execution.
-- Cross-reference integrity (entity → entity links resolve).
+- Cross-reference integrity (entity â†’ entity links resolve).
 - Narrative continuity rules (timeline, character presence, fact consistency).
-- Balance rules (game-content invariants — uses `rules` for game-side).
+- Balance rules (game-content invariants â€” uses `rules` for game-side).
 - Stale-content detection (via `provenance`).
 - Custom validators per content type.
 - CI integration (`neko validator check`).
@@ -77,7 +76,7 @@ Content has rules. A character introduced in book 3 can't appear in book 1. A ch
 
 ## Design philosophy
 
-- **Content has rules.** Continuity, balance, references — all checkable.
+- **Content has rules.** Continuity, balance, references â€” all checkable.
 - **Rules as code.** Validators are declared, runnable, testable.
 - **CI-integrated.** No PR ships content that breaks rules.
 - **Auto-fix where possible.** Some rule violations have mechanical fixes.
@@ -86,45 +85,45 @@ Content has rules. A character introduced in book 3 can't appear in book 1. A ch
 
 ```
 packages/validator/
-├── src/
-│   ├── rules/
-│   │   ├── define.ts
-│   │   └── catalog.ts
-│   ├── cross-reference/
-│   │   └── integrity.ts        # via codex
-│   ├── continuity/
-│   │   ├── timeline.ts
-│   │   ├── character-presence.ts
-│   │   └── fact-consistency.ts
-│   ├── balance/
-│   │   └── game-invariant.ts
-│   ├── stale/
-│   │   └── via-provenance.ts
-│   ├── custom/
-│   │   └── plugin.ts
-│   ├── ci/
-│   │   └── check.ts
-│   └── fix/
-│       └── auto.ts
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ rules/
+â”‚   â”‚   â”œâ”€â”€ define.ts
+â”‚   â”‚   â””â”€â”€ catalog.ts
+â”‚   â”œâ”€â”€ cross-reference/
+â”‚   â”‚   â””â”€â”€ integrity.ts        # via codex
+â”‚   â”œâ”€â”€ continuity/
+â”‚   â”‚   â”œâ”€â”€ timeline.ts
+â”‚   â”‚   â”œâ”€â”€ character-presence.ts
+â”‚   â”‚   â””â”€â”€ fact-consistency.ts
+â”‚   â”œâ”€â”€ balance/
+â”‚   â”‚   â””â”€â”€ game-invariant.ts
+â”‚   â”œâ”€â”€ stale/
+â”‚   â”‚   â””â”€â”€ via-provenance.ts
+â”‚   â”œâ”€â”€ custom/
+â”‚   â”‚   â””â”€â”€ plugin.ts
+â”‚   â”œâ”€â”€ ci/
+â”‚   â”‚   â””â”€â”€ check.ts
+â”‚   â””â”€â”€ fix/
+â”‚       â””â”€â”€ auto.ts
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — Validation rule DSL
-### v0.2 — Cross-reference integrity
-### v0.3 — Custom validators
-### v0.4 — Continuity rules (timeline / character-presence)
-### v0.5 — Stale-content detection
-### v0.6 — Auto-fix
-### v0.7 — CI integration
-### v1.0 — Stable API
+### v0.1 â€” Validation rule DSL
+### v0.2 â€” Cross-reference integrity
+### v0.3 â€” Custom validators
+### v0.4 â€” Continuity rules (timeline / character-presence)
+### v0.5 â€” Stale-content detection
+### v0.6 â€” Auto-fix
+### v0.7 â€” CI integration
+### v1.0 â€” Stable API
 
 ## Product potential
 
 **Internal:** Mara Kane especially.
-**Open source release:** Plausible — content-validation library is undersupplied.
+**Open source release:** Plausible â€” content-validation library is undersupplied.
 **Commercial:** Marginal.
 
 ## Status

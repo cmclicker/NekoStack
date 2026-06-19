@@ -1,4 +1,4 @@
-# @nekostack/math
+﻿# @nekostack/math
 
 > Curve functions, probability tables, interpolation, statistics. The "shape this number" layer for game design, economy modeling, animation easing, balance.
 
@@ -7,11 +7,10 @@
 | | |
 |---|---|
 | **Build tier** | Utility primitives |
-| **Depends on** | (none — foundational) |
+| **Depends on** | (none â€” foundational) |
 | **Used by** | `economy` (curve modeling), `progression` (leveling curves), `motion` (easing), `procgen` (interpolation), `chart` (axis scales), `random` (some distributions), game balance code |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 3–5 weeks focused |
-| **Sellable?** | Low — substrate |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 3â€“5 weeks focused |
 
 ## Why this exists
 
@@ -78,45 +77,45 @@ Game / economy / progression code is full of curve math: "how much XP for level 
 
 ```
 packages/math/
-├── src/
-│   ├── curves/
-│   │   ├── linear.ts
-│   │   ├── log.ts
-│   │   ├── exp.ts
-│   │   ├── sigmoid.ts
-│   │   └── piecewise.ts
-│   ├── probability/
-│   │   ├── table.ts
-│   │   └── expected-value.ts
-│   ├── interpolate/
-│   │   ├── lerp.ts
-│   │   ├── cubic.ts
-│   │   └── bezier.ts
-│   ├── range/
-│   │   ├── clamp.ts
-│   │   └── remap.ts
-│   ├── stats/
-│   │   ├── mean.ts
-│   │   ├── median.ts
-│   │   ├── variance.ts
-│   │   └── percentile.ts
-│   ├── vector/
-│   │   ├── vec2.ts
-│   │   └── vec3.ts
-│   └── easing/
-│       └── functions.ts
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ curves/
+â”‚   â”‚   â”œâ”€â”€ linear.ts
+â”‚   â”‚   â”œâ”€â”€ log.ts
+â”‚   â”‚   â”œâ”€â”€ exp.ts
+â”‚   â”‚   â”œâ”€â”€ sigmoid.ts
+â”‚   â”‚   â””â”€â”€ piecewise.ts
+â”‚   â”œâ”€â”€ probability/
+â”‚   â”‚   â”œâ”€â”€ table.ts
+â”‚   â”‚   â””â”€â”€ expected-value.ts
+â”‚   â”œâ”€â”€ interpolate/
+â”‚   â”‚   â”œâ”€â”€ lerp.ts
+â”‚   â”‚   â”œâ”€â”€ cubic.ts
+â”‚   â”‚   â””â”€â”€ bezier.ts
+â”‚   â”œâ”€â”€ range/
+â”‚   â”‚   â”œâ”€â”€ clamp.ts
+â”‚   â”‚   â””â”€â”€ remap.ts
+â”‚   â”œâ”€â”€ stats/
+â”‚   â”‚   â”œâ”€â”€ mean.ts
+â”‚   â”‚   â”œâ”€â”€ median.ts
+â”‚   â”‚   â”œâ”€â”€ variance.ts
+â”‚   â”‚   â””â”€â”€ percentile.ts
+â”‚   â”œâ”€â”€ vector/
+â”‚   â”‚   â”œâ”€â”€ vec2.ts
+â”‚   â”‚   â””â”€â”€ vec3.ts
+â”‚   â””â”€â”€ easing/
+â”‚       â””â”€â”€ functions.ts
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — Curves + interpolation
-### v0.2 — Probability tables
-### v0.3 — Statistics
-### v0.4 — Vector helpers
-### v0.5 — Easing functions
-### v1.0 — Stable API
+### v0.1 â€” Curves + interpolation
+### v0.2 â€” Probability tables
+### v0.3 â€” Statistics
+### v0.4 â€” Vector helpers
+### v0.5 â€” Easing functions
+### v1.0 â€” Stable API
 
 ## Product potential
 
@@ -129,4 +128,4 @@ packages/math/
 - **Current:** Empty placeholder.
 - **Owner:** Cody (solo dev).
 - **Priority tier:** Utility primitives.
-- **Estimated learning return:** High. Curve design, interpolation, statistics — game-design + production engineering.
+- **Estimated learning return:** High. Curve design, interpolation, statistics â€” game-design + production engineering.

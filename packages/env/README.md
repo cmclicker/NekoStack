@@ -1,23 +1,22 @@
-# @nekostack/env
+﻿# @nekostack/env
 
-> One command to get any NekoStack project running locally. Devcontainers, docker-compose, port allocation, service dependencies, and tear-down — all declarative.
+> One command to get any NekoStack project running locally. Devcontainers, docker-compose, port allocation, service dependencies, and tear-down â€” all declarative.
 
 ## Quick reference
 
 | | |
 |---|---|
-| **Build tier** | Foundation primitive — mid-priority (projects survive without it briefly) |
+| **Build tier** | Foundation primitive â€” mid-priority (projects survive without it briefly) |
 | **Depends on** | Docker (external), `cli` (subcommand integration), `config` (port + env discovery) |
 | **Used by** | every developer working on any NekoStack project, daily; CI smoke tests; onboarding flows |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 3–6 weeks focused |
-| **Sellable?** | Plausible MIT release (Tilt-but-simpler niche); solo-dev-friendly orchestration is undersupplied |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 3â€“6 weeks focused |
 
 ## Why this exists
 
 Every NekoStack project has the same problem: getting it running locally is a multi-step ritual. Start Postgres on the right port. Start Redis. Configure env vars. Apply database migrations. Generate Prisma clients. Build packages in the right order. Start the API. Start the web frontend. Make sure they can talk to each other.
 
-The NekoVibe README has a *six-section troubleshooting guide* just for the "I can't get it running" failure modes. That's not a NekoVibe problem — that's a problem every project will have without a uniform dev-environment abstraction.
+The NekoVibe README has a *six-section troubleshooting guide* just for the "I can't get it running" failure modes. That's not a NekoVibe problem â€” that's a problem every project will have without a uniform dev-environment abstraction.
 
 `@nekostack/env` makes the local dev environment a first-class declarative artifact:
 
@@ -71,7 +70,7 @@ Building this yourself rather than using docker-compose directly is justified be
 
 ## Boundary
 
-> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §45 for the full capability map.
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) Â§45 for the full capability map.
 
 ### Owns
 - Declarative `neko-env.yaml` spec per project
@@ -109,12 +108,12 @@ The right framing: `@nekostack/env` is the *thin layer over Docker + native proc
 ## How this fits the NekoStack
 
 **Depends on:**
-- Docker (external) — for container services.
-- `@nekostack/cli` — `neko env` is a CLI subcommand.
-- `@nekostack/config` — reads project config to discover ports and env vars.
+- Docker (external) â€” for container services.
+- `@nekostack/cli` â€” `neko env` is a CLI subcommand.
+- `@nekostack/config` â€” reads project config to discover ports and env vars.
 
 **Used by:**
-- Every developer working on any NekoStack project — every day.
+- Every developer working on any NekoStack project â€” every day.
 - CI smoke tests can use the same spec to spin up a representative environment.
 - Onboarding docs reduce from a 20-step README to "run `neko env up`."
 
@@ -130,31 +129,31 @@ The right framing: `@nekostack/env` is the *thin layer over Docker + native proc
 
 ```
 packages/env/
-├── src/
-│   ├── spec.ts               # parse neko-env.yaml, validate schema
-│   ├── docker.ts             # container service driver
-│   ├── process.ts            # native process service driver
-│   ├── healthcheck.ts        # readiness probes (tcp, http, command)
-│   ├── ports.ts              # allocation + collision detection
-│   ├── logs.ts               # multiplexed log streaming
-│   ├── lifecycle.ts          # up / down / restart orchestration
-│   └── cli.ts                # subcommand registration
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ spec.ts               # parse neko-env.yaml, validate schema
+â”‚   â”œâ”€â”€ docker.ts             # container service driver
+â”‚   â”œâ”€â”€ process.ts            # native process service driver
+â”‚   â”œâ”€â”€ healthcheck.ts        # readiness probes (tcp, http, command)
+â”‚   â”œâ”€â”€ ports.ts              # allocation + collision detection
+â”‚   â”œâ”€â”€ logs.ts               # multiplexed log streaming
+â”‚   â”œâ”€â”€ lifecycle.ts          # up / down / restart orchestration
+â”‚   â””â”€â”€ cli.ts                # subcommand registration
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 Project-side `neko-env.yaml` example (already shown above) plus optional `devcontainer.json` output:
 
 ```
 $ neko env up
-[postgres] starting…
-[postgres] ✔ healthy (pg_isready)
-[redis] starting…
-[redis] ✔ healthy
-[api] starting (npm run start:dev)…
+[postgres] startingâ€¦
+[postgres] âœ” healthy (pg_isready)
+[redis] startingâ€¦
+[redis] âœ” healthy
+[api] starting (npm run start:dev)â€¦
 [api] Nest application successfully started on :3001
-[api] ✔ healthy (http://localhost:3001/health)
-[web] starting (npm run dev)…
+[api] âœ” healthy (http://localhost:3001/health)
+[web] starting (npm run dev)â€¦
 [web] Ready at http://localhost:3000
 
 All services running. Press Ctrl+C to stop.
@@ -162,27 +161,27 @@ All services running. Press Ctrl+C to stop.
 
 ## Roadmap
 
-### v0.1 — Bootstrap
+### v0.1 â€” Bootstrap
 - Schema for `neko-env.yaml`.
 - Docker service driver (start/stop containers).
 - Basic up/down lifecycle.
 
-### v0.2 — Native processes
+### v0.2 â€” Native processes
 - Process service driver with stdout/stderr capture.
 - Multiplexed log output.
 
-### v0.3 — Healthchecks
+### v0.3 â€” Healthchecks
 - TCP, HTTP, and command-based readiness probes.
 - Dependency ordering using probe results.
 
-### v0.4 — Port management
+### v0.4 â€” Port management
 - Port allocation with collision detection.
 - Override and discovery API.
 
-### v0.5 — Devcontainer output
+### v0.5 â€” Devcontainer output
 - Generate `.devcontainer/devcontainer.json` from `neko-env.yaml` for VS Code users.
 
-### v1.0 — Stable spec
+### v1.0 â€” Stable spec
 - Documentation site.
 - Migration recipes from raw docker-compose.
 
@@ -192,7 +191,6 @@ All services running. Press Ctrl+C to stop.
 
 **Open source release:** Plausible MIT release. The "process orchestration + container management in one declarative spec" niche has Tilt, but Tilt is Kubernetes-focused. A simpler tool for solo devs / small teams is undersupplied.
 
-**Commercial product:** Unlikely. Dev tooling rarely monetizes directly except as part of a broader IDE / platform.
 
 **Estimated effort to v1.0:** 3-6 weeks of focused work. Docker + process drivers are mostly orchestration; healthchecks are the subtle part.
 
@@ -200,5 +198,5 @@ All services running. Press Ctrl+C to stop.
 
 - **Current:** Empty placeholder. Not started.
 - **Owner:** Cody (solo dev project).
-- **Priority tier:** Foundation primitive. Mid-priority — projects can survive without it for a while, but solo-dev context-switching pain becomes intolerable past 3-4 active projects.
-- **Estimated learning return:** Moderate. Docker API, process management, healthcheck patterns, log multiplexing — all useful operational skills.
+- **Priority tier:** Foundation primitive. Mid-priority â€” projects can survive without it for a while, but solo-dev context-switching pain becomes intolerable past 3-4 active projects.
+- **Estimated learning return:** Moderate. Docker API, process management, healthcheck patterns, log multiplexing â€” all useful operational skills.

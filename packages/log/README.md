@@ -1,4 +1,4 @@
-# @nekostack/log
+﻿# @nekostack/log
 
 > Structured runtime logging. Levels, tagged context, correlation IDs, redaction, multi-sink output. **Distinct from `telemetry`** (analytics), **`audit`** (compliance), **`trace`** (spans).
 
@@ -9,9 +9,8 @@
 | **Build tier** | Observability |
 | **Depends on** | `schema` (log record shape), `secure` (redaction), `trace` (correlation ID injection), `secrets` (secret-tagged-value scrubbing) |
 | **Used by** | every backend; every package emits debug/info/warn/error/fatal |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 4–6 weeks focused |
-| **Sellable?** | Low — pino / winston dominate; library-level integration |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 4â€“6 weeks focused |
 
 ## Why this exists
 
@@ -45,7 +44,7 @@ Generic logging libraries are fine substrates. NekoStack needs them wired into t
 
 ## Boundary
 
-> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §15 for the full capability map.
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) Â§15 for the full capability map.
 
 ### Owns
 - Structured logger interface
@@ -95,40 +94,40 @@ Generic logging libraries are fine substrates. NekoStack needs them wired into t
 
 ```
 packages/log/
-├── src/
-│   ├── logger/
-│   │   ├── core.ts
-│   │   ├── child.ts          # contextual child loggers
-│   │   └── levels.ts
-│   ├── format/
-│   │   ├── json.ts
-│   │   └── pretty.ts
-│   ├── correlation/
-│   │   └── inject.ts         # from trace
-│   ├── redact/
-│   │   ├── secret.ts         # via secrets
-│   │   └── pii.ts            # via secure
-│   ├── sinks/
-│   │   ├── console.ts
-│   │   ├── file.ts
-│   │   └── otlp.ts
-│   ├── bridge/
-│   │   ├── audit.ts
-│   │   └── errors.ts
-│   └── cli.ts
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ logger/
+â”‚   â”‚   â”œâ”€â”€ core.ts
+â”‚   â”‚   â”œâ”€â”€ child.ts          # contextual child loggers
+â”‚   â”‚   â””â”€â”€ levels.ts
+â”‚   â”œâ”€â”€ format/
+â”‚   â”‚   â”œâ”€â”€ json.ts
+â”‚   â”‚   â””â”€â”€ pretty.ts
+â”‚   â”œâ”€â”€ correlation/
+â”‚   â”‚   â””â”€â”€ inject.ts         # from trace
+â”‚   â”œâ”€â”€ redact/
+â”‚   â”‚   â”œâ”€â”€ secret.ts         # via secrets
+â”‚   â”‚   â””â”€â”€ pii.ts            # via secure
+â”‚   â”œâ”€â”€ sinks/
+â”‚   â”‚   â”œâ”€â”€ console.ts
+â”‚   â”‚   â”œâ”€â”€ file.ts
+â”‚   â”‚   â””â”€â”€ otlp.ts
+â”‚   â”œâ”€â”€ bridge/
+â”‚   â”‚   â”œâ”€â”€ audit.ts
+â”‚   â”‚   â””â”€â”€ errors.ts
+â”‚   â””â”€â”€ cli.ts
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — Pino wrapper with NekoStack defaults
-### v0.2 — Contextual child loggers
-### v0.3 — Trace correlation
-### v0.4 — Redaction
-### v0.5 — Multi-sink
-### v0.6 — Audit + error bridges
-### v1.0 — Stable API
+### v0.1 â€” Pino wrapper with NekoStack defaults
+### v0.2 â€” Contextual child loggers
+### v0.3 â€” Trace correlation
+### v0.4 â€” Redaction
+### v0.5 â€” Multi-sink
+### v0.6 â€” Audit + error bridges
+### v1.0 â€” Stable API
 
 ## Product potential
 

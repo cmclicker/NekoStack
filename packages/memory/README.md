@@ -1,4 +1,4 @@
-# @nekostack/memory
+﻿# @nekostack/memory
 
 > Agent conversation memory + persistence + summarization. Episodic, semantic, project memory. The "what should the LLM remember across sessions?" layer.
 
@@ -8,10 +8,9 @@
 |---|---|
 | **Build tier** | AI / LLM |
 | **Depends on** | `schema`, `rag` (semantic memory via embeddings), `storage`, `prompts` (memory feeds into prompts), `audit` (memory mutations), `time` (expiry) |
-| **Used by** | NekoSystems (LLM-feature persistence for tenant agents), `chat` (conversation history), `session` (developer-session memory is *different* — uses us conceptually but holds dev-side records) |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 8–14 weeks focused |
-| **Sellable?** | Strong — agent memory is a young, important space |
+| **Used by** | NekoSystems (LLM-feature persistence for tenant agents), `chat` (conversation history), `session` (developer-session memory is *different* â€” uses us conceptually but holds dev-side records) |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 8â€“14 weeks focused |
 
 ## Why this exists
 
@@ -40,13 +39,13 @@ Naive solutions store everything; context windows explode. `memory` is the prope
 
 ### Out of scope
 - LLM conversation transcripts in the wire (those are `chat`).
-- Developer session state (`session` — distinct concept, similar shape).
-- RAG primitives (`rag` — we use them).
+- Developer session state (`session` â€” distinct concept, similar shape).
+- RAG primitives (`rag` â€” we use them).
 - Auth-side user preferences (`auth` user profile).
 
 ## Boundary
 
-> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §58 (in BOUNDARIES.md).
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) Â§58 (in BOUNDARIES.md).
 
 ### Owns
 - Persistent memory records
@@ -86,55 +85,55 @@ Naive solutions store everything; context windows explode. `memory` is the prope
 - **Multi-shape memory.** Episodic / semantic / preference / project are distinct.
 - **Relevance over recency.** Surfacing irrelevant memory wastes context.
 - **Expiry mandatory.** Old facts become wrong; stale memory is worse than none.
-- **Conflict resolution explicit.** Two contradictory memories → resolve, don't silently pick.
+- **Conflict resolution explicit.** Two contradictory memories â†’ resolve, don't silently pick.
 
 ## Architecture sketch
 
 ```
 packages/memory/
-├── src/
-│   ├── records/
-│   │   ├── episodic.ts
-│   │   ├── semantic.ts
-│   │   ├── preference.ts
-│   │   └── project.ts
-│   ├── store/
-│   │   └── persist.ts          # via storage
-│   ├── relevance/
-│   │   └── score.ts            # via rag embeddings
-│   ├── inject/
-│   │   └── into-prompt.ts      # via prompts
-│   ├── expiry/
-│   │   └── policy.ts
-│   ├── conflict/
-│   │   └── resolve.ts
-│   ├── redact/
-│   │   └── delete.ts
-│   └── export/
-│       └── via-export.ts
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ records/
+â”‚   â”‚   â”œâ”€â”€ episodic.ts
+â”‚   â”‚   â”œâ”€â”€ semantic.ts
+â”‚   â”‚   â”œâ”€â”€ preference.ts
+â”‚   â”‚   â””â”€â”€ project.ts
+â”‚   â”œâ”€â”€ store/
+â”‚   â”‚   â””â”€â”€ persist.ts          # via storage
+â”‚   â”œâ”€â”€ relevance/
+â”‚   â”‚   â””â”€â”€ score.ts            # via rag embeddings
+â”‚   â”œâ”€â”€ inject/
+â”‚   â”‚   â””â”€â”€ into-prompt.ts      # via prompts
+â”‚   â”œâ”€â”€ expiry/
+â”‚   â”‚   â””â”€â”€ policy.ts
+â”‚   â”œâ”€â”€ conflict/
+â”‚   â”‚   â””â”€â”€ resolve.ts
+â”‚   â”œâ”€â”€ redact/
+â”‚   â”‚   â””â”€â”€ delete.ts
+â”‚   â””â”€â”€ export/
+â”‚       â””â”€â”€ via-export.ts
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — Memory record types + storage
-### v0.2 — Relevance scoring (RAG-based)
-### v0.3 — Memory injection
-### v0.4 — Expiry policies
-### v0.5 — Conflict resolution
-### v0.6 — Redaction + export
-### v1.0 — Stable API
+### v0.1 â€” Memory record types + storage
+### v0.2 â€” Relevance scoring (RAG-based)
+### v0.3 â€” Memory injection
+### v0.4 â€” Expiry policies
+### v0.5 â€” Conflict resolution
+### v0.6 â€” Redaction + export
+### v1.0 â€” Stable API
 
 ## Product potential
 
 **Internal:** Critical for any agentic features (NekoSystems tenant-facing agents, narrative tools, coding assistants).
-**Open source release:** Strong — agent memory is a young space.
-**Commercial:** Real — Mem0 commercializes; room for OSS-friendly competitor.
+**Open source release:** Strong â€” agent memory is a young space.
+**Commercial:** Real â€” Mem0 commercializes; room for OSS-friendly competitor.
 
 ## Status
 
 - **Current:** Empty placeholder.
 - **Owner:** Cody (solo dev).
 - **Priority tier:** AI / LLM.
-- **Estimated learning return:** Very high. Memory architectures, relevance scoring, conflict resolution, expiry policies — emerging field.
+- **Estimated learning return:** Very high. Memory architectures, relevance scoring, conflict resolution, expiry policies â€” emerging field.

@@ -1,4 +1,4 @@
-# @nekostack/jobs
+﻿# @nekostack/jobs
 
 > Scheduled and ad-hoc job execution. Worker registration, cron scheduling (via `time`), job definition. Uses `queue` as the storage substrate; uses `time` for recurrence.
 
@@ -6,12 +6,11 @@
 
 | | |
 |---|---|
-| **Build tier** | Background processing — execution layer |
+| **Build tier** | Background processing â€” execution layer |
 | **Depends on** | `queue` (substrate), `time` (RRULE / cron), `schema` (job definitions), `audit`, `telemetry` (execution metrics), `errors` |
 | **Used by** | every package needing scheduled work: `email` (digest scheduler), `notify` (batch digests), `billing` (Stripe reconciliation), `backup` (scheduled snapshots), `compliance` (retention enforcement runs), `telemetry` (cleanup jobs), product-side daily-puzzle generation, etc. |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 6–10 weeks focused |
-| **Sellable?** | Modest — BullMQ Pro / Inngest territory |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 6â€“10 weeks focused |
 
 ## Why this exists
 
@@ -26,7 +25,7 @@ defineJob('email.daily-digest', {
 });
 ```
 
-A consuming product writes `defineJob` and gets scheduling, worker execution, retries, DLQ, audit, metrics — all wired up.
+A consuming product writes `defineJob` and gets scheduling, worker execution, retries, DLQ, audit, metrics â€” all wired up.
 
 ## Scope
 
@@ -48,7 +47,7 @@ A consuming product writes `defineJob` and gets scheduling, worker execution, re
 
 ## Boundary
 
-> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §34 for the full capability map.
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) Â§34 for the full capability map.
 
 ### Owns
 - Job definition + worker registration
@@ -85,7 +84,7 @@ A consuming product writes `defineJob` and gets scheduling, worker execution, re
 
 ## Design philosophy
 
-- **Jobs are definitions, not closures.** A job has a name, a schedule, a handler — all registerable + auditable.
+- **Jobs are definitions, not closures.** A job has a name, a schedule, a handler â€” all registerable + auditable.
 - **Idempotent handlers expected.** Retries happen; handlers must tolerate.
 - **Concurrency is per-job.** Some jobs run one-at-a-time (DB migrations), others fan out.
 
@@ -93,31 +92,31 @@ A consuming product writes `defineJob` and gets scheduling, worker execution, re
 
 ```
 packages/jobs/
-├── src/
-│   ├── define/
-│   │   └── job.ts
-│   ├── worker/
-│   │   ├── register.ts
-│   │   ├── run.ts
-│   │   └── concurrency.ts
-│   ├── schedule/
-│   │   ├── cron.ts           # via time
-│   │   └── ad-hoc.ts
-│   ├── audit/
-│   │   └── emit.ts
-│   └── cli.ts
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ define/
+â”‚   â”‚   â””â”€â”€ job.ts
+â”‚   â”œâ”€â”€ worker/
+â”‚   â”‚   â”œâ”€â”€ register.ts
+â”‚   â”‚   â”œâ”€â”€ run.ts
+â”‚   â”‚   â””â”€â”€ concurrency.ts
+â”‚   â”œâ”€â”€ schedule/
+â”‚   â”‚   â”œâ”€â”€ cron.ts           # via time
+â”‚   â”‚   â””â”€â”€ ad-hoc.ts
+â”‚   â”œâ”€â”€ audit/
+â”‚   â”‚   â””â”€â”€ emit.ts
+â”‚   â””â”€â”€ cli.ts
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — Job definition + ad-hoc enqueue
-### v0.2 — Worker registration
-### v0.3 — Cron scheduling via time
-### v0.4 — Concurrency limits
-### v0.5 — Audit + telemetry
-### v1.0 — Stable API
+### v0.1 â€” Job definition + ad-hoc enqueue
+### v0.2 â€” Worker registration
+### v0.3 â€” Cron scheduling via time
+### v0.4 â€” Concurrency limits
+### v0.5 â€” Audit + telemetry
+### v1.0 â€” Stable API
 
 ## Product potential
 

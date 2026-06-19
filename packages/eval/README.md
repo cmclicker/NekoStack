@@ -1,4 +1,4 @@
-# @nekostack/eval
+﻿# @nekostack/eval
 
 > LLM evaluation framework: test suites, regression detection, output schema validation, rubric-based scoring. The "is this prompt / model / RAG actually working?" layer.
 
@@ -9,14 +9,13 @@
 | **Build tier** | AI / LLM |
 | **Depends on** | `schema` (eval definitions), `prompts` (eval target), `rag` (RAG eval), `audit` (eval results), `bench` (regression patterns), `governance` (eval gates) |
 | **Used by** | every LLM-using project; CI eval runs; prompt-versioning regressions |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 10–16 weeks focused |
-| **Sellable?** | Strong — LLM eval is an active commercial space (Braintrust / LangSmith / Honeycomb-for-AI) |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 10â€“16 weeks focused |
 
 ## Why this exists
 
 LLMs are non-deterministic. "Did this prompt change make things better or worse?" can't be answered without an eval suite. Eval needs:
-- Test cases (input → expected behavior).
+- Test cases (input â†’ expected behavior).
 - Rubrics (graders that score outputs).
 - LLM-as-judge support (use a stronger model to evaluate).
 - Regression detection (this prompt version performs worse than the previous one).
@@ -26,7 +25,7 @@ LLMs are non-deterministic. "Did this prompt change make things better or worse?
 ## Scope
 
 ### In scope
-- Eval definition DSL (test case → expected → graders).
+- Eval definition DSL (test case â†’ expected â†’ graders).
 - Graders (exact match / contains / regex / schema-valid / LLM-as-judge / custom).
 - LLM-as-judge support.
 - Regression detection (compare versions).
@@ -90,53 +89,53 @@ LLMs are non-deterministic. "Did this prompt change make things better or worse?
 
 ```
 packages/eval/
-├── src/
-│   ├── define/
-│   │   ├── eval.ts            # defineEval({ cases, graders, ... })
-│   │   └── case.ts
-│   ├── graders/
-│   │   ├── exact-match.ts
-│   │   ├── contains.ts
-│   │   ├── regex.ts
-│   │   ├── schema-valid.ts
-│   │   ├── llm-judge.ts
-│   │   └── custom.ts
-│   ├── regression/
-│   │   ├── compare.ts
-│   │   └── baseline.ts
-│   ├── retrieval/
-│   │   ├── precision.ts
-│   │   └── recall.ts
-│   ├── ci/
-│   │   └── gate.ts
-│   ├── report/
-│   │   ├── markdown.ts
-│   │   └── json.ts
-│   └── cli.ts                 # `neko eval run / compare / baseline`
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ define/
+â”‚   â”‚   â”œâ”€â”€ eval.ts            # defineEval({ cases, graders, ... })
+â”‚   â”‚   â””â”€â”€ case.ts
+â”‚   â”œâ”€â”€ graders/
+â”‚   â”‚   â”œâ”€â”€ exact-match.ts
+â”‚   â”‚   â”œâ”€â”€ contains.ts
+â”‚   â”‚   â”œâ”€â”€ regex.ts
+â”‚   â”‚   â”œâ”€â”€ schema-valid.ts
+â”‚   â”‚   â”œâ”€â”€ llm-judge.ts
+â”‚   â”‚   â””â”€â”€ custom.ts
+â”‚   â”œâ”€â”€ regression/
+â”‚   â”‚   â”œâ”€â”€ compare.ts
+â”‚   â”‚   â””â”€â”€ baseline.ts
+â”‚   â”œâ”€â”€ retrieval/
+â”‚   â”‚   â”œâ”€â”€ precision.ts
+â”‚   â”‚   â””â”€â”€ recall.ts
+â”‚   â”œâ”€â”€ ci/
+â”‚   â”‚   â””â”€â”€ gate.ts
+â”‚   â”œâ”€â”€ report/
+â”‚   â”‚   â”œâ”€â”€ markdown.ts
+â”‚   â”‚   â””â”€â”€ json.ts
+â”‚   â””â”€â”€ cli.ts                 # `neko eval run / compare / baseline`
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — Eval definition + simple graders
-### v0.2 — Output schema validation
-### v0.3 — LLM-as-judge
-### v0.4 — Regression detection
-### v0.5 — RAG retrieval evals
-### v0.6 — CI gate integration
-### v0.7 — Reporting
-### v1.0 — Stable API
+### v0.1 â€” Eval definition + simple graders
+### v0.2 â€” Output schema validation
+### v0.3 â€” LLM-as-judge
+### v0.4 â€” Regression detection
+### v0.5 â€” RAG retrieval evals
+### v0.6 â€” CI gate integration
+### v0.7 â€” Reporting
+### v1.0 â€” Stable API
 
 ## Product potential
 
 **Internal:** Critical for production LLM use.
-**Open source release:** Strong — TS-native LLM eval is undersupplied (Promptfoo exists but room remains).
-**Commercial:** Real — Braintrust / LangSmith are real businesses.
+**Open source release:** Strong â€” TS-native LLM eval is undersupplied (Promptfoo exists but room remains).
+**Commercial:** Real â€” Braintrust / LangSmith are real businesses.
 
 ## Status
 
 - **Current:** Empty placeholder.
 - **Owner:** Cody (solo dev).
 - **Priority tier:** AI / LLM.
-- **Estimated learning return:** Very high. LLM eval methodology is a young, important field; LLM-as-judge, regression detection, retrieval evals — all valuable skills.
+- **Estimated learning return:** Very high. LLM eval methodology is a young, important field; LLM-as-judge, regression detection, retrieval evals â€” all valuable skills.

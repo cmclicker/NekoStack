@@ -1,4 +1,4 @@
-# @nekostack/rag
+﻿# @nekostack/rag
 
 > Retrieval-augmented generation. Embedding generation + vector store + retrieval + reranking + context-pack assembly. The "give the LLM the right information" layer.
 
@@ -9,9 +9,8 @@
 | **Build tier** | AI / LLM |
 | **Depends on** | `schema`, `codex` (entity graph as a retrieval source), `search` (text-search complement), `storage` (embedding store), `prompts` (context fed into prompts), `eval` (retrieval evals) |
 | **Used by** | NekoSystems (RAG over tenant content for customer-support agents + business workflows), `chat` (RAG-augmented conversations), narrative tools (lore retrieval), any LLM-using project needing context beyond context-window |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 12–20 weeks focused |
-| **Sellable?** | Strong — RAG-ops tooling is hot |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 12â€“20 weeks focused |
 
 ## Why this exists
 
@@ -33,13 +32,13 @@ LLMs have limited context windows. RAG bridges that: retrieve relevant docs, stu
 
 ### Out of scope
 - Prompt management (`prompts`).
-- Full-text search infrastructure (`search` — we use it).
+- Full-text search infrastructure (`search` â€” we use it).
 - Embedding-model hosting (use provider).
 - Chat UI (`chat`).
 
 ## Boundary
 
-> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §30, §59 for the full capability map.
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) Â§30, Â§59 for the full capability map.
 
 ### Owns
 - Embedding generation
@@ -86,62 +85,62 @@ LLMs have limited context windows. RAG bridges that: retrieve relevant docs, stu
 - **Hybrid retrieval by default.** Dense (semantic) + sparse (keyword); reranked.
 - **Citations are first-class.** Every output cites which source informed it.
 - **Eval-driven.** Retrieval quality is measured, not assumed.
-- **Provider-swappable embeddings.** OpenAI / Voyage / local — switchable.
+- **Provider-swappable embeddings.** OpenAI / Voyage / local â€” switchable.
 
 ## Architecture sketch
 
 ```
 packages/rag/
-├── src/
-│   ├── embed/
-│   │   ├── generate.ts        # via prompts (provider)
-│   │   └── batch.ts
-│   ├── store/
-│   │   ├── pgvector.ts
-│   │   ├── chroma.ts
-│   │   ├── qdrant.ts
-│   │   └── memory.ts
-│   ├── chunk/
-│   │   ├── token-aware.ts
-│   │   └── sliding-window.ts
-│   ├── retrieve/
-│   │   ├── dense.ts
-│   │   ├── sparse.ts           # via search
-│   │   └── hybrid.ts
-│   ├── rerank/
-│   │   └── score.ts
-│   ├── context/
-│   │   └── assemble.ts
-│   ├── citation/
-│   │   └── track.ts
-│   └── eval/
-│       └── retrieval.ts        # via eval
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ embed/
+â”‚   â”‚   â”œâ”€â”€ generate.ts        # via prompts (provider)
+â”‚   â”‚   â””â”€â”€ batch.ts
+â”‚   â”œâ”€â”€ store/
+â”‚   â”‚   â”œâ”€â”€ pgvector.ts
+â”‚   â”‚   â”œâ”€â”€ chroma.ts
+â”‚   â”‚   â”œâ”€â”€ qdrant.ts
+â”‚   â”‚   â””â”€â”€ memory.ts
+â”‚   â”œâ”€â”€ chunk/
+â”‚   â”‚   â”œâ”€â”€ token-aware.ts
+â”‚   â”‚   â””â”€â”€ sliding-window.ts
+â”‚   â”œâ”€â”€ retrieve/
+â”‚   â”‚   â”œâ”€â”€ dense.ts
+â”‚   â”‚   â”œâ”€â”€ sparse.ts           # via search
+â”‚   â”‚   â””â”€â”€ hybrid.ts
+â”‚   â”œâ”€â”€ rerank/
+â”‚   â”‚   â””â”€â”€ score.ts
+â”‚   â”œâ”€â”€ context/
+â”‚   â”‚   â””â”€â”€ assemble.ts
+â”‚   â”œâ”€â”€ citation/
+â”‚   â”‚   â””â”€â”€ track.ts
+â”‚   â””â”€â”€ eval/
+â”‚       â””â”€â”€ retrieval.ts        # via eval
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — Embedding + in-memory store
-### v0.2 — Token-aware chunking
-### v0.3 — Dense retrieval
-### v0.4 — pgvector adapter
-### v0.5 — Hybrid retrieval
-### v0.6 — Reranking
-### v0.7 — Context-pack assembly
-### v0.8 — Citation tracking
-### v0.9 — Retrieval eval
-### v1.0 — Stable API
+### v0.1 â€” Embedding + in-memory store
+### v0.2 â€” Token-aware chunking
+### v0.3 â€” Dense retrieval
+### v0.4 â€” pgvector adapter
+### v0.5 â€” Hybrid retrieval
+### v0.6 â€” Reranking
+### v0.7 â€” Context-pack assembly
+### v0.8 â€” Citation tracking
+### v0.9 â€” Retrieval eval
+### v1.0 â€” Stable API
 
 ## Product potential
 
 **Internal:** Powers NekoSystems tenant-content retrieval for in-SaaS agents, narrative-tool lore retrieval.
-**Open source release:** Strong — TS-native RAG library is undersupplied.
-**Commercial:** Real — RAG-ops is hot (LlamaIndex commercial offerings).
+**Open source release:** Strong â€” TS-native RAG library is undersupplied.
+**Commercial:** Real â€” RAG-ops is hot (LlamaIndex commercial offerings).
 
 ## Status
 
 - **Current:** Empty placeholder.
 - **Owner:** Cody (solo dev).
 - **Priority tier:** AI / LLM.
-- **Estimated learning return:** Very high. Embeddings, vector search, hybrid retrieval, reranking, context assembly — increasingly core skills.
+- **Estimated learning return:** Very high. Embeddings, vector search, hybrid retrieval, reranking, context assembly â€” increasingly core skills.

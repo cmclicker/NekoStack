@@ -1,4 +1,4 @@
-# @nekostack/fuzz
+﻿# @nekostack/fuzz
 
 > Property-based / fuzz testing. Generative input, invariant checking, shrinkage on failure. The "is this rule engine / sim / API actually correct under all inputs?" layer.
 
@@ -9,9 +9,8 @@
 | **Build tier** | Testing depth |
 | **Depends on** | `schema` (input generators), `test` (test runner integration), `random` (PRNG), `audit`; external: `fast-check` or comparable |
 | **Used by** | `rules` (rule engine invariants), `sim` (sim determinism), `api` (request validation), `schema` (round-trip generators), CI |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 4–8 weeks focused |
-| **Sellable?** | Low — fast-check dominates |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 4â€“8 weeks focused |
 
 ## Why this exists
 
@@ -75,27 +74,27 @@ Property-based testing finds bugs unit tests miss: "for any valid input, the rul
 
 ```
 packages/fuzz/
-├── src/
-│   ├── generators/
-│   │   └── from-schema.ts
-│   ├── invariants/
-│   │   └── declare.ts
-│   ├── shrink/
-│   │   └── minimize.ts
-│   ├── runner/
-│   │   └── via-fast-check.ts
-│   └── ci.ts
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ generators/
+â”‚   â”‚   â””â”€â”€ from-schema.ts
+â”‚   â”œâ”€â”€ invariants/
+â”‚   â”‚   â””â”€â”€ declare.ts
+â”‚   â”œâ”€â”€ shrink/
+â”‚   â”‚   â””â”€â”€ minimize.ts
+â”‚   â”œâ”€â”€ runner/
+â”‚   â”‚   â””â”€â”€ via-fast-check.ts
+â”‚   â””â”€â”€ ci.ts
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — fast-check wrapper
-### v0.2 — Schema-driven generators
-### v0.3 — Invariant DSL
-### v0.4 — CI integration
-### v1.0 — Stable API
+### v0.1 â€” fast-check wrapper
+### v0.2 â€” Schema-driven generators
+### v0.3 â€” Invariant DSL
+### v0.4 â€” CI integration
+### v1.0 â€” Stable API
 
 ## Product potential
 

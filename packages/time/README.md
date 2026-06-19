@@ -1,4 +1,4 @@
-# @nekostack/time
+﻿# @nekostack/time
 
 > Date / RRULE / calendar / cadence primitives. Timezone-aware. The package every other time-aware thing depends on. RFC 5545 RRULE is first-class.
 
@@ -6,12 +6,11 @@
 
 | | |
 |---|---|
-| **Build tier** | Background processing — primitives used everywhere |
-| **Depends on** | (none — foundational); external: Temporal API polyfill or `date-fns-tz` |
-| **Used by** | `jobs` (cron scheduling), `notify` (quiet hours, digests), `time`-scoped queries throughout, `path` (milestone target dates), `decision` (review dates), `review` (stale detection), `compliance` (retention windows), `audit` (retention), `entitlements` (period rollover), NekoLife (RRULE recurrence — already does this!) |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 4–8 weeks focused |
-| **Sellable?** | Low — date libraries are mature; library-level addition niche |
+| **Build tier** | Background processing â€” primitives used everywhere |
+| **Depends on** | (none â€” foundational); external: Temporal API polyfill or `date-fns-tz` |
+| **Used by** | `jobs` (cron scheduling), `notify` (quiet hours, digests), `time`-scoped queries throughout, `path` (milestone target dates), `decision` (review dates), `review` (stale detection), `compliance` (retention windows), `audit` (retention), `entitlements` (period rollover), NekoLife (RRULE recurrence â€” already does this!) |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 4â€“8 weeks focused |
 
 ## Why this exists
 
@@ -21,7 +20,7 @@ Every NekoStack package that thinks about time reinvents the wheel:
 - `entitlements` rolls usage counters at period boundaries.
 - `NekoLife` already parses RRULE (we saw `app.py` doing this).
 
-Centralizing time logic — RRULE, timezone handling, cadence math, due-date logic — means each consumer gets the same correct behavior. Centralized timezone handling alone prevents the "off by one day at DST" class of bugs.
+Centralizing time logic â€” RRULE, timezone handling, cadence math, due-date logic â€” means each consumer gets the same correct behavior. Centralized timezone handling alone prevents the "off by one day at DST" class of bugs.
 
 ## Scope
 
@@ -44,7 +43,7 @@ Centralizing time logic — RRULE, timezone handling, cadence math, due-date log
 
 ## Boundary
 
-> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §35 for the full capability map.
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) Â§35 for the full capability map.
 
 ### Owns
 - Date / time utilities
@@ -94,50 +93,50 @@ Centralizing time logic — RRULE, timezone handling, cadence math, due-date log
 
 ```
 packages/time/
-├── src/
-│   ├── date/
-│   │   ├── parse.ts
-│   │   ├── format.ts
-│   │   └── now.ts
-│   ├── timezone/
-│   │   ├── iana.ts
-│   │   └── convert.ts
-│   ├── rrule/
-│   │   ├── parse.ts          # via rrule.js
-│   │   ├── next.ts
-│   │   └── matches.ts
-│   ├── calendar/
-│   │   └── event.ts
-│   ├── cadence/
-│   │   ├── period.ts         # daily / weekly / etc.
-│   │   └── window.ts
-│   ├── due/
-│   │   ├── overdue.ts
-│   │   └── reminder.ts
-│   └── reset/
-│       └── local-daily.ts
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ date/
+â”‚   â”‚   â”œâ”€â”€ parse.ts
+â”‚   â”‚   â”œâ”€â”€ format.ts
+â”‚   â”‚   â””â”€â”€ now.ts
+â”‚   â”œâ”€â”€ timezone/
+â”‚   â”‚   â”œâ”€â”€ iana.ts
+â”‚   â”‚   â””â”€â”€ convert.ts
+â”‚   â”œâ”€â”€ rrule/
+â”‚   â”‚   â”œâ”€â”€ parse.ts          # via rrule.js
+â”‚   â”‚   â”œâ”€â”€ next.ts
+â”‚   â”‚   â””â”€â”€ matches.ts
+â”‚   â”œâ”€â”€ calendar/
+â”‚   â”‚   â””â”€â”€ event.ts
+â”‚   â”œâ”€â”€ cadence/
+â”‚   â”‚   â”œâ”€â”€ period.ts         # daily / weekly / etc.
+â”‚   â”‚   â””â”€â”€ window.ts
+â”‚   â”œâ”€â”€ due/
+â”‚   â”‚   â”œâ”€â”€ overdue.ts
+â”‚   â”‚   â””â”€â”€ reminder.ts
+â”‚   â””â”€â”€ reset/
+â”‚       â””â”€â”€ local-daily.ts
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — date-fns-tz wrapper
-### v0.2 — RRULE parse + evaluate
-### v0.3 — Cadence periods + windows
-### v0.4 — Due / overdue / reminder
-### v0.5 — Localized daily-reset
-### v1.0 — Stable API
+### v0.1 â€” date-fns-tz wrapper
+### v0.2 â€” RRULE parse + evaluate
+### v0.3 â€” Cadence periods + windows
+### v0.4 â€” Due / overdue / reminder
+### v0.5 â€” Localized daily-reset
+### v1.0 â€” Stable API
 
 ## Product potential
 
 **Internal:** Used by many packages.
-**Open source release:** Marginal — substrate libraries already mature.
+**Open source release:** Marginal â€” substrate libraries already mature.
 **Commercial:** None.
 
 ## Status
 
 - **Current:** Empty placeholder.
 - **Owner:** Cody (solo dev).
-- **Priority tier:** Background processing — primitives.
-- **Estimated learning return:** Moderate. RRULE semantics, timezone handling, cadence math — useful infrastructure skills.
+- **Priority tier:** Background processing â€” primitives.
+- **Estimated learning return:** Moderate. RRULE semantics, timezone handling, cadence math â€” useful infrastructure skills.

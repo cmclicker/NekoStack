@@ -1,4 +1,4 @@
-# @nekostack/tilemap
+﻿# @nekostack/tilemap
 
 > Tile-based world representation + rendering. Grid storage, layers, chunked loading, collision queries. The substrate for tile-based games (Leytide world, NekoBattler combat board, retro-style games).
 
@@ -9,9 +9,8 @@
 | **Build tier** | Game systems |
 | **Depends on** | `schema`, `canvas` (rendering), `assets` (tile sprites), `graph` (tile graph for pathfinding), `pathfinding` |
 | **Used by** | Leytide (world maps), NekoBattler (combat grids), tower-defense, any tile-based game |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 8–14 weeks focused |
-| **Sellable?** | Plausible OSS — TS tilemap library with chunking is undersupplied |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 8â€“14 weeks focused |
 
 ## Why this exists
 
@@ -39,7 +38,7 @@ Phaser / PixiJS have tile renderers but engine-coupled. `tilemap` is engine-agno
 
 ## Boundary
 
-> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §84 (in BOUNDARIES.md).
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) Â§84 (in BOUNDARIES.md).
 
 ### Owns
 - Tile grid storage
@@ -86,44 +85,44 @@ Phaser / PixiJS have tile renderers but engine-coupled. `tilemap` is engine-agno
 
 ```
 packages/tilemap/
-├── src/
-│   ├── grid/
-│   │   ├── storage.ts
-│   │   └── chunk.ts
-│   ├── layer/
-│   │   └── compose.ts
-│   ├── import/
-│   │   └── tmx.ts
-│   ├── render/
-│   │   ├── visible.ts
-│   │   └── draw.ts
-│   ├── collision/
-│   │   └── query.ts
-│   ├── chunked/
-│   │   ├── load.ts
-│   │   └── unload.ts
-│   ├── auto-tile/
-│   │   └── variant.ts
-│   └── cli.ts
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ grid/
+â”‚   â”‚   â”œâ”€â”€ storage.ts
+â”‚   â”‚   â””â”€â”€ chunk.ts
+â”‚   â”œâ”€â”€ layer/
+â”‚   â”‚   â””â”€â”€ compose.ts
+â”‚   â”œâ”€â”€ import/
+â”‚   â”‚   â””â”€â”€ tmx.ts
+â”‚   â”œâ”€â”€ render/
+â”‚   â”‚   â”œâ”€â”€ visible.ts
+â”‚   â”‚   â””â”€â”€ draw.ts
+â”‚   â”œâ”€â”€ collision/
+â”‚   â”‚   â””â”€â”€ query.ts
+â”‚   â”œâ”€â”€ chunked/
+â”‚   â”‚   â”œâ”€â”€ load.ts
+â”‚   â”‚   â””â”€â”€ unload.ts
+â”‚   â”œâ”€â”€ auto-tile/
+â”‚   â”‚   â””â”€â”€ variant.ts
+â”‚   â””â”€â”€ cli.ts
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — Grid storage + layers
-### v0.2 — Canvas rendering
-### v0.3 — Tiled (.tmx) import
-### v0.4 — Visible-region culling
-### v0.5 — Collision queries
-### v0.6 — Chunked loading
-### v0.7 — Auto-tiling
-### v1.0 — Stable API
+### v0.1 â€” Grid storage + layers
+### v0.2 â€” Canvas rendering
+### v0.3 â€” Tiled (.tmx) import
+### v0.4 â€” Visible-region culling
+### v0.5 â€” Collision queries
+### v0.6 â€” Chunked loading
+### v0.7 â€” Auto-tiling
+### v1.0 â€” Stable API
 
 ## Product potential
 
 **Internal:** Critical for Leytide.
-**Open source release:** Plausible — engine-agnostic TS tilemap library is rare.
+**Open source release:** Plausible â€” engine-agnostic TS tilemap library is rare.
 **Commercial:** Marginal.
 
 ## Status

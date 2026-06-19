@@ -1,4 +1,4 @@
-# @nekostack/input
+﻿# @nekostack/input
 
 > Unified input abstraction: keyboard / mouse / gamepad / touch / accessibility devices. Bindings, contexts, action mapping. The "what does pressing this key do right now?" layer.
 
@@ -7,11 +7,10 @@
 | | |
 |---|---|
 | **Build tier** | Game systems |
-| **Depends on** | `schema`, `a11y` (accessibility integration), `actions` (input → action mapping) |
+| **Depends on** | `schema`, `a11y` (accessibility integration), `actions` (input â†’ action mapping) |
 | **Used by** | every game with player input: NekoBattler, NekoGacha, Leytide, NekoVibe puzzle games |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 4–8 weeks focused |
-| **Sellable?** | Low — game-specific niche |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 4â€“8 weeks focused |
 
 ## Why this exists
 
@@ -23,7 +22,7 @@ Browser input handling is fragmented across DOM events, Gamepad API, touch event
 
 ### In scope
 - Input device abstraction (keyboard / mouse / gamepad / touch).
-- Action mapping (input → semantic action).
+- Action mapping (input â†’ semantic action).
 - Input contexts (menu / gameplay / paused).
 - Binding configuration (player remap).
 - Gamepad API wrapper.
@@ -38,7 +37,7 @@ Browser input handling is fragmented across DOM events, Gamepad API, touch event
 
 ## Boundary
 
-> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §43 (input row).
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) Â§43 (input row).
 
 ### Owns
 - Input device abstraction
@@ -73,36 +72,36 @@ Browser input handling is fragmented across DOM events, Gamepad API, touch event
 
 ```
 packages/input/
-├── src/
-│   ├── devices/
-│   │   ├── keyboard.ts
-│   │   ├── mouse.ts
-│   │   ├── gamepad.ts
-│   │   └── touch.ts
-│   ├── action/
-│   │   ├── map.ts
-│   │   └── binding.ts
-│   ├── context/
-│   │   └── stack.ts
-│   ├── gesture/
-│   │   ├── hold.ts
-│   │   ├── double-tap.ts
-│   │   └── chord.ts
-│   └── a11y/
-│       └── adapt.ts
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ devices/
+â”‚   â”‚   â”œâ”€â”€ keyboard.ts
+â”‚   â”‚   â”œâ”€â”€ mouse.ts
+â”‚   â”‚   â”œâ”€â”€ gamepad.ts
+â”‚   â”‚   â””â”€â”€ touch.ts
+â”‚   â”œâ”€â”€ action/
+â”‚   â”‚   â”œâ”€â”€ map.ts
+â”‚   â”‚   â””â”€â”€ binding.ts
+â”‚   â”œâ”€â”€ context/
+â”‚   â”‚   â””â”€â”€ stack.ts
+â”‚   â”œâ”€â”€ gesture/
+â”‚   â”‚   â”œâ”€â”€ hold.ts
+â”‚   â”‚   â”œâ”€â”€ double-tap.ts
+â”‚   â”‚   â””â”€â”€ chord.ts
+â”‚   â””â”€â”€ a11y/
+â”‚       â””â”€â”€ adapt.ts
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — Keyboard + mouse + action mapping
-### v0.2 — Input contexts
-### v0.3 — Gamepad
-### v0.4 — Touch + gestures
-### v0.5 — Binding remap
-### v0.6 — Accessibility
-### v1.0 — Stable API
+### v0.1 â€” Keyboard + mouse + action mapping
+### v0.2 â€” Input contexts
+### v0.3 â€” Gamepad
+### v0.4 â€” Touch + gestures
+### v0.5 â€” Binding remap
+### v0.6 â€” Accessibility
+### v1.0 â€” Stable API
 
 ## Product potential
 

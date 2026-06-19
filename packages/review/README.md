@@ -1,36 +1,35 @@
-# @nekostack/review
+﻿# @nekostack/review
 
-> Review request lifecycle, approval state, reviewer notes, follow-up tracking. The package that owns "is this work actually ready to ship, and has a human signed off?" — distinct from `decision` (the ADRs) and `audit` (the log of what happened).
+> Review request lifecycle, approval state, reviewer notes, follow-up tracking. The package that owns "is this work actually ready to ship, and has a human signed off?" â€” distinct from `decision` (the ADRs) and `audit` (the log of what happened).
 
 ## Quick reference
 
 | | |
 |---|---|
-| **Build tier** | Meta / control plane — load-bearing once any work requires human approval before proceeding |
+| **Build tier** | Meta / control plane â€” load-bearing once any work requires human approval before proceeding |
 | **Depends on** | `schema`, `audit` (review actions emit), `governance` (gates trigger review requirements), `path` (milestones link to reviews), `decision` (decisions need approval review), `changeset` (LLM-driven changesets need review before apply) |
 | **Used by** | every state transition with a human-approval gate; LLM sessions check review state before proceeding past gates |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 6–10 weeks focused |
-| **Sellable?** | Niche — primarily useful inside the NekoStack ecosystem; MIT release as part of stack |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 6â€“10 weeks focused |
 
 ## Why this exists
 
 In a solo workflow with LLM-paired development, the "review" question is sharper than in a team context. The LLM produces a changeset; before it applies, a human (you) needs to look at it. The LLM proposes a decision; before it lands, the human accepts or rejects. A milestone transitions to `done`; before that's official, a review confirms acceptance criteria.
 
-Without an explicit review layer, all of this happens informally in chat history — which means:
+Without an explicit review layer, all of this happens informally in chat history â€” which means:
 - "Did I approve that?" is unanswerable.
 - Rework loops are invisible.
 - Stale reviews (proposed weeks ago, never touched) rot silently.
 - Follow-ups ("I said this was OK but I want to revisit X later") are forgotten.
 
-`review` is the typed-state layer for all of this. Every reviewable artifact (changeset / decision / milestone / content draft) can have a `Review` attached, with state transitioning through `requested → in-progress → approved | rejected → follow-up-required → closed`.
+`review` is the typed-state layer for all of this. Every reviewable artifact (changeset / decision / milestone / content draft) can have a `Review` attached, with state transitioning through `requested â†’ in-progress â†’ approved | rejected â†’ follow-up-required â†’ closed`.
 
 ## Scope
 
 ### In scope
 - Review request lifecycle states.
 - Approval / rejection records with reviewer notes.
-- Rework loops (rejected → re-submitted → reviewed again).
+- Rework loops (rejected â†’ re-submitted â†’ reviewed again).
 - Acceptance evidence (links to test results, screenshots, replays).
 - "Needs human review before proceeding" markers attached to work items.
 - LLM self-review output capture (when the agent reviews its own work first).
@@ -41,13 +40,13 @@ Without an explicit review layer, all of this happens informally in chat history
 
 ### Out of scope
 - The artifact being reviewed (decisions live in `decision`, changesets in `changeset`, milestones in `path`).
-- Multi-approver workflows (this is solo-shaped — single approver, but with explicit state).
+- Multi-approver workflows (this is solo-shaped â€” single approver, but with explicit state).
 - Audit log storage (`audit`).
 - Generic comment threads on non-review content.
 
 ## Boundary
 
-> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §5 for the full capability map.
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) Â§5 for the full capability map.
 
 ### Owns
 - Review request lifecycle + state machine
@@ -100,37 +99,37 @@ Without an explicit review layer, all of this happens informally in chat history
 
 ```
 packages/review/
-├── src/
-│   ├── request/
-│   │   ├── review.ts         # Review type + state machine
-│   │   └── target.ts         # what's being reviewed (decision/changeset/milestone/content)
-│   ├── workflow/
-│   │   ├── transitions.ts    # requested → in-progress → approved/rejected → ...
-│   │   └── rework.ts
-│   ├── notes/
-│   │   └── note.ts           # reviewer notes
-│   ├── evidence/
-│   │   └── attach.ts         # links to test results, replays, screenshots
-│   ├── stale/
-│   │   └── detect.ts         # N-day inactivity check
-│   ├── followup/
-│   │   └── defer.ts
-│   ├── llm-self-review/
-│   │   └── capture.ts        # capture agent's self-review output
-│   └── cli.ts
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ request/
+â”‚   â”‚   â”œâ”€â”€ review.ts         # Review type + state machine
+â”‚   â”‚   â””â”€â”€ target.ts         # what's being reviewed (decision/changeset/milestone/content)
+â”‚   â”œâ”€â”€ workflow/
+â”‚   â”‚   â”œâ”€â”€ transitions.ts    # requested â†’ in-progress â†’ approved/rejected â†’ ...
+â”‚   â”‚   â””â”€â”€ rework.ts
+â”‚   â”œâ”€â”€ notes/
+â”‚   â”‚   â””â”€â”€ note.ts           # reviewer notes
+â”‚   â”œâ”€â”€ evidence/
+â”‚   â”‚   â””â”€â”€ attach.ts         # links to test results, replays, screenshots
+â”‚   â”œâ”€â”€ stale/
+â”‚   â”‚   â””â”€â”€ detect.ts         # N-day inactivity check
+â”‚   â”œâ”€â”€ followup/
+â”‚   â”‚   â””â”€â”€ defer.ts
+â”‚   â”œâ”€â”€ llm-self-review/
+â”‚   â”‚   â””â”€â”€ capture.ts        # capture agent's self-review output
+â”‚   â””â”€â”€ cli.ts
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — Review request + state machine
-### v0.2 — Linkage to decision/changeset/milestone targets
-### v0.3 — Stale detection + dashboard data
-### v0.4 — Follow-up tracker
-### v0.5 — LLM self-review capture
-### v0.6 — Comments / discussion threads
-### v1.0 — Stable API + documentation
+### v0.1 â€” Review request + state machine
+### v0.2 â€” Linkage to decision/changeset/milestone targets
+### v0.3 â€” Stale detection + dashboard data
+### v0.4 â€” Follow-up tracker
+### v0.5 â€” LLM self-review capture
+### v0.6 â€” Comments / discussion threads
+### v1.0 â€” Stable API + documentation
 
 ## Product potential
 
@@ -143,4 +142,4 @@ packages/review/
 - **Current:** Empty placeholder.
 - **Owner:** Cody (solo dev).
 - **Priority tier:** Meta / control plane. Build after `path` + `decision` so there are targets to attach reviews to.
-- **Estimated learning return:** Moderate. Review state machine, stale-detection patterns, LLM self-review capture — useful for any human-in-the-loop AI workflow.
+- **Estimated learning return:** Moderate. Review state machine, stale-detection patterns, LLM self-review capture â€” useful for any human-in-the-loop AI workflow.

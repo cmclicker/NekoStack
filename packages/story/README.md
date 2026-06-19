@@ -1,4 +1,4 @@
-# @nekostack/story
+﻿# @nekostack/story
 
 > Branching dialog + narrative scripting. Twine / Ink / Yarn territory. The substrate for interactive narrative, deduction-game cases, dialogue trees.
 
@@ -9,9 +9,8 @@
 | **Build tier** | Content / narrative |
 | **Depends on** | `schema`, `codex` (characters/locations as entities), `rules` (story triggers), `validator` (continuity), `state` / `flow` (state machines) |
 | **Used by** | Mara Kane (interactive episodes if/when), Leytide (NPC dialog + quests), deduction-game mystery cases, narrative-tool authoring |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 10–16 weeks focused |
-| **Sellable?** | Plausible OSS — TS narrative scripting library is undersupplied |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 10â€“16 weeks focused |
 
 ## Why this exists
 
@@ -83,49 +82,49 @@ Interactive narrative needs: branching paths, character state tracking, conditio
 
 ```
 packages/story/
-├── src/
-│   ├── dsl/
-│   │   ├── passage.ts
-│   │   ├── choice.ts
-│   │   └── variable.ts
-│   ├── branching/
-│   │   └── tree.ts
-│   ├── triggers/
-│   │   └── conditional.ts      # via rules
-│   ├── state/
-│   │   ├── character.ts
-│   │   └── inventory.ts
-│   ├── substitute/
-│   │   └── render.ts
-│   ├── save/
-│   │   ├── snapshot.ts
-│   │   └── restore.ts
-│   ├── deduction/
-│   │   ├── clue.ts
-│   │   ├── evidence.ts
-│   │   └── accusation.ts
-│   ├── locale/
-│   │   └── translate.ts        # via locale
-│   └── cli.ts
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ dsl/
+â”‚   â”‚   â”œâ”€â”€ passage.ts
+â”‚   â”‚   â”œâ”€â”€ choice.ts
+â”‚   â”‚   â””â”€â”€ variable.ts
+â”‚   â”œâ”€â”€ branching/
+â”‚   â”‚   â””â”€â”€ tree.ts
+â”‚   â”œâ”€â”€ triggers/
+â”‚   â”‚   â””â”€â”€ conditional.ts      # via rules
+â”‚   â”œâ”€â”€ state/
+â”‚   â”‚   â”œâ”€â”€ character.ts
+â”‚   â”‚   â””â”€â”€ inventory.ts
+â”‚   â”œâ”€â”€ substitute/
+â”‚   â”‚   â””â”€â”€ render.ts
+â”‚   â”œâ”€â”€ save/
+â”‚   â”‚   â”œâ”€â”€ snapshot.ts
+â”‚   â”‚   â””â”€â”€ restore.ts
+â”‚   â”œâ”€â”€ deduction/
+â”‚   â”‚   â”œâ”€â”€ clue.ts
+â”‚   â”‚   â”œâ”€â”€ evidence.ts
+â”‚   â”‚   â””â”€â”€ accusation.ts
+â”‚   â”œâ”€â”€ locale/
+â”‚   â”‚   â””â”€â”€ translate.ts        # via locale
+â”‚   â””â”€â”€ cli.ts
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — Passage + choice DSL
-### v0.2 — Branching execution
-### v0.3 — Variable substitution
-### v0.4 — Conditional triggers
-### v0.5 — Save / restore
-### v0.6 — Deduction primitives
-### v0.7 — Localization
-### v1.0 — Stable API
+### v0.1 â€” Passage + choice DSL
+### v0.2 â€” Branching execution
+### v0.3 â€” Variable substitution
+### v0.4 â€” Conditional triggers
+### v0.5 â€” Save / restore
+### v0.6 â€” Deduction primitives
+### v0.7 â€” Localization
+### v1.0 â€” Stable API
 
 ## Product potential
 
 **Internal:** Mara Kane interactive, Leytide dialog, deduction games.
-**Open source release:** Plausible — TS narrative library gap.
+**Open source release:** Plausible â€” TS narrative library gap.
 **Commercial:** Marginal.
 
 ## Status

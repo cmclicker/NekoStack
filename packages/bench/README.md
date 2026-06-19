@@ -1,4 +1,4 @@
-# @nekostack/bench
+﻿# @nekostack/bench
 
 > Performance benchmarking + regression detection. Microbenchmarks with statistical significance, CI-integrated perf gates. The "did this PR make things slower?" layer.
 
@@ -6,12 +6,11 @@
 
 | | |
 |---|---|
-| **Build tier** | Observability — testing-adjacent |
+| **Build tier** | Observability â€” testing-adjacent |
 | **Depends on** | `schema` (benchmark definitions), `metrics` (results stored as metrics over time), `audit` (regression detections); external: tinybench or comparable |
 | **Used by** | CI pipelines, performance-critical packages (`rules`, `sim`, `search`, `cache`), `path` (perf milestones), `governance` (perf-regression gates) |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 4–8 weeks focused |
-| **Sellable?** | Low — benchmark.js / tinybench dominate microbench; CI-perf-gate niche is real |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 4â€“8 weeks focused |
 
 ## Why this exists
 
@@ -30,14 +29,14 @@ Most projects test functional correctness; few test performance. The result: sil
 - Per-benchmark threshold configuration.
 
 ### Out of scope
-- Load testing (different shape — k6, Artillery).
+- Load testing (different shape â€” k6, Artillery).
 - Production performance monitoring (`metrics` + `trace`).
 - Visual / UI performance (browser-specific tools).
 - Profiling (we measure; profiling is a separate concern).
 
 ## Boundary
 
-> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §17 for the full capability map.
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) Â§17 for the full capability map.
 
 ### Owns
 - Microbenchmark DSL
@@ -80,31 +79,31 @@ Most projects test functional correctness; few test performance. The result: sil
 
 ```
 packages/bench/
-├── src/
-│   ├── define/
-│   │   └── bench.ts
-│   ├── run/
-│   │   ├── warmup.ts
-│   │   ├── iterate.ts
-│   │   └── stats.ts
-│   ├── regression/
-│   │   ├── compare.ts
-│   │   └── threshold.ts
-│   ├── store/
-│   │   └── via-metrics.ts
-│   └── ci.ts
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ define/
+â”‚   â”‚   â””â”€â”€ bench.ts
+â”‚   â”œâ”€â”€ run/
+â”‚   â”‚   â”œâ”€â”€ warmup.ts
+â”‚   â”‚   â”œâ”€â”€ iterate.ts
+â”‚   â”‚   â””â”€â”€ stats.ts
+â”‚   â”œâ”€â”€ regression/
+â”‚   â”‚   â”œâ”€â”€ compare.ts
+â”‚   â”‚   â””â”€â”€ threshold.ts
+â”‚   â”œâ”€â”€ store/
+â”‚   â”‚   â””â”€â”€ via-metrics.ts
+â”‚   â””â”€â”€ ci.ts
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — Microbench DSL
-### v0.2 — Warmup + statistical runs
-### v0.3 — CI comparison
-### v0.4 — Threshold configuration
-### v0.5 — Metric storage
-### v1.0 — Stable API
+### v0.1 â€” Microbench DSL
+### v0.2 â€” Warmup + statistical runs
+### v0.3 â€” CI comparison
+### v0.4 â€” Threshold configuration
+### v0.5 â€” Metric storage
+### v1.0 â€” Stable API
 
 ## Product potential
 
@@ -116,5 +115,5 @@ packages/bench/
 
 - **Current:** Empty placeholder.
 - **Owner:** Cody (solo dev).
-- **Priority tier:** Observability — testing-adjacent.
+- **Priority tier:** Observability â€” testing-adjacent.
 - **Estimated learning return:** Moderate. Microbench statistics, regression detection, CI-perf-gate patterns.

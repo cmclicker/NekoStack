@@ -1,4 +1,4 @@
-# @nekostack/chat
+﻿# @nekostack/chat
 
 > Chat interface infrastructure: conversation state, thread model, assistant + tool messages, streaming. The UI substrate for AI chat surfaces.
 
@@ -9,9 +9,8 @@
 | **Build tier** | AI / LLM |
 | **Depends on** | `schema`, `prompts`, `tools`, `memory`, `ui`, `realtime` (streaming), `audit` |
 | **Used by** | NekoSystems (tenant-facing chat surfaces, customer-support agents), in-app help, narrative co-author UIs |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 10–16 weeks focused |
-| **Sellable?** | Modest — Vercel AI SDK dominates UI; chat UI niche |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 10â€“16 weeks focused |
 
 ## Why this exists
 
@@ -33,7 +32,7 @@ AI chat UIs share patterns: streaming responses, tool-call rendering, conversati
 - LLM provider (`prompts`).
 - Tool registry (`tools`).
 - Memory (`memory`).
-- Chat platform (Slack-style multi-user) — different shape.
+- Chat platform (Slack-style multi-user) â€” different shape.
 - Real-time multi-user collaboration (`realtime` for streaming, but not multi-user chat).
 
 ## Boundary
@@ -84,51 +83,51 @@ AI chat UIs share patterns: streaming responses, tool-call rendering, conversati
 
 ```
 packages/chat/
-├── src/
-│   ├── state/
-│   │   └── conversation.ts
-│   ├── thread/
-│   │   ├── linear.ts
-│   │   └── branch.ts
-│   ├── messages/
-│   │   ├── user.ts
-│   │   ├── assistant.ts
-│   │   ├── system.ts
-│   │   ├── tool-call.ts
-│   │   └── tool-result.ts
-│   ├── streaming/
-│   │   └── render.ts           # via realtime
-│   ├── actions/
-│   │   ├── regenerate.ts
-│   │   ├── edit.ts
-│   │   └── branch.ts
-│   ├── persist/
-│   │   └── via-memory.ts
-│   ├── components/
-│   │   ├── MessageList.tsx
-│   │   ├── Message.tsx
-│   │   ├── ToolCall.tsx
-│   │   └── Composer.tsx
-│   └── cli.ts
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ state/
+â”‚   â”‚   â””â”€â”€ conversation.ts
+â”‚   â”œâ”€â”€ thread/
+â”‚   â”‚   â”œâ”€â”€ linear.ts
+â”‚   â”‚   â””â”€â”€ branch.ts
+â”‚   â”œâ”€â”€ messages/
+â”‚   â”‚   â”œâ”€â”€ user.ts
+â”‚   â”‚   â”œâ”€â”€ assistant.ts
+â”‚   â”‚   â”œâ”€â”€ system.ts
+â”‚   â”‚   â”œâ”€â”€ tool-call.ts
+â”‚   â”‚   â””â”€â”€ tool-result.ts
+â”‚   â”œâ”€â”€ streaming/
+â”‚   â”‚   â””â”€â”€ render.ts           # via realtime
+â”‚   â”œâ”€â”€ actions/
+â”‚   â”‚   â”œâ”€â”€ regenerate.ts
+â”‚   â”‚   â”œâ”€â”€ edit.ts
+â”‚   â”‚   â””â”€â”€ branch.ts
+â”‚   â”œâ”€â”€ persist/
+â”‚   â”‚   â””â”€â”€ via-memory.ts
+â”‚   â”œâ”€â”€ components/
+â”‚   â”‚   â”œâ”€â”€ MessageList.tsx
+â”‚   â”‚   â”œâ”€â”€ Message.tsx
+â”‚   â”‚   â”œâ”€â”€ ToolCall.tsx
+â”‚   â”‚   â””â”€â”€ Composer.tsx
+â”‚   â””â”€â”€ cli.ts
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — Conversation state + linear thread
-### v0.2 — Streaming rendering
-### v0.3 — Tool-call rendering
-### v0.4 — Regenerate / edit
-### v0.5 — Branching threads
-### v0.6 — Memory persistence
-### v0.7 — React components
-### v1.0 — Stable API
+### v0.1 â€” Conversation state + linear thread
+### v0.2 â€” Streaming rendering
+### v0.3 â€” Tool-call rendering
+### v0.4 â€” Regenerate / edit
+### v0.5 â€” Branching threads
+### v0.6 â€” Memory persistence
+### v0.7 â€” React components
+### v1.0 â€” Stable API
 
 ## Product potential
 
 **Internal:** Critical for NekoSystems chat surfaces.
-**Open source release:** Modest — Vercel AI SDK fills similar niche.
+**Open source release:** Modest â€” Vercel AI SDK fills similar niche.
 **Commercial:** Marginal.
 
 ## Status

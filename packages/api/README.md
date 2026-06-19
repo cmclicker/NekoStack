@@ -1,4 +1,4 @@
-# @nekostack/api
+﻿# @nekostack/api
 
 > Define the API contract once. Generate the server stubs, client SDKs, validation middleware, and docs from it. End the "TypeScript types in three places" problem at the API boundary.
 
@@ -6,12 +6,11 @@
 
 | | |
 |---|---|
-| **Build tier** | Force multiplier — build after `schema` |
+| **Build tier** | Force multiplier â€” build after `schema` |
 | **Depends on** | `schema` (request/response shapes), `auth` (permission decoration), `telemetry` (request events), `cli` (codegen subcommands) |
 | **Used by** | every backend with an HTTP API: NekoVibe, NekoSystems (FastAPI adapter would be a stretch goal), Leytide server, future SaaS |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 12–20 weeks focused |
-| **Sellable?** | Strong: contract-first multi-adapter niche undersupplied (ts-rest is single-adapter, Stainless is commercial-only); managed-SDK + breaking-change CI is a real Stainless-adjacent commercial direction |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 12â€“20 weeks focused |
 
 ## Why this exists
 
@@ -20,7 +19,7 @@ The endpoint-and-its-types-drift problem is universal:
 - The Nest controller declares a TS type for the request body.
 - The Zod validator (if any) defines a runtime check separately.
 - The React Query hook on the client redeclares the same shape for fetching.
-- The OpenAPI doc — if it exists at all — is generated from one of those and is always out of date.
+- The OpenAPI doc â€” if it exists at all â€” is generated from one of those and is always out of date.
 - Six months later, the controller accepts a new optional field, but the client doesn't know about it, the validator still rejects it, and the OpenAPI doc lies.
 
 `@nekostack/api` makes the API contract the single source of truth. You define endpoints with `@nekostack/schema`-typed inputs and outputs. From that contract:
@@ -34,7 +33,7 @@ This is the same pattern ts-rest and Stainless ship. The difference is integrati
 Building this yourself rather than adopting tRPC, ts-rest, or Hono RPC is justified because:
 1. **You learn API contract design end-to-end.** Versioning, deprecation, breaking-change detection, content negotiation, RPC vs REST tradeoffs.
 2. **Schema spine reuse.** ts-rest uses Zod; we use our own schema layer (which can compile *to* Zod). No double-typing.
-3. **Multi-target.** Generate Express handlers, Nest controllers, Fastify routes, Next.js Route Handlers, Cloudflare Workers, AWS Lambda — your choice.
+3. **Multi-target.** Generate Express handlers, Nest controllers, Fastify routes, Next.js Route Handlers, Cloudflare Workers, AWS Lambda â€” your choice.
 4. **OpenAPI is first-class.** ts-rest emits OpenAPI as a side-effect; Stainless treats it as primary. We treat OpenAPI 3.1 as a first-class output, ensuring durable compatibility with the wider tooling ecosystem.
 
 ## Scope
@@ -52,13 +51,13 @@ Building this yourself rather than adopting tRPC, ts-rest, or Hono RPC is justif
 ### Out of scope
 - Authentication itself (login flow). `@nekostack/auth` handles that.
 - Real-time / WebSocket transport. `@nekostack/realtime` covers that.
-- Webhook receiver primitives — that's `@nekostack/webhooks`.
+- Webhook receiver primitives â€” that's `@nekostack/webhooks`.
 - gRPC. Could be a future codegen target; not in v1.
 - GraphQL. Different paradigm; out of scope.
 
 ## Boundary
 
-> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §32 for the full capability map.
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) Â§32 for the full capability map.
 
 ### Owns
 - `defineEndpoint()` contract DSL (method / path / params / query / body / responses)
@@ -87,22 +86,22 @@ Building this yourself rather than adopting tRPC, ts-rest, or Hono RPC is justif
 | Tool | What they do well | Where they fall short for us |
 |---|---|---|
 | **ts-rest** | Excellent contract-first, Zod-based, TS-native. | Tied to Zod. No first-class multi-server-adapter story. OpenAPI is secondary output. |
-| **tRPC** | Excellent DX inside TS-only monorepos. | RPC-flavor — limited interop with non-TS clients, OpenAPI emission is a plugin afterthought. |
+| **tRPC** | Excellent DX inside TS-only monorepos. | RPC-flavor â€” limited interop with non-TS clients, OpenAPI emission is a plugin afterthought. |
 | **Hono + zod-openapi** | Modern, fast, OpenAPI-aware. | Tied to Hono; nice library but single-framework. |
 | **Stainless** | Contract-first, polished SDK generation. | Commercial, vendor-coupled. Aimed at companies, not solo devs. |
 | **OpenAPI Generator** | Generates clients/servers from OpenAPI. | OpenAPI-first; we want code-first contracts compiled *to* OpenAPI. |
 | **NestJS + class-validator** | Mature framework with validation. | Nest-specific; types decoupled from runtime validation. |
 | **Speakeasy** | OpenAPI-driven SDK generation. | OpenAPI-first; commercial. |
 
-The right framing: this is **ts-rest's contract-first ergonomics combined with Stainless's multi-target codegen, with the schema layer being `@nekostack/schema` (which we also own).** The unique angle is full integration across the NekoStack — auth decoration, telemetry events, lint enforcement, doc generation all wire in for free.
+The right framing: this is **ts-rest's contract-first ergonomics combined with Stainless's multi-target codegen, with the schema layer being `@nekostack/schema` (which we also own).** The unique angle is full integration across the NekoStack â€” auth decoration, telemetry events, lint enforcement, doc generation all wire in for free.
 
 ## How this fits the NekoStack
 
 **Depends on:**
-- `@nekostack/schema` — defines request/response shapes.
-- `@nekostack/auth` — permission/entitlement decoration.
-- `@nekostack/telemetry` — emits request-level events.
-- `@nekostack/cli` — `neko api generate` regenerates outputs.
+- `@nekostack/schema` â€” defines request/response shapes.
+- `@nekostack/auth` â€” permission/entitlement decoration.
+- `@nekostack/telemetry` â€” emits request-level events.
+- `@nekostack/cli` â€” `neko api generate` regenerates outputs.
 
 **Used by:**
 - **NekoVibe** API.
@@ -124,29 +123,29 @@ The right framing: this is **ts-rest's contract-first ergonomics combined with S
 
 ```
 packages/api/
-├── src/
-│   ├── contract/
-│   │   ├── endpoint.ts       # defineEndpoint()
-│   │   ├── contract.ts       # composeContract(endpoints)
-│   │   └── versioning.ts
-│   ├── adapters/
-│   │   ├── nest.ts
-│   │   ├── express.ts
-│   │   ├── fastify.ts
-│   │   ├── nextjs.ts
-│   │   └── hono.ts
-│   ├── client/
-│   │   ├── fetch.ts          # typed fetch client
-│   │   └── hooks.ts          # React Query / SWR adapters
-│   ├── openapi/
-│   │   └── emit.ts           # contract → OpenAPI 3.1
-│   ├── docs/
-│   │   └── markdown.ts       # contract → reference docs
-│   ├── diff/
-│   │   └── breaking.ts       # compare two contracts for breaking changes
-│   └── cli.ts                # `neko api generate / diff`
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ contract/
+â”‚   â”‚   â”œâ”€â”€ endpoint.ts       # defineEndpoint()
+â”‚   â”‚   â”œâ”€â”€ contract.ts       # composeContract(endpoints)
+â”‚   â”‚   â””â”€â”€ versioning.ts
+â”‚   â”œâ”€â”€ adapters/
+â”‚   â”‚   â”œâ”€â”€ nest.ts
+â”‚   â”‚   â”œâ”€â”€ express.ts
+â”‚   â”‚   â”œâ”€â”€ fastify.ts
+â”‚   â”‚   â”œâ”€â”€ nextjs.ts
+â”‚   â”‚   â””â”€â”€ hono.ts
+â”‚   â”œâ”€â”€ client/
+â”‚   â”‚   â”œâ”€â”€ fetch.ts          # typed fetch client
+â”‚   â”‚   â””â”€â”€ hooks.ts          # React Query / SWR adapters
+â”‚   â”œâ”€â”€ openapi/
+â”‚   â”‚   â””â”€â”€ emit.ts           # contract â†’ OpenAPI 3.1
+â”‚   â”œâ”€â”€ docs/
+â”‚   â”‚   â””â”€â”€ markdown.ts       # contract â†’ reference docs
+â”‚   â”œâ”€â”€ diff/
+â”‚   â”‚   â””â”€â”€ breaking.ts       # compare two contracts for breaking changes
+â”‚   â””â”€â”€ cli.ts                # `neko api generate / diff`
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 Defining a contract:
@@ -192,34 +191,34 @@ const puzzle = await client.getPuzzle({ params: { dayKey: '2026-05-15', gameKey:
 
 ## Roadmap
 
-### v0.1 — Bootstrap
+### v0.1 â€” Bootstrap
 - `defineEndpoint`, `composeContract`.
 - Schema integration via `@nekostack/schema`.
 - Basic Express adapter.
 
-### v0.2 — More adapters
+### v0.2 â€” More adapters
 - Nest, Fastify, Next.js Route Handlers.
 
-### v0.3 — OpenAPI emission
+### v0.3 â€” OpenAPI emission
 - OpenAPI 3.1 output with full metadata.
 
-### v0.4 — Typed client
+### v0.4 â€” Typed client
 - Fetch-based client codegen.
 - React Query hook adapter.
 
-### v0.5 — Versioning + diff
+### v0.5 â€” Versioning + diff
 - Contract versioning.
 - Breaking-change detector (`neko api diff v1 v2`).
 
-### v0.6 — Auth + telemetry integration
+### v0.6 â€” Auth + telemetry integration
 - `@nekostack/auth` decoration.
 - Request-level telemetry emission.
 
-### v0.7 — Doc generation
+### v0.7 â€” Doc generation
 - Markdown reference docs.
 - Integration with `@nekostack/docs`.
 
-### v1.0 — Stable contract
+### v1.0 â€” Stable contract
 - Documentation site.
 - Migration recipes from ts-rest, Nest+Swagger, hand-rolled controllers.
 
@@ -229,7 +228,6 @@ const puzzle = await client.getPuzzle({ params: { dayKey: '2026-05-15', gameKey:
 
 **Open source release:** Strong. The contract-first-multi-adapter niche is genuinely undersupplied. ts-rest is the closest competitor and is missing multi-adapter polish. MIT release could attract real users.
 
-**Commercial product:** Plausible as **"managed SDK generation + breaking-change CI"** — similar to Stainless. Mid-priority commercial direction.
 
 **Estimated effort to v1.0:** 12-20 weeks of focused work. Each adapter is a meaningful chunk; client codegen quality is the hard part.
 
@@ -238,4 +236,4 @@ const puzzle = await client.getPuzzle({ params: { dayKey: '2026-05-15', gameKey:
 - **Current:** Empty placeholder. Not started.
 - **Owner:** Cody (solo dev project).
 - **Priority tier:** Force multiplier. Build after `@nekostack/schema` since it's the foundation.
-- **Estimated learning return:** Very high. API contract design, code generation, OpenAPI semantics, adapter abstraction patterns — all foundational web-dev skills.
+- **Estimated learning return:** Very high. API contract design, code generation, OpenAPI semantics, adapter abstraction patterns â€” all foundational web-dev skills.

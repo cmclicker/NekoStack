@@ -1,4 +1,4 @@
-# @nekostack/prompts
+﻿# @nekostack/prompts
 
 > Prompt template management, versioning, provider abstraction (Anthropic / OpenAI / local / etc.), structured output schemas, safety constraints. The "LLM is a typed function with a versioned contract" layer.
 
@@ -8,10 +8,9 @@
 |---|---|
 | **Build tier** | AI / LLM |
 | **Depends on** | `schema` (output validation), `audit` (LLM invocations), `provenance` (generated-output tracking), `governance` (LLM behavior constraints), `telemetry` (cost + latency), `secrets` (provider API keys) |
-| **Used by** | NekoSystems (LLM-driven features inside the Business-OS SaaS — customer support, workflow assistants), every product touching LLMs, `tools` (provider routing), `chat`, `rag` (RAG prompts), `eval` (prompt regression tests) |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 8–14 weeks focused |
-| **Sellable?** | **Strong** — prompt-ops tooling is undersupplied; commercial as part of LLM-platform offering |
+| **Used by** | NekoSystems (LLM-driven features inside the Business-OS SaaS â€” customer support, workflow assistants), every product touching LLMs, `tools` (provider routing), `chat`, `rag` (RAG prompts), `eval` (prompt regression tests) |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 8â€“14 weeks focused |
 
 ## Why this exists
 
@@ -49,7 +48,7 @@ Without a `prompts` package, every project re-invents:
 
 ## Boundary
 
-> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §41 for the full capability map.
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) Â§41 for the full capability map.
 
 ### Owns
 - Prompt template DSL
@@ -100,8 +99,8 @@ Without a `prompts` package, every project re-invents:
 ## Design philosophy
 
 - **LLM is a typed function.** Inputs typed, outputs typed.
-- **Versioning is mandatory.** Edit a prompt → bump version. Old version still callable.
-- **Provider-swappable.** Anthropic → OpenAI → local is a config change.
+- **Versioning is mandatory.** Edit a prompt â†’ bump version. Old version still callable.
+- **Provider-swappable.** Anthropic â†’ OpenAI â†’ local is a config change.
 - **Refusal handling.** Models say no; the package surfaces that explicitly.
 - **Cost is observed.** Token usage emitted to telemetry per call.
 
@@ -109,55 +108,55 @@ Without a `prompts` package, every project re-invents:
 
 ```
 packages/prompts/
-├── src/
-│   ├── template/
-│   │   ├── define.ts          # definePrompt({ inputs, version, ... })
-│   │   ├── render.ts          # template + vars → string
-│   │   └── catalog.ts
-│   ├── version/
-│   │   └── semver.ts
-│   ├── provider/
-│   │   ├── anthropic.ts
-│   │   ├── openai.ts
-│   │   ├── ollama.ts          # local
-│   │   └── route.ts
-│   ├── output/
-│   │   ├── validate.ts        # via schema
-│   │   └── parse.ts
-│   ├── constraints/
-│   │   └── render.ts          # from governance
-│   ├── refusal/
-│   │   └── handle.ts
-│   ├── cost/
-│   │   └── track.ts           # to telemetry
-│   ├── provenance/
-│   │   └── emit.ts            # to provenance
-│   └── cli.ts                 # `neko prompts list / test / version`
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ template/
+â”‚   â”‚   â”œâ”€â”€ define.ts          # definePrompt({ inputs, version, ... })
+â”‚   â”‚   â”œâ”€â”€ render.ts          # template + vars â†’ string
+â”‚   â”‚   â””â”€â”€ catalog.ts
+â”‚   â”œâ”€â”€ version/
+â”‚   â”‚   â””â”€â”€ semver.ts
+â”‚   â”œâ”€â”€ provider/
+â”‚   â”‚   â”œâ”€â”€ anthropic.ts
+â”‚   â”‚   â”œâ”€â”€ openai.ts
+â”‚   â”‚   â”œâ”€â”€ ollama.ts          # local
+â”‚   â”‚   â””â”€â”€ route.ts
+â”‚   â”œâ”€â”€ output/
+â”‚   â”‚   â”œâ”€â”€ validate.ts        # via schema
+â”‚   â”‚   â””â”€â”€ parse.ts
+â”‚   â”œâ”€â”€ constraints/
+â”‚   â”‚   â””â”€â”€ render.ts          # from governance
+â”‚   â”œâ”€â”€ refusal/
+â”‚   â”‚   â””â”€â”€ handle.ts
+â”‚   â”œâ”€â”€ cost/
+â”‚   â”‚   â””â”€â”€ track.ts           # to telemetry
+â”‚   â”œâ”€â”€ provenance/
+â”‚   â”‚   â””â”€â”€ emit.ts            # to provenance
+â”‚   â””â”€â”€ cli.ts                 # `neko prompts list / test / version`
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — Template DSL + render
-### v0.2 — Anthropic provider
-### v0.3 — Output schema validation
-### v0.4 — Versioning + catalog
-### v0.5 — OpenAI + Ollama providers
-### v0.6 — Model routing
-### v0.7 — Behavior constraint rendering (from governance)
-### v0.8 — Cost tracking + provenance emission
-### v1.0 — Stable API
+### v0.1 â€” Template DSL + render
+### v0.2 â€” Anthropic provider
+### v0.3 â€” Output schema validation
+### v0.4 â€” Versioning + catalog
+### v0.5 â€” OpenAI + Ollama providers
+### v0.6 â€” Model routing
+### v0.7 â€” Behavior constraint rendering (from governance)
+### v0.8 â€” Cost tracking + provenance emission
+### v1.0 â€” Stable API
 
 ## Product potential
 
 **Internal:** Critical for NekoSystems + any LLM-using product.
-**Open source release:** Strong — typed prompt-ops library is undersupplied.
-**Commercial:** Real — prompt-ops SaaS (PromptLayer / Helicone) is a category.
+**Open source release:** Strong â€” typed prompt-ops library is undersupplied.
+**Commercial:** Real â€” prompt-ops SaaS (PromptLayer / Helicone) is a category.
 
 ## Status
 
 - **Current:** Empty placeholder.
 - **Owner:** Cody (solo dev).
 - **Priority tier:** AI / LLM.
-- **Estimated learning return:** Very high. Prompt-engineering as code, structured output validation, provider abstraction, cost optimization — increasingly important skills.
+- **Estimated learning return:** Very high. Prompt-engineering as code, structured output validation, provider abstraction, cost optimization â€” increasingly important skills.

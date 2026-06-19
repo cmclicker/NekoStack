@@ -1,4 +1,4 @@
-# @nekostack/provenance
+﻿# @nekostack/provenance
 
 > Generated-artifact lineage. Who produced this file? Which prompt? What model? Which retrieval context? The "trace this artifact back to its source" layer.
 
@@ -9,9 +9,8 @@
 | **Build tier** | LLM-workflow safety |
 | **Depends on** | `schema`, `audit` (provenance records audited), `prompts` (links to prompt), `tools` (links to tool calls), `rag` (links to retrieval), `changeset` (links to changesets), `time` |
 | **Used by** | every LLM-generated artifact: code files, doc files, decisions, content drafts; `validator` (stale-generated detection); compliance reviews |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 6–10 weeks focused |
-| **Sellable?** | Modest — AI-content provenance is an emerging space |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 6â€“10 weeks focused |
 
 ## Why this exists
 
@@ -41,12 +40,12 @@ Without `provenance`, the answer is "I have no idea, sorry." With it: every gene
 - Audit log storage (`audit`).
 - Prompts (`prompts`).
 - Tools (`tools`).
-- Changesets (`changeset` — we link).
+- Changesets (`changeset` â€” we link).
 - LLM safety enforcement (`governance`).
 
 ## Boundary
 
-> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §42, §27 for the full capability map.
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) Â§42, Â§27 for the full capability map.
 
 ### Owns
 - Generated-artifact metadata
@@ -88,51 +87,51 @@ Without `provenance`, the answer is "I have no idea, sorry." With it: every gene
 - **Every generated artifact is traceable.** No anonymous AI output.
 - **Sidecar manifests.** `foo.ts.provenance.json` next to `foo.ts` if metadata can't fit inline.
 - **Stale detection.** If source changes, derived artifacts flagged.
-- **Citation chains.** RAG → prompt → output is recorded end-to-end.
+- **Citation chains.** RAG â†’ prompt â†’ output is recorded end-to-end.
 
 ## Architecture sketch
 
 ```
 packages/provenance/
-├── src/
-│   ├── record/
-│   │   ├── metadata.ts
-│   │   └── manifest.ts        # sidecar files
-│   ├── lineage/
-│   │   ├── source.ts
-│   │   └── modified-by.ts
-│   ├── trace/
-│   │   ├── prompt-to-output.ts
-│   │   └── rag-citation.ts
-│   ├── stale/
-│   │   ├── detect.ts
-│   │   └── invalidate.ts
-│   ├── mapping/
-│   │   └── source-to-output.ts
-│   └── cli.ts                 # `neko provenance trace <file>`
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ record/
+â”‚   â”‚   â”œâ”€â”€ metadata.ts
+â”‚   â”‚   â””â”€â”€ manifest.ts        # sidecar files
+â”‚   â”œâ”€â”€ lineage/
+â”‚   â”‚   â”œâ”€â”€ source.ts
+â”‚   â”‚   â””â”€â”€ modified-by.ts
+â”‚   â”œâ”€â”€ trace/
+â”‚   â”‚   â”œâ”€â”€ prompt-to-output.ts
+â”‚   â”‚   â””â”€â”€ rag-citation.ts
+â”‚   â”œâ”€â”€ stale/
+â”‚   â”‚   â”œâ”€â”€ detect.ts
+â”‚   â”‚   â””â”€â”€ invalidate.ts
+â”‚   â”œâ”€â”€ mapping/
+â”‚   â”‚   â””â”€â”€ source-to-output.ts
+â”‚   â””â”€â”€ cli.ts                 # `neko provenance trace <file>`
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — Provenance record schema
-### v0.2 — Sidecar manifest format
-### v0.3 — Prompt-to-output trace
-### v0.4 — RAG citation tracking
-### v0.5 — Stale-artifact detection
-### v0.6 — CLI: trace artifact lineage
-### v1.0 — Stable API
+### v0.1 â€” Provenance record schema
+### v0.2 â€” Sidecar manifest format
+### v0.3 â€” Prompt-to-output trace
+### v0.4 â€” RAG citation tracking
+### v0.5 â€” Stale-artifact detection
+### v0.6 â€” CLI: trace artifact lineage
+### v1.0 â€” Stable API
 
 ## Product potential
 
 **Internal:** Underrated. Solves "where did this come from?" durably.
-**Open source release:** Modest — AI content provenance is emerging.
-**Commercial:** Plausible — regulatory pressure around AI-generated content provenance is rising.
+**Open source release:** Modest â€” AI content provenance is emerging.
+**Commercial:** Plausible â€” regulatory pressure around AI-generated content provenance is rising.
 
 ## Status
 
 - **Current:** Empty placeholder.
 - **Owner:** Cody (solo dev).
 - **Priority tier:** LLM-workflow safety.
-- **Estimated learning return:** High. Content provenance, lineage tracking, stale-detection — important emerging discipline.
+- **Estimated learning return:** High. Content provenance, lineage tracking, stale-detection â€” important emerging discipline.

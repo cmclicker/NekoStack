@@ -1,4 +1,4 @@
-# @nekostack/workspace
+﻿# @nekostack/workspace
 
 > The multi-project context layer. Knows what projects exist locally, which one is active, where each lives on disk, what state each is in. The "where am I, what's around me" answer for every NekoStack-consuming tool and every Claude session.
 
@@ -6,12 +6,11 @@
 
 | | |
 |---|---|
-| **Build tier** | Meta / control plane — needed early for any multi-project tooling |
+| **Build tier** | Meta / control plane â€” needed early for any multi-project tooling |
 | **Depends on** | `schema` (workspace manifest), `graph` (intra-monorepo package deps), `lint` (consumes the dep graph for boundary enforcement), external: `simple-git` or comparable for git status |
 | **Used by** | `cli` (most subcommands need to know which project is active), `path` (queries workspace for active project), `session` (current-session context), `env` (devcontainer/docker-compose are per-workspace), every developer-tooling integration |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 6–10 weeks focused |
-| **Sellable?** | Low — plumbing. MIT release as part of stack. |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 6â€“10 weeks focused |
 
 ## Why this exists
 
@@ -52,7 +51,7 @@ Without an explicit workspace layer, every tool re-invents these answers. CLI su
 
 ## Boundary
 
-> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §2 for the full capability map.
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) Â§2 for the full capability map.
 
 ### Owns
 - Workspace registry + project root detection
@@ -103,35 +102,35 @@ The right framing: **a TS-native, schema-typed, multi-project workspace registry
 - **No assumption of a single monorepo.** Some users (like you) have many independent repos under `Projects/`. The workspace model covers that.
 - **Cheap queries.** Git status reads are cached with TTL; the API is fast enough to call on every CLI invocation.
 - **Stable disk-path discovery.** Project root detection works from any subpath via marker files (`.git`, `package.json` with a NekoStack manifest, etc.).
-- **Project kind taxonomy.** `game`, `saas`, `narrative`, `utility-kit`, `library`, etc. — drives downstream tooling behavior.
+- **Project kind taxonomy.** `game`, `saas`, `narrative`, `utility-kit`, `library`, etc. â€” drives downstream tooling behavior.
 
 ## Architecture sketch
 
 ```
 packages/workspace/
-├── src/
-│   ├── registry/
-│   │   ├── workspace.ts      # Workspace type + projects[]
-│   │   ├── project.ts        # Project type with path + kind + metadata
-│   │   └── manifest.ts       # neko-workspace.yaml format
-│   ├── discovery/
-│   │   ├── root.ts           # project root from any path
-│   │   ├── scan.ts           # discover projects under a directory
-│   │   └── markers.ts        # which files indicate a project root
-│   ├── active/
-│   │   ├── resolve.ts        # active project from cwd
-│   │   └── switch.ts         # explicit switching
-│   ├── git/
-│   │   ├── status.ts         # read-only status query
-│   │   └── health.ts         # dirty count, branch, last commit
-│   ├── monorepo/
-│   │   ├── packages.ts       # enumerate packages
-│   │   └── deps.ts           # package dependency graph (uses graph)
-│   ├── dashboard/
-│   │   └── feed.ts           # cross-project data
-│   └── cli.ts                # `neko workspace status / list / switch`
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ registry/
+â”‚   â”‚   â”œâ”€â”€ workspace.ts      # Workspace type + projects[]
+â”‚   â”‚   â”œâ”€â”€ project.ts        # Project type with path + kind + metadata
+â”‚   â”‚   â””â”€â”€ manifest.ts       # neko-workspace.yaml format
+â”‚   â”œâ”€â”€ discovery/
+â”‚   â”‚   â”œâ”€â”€ root.ts           # project root from any path
+â”‚   â”‚   â”œâ”€â”€ scan.ts           # discover projects under a directory
+â”‚   â”‚   â””â”€â”€ markers.ts        # which files indicate a project root
+â”‚   â”œâ”€â”€ active/
+â”‚   â”‚   â”œâ”€â”€ resolve.ts        # active project from cwd
+â”‚   â”‚   â””â”€â”€ switch.ts         # explicit switching
+â”‚   â”œâ”€â”€ git/
+â”‚   â”‚   â”œâ”€â”€ status.ts         # read-only status query
+â”‚   â”‚   â””â”€â”€ health.ts         # dirty count, branch, last commit
+â”‚   â”œâ”€â”€ monorepo/
+â”‚   â”‚   â”œâ”€â”€ packages.ts       # enumerate packages
+â”‚   â”‚   â””â”€â”€ deps.ts           # package dependency graph (uses graph)
+â”‚   â”œâ”€â”€ dashboard/
+â”‚   â”‚   â””â”€â”€ feed.ts           # cross-project data
+â”‚   â””â”€â”€ cli.ts                # `neko workspace status / list / switch`
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 CLI shape:
@@ -145,35 +144,35 @@ $ neko workspace deps                # package dep graph (current monorepo)
 
 ## Roadmap
 
-### v0.1 — Project root + scan
+### v0.1 â€” Project root + scan
 - Marker-based project root detection.
 - Workspace registry from `neko-workspace.yaml` or auto-scan.
 
-### v0.2 — Active project + switching
-- cwd → active project resolution.
+### v0.2 â€” Active project + switching
+- cwd â†’ active project resolution.
 - Explicit switching with state persisted.
 
-### v0.3 — Git status
+### v0.3 â€” Git status
 - Read-only status query per project.
 - Cached with TTL.
 
-### v0.4 — Monorepo package map
+### v0.4 â€” Monorepo package map
 - Enumerate workspace packages.
 - Build dep graph using `graph` substrate.
 
-### v0.5 — Repo health summary
+### v0.5 â€” Repo health summary
 - Branch / dirty / ahead-behind / last-commit-age.
 
-### v0.6 — Dashboard data feed
+### v0.6 â€” Dashboard data feed
 - Cross-project aggregated data for UI consumers.
 
-### v1.0 — Stable API
+### v1.0 â€” Stable API
 - Documentation site.
 - Recipes for the flat-Projects-directory and Turbo-monorepo patterns.
 
 ## Product potential
 
-**Internal:** High — multi-project tooling can't be coherent without it.
+**Internal:** High â€” multi-project tooling can't be coherent without it.
 
 **Open source release:** Modest. The niche is small and tool-specific. MIT release as part of stack.
 
@@ -184,4 +183,4 @@ $ neko workspace deps                # package dep graph (current monorepo)
 - **Current:** Empty placeholder. Not started.
 - **Owner:** Cody (solo dev).
 - **Priority tier:** Meta / control plane. Build after `path` (path defines the project model; workspace tracks disk reality).
-- **Estimated learning return:** Moderate. Multi-project workspace modeling, root-detection patterns, git CLI interop, dependency graph construction — practical infrastructure skills.
+- **Estimated learning return:** Moderate. Multi-project workspace modeling, root-detection patterns, git CLI interop, dependency graph construction â€” practical infrastructure skills.

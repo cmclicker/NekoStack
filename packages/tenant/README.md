@@ -1,4 +1,4 @@
-# @nekostack/tenant
+﻿# @nekostack/tenant
 
 > Tenant identity, lifecycle, settings, membership, isolation patterns. The multi-tenancy primitive lifted out of `auth`. The "who is this customer and what's their boundary?" layer.
 
@@ -6,12 +6,11 @@
 
 | | |
 |---|---|
-| **Build tier** | Identity / access — split out of `auth` for clean ownership |
+| **Build tier** | Identity / access â€” split out of `auth` for clean ownership |
 | **Depends on** | `schema` (tenant shape), `audit` (tenant-scoped audit), `id` (tenant-scoped IDs), `time` (lifecycle dates) |
 | **Used by** | `auth` (composes tenant into AuthContext), `entitlements` (per-tenant plan binding), `audit` (tenant scoping), `permissions` (tenant-scoped role bindings), every multi-tenant SaaS product (NekoSystems, retail-ops, future EdTech) |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 6–10 weeks focused |
-| **Sellable?** | Modest — most products bundle this into auth; standalone niche is narrow but a clean primitive may attract serious SaaS builders |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 6â€“10 weeks focused |
 
 ## Why this exists
 
@@ -47,7 +46,7 @@ The decision to lift it out is recorded as ADR `D-0042` (see `decision`).
 
 ## Boundary
 
-> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §9 for the full capability map.
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) Â§9 for the full capability map.
 
 ### Owns
 - Tenant identity model
@@ -102,48 +101,48 @@ The decision to lift it out is recorded as ADR `D-0042` (see `decision`).
 
 ```
 packages/tenant/
-├── src/
-│   ├── identity/
-│   │   ├── tenant.ts         # Tenant type
-│   │   ├── lifecycle.ts      # state machine
-│   │   └── settings.ts
-│   ├── membership/
-│   │   └── user-tenant.ts    # user-tenant binding (role binding lives in permissions)
-│   ├── isolation/
-│   │   ├── rls.ts            # row-level-security SQL templates
-│   │   └── clause.ts         # query-clause injection helpers
-│   ├── ids/
-│   │   └── scoped.ts         # tenant-scoped ID convention
-│   ├── audit/
-│   │   └── scope.ts          # audit context helpers
-│   ├── lifecycle-hooks/
-│   │   ├── suspend.ts
-│   │   ├── delete.ts
-│   │   └── trial.ts
-│   └── cli.ts
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ identity/
+â”‚   â”‚   â”œâ”€â”€ tenant.ts         # Tenant type
+â”‚   â”‚   â”œâ”€â”€ lifecycle.ts      # state machine
+â”‚   â”‚   â””â”€â”€ settings.ts
+â”‚   â”œâ”€â”€ membership/
+â”‚   â”‚   â””â”€â”€ user-tenant.ts    # user-tenant binding (role binding lives in permissions)
+â”‚   â”œâ”€â”€ isolation/
+â”‚   â”‚   â”œâ”€â”€ rls.ts            # row-level-security SQL templates
+â”‚   â”‚   â””â”€â”€ clause.ts         # query-clause injection helpers
+â”‚   â”œâ”€â”€ ids/
+â”‚   â”‚   â””â”€â”€ scoped.ts         # tenant-scoped ID convention
+â”‚   â”œâ”€â”€ audit/
+â”‚   â”‚   â””â”€â”€ scope.ts          # audit context helpers
+â”‚   â”œâ”€â”€ lifecycle-hooks/
+â”‚   â”‚   â”œâ”€â”€ suspend.ts
+â”‚   â”‚   â”œâ”€â”€ delete.ts
+â”‚   â”‚   â””â”€â”€ trial.ts
+â”‚   â””â”€â”€ cli.ts
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — Tenant model + lifecycle
-### v0.2 — Membership + isolation helpers
-### v0.3 — RLS templates (Postgres-first)
-### v0.4 — Tenant-scoped IDs
-### v0.5 — Plan binding integration (entitlements)
-### v0.6 — Tenant-export / delete orchestration
-### v1.0 — Stable API
+### v0.1 â€” Tenant model + lifecycle
+### v0.2 â€” Membership + isolation helpers
+### v0.3 â€” RLS templates (Postgres-first)
+### v0.4 â€” Tenant-scoped IDs
+### v0.5 â€” Plan binding integration (entitlements)
+### v0.6 â€” Tenant-export / delete orchestration
+### v1.0 â€” Stable API
 
 ## Product potential
 
 **Internal:** Critical for any multi-tenant product.
-**Open source release:** Plausible — clean tenant primitive is undersupplied.
-**Commercial:** Marginal — Clerk/Auth0/WorkOS already commercialize this.
+**Open source release:** Plausible â€” clean tenant primitive is undersupplied.
+**Commercial:** Marginal â€” Clerk/Auth0/WorkOS already commercialize this.
 
 ## Status
 
 - **Current:** Empty placeholder.
 - **Owner:** Cody (solo dev).
 - **Priority tier:** Identity / access. Build alongside `auth` since they're tightly coupled.
-- **Estimated learning return:** High. Multi-tenant isolation patterns, RLS, lifecycle state machines for organizations — all important SaaS engineering skills.
+- **Estimated learning return:** High. Multi-tenant isolation patterns, RLS, lifecycle state machines for organizations â€” all important SaaS engineering skills.

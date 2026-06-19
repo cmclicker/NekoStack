@@ -1,4 +1,4 @@
-# @nekostack/webhooks
+﻿# @nekostack/webhooks
 
 > Webhook receiver + dispatcher with signature verification, idempotency, retry queues. The substrate for Stripe / GitHub / generic third-party callbacks. Distinct from `realtime` (persistent connections) and `api` (request-response).
 
@@ -9,15 +9,14 @@
 | **Build tier** | SaaS layer |
 | **Depends on** | `schema` (webhook payload schemas), `audit` (deliveries audited), `crypto` (signature verification), `queue` (retry queue), `secrets` (webhook signing secrets), `fetch` (outbound dispatch) |
 | **Used by** | `billing` (Stripe webhooks), any product receiving callbacks from third parties; outbound: any product calling consumer webhooks |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 4–8 weeks focused |
-| **Sellable?** | Modest — Svix / Hookdeck commercialize this; library-level integration value |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 4â€“8 weeks focused |
 
 ## Why this exists
 
 Webhooks are deceptively hard:
 - **Inbound** verification (HMAC signatures must match), idempotency (the same event arrives twice), replay protection (don't process events from 6 months ago).
-- **Outbound** delivery: target endpoint slow → retry with backoff, target fails 10x → dead-letter, signature generation, replay protection on consumer side.
+- **Outbound** delivery: target endpoint slow â†’ retry with backoff, target fails 10x â†’ dead-letter, signature generation, replay protection on consumer side.
 
 Hand-rolling per product means each gets it wrong differently. `webhooks` solves it once.
 
@@ -34,11 +33,11 @@ Hand-rolling per product means each gets it wrong differently. `webhooks` solves
 ### Out of scope
 - Webhook UI for end users.
 - Real-time / WebSocket transport (`realtime`).
-- Job queue substrate (`queue` — we use it).
+- Job queue substrate (`queue` â€” we use it).
 
 ## Boundary
 
-> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §32 for the full capability map.
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) Â§32 for the full capability map.
 
 ### Owns
 - Inbound webhook reception + verification
@@ -82,39 +81,39 @@ Hand-rolling per product means each gets it wrong differently. `webhooks` solves
 
 ```
 packages/webhooks/
-├── src/
-│   ├── inbound/
-│   │   ├── receive.ts
-│   │   ├── verify.ts         # HMAC
-│   │   ├── idempotency.ts
-│   │   └── replay-protect.ts
-│   ├── outbound/
-│   │   ├── dispatch.ts
-│   │   ├── retry.ts
-│   │   ├── dead-letter.ts
-│   │   └── sign.ts
-│   ├── subscriptions/
-│   │   └── manage.ts
-│   ├── handlers/
-│   │   └── register.ts
-│   └── cli.ts
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ inbound/
+â”‚   â”‚   â”œâ”€â”€ receive.ts
+â”‚   â”‚   â”œâ”€â”€ verify.ts         # HMAC
+â”‚   â”‚   â”œâ”€â”€ idempotency.ts
+â”‚   â”‚   â””â”€â”€ replay-protect.ts
+â”‚   â”œâ”€â”€ outbound/
+â”‚   â”‚   â”œâ”€â”€ dispatch.ts
+â”‚   â”‚   â”œâ”€â”€ retry.ts
+â”‚   â”‚   â”œâ”€â”€ dead-letter.ts
+â”‚   â”‚   â””â”€â”€ sign.ts
+â”‚   â”œâ”€â”€ subscriptions/
+â”‚   â”‚   â””â”€â”€ manage.ts
+â”‚   â”œâ”€â”€ handlers/
+â”‚   â”‚   â””â”€â”€ register.ts
+â”‚   â””â”€â”€ cli.ts
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — Inbound receive + verify + idempotency
-### v0.2 — Handler registration
-### v0.3 — Outbound dispatch + signing
-### v0.4 — Retry queue + dead-letter
-### v0.5 — Subscription management
-### v1.0 — Stable API
+### v0.1 â€” Inbound receive + verify + idempotency
+### v0.2 â€” Handler registration
+### v0.3 â€” Outbound dispatch + signing
+### v0.4 â€” Retry queue + dead-letter
+### v0.5 â€” Subscription management
+### v1.0 â€” Stable API
 
 ## Product potential
 
 **Internal:** Useful across SaaS + integration work.
-**Open source release:** Plausible — Svix-alike.
+**Open source release:** Plausible â€” Svix-alike.
 **Commercial:** Svix / Hookdeck dominate; tough commercial play.
 
 ## Status

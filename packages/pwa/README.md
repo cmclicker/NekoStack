@@ -1,4 +1,4 @@
-# @nekostack/pwa
+﻿# @nekostack/pwa
 
 > Progressive Web App infrastructure: manifest generation, service workers, install prompts. The "ship a web app that feels native on mobile" layer.
 
@@ -9,9 +9,8 @@
 | **Build tier** | Cross-platform |
 | **Depends on** | `schema` (manifest), `notify` (push integration), `offline`, `audit` |
 | **Used by** | NekoVibe (already has service worker work in Phase 1!), any web product wanting mobile install + offline |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 4–8 weeks focused |
-| **Sellable?** | Low — vite-plugin-pwa + workbox dominate |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 4â€“8 weeks focused |
 
 ## Why this exists
 
@@ -26,7 +25,7 @@ NekoVibe already has `sw.js` and `ServiceWorkerRegistrar.tsx`. Lifting into a pa
 - Service worker registration.
 - Cache strategies (network-first / cache-first / stale-while-revalidate).
 - Install prompt UX (when to show, how to defer).
-- Update flow (new SW available → user prompted).
+- Update flow (new SW available â†’ user prompted).
 - Push notification integration (via `notify`).
 - Offline navigation (via `offline`).
 
@@ -75,33 +74,33 @@ NekoVibe already has `sw.js` and `ServiceWorkerRegistrar.tsx`. Lifting into a pa
 
 ```
 packages/pwa/
-├── src/
-│   ├── manifest/
-│   │   ├── generate.ts
-│   │   └── icons.ts
-│   ├── service-worker/
-│   │   ├── register.ts
-│   │   └── strategies/
-│   │       ├── network-first.ts
-│   │       ├── cache-first.ts
-│   │       └── swr.ts
-│   ├── install-prompt/
-│   │   └── ux.ts
-│   ├── update/
-│   │   └── flow.ts
-│   └── cli.ts                  # `neko pwa build`
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ manifest/
+â”‚   â”‚   â”œâ”€â”€ generate.ts
+â”‚   â”‚   â””â”€â”€ icons.ts
+â”‚   â”œâ”€â”€ service-worker/
+â”‚   â”‚   â”œâ”€â”€ register.ts
+â”‚   â”‚   â””â”€â”€ strategies/
+â”‚   â”‚       â”œâ”€â”€ network-first.ts
+â”‚   â”‚       â”œâ”€â”€ cache-first.ts
+â”‚   â”‚       â””â”€â”€ swr.ts
+â”‚   â”œâ”€â”€ install-prompt/
+â”‚   â”‚   â””â”€â”€ ux.ts
+â”‚   â”œâ”€â”€ update/
+â”‚   â”‚   â””â”€â”€ flow.ts
+â”‚   â””â”€â”€ cli.ts                  # `neko pwa build`
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — Manifest generation
-### v0.2 — Service worker registration
-### v0.3 — Cache strategies
-### v0.4 — Install prompt
-### v0.5 — Update flow
-### v1.0 — Stable API
+### v0.1 â€” Manifest generation
+### v0.2 â€” Service worker registration
+### v0.3 â€” Cache strategies
+### v0.4 â€” Install prompt
+### v0.5 â€” Update flow
+### v1.0 â€” Stable API
 
 ## Product potential
 

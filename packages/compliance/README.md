@@ -1,4 +1,4 @@
-# @nekostack/compliance
+﻿# @nekostack/compliance
 
 > GDPR / HIPAA / SOC 2 profiles, evidence collection, control mapping, retention policy enforcement, consent records, legal hold, region/jurisdiction handling. The compliance layer that orchestrates `audit`, `export`, `secrets`, `secure`, and `tenant` into actual regulatory posture.
 
@@ -6,22 +6,21 @@
 
 | | |
 |---|---|
-| **Build tier** | Compliance / data governance — pairs with `audit` |
+| **Build tier** | Compliance / data governance â€” pairs with `audit` |
 | **Depends on** | `schema` (compliance profile shape), `audit` (evidence source), `export` (DSAR), `secure` (redaction policies), `tenant` (region binding), `secrets` (encryption controls), `time` (retention dates) |
 | **Used by** | products with regulatory exposure (any SaaS handling PII / health / payment data); `path` (compliance milestones); `governance` (compliance enforcement profiles compose into governance) |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 12–20 weeks focused |
-| **Sellable?** | Strong — compliance tooling market is real and growing (Drata / Vanta / Secureframe at high end); SMB-tier opportunity exists |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 12â€“20 weeks focused |
 
 ## Why this exists
 
 Compliance isn't audit (that's the log). Compliance is the layer above:
-- Which controls do we need to satisfy (GDPR Art. 15, SOC 2 CC6.1, HIPAA §164.312)?
+- Which controls do we need to satisfy (GDPR Art. 15, SOC 2 CC6.1, HIPAA Â§164.312)?
 - How do we collect evidence that we're satisfying them?
 - What's our retention policy per data type per jurisdiction?
 - What's our consent record for this user?
 - Is this tenant under legal hold (cannot delete their data)?
-- What jurisdiction applies — EU GDPR, California CCPA, Brazil LGPD?
+- What jurisdiction applies â€” EU GDPR, California CCPA, Brazil LGPD?
 
 Without an explicit package:
 - Compliance posture is "vibes" (probably we're OK?).
@@ -53,12 +52,12 @@ Without an explicit package:
 
 ## Boundary
 
-> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §22 for the full capability map.
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) Â§22 for the full capability map.
 
 ### Owns
 - Compliance profile definitions
 - Compliance checklists
-- Control mapping (NekoStack controls ↔ industry standards)
+- Control mapping (NekoStack controls â†” industry standards)
 - Compliance evidence collection
 - Retention requirements
 - Legal hold
@@ -105,58 +104,58 @@ Without an explicit package:
 
 ```
 packages/compliance/
-├── src/
-│   ├── profiles/
-│   │   ├── gdpr.ts
-│   │   ├── hipaa.ts
-│   │   ├── soc2.ts
-│   │   ├── ccpa.ts
-│   │   └── iso27001.ts
-│   ├── controls/
-│   │   ├── catalog.ts
-│   │   └── mapping.ts        # NekoStack ↔ standard
-│   ├── evidence/
-│   │   ├── collect.ts
-│   │   └── present.ts
-│   ├── retention/
-│   │   ├── policy.ts
-│   │   ├── enforce.ts        # cooperates with audit
-│   │   └── legal-hold.ts
-│   ├── consent/
-│   │   ├── record.ts
-│   │   └── version.ts
-│   ├── region/
-│   │   └── jurisdiction.ts
-│   ├── dsar/
-│   │   └── orchestrate.ts    # calls export + audit
-│   ├── right-to-forget/
-│   │   └── workflow.ts
-│   └── cli.ts
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ profiles/
+â”‚   â”‚   â”œâ”€â”€ gdpr.ts
+â”‚   â”‚   â”œâ”€â”€ hipaa.ts
+â”‚   â”‚   â”œâ”€â”€ soc2.ts
+â”‚   â”‚   â”œâ”€â”€ ccpa.ts
+â”‚   â”‚   â””â”€â”€ iso27001.ts
+â”‚   â”œâ”€â”€ controls/
+â”‚   â”‚   â”œâ”€â”€ catalog.ts
+â”‚   â”‚   â””â”€â”€ mapping.ts        # NekoStack â†” standard
+â”‚   â”œâ”€â”€ evidence/
+â”‚   â”‚   â”œâ”€â”€ collect.ts
+â”‚   â”‚   â””â”€â”€ present.ts
+â”‚   â”œâ”€â”€ retention/
+â”‚   â”‚   â”œâ”€â”€ policy.ts
+â”‚   â”‚   â”œâ”€â”€ enforce.ts        # cooperates with audit
+â”‚   â”‚   â””â”€â”€ legal-hold.ts
+â”‚   â”œâ”€â”€ consent/
+â”‚   â”‚   â”œâ”€â”€ record.ts
+â”‚   â”‚   â””â”€â”€ version.ts
+â”‚   â”œâ”€â”€ region/
+â”‚   â”‚   â””â”€â”€ jurisdiction.ts
+â”‚   â”œâ”€â”€ dsar/
+â”‚   â”‚   â””â”€â”€ orchestrate.ts    # calls export + audit
+â”‚   â”œâ”€â”€ right-to-forget/
+â”‚   â”‚   â””â”€â”€ workflow.ts
+â”‚   â””â”€â”€ cli.ts
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — Profile definitions (GDPR + SOC 2)
-### v0.2 — Control catalog + mapping
-### v0.3 — Retention enforcement
-### v0.4 — Consent records
-### v0.5 — Legal hold
-### v0.6 — DSAR orchestration
-### v0.7 — Right-to-forget
-### v0.8 — Region / jurisdiction
-### v1.0 — Stable API
+### v0.1 â€” Profile definitions (GDPR + SOC 2)
+### v0.2 â€” Control catalog + mapping
+### v0.3 â€” Retention enforcement
+### v0.4 â€” Consent records
+### v0.5 â€” Legal hold
+### v0.6 â€” DSAR orchestration
+### v0.7 â€” Right-to-forget
+### v0.8 â€” Region / jurisdiction
+### v1.0 â€” Stable API
 
 ## Product potential
 
 **Internal:** Critical once any product processes PII / health / payment data.
-**Open source release:** Plausible — SMB-tier compliance is undersupplied.
-**Commercial:** **Strong** — Vanta / Drata at high end leave room for SMB-tier hosted offering.
+**Open source release:** Plausible â€” SMB-tier compliance is undersupplied.
+**Commercial:** **Strong** â€” Vanta / Drata at high end leave room for SMB-tier hosted offering.
 
 ## Status
 
 - **Current:** Empty placeholder.
 - **Owner:** Cody (solo dev).
-- **Priority tier:** Compliance — build before any product reaches "we handle real PII at scale".
-- **Estimated learning return:** Very high. GDPR / SOC 2 / HIPAA mapping, evidence-collection design, retention enforcement, consent versioning — directly relevant to any commercial SaaS work.
+- **Priority tier:** Compliance â€” build before any product reaches "we handle real PII at scale".
+- **Estimated learning return:** Very high. GDPR / SOC 2 / HIPAA mapping, evidence-collection design, retention enforcement, consent versioning â€” directly relevant to any commercial SaaS work.

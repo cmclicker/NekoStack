@@ -1,4 +1,4 @@
-# @nekostack/queue
+﻿# @nekostack/queue
 
 > Job queue substrate: retries, dead-letter queues, deduplication, locking, priority. **Distinct from `jobs`** (which executes jobs; queue is the storage + delivery substrate underneath).
 
@@ -6,12 +6,11 @@
 
 | | |
 |---|---|
-| **Build tier** | Background processing — substrate layer |
+| **Build tier** | Background processing â€” substrate layer |
 | **Depends on** | `schema` (job payload schemas), `audit` (job lifecycle audited), `telemetry` (queue metrics), `storage` (durable backing if not Redis); external: Redis or PostgreSQL as substrate |
 | **Used by** | `jobs` (consumes us as substrate), `webhooks` (retry queue), `email` (send queue), `notify` (digest queue), `billing` (reconciliation), every package doing async work |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 6–10 weeks focused |
-| **Sellable?** | Modest — BullMQ / pg-boss are mature OSS; library-level addition uncommon |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 6â€“10 weeks focused |
 
 ## Why this exists
 
@@ -48,7 +47,7 @@ Building a queue substrate over BullMQ / pg-boss / SQS is justified because:
 
 ## Boundary
 
-> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §34 for the full capability map.
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) Â§34 for the full capability map.
 
 ### Owns
 - Queue interface + adapter contract
@@ -93,7 +92,7 @@ Building a queue substrate over BullMQ / pg-boss / SQS is justified because:
 ## Design philosophy
 
 - **Substrate over reinvention.** We wrap BullMQ / pg-boss; we don't write a queue from scratch.
-- **Same semantics across adapters.** Switching Redis → PostgreSQL is a config change.
+- **Same semantics across adapters.** Switching Redis â†’ PostgreSQL is a config change.
 - **DLQ is mandatory.** Jobs that exhaust retries land in DLQ with full audit; never silently lost.
 - **Idempotency by default.** Every enqueue accepts an idempotency key.
 
@@ -101,52 +100,52 @@ Building a queue substrate over BullMQ / pg-boss / SQS is justified because:
 
 ```
 packages/queue/
-├── src/
-│   ├── interface/
-│   │   ├── queue.ts          # Queue<T> abstract interface
-│   │   └── job.ts            # Job<T> envelope
-│   ├── adapters/
-│   │   ├── redis.ts          # BullMQ-backed
-│   │   ├── postgres.ts       # pg-boss-backed
-│   │   └── memory.ts         # dev/test
-│   ├── retry/
-│   │   ├── policy.ts
-│   │   └── backoff.ts
-│   ├── dead-letter/
-│   │   └── dlq.ts
-│   ├── dedup/
-│   │   └── idempotency.ts
-│   ├── lock/
-│   │   └── distributed.ts
-│   ├── priority/
-│   │   └── levels.ts
-│   ├── metrics/
-│   │   └── emit.ts           # to telemetry
-│   └── cli.ts
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ interface/
+â”‚   â”‚   â”œâ”€â”€ queue.ts          # Queue<T> abstract interface
+â”‚   â”‚   â””â”€â”€ job.ts            # Job<T> envelope
+â”‚   â”œâ”€â”€ adapters/
+â”‚   â”‚   â”œâ”€â”€ redis.ts          # BullMQ-backed
+â”‚   â”‚   â”œâ”€â”€ postgres.ts       # pg-boss-backed
+â”‚   â”‚   â””â”€â”€ memory.ts         # dev/test
+â”‚   â”œâ”€â”€ retry/
+â”‚   â”‚   â”œâ”€â”€ policy.ts
+â”‚   â”‚   â””â”€â”€ backoff.ts
+â”‚   â”œâ”€â”€ dead-letter/
+â”‚   â”‚   â””â”€â”€ dlq.ts
+â”‚   â”œâ”€â”€ dedup/
+â”‚   â”‚   â””â”€â”€ idempotency.ts
+â”‚   â”œâ”€â”€ lock/
+â”‚   â”‚   â””â”€â”€ distributed.ts
+â”‚   â”œâ”€â”€ priority/
+â”‚   â”‚   â””â”€â”€ levels.ts
+â”‚   â”œâ”€â”€ metrics/
+â”‚   â”‚   â””â”€â”€ emit.ts           # to telemetry
+â”‚   â””â”€â”€ cli.ts
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — Interface + in-memory adapter
-### v0.2 — Redis adapter (BullMQ)
-### v0.3 — PostgreSQL adapter (pg-boss)
-### v0.4 — Retry + DLQ
-### v0.5 — Dedup + idempotency
-### v0.6 — Priority + locking
-### v0.7 — Metrics
-### v1.0 — Stable API
+### v0.1 â€” Interface + in-memory adapter
+### v0.2 â€” Redis adapter (BullMQ)
+### v0.3 â€” PostgreSQL adapter (pg-boss)
+### v0.4 â€” Retry + DLQ
+### v0.5 â€” Dedup + idempotency
+### v0.6 â€” Priority + locking
+### v0.7 â€” Metrics
+### v1.0 â€” Stable API
 
 ## Product potential
 
 **Internal:** Required for every product with async work.
-**Open source release:** Modest — wraps mature substrates.
+**Open source release:** Modest â€” wraps mature substrates.
 **Commercial:** None.
 
 ## Status
 
 - **Current:** Empty placeholder.
 - **Owner:** Cody (solo dev).
-- **Priority tier:** Background processing — substrate.
-- **Estimated learning return:** High. Queue semantics, retry/backoff, DLQ patterns, idempotency, distributed locking — operational engineering core skills.
+- **Priority tier:** Background processing â€” substrate.
+- **Estimated learning return:** High. Queue semantics, retry/backoff, DLQ patterns, idempotency, distributed locking â€” operational engineering core skills.

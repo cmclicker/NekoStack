@@ -1,4 +1,4 @@
-# @nekostack/secure
+﻿# @nekostack/secure
 
 > Security headers (CSP/HSTS/etc.), CSRF, CORS, input sanitization, PII redaction. The cross-cutting web-security middleware layer. Distinct from `crypto` (primitives), `secrets` (lifecycle), and `auth` (login).
 
@@ -9,9 +9,8 @@
 | **Build tier** | Security |
 | **Depends on** | `schema` (sanitization rules), `audit` (security events), `log` (redaction integration), `telemetry` (redaction integration) |
 | **Used by** | every backend (HTTP middleware), `log` (redaction calls), `telemetry` (egress scrubbing), `export` (redaction during egress) |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 6–10 weeks focused |
-| **Sellable?** | Low — helmet / cors / etc. cover the niches; integration value |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 6â€“10 weeks focused |
 
 ## Why this exists
 
@@ -39,7 +38,7 @@ Generic security middleware exists (helmet, cors, csurf) but is fragmented and u
 
 ## Boundary
 
-> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §33 for the full capability map.
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) Â§33 for the full capability map.
 
 ### Owns
 - Security headers middleware
@@ -85,49 +84,49 @@ Generic security middleware exists (helmet, cors, csurf) but is fragmented and u
 
 ```
 packages/secure/
-├── src/
-│   ├── headers/
-│   │   ├── csp.ts
-│   │   ├── hsts.ts
-│   │   └── all.ts
-│   ├── csrf/
-│   │   └── double-submit.ts
-│   ├── cors/
-│   │   └── config.ts
-│   ├── sanitize/
-│   │   ├── html.ts
-│   │   └── sql.ts
-│   ├── pii/
-│   │   ├── detect.ts
-│   │   ├── scrub.ts
-│   │   └── hash.ts
-│   ├── nonce/
-│   │   └── generate.ts
-│   ├── adapters/
-│   │   ├── nest.ts
-│   │   ├── express.ts
-│   │   ├── nextjs.ts
-│   │   ├── hono.ts
-│   │   └── fastify.ts
-│   └── cli.ts
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ headers/
+â”‚   â”‚   â”œâ”€â”€ csp.ts
+â”‚   â”‚   â”œâ”€â”€ hsts.ts
+â”‚   â”‚   â””â”€â”€ all.ts
+â”‚   â”œâ”€â”€ csrf/
+â”‚   â”‚   â””â”€â”€ double-submit.ts
+â”‚   â”œâ”€â”€ cors/
+â”‚   â”‚   â””â”€â”€ config.ts
+â”‚   â”œâ”€â”€ sanitize/
+â”‚   â”‚   â”œâ”€â”€ html.ts
+â”‚   â”‚   â””â”€â”€ sql.ts
+â”‚   â”œâ”€â”€ pii/
+â”‚   â”‚   â”œâ”€â”€ detect.ts
+â”‚   â”‚   â”œâ”€â”€ scrub.ts
+â”‚   â”‚   â””â”€â”€ hash.ts
+â”‚   â”œâ”€â”€ nonce/
+â”‚   â”‚   â””â”€â”€ generate.ts
+â”‚   â”œâ”€â”€ adapters/
+â”‚   â”‚   â”œâ”€â”€ nest.ts
+â”‚   â”‚   â”œâ”€â”€ express.ts
+â”‚   â”‚   â”œâ”€â”€ nextjs.ts
+â”‚   â”‚   â”œâ”€â”€ hono.ts
+â”‚   â”‚   â””â”€â”€ fastify.ts
+â”‚   â””â”€â”€ cli.ts
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — Headers middleware
-### v0.2 — CORS
-### v0.3 — CSRF
-### v0.4 — PII redaction
-### v0.5 — Input sanitization
-### v0.6 — Framework adapters
-### v1.0 — Stable API
+### v0.1 â€” Headers middleware
+### v0.2 â€” CORS
+### v0.3 â€” CSRF
+### v0.4 â€” PII redaction
+### v0.5 â€” Input sanitization
+### v0.6 â€” Framework adapters
+### v1.0 â€” Stable API
 
 ## Product potential
 
 **Internal:** Used by every backend.
-**Open source release:** Marginal — niches covered.
+**Open source release:** Marginal â€” niches covered.
 **Commercial:** None.
 
 ## Status
@@ -135,4 +134,4 @@ packages/secure/
 - **Current:** Empty placeholder.
 - **Owner:** Cody (solo dev).
 - **Priority tier:** Security.
-- **Estimated learning return:** High. CSP semantics, CSRF patterns, redaction strategies — production security baseline.
+- **Estimated learning return:** High. CSP semantics, CSRF patterns, redaction strategies â€” production security baseline.

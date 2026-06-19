@@ -1,4 +1,4 @@
-# @nekostack/mock
+﻿# @nekostack/mock
 
 > Service mocking: contract-test fixtures, record-and-replay, deterministic stubs. The "tests don't talk to the real internet" layer.
 
@@ -9,9 +9,8 @@
 | **Build tier** | Testing depth |
 | **Depends on** | `schema` (mock contract shapes), `test`, `fetch` (intercepts), `random` |
 | **Used by** | every package with external dependencies during tests; `billing` (Stripe mock), `email` (Resend mock), `webhooks` (provider mocks), `prompts` (LLM mocks) |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 4–8 weeks focused |
-| **Sellable?** | Low — msw / nock dominate |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 4â€“8 weeks focused |
 
 ## Why this exists
 
@@ -73,33 +72,33 @@ Tests that hit real external services are slow, flaky, and exhaust API quotas. M
 
 ```
 packages/mock/
-├── src/
-│   ├── http/
-│   │   └── via-msw.ts
-│   ├── providers/
-│   │   ├── stripe.ts
-│   │   ├── openai.ts
-│   │   ├── anthropic.ts
-│   │   └── resend.ts
-│   ├── record-replay/
-│   │   ├── record.ts
-│   │   └── replay.ts
-│   ├── contract-test/
-│   │   └── verify.ts
-│   └── llm/
-│       └── structured.ts
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ http/
+â”‚   â”‚   â””â”€â”€ via-msw.ts
+â”‚   â”œâ”€â”€ providers/
+â”‚   â”‚   â”œâ”€â”€ stripe.ts
+â”‚   â”‚   â”œâ”€â”€ openai.ts
+â”‚   â”‚   â”œâ”€â”€ anthropic.ts
+â”‚   â”‚   â””â”€â”€ resend.ts
+â”‚   â”œâ”€â”€ record-replay/
+â”‚   â”‚   â”œâ”€â”€ record.ts
+â”‚   â”‚   â””â”€â”€ replay.ts
+â”‚   â”œâ”€â”€ contract-test/
+â”‚   â”‚   â””â”€â”€ verify.ts
+â”‚   â””â”€â”€ llm/
+â”‚       â””â”€â”€ structured.ts
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — msw wrapper
-### v0.2 — Provider mocks (Stripe / OpenAI / Anthropic / Resend)
-### v0.3 — Record-and-replay
-### v0.4 — Contract tests
-### v0.5 — LLM mock
-### v1.0 — Stable API
+### v0.1 â€” msw wrapper
+### v0.2 â€” Provider mocks (Stripe / OpenAI / Anthropic / Resend)
+### v0.3 â€” Record-and-replay
+### v0.4 â€” Contract tests
+### v0.5 â€” LLM mock
+### v1.0 â€” Stable API
 
 ## Product potential
 

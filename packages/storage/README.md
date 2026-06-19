@@ -1,4 +1,4 @@
-# @nekostack/storage
+﻿# @nekostack/storage
 
 > File upload + object storage abstraction. S3-compatible, local fallback, signed URLs, content-addressable storage. The "where do uploads go?" layer.
 
@@ -9,9 +9,8 @@
 | **Build tier** | Data layer |
 | **Depends on** | `schema` (object metadata), `audit`, `secrets` (S3 credentials), `crypto` (at-rest encryption); external: AWS SDK / S3-compatible client |
 | **Used by** | `media` (image processing pipeline), `export` (archive output), `backup` (snapshot storage), any product handling user uploads (NekoVibe avatars / share cards, NekoBattler asset hosting, Leytide player content, Mara Kane narrative drafts) |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 6–10 weeks focused |
-| **Sellable?** | Modest — abstraction layers over S3 exist; library-level integration |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 6â€“10 weeks focused |
 
 ## Why this exists
 
@@ -44,7 +43,7 @@ Every product handling user uploads reinvents the same patterns:
 
 ## Boundary
 
-> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §24 for the full capability map.
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) Â§24 for the full capability map.
 
 ### Owns
 - Object storage adapter contract
@@ -85,7 +84,7 @@ Every product handling user uploads reinvents the same patterns:
 ## Design philosophy
 
 - **Local fallback in dev.** No requirement to spin up S3 just to develop.
-- **Same API across adapters.** S3 ↔ R2 ↔ local is a config change.
+- **Same API across adapters.** S3 â†” R2 â†” local is a config change.
 - **Signed URLs are default.** Direct browser uploads avoid server-side bandwidth.
 - **Content-addressable when sensible.** Deduplication + cache-busting for free.
 
@@ -93,46 +92,46 @@ Every product handling user uploads reinvents the same patterns:
 
 ```
 packages/storage/
-├── src/
-│   ├── interface/
-│   │   ├── adapter.ts
-│   │   └── object.ts
-│   ├── adapters/
-│   │   ├── s3.ts
-│   │   ├── r2.ts
-│   │   ├── b2.ts
-│   │   ├── minio.ts
-│   │   ├── local.ts
-│   │   └── memory.ts
-│   ├── signed/
-│   │   ├── upload.ts
-│   │   └── download.ts
-│   ├── content-addressed/
-│   │   └── hash-key.ts
-│   ├── encrypt/
-│   │   └── at-rest.ts
-│   ├── metadata/
-│   │   └── store.ts
-│   ├── cleanup/
-│   │   └── orphans.ts
-│   ├── multipart/
-│   │   └── upload.ts
-│   └── cli.ts
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ interface/
+â”‚   â”‚   â”œâ”€â”€ adapter.ts
+â”‚   â”‚   â””â”€â”€ object.ts
+â”‚   â”œâ”€â”€ adapters/
+â”‚   â”‚   â”œâ”€â”€ s3.ts
+â”‚   â”‚   â”œâ”€â”€ r2.ts
+â”‚   â”‚   â”œâ”€â”€ b2.ts
+â”‚   â”‚   â”œâ”€â”€ minio.ts
+â”‚   â”‚   â”œâ”€â”€ local.ts
+â”‚   â”‚   â””â”€â”€ memory.ts
+â”‚   â”œâ”€â”€ signed/
+â”‚   â”‚   â”œâ”€â”€ upload.ts
+â”‚   â”‚   â””â”€â”€ download.ts
+â”‚   â”œâ”€â”€ content-addressed/
+â”‚   â”‚   â””â”€â”€ hash-key.ts
+â”‚   â”œâ”€â”€ encrypt/
+â”‚   â”‚   â””â”€â”€ at-rest.ts
+â”‚   â”œâ”€â”€ metadata/
+â”‚   â”‚   â””â”€â”€ store.ts
+â”‚   â”œâ”€â”€ cleanup/
+â”‚   â”‚   â””â”€â”€ orphans.ts
+â”‚   â”œâ”€â”€ multipart/
+â”‚   â”‚   â””â”€â”€ upload.ts
+â”‚   â””â”€â”€ cli.ts
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — Adapter contract + local + memory
-### v0.2 — S3 adapter
-### v0.3 — Signed URLs
-### v0.4 — Content-addressable keys
-### v0.5 — R2 / B2 / MinIO adapters
-### v0.6 — At-rest encryption
-### v0.7 — Orphan cleanup
-### v0.8 — Multi-part upload
-### v1.0 — Stable API
+### v0.1 â€” Adapter contract + local + memory
+### v0.2 â€” S3 adapter
+### v0.3 â€” Signed URLs
+### v0.4 â€” Content-addressable keys
+### v0.5 â€” R2 / B2 / MinIO adapters
+### v0.6 â€” At-rest encryption
+### v0.7 â€” Orphan cleanup
+### v0.8 â€” Multi-part upload
+### v1.0 â€” Stable API
 
 ## Product potential
 

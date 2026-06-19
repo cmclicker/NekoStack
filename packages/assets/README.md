@@ -1,4 +1,4 @@
-# @nekostack/assets
+﻿# @nekostack/assets
 
 > Game asset pipeline: sprite atlases, audio sprite sheets, animation sequences, content validation, hot-reload in dev, hashed/optimized output in prod. Every NekoStack game project's asset story in one place.
 
@@ -6,12 +6,11 @@
 
 | | |
 |---|---|
-| **Build tier** | Project unblocker — NekoBattler's 565-champion roster and Leytide's world content cannot scale without it |
+| **Build tier** | Project unblocker â€” NekoBattler's 565-champion roster and Leytide's world content cannot scale without it |
 | **Depends on** | `schema` (manifest format), `codex` (entity reference validation), `cli`; external substrates: `sharp`, `ffmpeg`, atlas packers, Aseprite CLI |
 | **Used by** | NekoBattler, NekoGacha, Leytide, NekoVibe (game icons + share-card art), future game projects |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 12–20 weeks focused |
-| **Sellable?** | Plausible OSS — engine-agnostic asset pipelines are rare; commercial CDN-pipeline angle dominated by Cloudinary/Imgix so not a near-term focus |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 12â€“20 weeks focused |
 
 ## Why this exists
 
@@ -21,7 +20,7 @@ Games have content that isn't code: sprites, sound effects, music, animations, p
 - No atlasing, so GPU sprite-batching can't happen efficiently.
 - Audio that plays through `<audio>` elements with race conditions and no overlap handling.
 - Asset paths hardcoded in code, so renames break things silently.
-- No content validation — a JSON champion definition referencing a missing ability fails at runtime.
+- No content validation â€” a JSON champion definition referencing a missing ability fails at runtime.
 - No hot-reload, so iteration on art is "rebuild, refresh, lose state."
 
 NekoBattler has 565 champions in `BESPOKE_GAP_LIST.md`. Each one needs at minimum a sprite, plus ability icons, plus animations. That's thousands of assets. Without a pipeline, the dev loop becomes the limiting factor on creative iteration.
@@ -30,7 +29,7 @@ NekoBattler has 565 champions in `BESPOKE_GAP_LIST.md`. Each one needs at minimu
 
 Building this yourself rather than using Phaser's asset pipeline, PixiJS-Asset, or webpack-asset loaders is justified because:
 1. **Engine-independent.** Phaser's pipeline assumes Phaser. We work for plain canvas, PixiJS, Three.js, Cocos, or your own custom renderer.
-2. **Codex integration.** Asset references can be validated against `@nekostack/codex` entity definitions — a champion entity in Codex references an asset id; the pipeline validates that id resolves.
+2. **Codex integration.** Asset references can be validated against `@nekostack/codex` entity definitions â€” a champion entity in Codex references an asset id; the pipeline validates that id resolves.
 3. **Hot-reload across engines.** Generic build tools (Vite) hot-reload code; we hot-reload textures and audio across whatever rendering engine is in use.
 4. **Atlas packing as a first-class concern.** Not a webpack plugin afterthought.
 
@@ -41,7 +40,7 @@ Building this yourself rather than using Phaser's asset pipeline, PixiJS-Asset, 
 - Texture atlas packing (TexturePacker-style, multiple bin-packing algorithms).
 - Audio sprite generation (concatenated audio file + JSON timing map).
 - Sprite sequence handling (animation frame extraction, naming conventions).
-- Format conversion (PNG → AVIF/WebP, WAV → OGG/Opus).
+- Format conversion (PNG â†’ AVIF/WebP, WAV â†’ OGG/Opus).
 - Content validation against `@nekostack/codex` entity schemas.
 - Build-time output with content-hashing for cache-busting.
 - Dev-time hot-reload server.
@@ -56,14 +55,14 @@ Building this yourself rather than using Phaser's asset pipeline, PixiJS-Asset, 
 
 ## Boundary
 
-> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §43 for the full capability map.
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) Â§43 for the full capability map.
 
 ### Owns
 - Asset manifest format (declarative inputs + processing rules)
 - Sprite atlas packing (multiple bin-packing algorithms)
 - Audio sprite generation (concatenated file + JSON timing map)
 - Sprite sequence / animation frame extraction
-- Format conversion (PNG → AVIF/WebP, WAV → OGG/Opus)
+- Format conversion (PNG â†’ AVIF/WebP, WAV â†’ OGG/Opus)
 - Content validation against `codex` entity schemas
 - Build-time content hashing for cache-busting
 - Dev-time hot-reload server
@@ -74,8 +73,8 @@ Building this yourself rather than using Phaser's asset pipeline, PixiJS-Asset, 
 | Capability | Lives in |
 |---|---|
 | Authoring assets (Aseprite, Photoshop, Audacity) | external (we ingest, never create) |
-| Image processing primitives | external (`sharp` — we orchestrate) |
-| Audio transcoding primitives | external (`ffmpeg` — we orchestrate) |
+| Image processing primitives | external (`sharp` â€” we orchestrate) |
+| Audio transcoding primitives | external (`ffmpeg` â€” we orchestrate) |
 | Atlas packing algorithms themselves | external (TexturePacker or free alternatives) |
 | Image processing for non-game web (resize / responsive / WebP) | `media` (UI-facing media, distinct from game assets) |
 | 3D model pipelines (glTF, FBX) | out of scope (v1) |
@@ -102,16 +101,16 @@ The right framing: this is the **orchestration layer over established tools** (s
 ## How this fits the NekoStack
 
 **Depends on:**
-- `@nekostack/schema` — asset manifest schema, asset descriptor validation.
-- `@nekostack/codex` — entity references resolve against Codex.
-- `@nekostack/cli` — `neko assets` subcommands.
-- `sharp`, `ffmpeg`, atlas packers — external substrates.
+- `@nekostack/schema` â€” asset manifest schema, asset descriptor validation.
+- `@nekostack/codex` â€” entity references resolve against Codex.
+- `@nekostack/cli` â€” `neko assets` subcommands.
+- `sharp`, `ffmpeg`, atlas packers â€” external substrates.
 
 **Used by:**
-- **NekoBattler** — 565+ champion sprites + ability icons + animations.
-- **NekoGacha** — character art, banner art, UI flourishes.
-- **Leytide** — world tilesets, character sprites, environment textures, audio.
-- **NekoVibe** — game icons, UI sprites, share-card art.
+- **NekoBattler** â€” 565+ champion sprites + ability icons + animations.
+- **NekoGacha** â€” character art, banner art, UI flourishes.
+- **Leytide** â€” world tilesets, character sprites, environment textures, audio.
+- **NekoVibe** â€” game icons, UI sprites, share-card art.
 - Future game projects.
 
 ## Design philosophy
@@ -126,28 +125,28 @@ The right framing: this is the **orchestration layer over established tools** (s
 
 ```
 packages/assets/
-├── src/
-│   ├── manifest/
-│   │   ├── schema.ts         # asset manifest format
-│   │   └── parse.ts
-│   ├── pipeline/
-│   │   ├── sprite.ts         # PNG/WebP/AVIF processing
-│   │   ├── atlas.ts          # bin-packing
-│   │   ├── audio.ts          # audio sprite generation
-│   │   ├── sequence.ts       # animation frame extraction
-│   │   └── hash.ts           # content hashing
-│   ├── validation/
-│   │   ├── refs.ts           # validate against Codex
-│   │   └── content.ts        # validate JSON content files
-│   ├── dev-server/
-│   │   ├── hot-reload.ts     # ws-based asset reload
-│   │   └── watcher.ts        # file watcher
-│   ├── runtime/
-│   │   ├── loader.ts         # progressive load + retry
-│   │   └── manifest-client.ts
-│   └── cli.ts
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ manifest/
+â”‚   â”‚   â”œâ”€â”€ schema.ts         # asset manifest format
+â”‚   â”‚   â””â”€â”€ parse.ts
+â”‚   â”œâ”€â”€ pipeline/
+â”‚   â”‚   â”œâ”€â”€ sprite.ts         # PNG/WebP/AVIF processing
+â”‚   â”‚   â”œâ”€â”€ atlas.ts          # bin-packing
+â”‚   â”‚   â”œâ”€â”€ audio.ts          # audio sprite generation
+â”‚   â”‚   â”œâ”€â”€ sequence.ts       # animation frame extraction
+â”‚   â”‚   â””â”€â”€ hash.ts           # content hashing
+â”‚   â”œâ”€â”€ validation/
+â”‚   â”‚   â”œâ”€â”€ refs.ts           # validate against Codex
+â”‚   â”‚   â””â”€â”€ content.ts        # validate JSON content files
+â”‚   â”œâ”€â”€ dev-server/
+â”‚   â”‚   â”œâ”€â”€ hot-reload.ts     # ws-based asset reload
+â”‚   â”‚   â””â”€â”€ watcher.ts        # file watcher
+â”‚   â”œâ”€â”€ runtime/
+â”‚   â”‚   â”œâ”€â”€ loader.ts         # progressive load + retry
+â”‚   â”‚   â””â”€â”€ manifest-client.ts
+â”‚   â””â”€â”€ cli.ts
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 Manifest example:
@@ -182,44 +181,44 @@ Build:
 
 ```
 $ neko assets build
-✔ 565 sprites → 4 atlases (88% packing efficiency)
-✔ 1,124 audio clips → 6 sprites
-✔ 565 champion JSON files validated against Codex:Character
-✔ All assets hashed and output to dist/assets/
+âœ” 565 sprites â†’ 4 atlases (88% packing efficiency)
+âœ” 1,124 audio clips â†’ 6 sprites
+âœ” 565 champion JSON files validated against Codex:Character
+âœ” All assets hashed and output to dist/assets/
 ```
 
 ## Roadmap
 
-### v0.1 — Sprite pipeline
+### v0.1 â€” Sprite pipeline
 - Manifest format.
-- PNG → WebP/AVIF conversion.
+- PNG â†’ WebP/AVIF conversion.
 - Simple atlas packing.
 
-### v0.2 — Audio pipeline
-- WAV → OGG/Opus conversion.
+### v0.2 â€” Audio pipeline
+- WAV â†’ OGG/Opus conversion.
 - Audio sprite generation.
 
-### v0.3 — Aseprite integration
+### v0.3 â€” Aseprite integration
 - Aseprite CLI export wrapper.
 - Animation frame extraction.
 
-### v0.4 — Validation
+### v0.4 â€” Validation
 - Content JSON validation via `@nekostack/schema`.
 - Codex reference validation.
 
-### v0.5 — Hashing + production output
+### v0.5 â€” Hashing + production output
 - Content-hashed filenames.
 - Manifest JSON for runtime loading.
 
-### v0.6 — Dev server
+### v0.6 â€” Dev server
 - File watcher.
 - Hot-reload over WebSocket.
 
-### v0.7 — Runtime SDK
+### v0.7 â€” Runtime SDK
 - Loader with progressive load + retry.
 - Per-engine adapters (Canvas, PixiJS, Three.js).
 
-### v1.0 — Stable API
+### v1.0 â€” Stable API
 - Documentation site.
 - Performance benchmarks (build time at 1K / 10K assets).
 
@@ -227,9 +226,8 @@ $ neko assets build
 
 **Internal use:** Essential for every game project.
 
-**Open source release:** Plausible. Engine-agnostic asset pipelines are surprisingly rare — most are coupled to one engine. MIT release could attract indie game devs.
+**Open source release:** Plausible. Engine-agnostic asset pipelines are surprisingly rare â€” most are coupled to one engine. MIT release could attract indie game devs.
 
-**Commercial product:** Modest opportunity as a "hosted asset CDN + pipeline" but the market is dominated by Cloudinary, Imgix, and similar. Not a near-term focus.
 
 **Estimated effort to v1.0:** 12-20 weeks of focused work. Most steps wrap existing tools; the orchestration and the dev-server hot-reload are where time goes.
 
@@ -238,4 +236,4 @@ $ neko assets build
 - **Current:** Empty placeholder. Not started.
 - **Owner:** Cody (solo dev project).
 - **Priority tier:** Project unblocker. Critical for NekoBattler's 565-champion scope and Leytide's world content.
-- **Estimated learning return:** High. Build-pipeline architecture, image/audio processing, bin-packing algorithms, content-addressable storage — all transferable to web ops generally.
+- **Estimated learning return:** High. Build-pipeline architecture, image/audio processing, bin-packing algorithms, content-addressable storage â€” all transferable to web ops generally.

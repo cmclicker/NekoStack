@@ -1,4 +1,4 @@
-# @nekostack/sim
+﻿# @nekostack/sim
 
 > Simulation runner. Tick-based + event-based loops. State machines, deterministic seeding for replay, observability of long-running sims. The substrate beneath autobattler combat, business-ops simulations, balance-testing, AI training environments.
 
@@ -9,9 +9,8 @@
 | **Build tier** | Game systems |
 | **Depends on** | `schema` (sim state shape), `rules` (rule engine the sim drives), `random` (deterministic PRNG), `events` (state changes as events), `telemetry`, `replay` (record/playback), `time` |
 | **Used by** | NekoBattler (combat sim), NekoGacha (pull simulation), retail-ops simulator, business sandboxes, AI training environments, balance-testing for any game |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 10–16 weeks focused |
-| **Sellable?** | Plausible OSS — deterministic sim runners for JS are rare |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 10â€“16 weeks focused |
 
 ## Why this exists
 
@@ -38,12 +37,12 @@ Hand-rolling per project means re-implementing tick scheduling, state-machine dr
 ### Out of scope
 - Rule engine itself (`rules`).
 - Game AI (`ai`).
-- Game-specific systems (combat, economy, progression — those compose us).
+- Game-specific systems (combat, economy, progression â€” those compose us).
 - Real-time multiplayer netcode (`realtime`).
 
 ## Boundary
 
-> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §43 for the full capability map.
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) Â§43 for the full capability map.
 
 ### Owns
 - Tick + event sim loops
@@ -72,7 +71,7 @@ Hand-rolling per project means re-implementing tick scheduling, state-machine dr
 
 ## Design philosophy
 
-- **Determinism is non-negotiable.** Same seed + same inputs → same output, always.
+- **Determinism is non-negotiable.** Same seed + same inputs â†’ same output, always.
 - **Tick-based and event-based both supported.** Game combat is often hybrid.
 - **Batch runs for balance.** "Run 10,000 sims with these parameters" is first-class.
 - **Speed control.** Sims run at real-time during play, full-speed for headless balance testing.
@@ -81,41 +80,41 @@ Hand-rolling per project means re-implementing tick scheduling, state-machine dr
 
 ```
 packages/sim/
-├── src/
-│   ├── loop/
-│   │   ├── tick.ts
-│   │   ├── event.ts
-│   │   └── hybrid.ts
-│   ├── state-machine/
-│   │   └── drive.ts          # via rules
-│   ├── determinism/
-│   │   └── seed.ts           # via random
-│   ├── speed/
-│   │   └── control.ts
-│   ├── batch/
-│   │   └── parallel.ts
-│   ├── observe/
-│   │   ├── tick-event.ts     # to telemetry
-│   │   └── record.ts         # to replay
-│   └── cli.ts
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ loop/
+â”‚   â”‚   â”œâ”€â”€ tick.ts
+â”‚   â”‚   â”œâ”€â”€ event.ts
+â”‚   â”‚   â””â”€â”€ hybrid.ts
+â”‚   â”œâ”€â”€ state-machine/
+â”‚   â”‚   â””â”€â”€ drive.ts          # via rules
+â”‚   â”œâ”€â”€ determinism/
+â”‚   â”‚   â””â”€â”€ seed.ts           # via random
+â”‚   â”œâ”€â”€ speed/
+â”‚   â”‚   â””â”€â”€ control.ts
+â”‚   â”œâ”€â”€ batch/
+â”‚   â”‚   â””â”€â”€ parallel.ts
+â”‚   â”œâ”€â”€ observe/
+â”‚   â”‚   â”œâ”€â”€ tick-event.ts     # to telemetry
+â”‚   â”‚   â””â”€â”€ record.ts         # to replay
+â”‚   â””â”€â”€ cli.ts
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — Tick loop + determinism
-### v0.2 — Event loop
-### v0.3 — Speed control
-### v0.4 — Batch runner
-### v0.5 — Rule engine integration
-### v0.6 — Replay recording
-### v1.0 — Stable API
+### v0.1 â€” Tick loop + determinism
+### v0.2 â€” Event loop
+### v0.3 â€” Speed control
+### v0.4 â€” Batch runner
+### v0.5 â€” Rule engine integration
+### v0.6 â€” Replay recording
+### v1.0 â€” Stable API
 
 ## Product potential
 
 **Internal:** Critical for NekoBattler, NekoGacha, retail-ops, balance-testing.
-**Open source release:** Plausible — gap in JS ecosystem.
+**Open source release:** Plausible â€” gap in JS ecosystem.
 **Commercial:** Marginal.
 
 ## Status

@@ -1,4 +1,4 @@
-# @nekostack/audio
+﻿# @nekostack/audio
 
 > Audio engine: sprite sheets, music management, ducking, accessibility (dialogue boost / mono / subtitles), per-channel routing. The "make this game sound good" layer.
 
@@ -9,9 +9,8 @@
 | **Build tier** | Game systems |
 | **Depends on** | `schema`, `assets` (audio sprites), `a11y` (accessibility settings) |
 | **Used by** | every game with audio: NekoBattler, NekoGacha, Leytide |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 8–12 weeks focused |
-| **Sellable?** | Modest — Howler.js exists, but accessibility-first audio is rare |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 8â€“12 weeks focused |
 
 ## Why this exists
 
@@ -38,7 +37,7 @@ Web Audio API is powerful but fiddly. Every game project ends up with race condi
 
 ## Boundary
 
-> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §43 (audio row).
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) Â§43 (audio row).
 
 ### Owns
 - Audio sprite playback
@@ -82,45 +81,45 @@ Web Audio API is powerful but fiddly. Every game project ends up with race condi
 
 ```
 packages/audio/
-├── src/
-│   ├── sprite/
-│   │   └── playback.ts
-│   ├── music/
-│   │   ├── crossfade.ts
-│   │   └── layered.ts
-│   ├── sfx/
-│   │   └── one-shot.ts
-│   ├── duck/
-│   │   └── auto.ts
-│   ├── channel/
-│   │   └── route.ts
-│   ├── a11y/
-│   │   ├── boost.ts
-│   │   ├── mono.ts
-│   │   └── reduce-freq.ts
-│   ├── subtitle/
-│   │   └── feed.ts
-│   └── spatial/
-│       └── pan.ts
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ sprite/
+â”‚   â”‚   â””â”€â”€ playback.ts
+â”‚   â”œâ”€â”€ music/
+â”‚   â”‚   â”œâ”€â”€ crossfade.ts
+â”‚   â”‚   â””â”€â”€ layered.ts
+â”‚   â”œâ”€â”€ sfx/
+â”‚   â”‚   â””â”€â”€ one-shot.ts
+â”‚   â”œâ”€â”€ duck/
+â”‚   â”‚   â””â”€â”€ auto.ts
+â”‚   â”œâ”€â”€ channel/
+â”‚   â”‚   â””â”€â”€ route.ts
+â”‚   â”œâ”€â”€ a11y/
+â”‚   â”‚   â”œâ”€â”€ boost.ts
+â”‚   â”‚   â”œâ”€â”€ mono.ts
+â”‚   â”‚   â””â”€â”€ reduce-freq.ts
+â”‚   â”œâ”€â”€ subtitle/
+â”‚   â”‚   â””â”€â”€ feed.ts
+â”‚   â””â”€â”€ spatial/
+â”‚       â””â”€â”€ pan.ts
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — Sprite playback + SFX
-### v0.2 — Music with cross-fade
-### v0.3 — Per-channel routing
-### v0.4 — Ducking
-### v0.5 — Accessibility (dialogue boost, mono)
-### v0.6 — Layered music
-### v0.7 — Spatial audio
-### v1.0 — Stable API
+### v0.1 â€” Sprite playback + SFX
+### v0.2 â€” Music with cross-fade
+### v0.3 â€” Per-channel routing
+### v0.4 â€” Ducking
+### v0.5 â€” Accessibility (dialogue boost, mono)
+### v0.6 â€” Layered music
+### v0.7 â€” Spatial audio
+### v1.0 â€” Stable API
 
 ## Product potential
 
 **Internal:** Used by all games.
-**Open source release:** Plausible — accessibility-first audio is rare.
+**Open source release:** Plausible â€” accessibility-first audio is rare.
 **Commercial:** None.
 
 ## Status

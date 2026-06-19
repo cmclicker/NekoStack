@@ -1,4 +1,4 @@
-# @nekostack/templates
+﻿# @nekostack/templates
 
 > `npx create-neko` project starters. Scaffolds new projects using the NekoStack ecosystem with sensible defaults.
 
@@ -9,9 +9,8 @@
 | **Build tier** | Documentation / scaffolding |
 | **Depends on** | `cli`, `schema`, `env`, `config` |
 | **Used by** | new project creation; `neko init` invokes us |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 6–10 weeks focused |
-| **Sellable?** | Modest — create-next-app etc. dominate |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 6â€“10 weeks focused |
 
 ## Why this exists
 
@@ -73,36 +72,36 @@ Note: this package is most useful **after** other packages reach maturity. Build
 
 ```
 packages/templates/
-├── src/
-│   ├── dsl/
-│   │   └── template.ts
-│   ├── create/
-│   │   └── command.ts
-│   ├── prompts/
-│   │   └── interactive.ts
-│   ├── hooks/
-│   │   ├── install-deps.ts
-│   │   └── init-git.ts
-│   └── built-in/
-│       ├── saas/
-│       ├── game/
-│       ├── narrative/
-│       ├── agent/
-│       └── utility-kit/
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ dsl/
+â”‚   â”‚   â””â”€â”€ template.ts
+â”‚   â”œâ”€â”€ create/
+â”‚   â”‚   â””â”€â”€ command.ts
+â”‚   â”œâ”€â”€ prompts/
+â”‚   â”‚   â””â”€â”€ interactive.ts
+â”‚   â”œâ”€â”€ hooks/
+â”‚   â”‚   â”œâ”€â”€ install-deps.ts
+â”‚   â”‚   â””â”€â”€ init-git.ts
+â”‚   â””â”€â”€ built-in/
+â”‚       â”œâ”€â”€ saas/
+â”‚       â”œâ”€â”€ game/
+â”‚       â”œâ”€â”€ narrative/
+â”‚       â”œâ”€â”€ agent/
+â”‚       â””â”€â”€ utility-kit/
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — Template DSL + create-neko command
-### v0.2 — SaaS template
-### v0.3 — Game template
-### v0.4 — Narrative template
-### v0.5 — Agent template
-### v0.6 — Utility-kit template
-### v0.7 — Customization
-### v1.0 — Stable templates
+### v0.1 â€” Template DSL + create-neko command
+### v0.2 â€” SaaS template
+### v0.3 â€” Game template
+### v0.4 â€” Narrative template
+### v0.5 â€” Agent template
+### v0.6 â€” Utility-kit template
+### v0.7 â€” Customization
+### v1.0 â€” Stable templates
 
 ## Product potential
 
@@ -114,5 +113,5 @@ packages/templates/
 
 - **Current:** Empty placeholder.
 - **Owner:** Cody (solo dev).
-- **Priority tier:** Documentation / scaffolding — **build late**, after underlying packages are stable.
+- **Priority tier:** Documentation / scaffolding â€” **build late**, after underlying packages are stable.
 - **Estimated learning return:** Moderate. Project template architecture, interactive CLIs.

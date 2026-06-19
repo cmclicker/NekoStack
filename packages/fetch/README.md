@@ -1,4 +1,4 @@
-# @nekostack/fetch
+﻿# @nekostack/fetch
 
 > Typed HTTP client with retry / backoff / circuit-breaker / request coalescing / idempotency. The outbound counterpart to `api` (which is inbound).
 
@@ -6,12 +6,11 @@
 
 | | |
 |---|---|
-| **Build tier** | Data layer — networking |
+| **Build tier** | Data layer â€” networking |
 | **Depends on** | `schema` (response validation), `telemetry` (request metrics), `errors` (typed network errors), `trace` (propagation) |
 | **Used by** | `webhooks` (outbound dispatch), `billing` (Stripe API calls), `email` (Resend API), `notify` (push provider), any product calling external HTTP services |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 4–8 weeks focused |
-| **Sellable?** | Low — axios / ky / undici dominate; library-level addition niche |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 4â€“8 weeks focused |
 
 ## Why this exists
 
@@ -47,7 +46,7 @@ Every product reimplements a subset of these. `fetch` solves them once.
 
 ## Boundary
 
-> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §32 for the full capability map.
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) Â§32 for the full capability map.
 
 ### Owns
 - Typed HTTP client wrapper
@@ -95,42 +94,42 @@ Every product reimplements a subset of these. `fetch` solves them once.
 
 ```
 packages/fetch/
-├── src/
-│   ├── client/
-│   │   ├── fetch.ts
-│   │   └── typed.ts
-│   ├── retry/
-│   │   ├── policy.ts
-│   │   └── backoff.ts
-│   ├── circuit/
-│   │   └── breaker.ts
-│   ├── coalesce/
-│   │   └── dedupe.ts
-│   ├── idempotency/
-│   │   └── key.ts
-│   ├── trace/
-│   │   └── propagate.ts
-│   ├── telemetry/
-│   │   └── emit.ts
-│   ├── interceptors/
-│   │   ├── request.ts
-│   │   └── response.ts
-│   └── timeout/
-│       └── enforce.ts
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ client/
+â”‚   â”‚   â”œâ”€â”€ fetch.ts
+â”‚   â”‚   â””â”€â”€ typed.ts
+â”‚   â”œâ”€â”€ retry/
+â”‚   â”‚   â”œâ”€â”€ policy.ts
+â”‚   â”‚   â””â”€â”€ backoff.ts
+â”‚   â”œâ”€â”€ circuit/
+â”‚   â”‚   â””â”€â”€ breaker.ts
+â”‚   â”œâ”€â”€ coalesce/
+â”‚   â”‚   â””â”€â”€ dedupe.ts
+â”‚   â”œâ”€â”€ idempotency/
+â”‚   â”‚   â””â”€â”€ key.ts
+â”‚   â”œâ”€â”€ trace/
+â”‚   â”‚   â””â”€â”€ propagate.ts
+â”‚   â”œâ”€â”€ telemetry/
+â”‚   â”‚   â””â”€â”€ emit.ts
+â”‚   â”œâ”€â”€ interceptors/
+â”‚   â”‚   â”œâ”€â”€ request.ts
+â”‚   â”‚   â””â”€â”€ response.ts
+â”‚   â””â”€â”€ timeout/
+â”‚       â””â”€â”€ enforce.ts
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — Typed fetch + schema validation
-### v0.2 — Retry + backoff
-### v0.3 — Circuit breaker
-### v0.4 — Request coalescing
-### v0.5 — Idempotency keys
-### v0.6 — Trace propagation
-### v0.7 — Telemetry
-### v1.0 — Stable API
+### v0.1 â€” Typed fetch + schema validation
+### v0.2 â€” Retry + backoff
+### v0.3 â€” Circuit breaker
+### v0.4 â€” Request coalescing
+### v0.5 â€” Idempotency keys
+### v0.6 â€” Trace propagation
+### v0.7 â€” Telemetry
+### v1.0 â€” Stable API
 
 ## Product potential
 
@@ -143,4 +142,4 @@ packages/fetch/
 - **Current:** Empty placeholder.
 - **Owner:** Cody (solo dev).
 - **Priority tier:** Data layer.
-- **Estimated learning return:** High. Retry strategies, circuit breakers, request coalescing — production resilience patterns.
+- **Estimated learning return:** High. Retry strategies, circuit breakers, request coalescing â€” production resilience patterns.

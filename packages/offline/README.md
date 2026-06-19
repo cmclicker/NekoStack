@@ -1,4 +1,4 @@
-# @nekostack/offline
+﻿# @nekostack/offline
 
 > Offline-first state + sync + conflict resolution. The "this app works without internet, syncs when back online" layer.
 
@@ -7,11 +7,10 @@
 | | |
 |---|---|
 | **Build tier** | Cross-platform |
-| **Depends on** | `schema`, `storage`, `events` (offline mutations → events), `realtime` (sync transport when online), `audit` |
+| **Depends on** | `schema`, `storage`, `events` (offline mutations â†’ events), `realtime` (sync transport when online), `audit` |
 | **Used by** | NekoLife (already file-based; could grow offline-first), Leytide (offline crafting / inventory), NekoVibe (offline puzzle play with sync on reconnect), any mobile-shaped product |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 10–16 weeks focused |
-| **Sellable?** | Plausible — local-first / CRDT space is hot |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 10â€“16 weeks focused |
 
 ## Why this exists
 
@@ -83,47 +82,47 @@ Network connectivity is unreliable. Apps that demand it feel broken on subway / 
 
 ```
 packages/offline/
-├── src/
-│   ├── store/
-│   │   ├── indexed-db.ts
-│   │   └── sqlite.ts
-│   ├── queue/
-│   │   ├── mutation.ts
-│   │   └── replay.ts
-│   ├── sync/
-│   │   ├── engine.ts
-│   │   └── reconnect.ts
-│   ├── conflict/
-│   │   ├── lww.ts              # last-write-wins
-│   │   ├── merge.ts
-│   │   └── manual.ts
-│   ├── version-vector/
-│   │   └── vector.ts
-│   └── audit/
-│       └── sync-events.ts
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ store/
+â”‚   â”‚   â”œâ”€â”€ indexed-db.ts
+â”‚   â”‚   â””â”€â”€ sqlite.ts
+â”‚   â”œâ”€â”€ queue/
+â”‚   â”‚   â”œâ”€â”€ mutation.ts
+â”‚   â”‚   â””â”€â”€ replay.ts
+â”‚   â”œâ”€â”€ sync/
+â”‚   â”‚   â”œâ”€â”€ engine.ts
+â”‚   â”‚   â””â”€â”€ reconnect.ts
+â”‚   â”œâ”€â”€ conflict/
+â”‚   â”‚   â”œâ”€â”€ lww.ts              # last-write-wins
+â”‚   â”‚   â”œâ”€â”€ merge.ts
+â”‚   â”‚   â””â”€â”€ manual.ts
+â”‚   â”œâ”€â”€ version-vector/
+â”‚   â”‚   â””â”€â”€ vector.ts
+â”‚   â””â”€â”€ audit/
+â”‚       â””â”€â”€ sync-events.ts
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — Local state + IndexedDB
-### v0.2 — Mutation queue
-### v0.3 — Sync engine
-### v0.4 — Conflict resolution policies
-### v0.5 — Version vectors
-### v0.6 — Sync audit + replay
-### v1.0 — Stable API
+### v0.1 â€” Local state + IndexedDB
+### v0.2 â€” Mutation queue
+### v0.3 â€” Sync engine
+### v0.4 â€” Conflict resolution policies
+### v0.5 â€” Version vectors
+### v0.6 â€” Sync audit + replay
+### v1.0 â€” Stable API
 
 ## Product potential
 
 **Internal:** Mobile-shaped products + NekoLife.
-**Open source release:** Plausible — local-first space is hot.
-**Commercial:** Real — Replicache commercializes.
+**Open source release:** Plausible â€” local-first space is hot.
+**Commercial:** Real â€” Replicache commercializes.
 
 ## Status
 
 - **Current:** Empty placeholder.
 - **Owner:** Cody (solo dev).
 - **Priority tier:** Cross-platform.
-- **Estimated learning return:** Very high. Local-first design, sync engines, conflict resolution, version vectors — emerging field.
+- **Estimated learning return:** Very high. Local-first design, sync engines, conflict resolution, version vectors â€” emerging field.

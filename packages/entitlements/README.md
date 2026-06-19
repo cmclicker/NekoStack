@@ -1,4 +1,4 @@
-# @nekostack/entitlements
+﻿# @nekostack/entitlements
 
 > Plans, feature gates, usage metering, soft and hard limits, upgrade prompts. The "what is this user / tenant allowed to do under their current plan" layer.
 
@@ -6,20 +6,19 @@
 
 | | |
 |---|---|
-| **Build tier** | SaaS layer — critical for every monetized product |
+| **Build tier** | SaaS layer â€” critical for every monetized product |
 | **Depends on** | `schema` (plan/feature definitions), `auth` (decisions feed AccessDecision), `telemetry` (usage events), `audit` (denial records), `tenant` (per-tenant plan binding) |
 | **Used by** | `billing` (drives entitlement state on plan change); NekoVibe (Plus tier), NekoSystems (per-tenant plan + feature gating), future retail-ops / EdTech / business SaaS |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 8–12 weeks focused |
-| **Sellable?** | **Strong commercial potential** — Stigg / LaunchDarkly Subscriptions territory; schema-typed audit-integrated entitlements with hosted tier is a real play |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 8â€“12 weeks focused |
 
 ## Why this exists
 
 Authorization (`@nekostack/auth`) answers: "given this user's roles and permissions, is this action allowed?" Entitlements answers a different question: "given this tenant's current plan and usage, is this action allowed?" The two are related but distinct:
 
-- `user.canEditChampions` — authorization. Role-based.
-- `tenant.canCreateAnotherAgent` — entitlement. Plan + usage based.
-- `user.canExportData` — authorization (do they have export permission?) **and** entitlement (does their plan include export?).
+- `user.canEditChampions` â€” authorization. Role-based.
+- `tenant.canCreateAnotherAgent` â€” entitlement. Plan + usage based.
+- `user.canExportData` â€” authorization (do they have export permission?) **and** entitlement (does their plan include export?).
 
 Without an explicit entitlements layer, this logic ends up sprinkled across the codebase:
 
@@ -59,7 +58,7 @@ Building this yourself rather than adopting Stigg, LaunchDarkly Subscriptions, o
 
 ## Boundary
 
-> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §11 for the full capability map.
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) Â§11 for the full capability map.
 
 ### Owns
 - `definePlan()` declarative plan schema
@@ -99,20 +98,20 @@ The right framing: **the logic spine of plan-based feature gating, with billing 
 ## How this fits the NekoStack
 
 **Depends on:**
-- `@nekostack/schema` — plan and feature definitions.
-- `@nekostack/auth` — entitlement decisions become part of AccessDecision.
-- `@nekostack/telemetry` — emits usage events.
-- `@nekostack/audit` — denials emit audit records.
+- `@nekostack/schema` â€” plan and feature definitions.
+- `@nekostack/auth` â€” entitlement decisions become part of AccessDecision.
+- `@nekostack/telemetry` â€” emits usage events.
+- `@nekostack/audit` â€” denials emit audit records.
 
 **Used by:**
-- `@nekostack/billing` — plan changes drive entitlement state.
+- `@nekostack/billing` â€” plan changes drive entitlement state.
 - Every SaaS-shaped product: NekoVibe (Plus tier), NekoSystems (per-tenant plan + feature gating), retail-ops, EdTech, future products.
-- `@nekostack/api` — entitlement decoration on endpoints.
+- `@nekostack/api` â€” entitlement decoration on endpoints.
 
 ## Design philosophy
 
 - **Plans are typed.** A plan is a schema instance, not a free-form JSON blob.
-- **Features are strings — but typed strings.** The set of feature names is a registered catalog. No typos.
+- **Features are strings â€” but typed strings.** The set of feature names is a registered catalog. No typos.
 - **Decisions are structured.** `{ allowed: false, reason: 'PLAN_LIMIT_EXCEEDED', limit: 3, current: 3, upgradeAvailable: 'pro' }`.
 - **Soft vs hard limits.** Soft limits warn but allow; hard limits block. Both are first-class.
 - **Grandfathering is explicit.** Legacy plans with custom terms are first-class, not "oh god, hardcoded if-statement."
@@ -122,30 +121,30 @@ The right framing: **the logic spine of plan-based feature gating, with billing 
 
 ```
 packages/entitlements/
-├── src/
-│   ├── plans/
-│   │   ├── define.ts         # definePlan({ features, limits })
-│   │   ├── catalog.ts        # registered plan catalog
-│   │   └── migration.ts      # plan-change handling
-│   ├── features/
-│   │   ├── catalog.ts        # registered feature names
-│   │   └── decorator.ts      # type-safe feature usage
-│   ├── meters/
-│   │   ├── counter.ts        # per-tenant per-feature counters
-│   │   ├── period.ts         # daily / monthly / lifetime windows
-│   │   └── reset.ts          # period rollover
-│   ├── decisions/
-│   │   ├── check.ts          # entitlements.check()
-│   │   └── reason.ts         # structured reason codes
-│   ├── middleware/
-│   │   └── require.ts        # requireEntitlement guard
-│   ├── upgrade/
-│   │   └── prompt.ts         # which plan unlocks this, diff vs current
-│   └── adapters/             # for plan-state persistence
-│       ├── postgres.ts
-│       └── memory.ts
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ plans/
+â”‚   â”‚   â”œâ”€â”€ define.ts         # definePlan({ features, limits })
+â”‚   â”‚   â”œâ”€â”€ catalog.ts        # registered plan catalog
+â”‚   â”‚   â””â”€â”€ migration.ts      # plan-change handling
+â”‚   â”œâ”€â”€ features/
+â”‚   â”‚   â”œâ”€â”€ catalog.ts        # registered feature names
+â”‚   â”‚   â””â”€â”€ decorator.ts      # type-safe feature usage
+â”‚   â”œâ”€â”€ meters/
+â”‚   â”‚   â”œâ”€â”€ counter.ts        # per-tenant per-feature counters
+â”‚   â”‚   â”œâ”€â”€ period.ts         # daily / monthly / lifetime windows
+â”‚   â”‚   â””â”€â”€ reset.ts          # period rollover
+â”‚   â”œâ”€â”€ decisions/
+â”‚   â”‚   â”œâ”€â”€ check.ts          # entitlements.check()
+â”‚   â”‚   â””â”€â”€ reason.ts         # structured reason codes
+â”‚   â”œâ”€â”€ middleware/
+â”‚   â”‚   â””â”€â”€ require.ts        # requireEntitlement guard
+â”‚   â”œâ”€â”€ upgrade/
+â”‚   â”‚   â””â”€â”€ prompt.ts         # which plan unlocks this, diff vs current
+â”‚   â””â”€â”€ adapters/             # for plan-state persistence
+â”‚       â”œâ”€â”€ postgres.ts
+â”‚       â””â”€â”€ memory.ts
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 Defining and checking:
@@ -180,32 +179,32 @@ if (!decision.allowed) throw new ForbiddenException(decision);
 
 ## Roadmap
 
-### v0.1 — Plan + feature catalog
+### v0.1 â€” Plan + feature catalog
 - `definePlan`, `registerFeature`.
 - In-memory backend.
 
-### v0.2 — Decision API
+### v0.2 â€” Decision API
 - `check()` with structured reasons.
 - Middleware for Nest / Express / Next.js.
 
-### v0.3 — Usage metering
+### v0.3 â€” Usage metering
 - Counters with period windows.
 - Period rollover.
 
-### v0.4 — Postgres adapter
+### v0.4 â€” Postgres adapter
 - Persistent plan-state and counter storage.
 
-### v0.5 — Plan migrations
+### v0.5 â€” Plan migrations
 - Atomic plan changes with current-usage carryover.
 
-### v0.6 — Grandfathering + custom plans
+### v0.6 â€” Grandfathering + custom plans
 - Per-tenant plan overrides.
 - Custom-plan definitions.
 
-### v0.7 — Upgrade-prompt metadata
+### v0.7 â€” Upgrade-prompt metadata
 - "Which plan unlocks this" and "what's the diff vs current."
 
-### v1.0 — Stable API
+### v1.0 â€” Stable API
 - Documentation site.
 - Stripe integration recipes (via `@nekostack/billing`).
 
@@ -215,7 +214,6 @@ if (!decision.allowed) throw new ForbiddenException(decision);
 
 **Open source release:** Strong. The space has paid tools (Stigg) and partial open-source (OpenMeter, Lago) but no clean, schema-typed, TS-native option. MIT release likely to attract real users.
 
-**Commercial product:** **Real opportunity.** Stigg has raised significant funding. A schema-typed, audit-integrated, open-source-core entitlements platform with a hosted tier is a viable commercial play.
 
 **Estimated effort to v1.0:** 8-12 weeks of focused work. Plan/feature/decision logic is small; metering, period handling, and grandfathering are where time goes.
 
@@ -224,4 +222,4 @@ if (!decision.allowed) throw new ForbiddenException(decision);
 - **Current:** Empty placeholder. Not started.
 - **Owner:** Cody (solo dev project).
 - **Priority tier:** SaaS layer. Build after `@nekostack/auth` since entitlement decisions feed into AccessDecision.
-- **Estimated learning return:** High. Pricing model design, metering architectures, plan migration patterns — increasingly important commercial skills.
+- **Estimated learning return:** High. Pricing model design, metering architectures, plan migration patterns â€” increasingly important commercial skills.

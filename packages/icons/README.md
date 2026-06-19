@@ -1,4 +1,4 @@
-# @nekostack/icons
+﻿# @nekostack/icons
 
 > SVG sprite system + typed icon names + theming. The "import an icon, get a typed component" layer.
 
@@ -9,19 +9,18 @@
 | **Build tier** | Frontend depth |
 | **Depends on** | `schema`, `theme` (color theming), `ui` |
 | **Used by** | every UI consumer; `ui` components ship with icons |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 3–5 weeks focused |
-| **Sellable?** | Low — Lucide / Heroicons dominate |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 3â€“5 weeks focused |
 
 ## Why this exists
 
-Icons are typically: import each SVG individually (bundle bloat), or use a giant component library (more bundle bloat). `icons` is the SVG sprite system — one HTTP request for the sprite, typed component references.
+Icons are typically: import each SVG individually (bundle bloat), or use a giant component library (more bundle bloat). `icons` is the SVG sprite system â€” one HTTP request for the sprite, typed component references.
 
 ## Scope
 
 ### In scope
 - SVG sprite generation (build-time).
-- Typed icon names (`<Icon name="check" />` — TS error if name doesn't exist).
+- Typed icon names (`<Icon name="check" />` â€” TS error if name doesn't exist).
 - Per-icon size + color via `theme`.
 - Icon set adapters (Lucide, Heroicons, custom).
 - Tree-shakable (only ship icons you use).
@@ -70,29 +69,29 @@ Icons are typically: import each SVG individually (bundle bloat), or use a giant
 
 ```
 packages/icons/
-├── src/
-│   ├── sprite/
-│   │   └── generate.ts         # build-time
-│   ├── component/
-│   │   └── Icon.tsx
-│   ├── adapters/
-│   │   ├── lucide.ts
-│   │   └── heroicons.ts
-│   ├── tree-shake/
-│   │   └── used.ts
-│   └── cli.ts                  # `neko icons build`
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ sprite/
+â”‚   â”‚   â””â”€â”€ generate.ts         # build-time
+â”‚   â”œâ”€â”€ component/
+â”‚   â”‚   â””â”€â”€ Icon.tsx
+â”‚   â”œâ”€â”€ adapters/
+â”‚   â”‚   â”œâ”€â”€ lucide.ts
+â”‚   â”‚   â””â”€â”€ heroicons.ts
+â”‚   â”œâ”€â”€ tree-shake/
+â”‚   â”‚   â””â”€â”€ used.ts
+â”‚   â””â”€â”€ cli.ts                  # `neko icons build`
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — Sprite generation
-### v0.2 — Typed Icon component
-### v0.3 — Theme integration
-### v0.4 — Lucide adapter
-### v0.5 — Tree-shaking
-### v1.0 — Stable API
+### v0.1 â€” Sprite generation
+### v0.2 â€” Typed Icon component
+### v0.3 â€” Theme integration
+### v0.4 â€” Lucide adapter
+### v0.5 â€” Tree-shaking
+### v1.0 â€” Stable API
 
 ## Product potential
 

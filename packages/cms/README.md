@@ -1,4 +1,4 @@
-# @nekostack/cms
+﻿# @nekostack/cms
 
 > Headless content management: draft / review / publish lifecycle, content versioning, scheduling, localized variants. The "edit content separately from code" layer.
 
@@ -9,9 +9,8 @@
 | **Build tier** | Content / narrative |
 | **Depends on** | `schema` (content types), `editor` (rich text), `md`, `audit`, `storage`, `time` (scheduling), `locale` |
 | **Used by** | Mara Kane (narrative content), `wiki` (page content), game patch notes, blog / news surfaces, marketing pages |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 12–18 weeks focused |
-| **Sellable?** | Modest — Sanity / Strapi / Payload dominate; integration angle |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 12â€“18 weeks focused |
 
 ## Why this exists
 
@@ -88,37 +87,37 @@ Content that changes independently of code (blog posts, narrative chapters, lore
 
 ```
 packages/cms/
-├── src/
-│   ├── types/
-│   │   └── define.ts          # content type DSL
-│   ├── lifecycle/
-│   │   ├── draft.ts
-│   │   ├── review.ts
-│   │   └── publish.ts
-│   ├── versioning/
-│   │   └── history.ts
-│   ├── schedule/
-│   │   └── publish-at.ts      # via time
-│   ├── locale/
-│   │   └── variant.ts          # via locale
-│   ├── references/
-│   │   └── cross-link.ts
-│   ├── webhooks/
-│   │   └── on-publish.ts
-│   └── cli.ts
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ types/
+â”‚   â”‚   â””â”€â”€ define.ts          # content type DSL
+â”‚   â”œâ”€â”€ lifecycle/
+â”‚   â”‚   â”œâ”€â”€ draft.ts
+â”‚   â”‚   â”œâ”€â”€ review.ts
+â”‚   â”‚   â””â”€â”€ publish.ts
+â”‚   â”œâ”€â”€ versioning/
+â”‚   â”‚   â””â”€â”€ history.ts
+â”‚   â”œâ”€â”€ schedule/
+â”‚   â”‚   â””â”€â”€ publish-at.ts      # via time
+â”‚   â”œâ”€â”€ locale/
+â”‚   â”‚   â””â”€â”€ variant.ts          # via locale
+â”‚   â”œâ”€â”€ references/
+â”‚   â”‚   â””â”€â”€ cross-link.ts
+â”‚   â”œâ”€â”€ webhooks/
+â”‚   â”‚   â””â”€â”€ on-publish.ts
+â”‚   â””â”€â”€ cli.ts
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — Content types + draft/publish lifecycle
-### v0.2 — Versioning
-### v0.3 — Scheduled publishing
-### v0.4 — Localized variants
-### v0.5 — Cross-references
-### v0.6 — Publish webhooks
-### v1.0 — Stable API
+### v0.1 â€” Content types + draft/publish lifecycle
+### v0.2 â€” Versioning
+### v0.3 â€” Scheduled publishing
+### v0.4 â€” Localized variants
+### v0.5 â€” Cross-references
+### v0.6 â€” Publish webhooks
+### v1.0 â€” Stable API
 
 ## Product potential
 

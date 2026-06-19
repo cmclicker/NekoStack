@@ -1,6 +1,6 @@
-# @nekostack/sandbox
+﻿# @nekostack/sandbox
 
-> Sandboxed command / script execution for agent tool calls. Permission allowlists, dry-run mode, output capture. The "the LLM wants to do X — let me execute it safely" layer.
+> Sandboxed command / script execution for agent tool calls. Permission allowlists, dry-run mode, output capture. The "the LLM wants to do X â€” let me execute it safely" layer.
 
 ## Quick reference
 
@@ -9,9 +9,8 @@
 | **Build tier** | LLM-workflow safety |
 | **Depends on** | `schema`, `tools` (we execute tool calls), `permissions` (tool authorization), `governance` (forbidden actions), `audit`, `changeset` (dry-run integration) |
 | **Used by** | `tools` (every tool execution), NekoSystems (LLM tool execution for tenant-facing features), Claude Code-style assistant tooling |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 8–14 weeks focused |
-| **Sellable?** | Strong — agent-safety tooling is hot |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 8â€“14 weeks focused |
 
 ## Why this exists
 
@@ -40,11 +39,11 @@ When an LLM agent wants to "run npm install" or "delete this file," the conseque
 - Tool registry (`tools`).
 - Permission catalog (`permissions`).
 - Changeset apply mechanics (`changeset`).
-- Container orchestration (Docker — we may use, not orchestrate).
+- Container orchestration (Docker â€” we may use, not orchestrate).
 
 ## Boundary
 
-> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §42 for the full capability map.
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) Â§42 for the full capability map.
 
 ### Owns
 - Command execution sandbox
@@ -92,47 +91,47 @@ When an LLM agent wants to "run npm install" or "delete this file," the conseque
 
 ```
 packages/sandbox/
-├── src/
-│   ├── execute/
-│   │   ├── spawn.ts
-│   │   └── capture.ts
-│   ├── allowlist/
-│   │   ├── command.ts
-│   │   ├── path.ts
-│   │   └── host.ts
-│   ├── dry-run/
-│   │   └── via-changeset.ts
-│   ├── limits/
-│   │   ├── timeout.ts
-│   │   ├── memory.ts
-│   │   └── cpu.ts
-│   ├── isolation/
-│   │   ├── filesystem.ts
-│   │   └── network.ts
-│   └── cli.ts
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ execute/
+â”‚   â”‚   â”œâ”€â”€ spawn.ts
+â”‚   â”‚   â””â”€â”€ capture.ts
+â”‚   â”œâ”€â”€ allowlist/
+â”‚   â”‚   â”œâ”€â”€ command.ts
+â”‚   â”‚   â”œâ”€â”€ path.ts
+â”‚   â”‚   â””â”€â”€ host.ts
+â”‚   â”œâ”€â”€ dry-run/
+â”‚   â”‚   â””â”€â”€ via-changeset.ts
+â”‚   â”œâ”€â”€ limits/
+â”‚   â”‚   â”œâ”€â”€ timeout.ts
+â”‚   â”‚   â”œâ”€â”€ memory.ts
+â”‚   â”‚   â””â”€â”€ cpu.ts
+â”‚   â”œâ”€â”€ isolation/
+â”‚   â”‚   â”œâ”€â”€ filesystem.ts
+â”‚   â”‚   â””â”€â”€ network.ts
+â”‚   â””â”€â”€ cli.ts
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — Command spawn + output capture
-### v0.2 — Allowlist enforcement
-### v0.3 — Dry-run mode
-### v0.4 — Resource limits
-### v0.5 — Filesystem isolation
-### v0.6 — Network isolation
-### v1.0 — Stable API
+### v0.1 â€” Command spawn + output capture
+### v0.2 â€” Allowlist enforcement
+### v0.3 â€” Dry-run mode
+### v0.4 â€” Resource limits
+### v0.5 â€” Filesystem isolation
+### v0.6 â€” Network isolation
+### v1.0 â€” Stable API
 
 ## Product potential
 
 **Internal:** Critical for safe agent tool use.
-**Open source release:** Strong — agent-safety is a real concern.
-**Commercial:** Real — agent sandboxing is increasingly important.
+**Open source release:** Strong â€” agent-safety is a real concern.
+**Commercial:** Real â€” agent sandboxing is increasingly important.
 
 ## Status
 
 - **Current:** Empty placeholder.
 - **Owner:** Cody (solo dev).
 - **Priority tier:** LLM-workflow safety.
-- **Estimated learning return:** Very high. Process isolation, allowlist enforcement, resource limits — security engineering for agent systems.
+- **Estimated learning return:** Very high. Process isolation, allowlist enforcement, resource limits â€” security engineering for agent systems.

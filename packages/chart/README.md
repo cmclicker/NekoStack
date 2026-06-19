@@ -1,4 +1,4 @@
-# @nekostack/chart
+﻿# @nekostack/chart
 
 > Charting + data visualization primitives. SVG-based, theme-aware, accessibility-aware. The "make this dashboard not ugly" layer.
 
@@ -9,9 +9,8 @@
 | **Build tier** | Frontend depth |
 | **Depends on** | `schema`, `ui`, `theme`, `motion`, `a11y` |
 | **Used by** | `admin` (dashboards), `metrics` UI surfaces, `path` (cross-project status), Business-OS reporting, NekoVibe stats |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 10–16 weeks focused |
-| **Sellable?** | Modest — Recharts / Visx / Tremor dominate |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 10â€“16 weeks focused |
 
 ## Why this exists
 
@@ -82,46 +81,46 @@ Every dashboard needs charts. Most chart libraries are either powerful-but-heavy
 
 ```
 packages/chart/
-├── src/
-│   ├── types/
-│   │   ├── line.tsx
-│   │   ├── bar.tsx
-│   │   ├── area.tsx
-│   │   ├── pie.tsx
-│   │   ├── scatter.tsx
-│   │   └── sparkline.tsx
-│   ├── axes/
-│   │   ├── scale.ts
-│   │   └── grid.tsx
-│   ├── tooltip/
-│   │   └── render.tsx
-│   ├── legend/
-│   │   └── render.tsx
-│   ├── interactive/
-│   │   ├── hover.ts
-│   │   ├── click.ts
-│   │   └── zoom.ts
-│   ├── theme/
-│   │   └── consume.ts
-│   ├── a11y/
-│   │   ├── kbd-nav.ts
-│   │   └── summary.ts
-│   └── responsive/
-│       └── resize.ts
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ types/
+â”‚   â”‚   â”œâ”€â”€ line.tsx
+â”‚   â”‚   â”œâ”€â”€ bar.tsx
+â”‚   â”‚   â”œâ”€â”€ area.tsx
+â”‚   â”‚   â”œâ”€â”€ pie.tsx
+â”‚   â”‚   â”œâ”€â”€ scatter.tsx
+â”‚   â”‚   â””â”€â”€ sparkline.tsx
+â”‚   â”œâ”€â”€ axes/
+â”‚   â”‚   â”œâ”€â”€ scale.ts
+â”‚   â”‚   â””â”€â”€ grid.tsx
+â”‚   â”œâ”€â”€ tooltip/
+â”‚   â”‚   â””â”€â”€ render.tsx
+â”‚   â”œâ”€â”€ legend/
+â”‚   â”‚   â””â”€â”€ render.tsx
+â”‚   â”œâ”€â”€ interactive/
+â”‚   â”‚   â”œâ”€â”€ hover.ts
+â”‚   â”‚   â”œâ”€â”€ click.ts
+â”‚   â”‚   â””â”€â”€ zoom.ts
+â”‚   â”œâ”€â”€ theme/
+â”‚   â”‚   â””â”€â”€ consume.ts
+â”‚   â”œâ”€â”€ a11y/
+â”‚   â”‚   â”œâ”€â”€ kbd-nav.ts
+â”‚   â”‚   â””â”€â”€ summary.ts
+â”‚   â””â”€â”€ responsive/
+â”‚       â””â”€â”€ resize.ts
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — Line + bar
-### v0.2 — Axes / scales / grids
-### v0.3 — Tooltips + legends
-### v0.4 — Area / pie / scatter / sparkline
-### v0.5 — Interactivity
-### v0.6 — Accessibility
-### v0.7 — Animation integration
-### v1.0 — Stable API
+### v0.1 â€” Line + bar
+### v0.2 â€” Axes / scales / grids
+### v0.3 â€” Tooltips + legends
+### v0.4 â€” Area / pie / scatter / sparkline
+### v0.5 â€” Interactivity
+### v0.6 â€” Accessibility
+### v0.7 â€” Animation integration
+### v1.0 â€” Stable API
 
 ## Product potential
 

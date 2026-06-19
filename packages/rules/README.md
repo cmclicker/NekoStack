@@ -1,17 +1,16 @@
-# @nekostack/rules
+﻿# @nekostack/rules
 
-> A deterministic rule engine with explicit trigger ordering, conflict resolution, and replay. Game combat, business rules, and content validation share the same shape — this is the spine.
+> A deterministic rule engine with explicit trigger ordering, conflict resolution, and replay. Game combat, business rules, and content validation share the same shape â€” this is the spine.
 
 ## Quick reference
 
 | | |
 |---|---|
-| **Build tier** | Force multiplier — critical for NekoBattler combat and any card/board game |
+| **Build tier** | Force multiplier â€” critical for NekoBattler combat and any card/board game |
 | **Depends on** | `schema` (rule validation), `telemetry` (rule-fire events optional), `random` (deterministic RNG for stochastic conditions) |
 | **Used by** | NekoBattler combat, NekoGacha banner rules + pity, future card autobattler mode, NekoSystems policy gates, NekoVibe puzzle-validation, business workflows |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 8–12 weeks focused |
-| **Sellable?** | Strong: deterministic-replayable rule engines in JS are surprisingly absent; OSS + hosted authoring-tool angle both viable |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 8â€“12 weeks focused |
 
 ## Why this exists
 
@@ -43,7 +42,7 @@ By unit 100, this code is unmaintainable, untestable, and bugs are constantly di
 Building this yourself rather than using `nools`, `json-rules-engine`, or a forward-chaining library is justified because:
 1. **Determinism is the whole game.** Most general rule engines are non-deterministic for performance. We *need* determinism for replay, anti-cheat, balance simulation.
 2. **Game-shaped triggers.** Most rule engines optimize for "evaluate a set of conditions once." We need "events fire continuously, triggers chain, the queue must resolve in a defined order." Different shape.
-3. **Learning the algorithm.** RETE, forward chaining, conflict resolution strategies — real CS that pays off in every system you build afterward.
+3. **Learning the algorithm.** RETE, forward chaining, conflict resolution strategies â€” real CS that pays off in every system you build afterward.
 
 ## Scope
 
@@ -65,13 +64,13 @@ Building this yourself rather than using `nools`, `json-rules-engine`, or a forw
 
 ## Boundary
 
-> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §43 for the full capability map.
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) Â§43 for the full capability map.
 
 ### Owns
 - Rule definition DSL (when / then / priority / timing-band / metadata)
 - Rule storage and indexing for fast lookup
 - Event-driven evaluation (`engine.fire(event)`)
-- Trigger ordering (priority → timing-band → source → stable tiebreaker)
+- Trigger ordering (priority â†’ timing-band â†’ source â†’ stable tiebreaker)
 - Resolution queue (effects emit further events, queue resolves in order)
 - Replay-from-seed determinism
 - Trace output (every fire recorded)
@@ -87,7 +86,7 @@ Building this yourself rather than using `nools`, `json-rules-engine`, or a forw
 | LLM-driven decision rules | `prompts` + `tools` (LLM) or `ai` (game AI) |
 | Authorization rules | `permissions` + `auth` |
 | Form validation rules | `form` (uses `schema`) |
-| Specific game semantics (combat / cards / abilities) | consuming games (NekoBattler etc. — they use us as substrate) |
+| Specific game semantics (combat / cards / abilities) | consuming games (NekoBattler etc. â€” they use us as substrate) |
 | Distributed rule evaluation across machines | out of scope |
 | Graphical rule editor UI | future companion (not core) |
 
@@ -98,25 +97,25 @@ Building this yourself rather than using `nools`, `json-rules-engine`, or a forw
 | **nools** | Node.js RETE implementation. | Stale (low recent activity), no TS-first API. |
 | **json-rules-engine** | Mature JS rule engine, JSON-defined rules. | Event-shape is wrong for games. No trigger ordering primitives. No replay. |
 | **GoRules / Drools** | Enterprise rule engines. | Java/Go-centric. JVM overhead. Optimized for business rules, not game triggers. |
-| **xstate** | State machine library. | Different abstraction — state machines model state transitions, not rule chains. We use xstate for some things; not the same. |
+| **xstate** | State machine library. | Different abstraction â€” state machines model state transitions, not rule chains. We use xstate for some things; not the same. |
 | **rete-next** | Modern RETE in TS. | Promising but young. Doesn't solve our game-trigger shape directly. |
 | **Lua scripting** (common in games) | Embed scripts, flexible. | No determinism guarantees, no trace, hard to test. |
 
-The right framing: this is **game-engine combat trigger ordering, generalized.** Magic: The Gathering's Comprehensive Rules and Hearthstone's trigger resolution are the closest formal analogues — and they're notoriously hard precisely because the underlying problem is hard.
+The right framing: this is **game-engine combat trigger ordering, generalized.** Magic: The Gathering's Comprehensive Rules and Hearthstone's trigger resolution are the closest formal analogues â€” and they're notoriously hard precisely because the underlying problem is hard.
 
 ## How this fits the NekoStack
 
 **Depends on:**
-- `@nekostack/schema` — rules are schema-validated.
-- `@nekostack/telemetry` — fires can emit telemetry events.
+- `@nekostack/schema` â€” rules are schema-validated.
+- `@nekostack/telemetry` â€” fires can emit telemetry events.
 
 **Used by:**
-- **NekoBattler** — combat trigger resolution, ability stacking, trait interactions.
-- **NekoGacha** — banner rules, pity calculations, drop rate modifiers.
+- **NekoBattler** â€” combat trigger resolution, ability stacking, trait interactions.
+- **NekoGacha** â€” banner rules, pity calculations, drop rate modifiers.
 - A future card autobattler / Hearthstone-Battlegrounds-style mode.
-- **NekoSystems** — business contract evaluation, workflow policy gates.
-- **NekoVibe** — puzzle validation rules (cross-puzzle cross-reference).
-- Form validation cascades, business workflow gates, content moderation — anything where "if X then Y unless Z" composes.
+- **NekoSystems** â€” business contract evaluation, workflow policy gates.
+- **NekoVibe** â€” puzzle validation rules (cross-puzzle cross-reference).
+- Form validation cascades, business workflow gates, content moderation â€” anything where "if X then Y unless Z" composes.
 
 ## Design philosophy
 
@@ -130,26 +129,26 @@ The right framing: this is **game-engine combat trigger ordering, generalized.**
 
 ```
 packages/rules/
-├── src/
-│   ├── core/
-│   │   ├── rule.ts           # Rule<TEvent, TState>
-│   │   ├── engine.ts         # Engine<TEvent, TState>
-│   │   ├── event.ts          # Event types
-│   │   └── trace.ts          # Trace + TraceEntry
-│   ├── matching/
-│   │   ├── predicate.ts      # composable predicates
-│   │   └── index.ts          # rule indexing for fast lookup
-│   ├── resolution/
-│   │   ├── queue.ts          # priority queue with stable tiebreaker
-│   │   ├── order.ts          # priority / timing-band / source ordering
-│   │   └── conflict.ts       # resolution policies
-│   ├── effects/
-│   │   ├── apply.ts          # state delta application
-│   │   └── chain.ts          # effects emit further events
-│   ├── replay.ts             # replay from seed + events
-│   └── debug.ts              # trace inspection helpers
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ core/
+â”‚   â”‚   â”œâ”€â”€ rule.ts           # Rule<TEvent, TState>
+â”‚   â”‚   â”œâ”€â”€ engine.ts         # Engine<TEvent, TState>
+â”‚   â”‚   â”œâ”€â”€ event.ts          # Event types
+â”‚   â”‚   â””â”€â”€ trace.ts          # Trace + TraceEntry
+â”‚   â”œâ”€â”€ matching/
+â”‚   â”‚   â”œâ”€â”€ predicate.ts      # composable predicates
+â”‚   â”‚   â””â”€â”€ index.ts          # rule indexing for fast lookup
+â”‚   â”œâ”€â”€ resolution/
+â”‚   â”‚   â”œâ”€â”€ queue.ts          # priority queue with stable tiebreaker
+â”‚   â”‚   â”œâ”€â”€ order.ts          # priority / timing-band / source ordering
+â”‚   â”‚   â””â”€â”€ conflict.ts       # resolution policies
+â”‚   â”œâ”€â”€ effects/
+â”‚   â”‚   â”œâ”€â”€ apply.ts          # state delta application
+â”‚   â”‚   â””â”€â”€ chain.ts          # effects emit further events
+â”‚   â”œâ”€â”€ replay.ts             # replay from seed + events
+â”‚   â””â”€â”€ debug.ts              # trace inspection helpers
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 Defining a rule:
@@ -184,30 +183,30 @@ console.log(result.finalState); // deterministic end state
 
 ## Roadmap
 
-### v0.1 — Core
+### v0.1 â€” Core
 - Rule definition + engine + trivial in-order evaluation.
 - Trace output.
 
-### v0.2 — Priority + timing bands
+### v0.2 â€” Priority + timing bands
 - Priority-ordered queue.
 - Configurable timing bands (pre/main/post).
 
-### v0.3 — Effect chaining
+### v0.3 â€” Effect chaining
 - Effects can emit new events that re-enter the queue.
 - Recursion guard.
 
-### v0.4 — Replay
+### v0.4 â€” Replay
 - Deterministic replay from seed + events.
 - Reproduction-test harness.
 
-### v0.5 — Conflict policies
+### v0.5 â€” Conflict policies
 - Multiple resolution strategies (priority-only, priority-then-source, owner-first, etc.).
 
-### v0.6 — Composable predicates
+### v0.6 â€” Composable predicates
 - Predicate library for common conditions.
 - Predicate composition (and/or/not).
 
-### v1.0 — Stable API
+### v1.0 â€” Stable API
 - Documentation site with game-trigger examples and business-rule examples.
 - Benchmark suite (rules-per-second, trace size, memory).
 
@@ -217,7 +216,6 @@ console.log(result.finalState); // deterministic end state
 
 **Open source release:** Strong candidate. Deterministic-replayable rule engines for games are surprisingly absent in JS. MIT or Apache release could attract indie game devs and serious tabletop-game-rules implementations.
 
-**Commercial product:** Plausible as **"hosted rule authoring + simulation"** — a SaaS where designers author rules in a UI, simulate balance, and ship rule packs to consuming games. Niche but real.
 
 **Estimated effort to v1.0:** 8-12 weeks of focused work. Core is small; correctness of trigger ordering and conflict resolution under all edge cases is the hard part.
 
@@ -226,4 +224,4 @@ console.log(result.finalState); // deterministic end state
 - **Current:** Empty placeholder. Not started.
 - **Owner:** Cody (solo dev project).
 - **Priority tier:** Force multiplier. Critical for NekoBattler and any future card/board game; valuable for SaaS business-logic too.
-- **Estimated learning return:** Very high. RETE algorithm, forward chaining, conflict resolution, deterministic replay — foundational CS that pays off forever.
+- **Estimated learning return:** Very high. RETE algorithm, forward chaining, conflict resolution, deterministic replay â€” foundational CS that pays off forever.

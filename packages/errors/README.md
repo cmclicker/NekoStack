@@ -1,4 +1,4 @@
-# @nekostack/errors
+﻿# @nekostack/errors
 
 > Typed error classes + codes, error grouping, alerting, retryability classification. Sentry-alike functionality as a typed library. The "what broke and what does it mean?" layer.
 
@@ -9,13 +9,12 @@
 | **Build tier** | Observability |
 | **Depends on** | `schema` (error shape), `log` (error logs flow here), `trace` (correlated traces), `tenant` |
 | **Used by** | every backend; `api` (error response shaping), `jobs` (handler failures), every package throwing typed errors |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 6–10 weeks focused |
-| **Sellable?** | Modest — Sentry dominates but TS-native library angle exists |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 6â€“10 weeks focused |
 
 ## Why this exists
 
-Errors are typically `new Error('something failed')` — string-based, untyped, ungrouped. Production needs:
+Errors are typically `new Error('something failed')` â€” string-based, untyped, ungrouped. Production needs:
 - **Typed errors** with codes (so client code can branch).
 - **Error grouping** (1000 instances of the same error = 1 group).
 - **User-safe vs internal messages** (the user sees "Please try again"; logs see the stack).
@@ -43,7 +42,7 @@ Errors are typically `new Error('something failed')` — string-based, untyped, 
 
 ## Boundary
 
-> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §19 for the full capability map.
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) Â§19 for the full capability map.
 
 ### Owns
 - Typed error classes / codes
@@ -89,45 +88,45 @@ Errors are typically `new Error('something failed')` — string-based, untyped, 
 
 ```
 packages/errors/
-├── src/
-│   ├── classes/
-│   │   ├── base.ts           # NekoStackError
-│   │   ├── code.ts           # error codes registry
-│   │   └── subclasses/
-│   ├── grouping/
-│   │   └── fingerprint.ts
-│   ├── alert/
-│   │   ├── sentry.ts
-│   │   ├── slack.ts
-│   │   └── pagerduty.ts
-│   ├── retryable/
-│   │   └── classify.ts
-│   ├── messages/
-│   │   ├── user.ts
-│   │   └── internal.ts
-│   ├── stack/
-│   │   └── sanitize.ts
-│   └── bridge/
-│       └── from-log.ts
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ classes/
+â”‚   â”‚   â”œâ”€â”€ base.ts           # NekoStackError
+â”‚   â”‚   â”œâ”€â”€ code.ts           # error codes registry
+â”‚   â”‚   â””â”€â”€ subclasses/
+â”‚   â”œâ”€â”€ grouping/
+â”‚   â”‚   â””â”€â”€ fingerprint.ts
+â”‚   â”œâ”€â”€ alert/
+â”‚   â”‚   â”œâ”€â”€ sentry.ts
+â”‚   â”‚   â”œâ”€â”€ slack.ts
+â”‚   â”‚   â””â”€â”€ pagerduty.ts
+â”‚   â”œâ”€â”€ retryable/
+â”‚   â”‚   â””â”€â”€ classify.ts
+â”‚   â”œâ”€â”€ messages/
+â”‚   â”‚   â”œâ”€â”€ user.ts
+â”‚   â”‚   â””â”€â”€ internal.ts
+â”‚   â”œâ”€â”€ stack/
+â”‚   â”‚   â””â”€â”€ sanitize.ts
+â”‚   â””â”€â”€ bridge/
+â”‚       â””â”€â”€ from-log.ts
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — Base typed errors + codes
-### v0.2 — Grouping / fingerprinting
-### v0.3 — User-safe message rendering
-### v0.4 — Retryability classification
-### v0.5 — Alerting adapters
-### v0.6 — Stack sanitization
-### v0.7 — Log bridge
-### v1.0 — Stable API
+### v0.1 â€” Base typed errors + codes
+### v0.2 â€” Grouping / fingerprinting
+### v0.3 â€” User-safe message rendering
+### v0.4 â€” Retryability classification
+### v0.5 â€” Alerting adapters
+### v0.6 â€” Stack sanitization
+### v0.7 â€” Log bridge
+### v1.0 â€” Stable API
 
 ## Product potential
 
 **Internal:** Universal.
-**Open source release:** Plausible — TS-native error-tracking library is undersupplied.
+**Open source release:** Plausible â€” TS-native error-tracking library is undersupplied.
 **Commercial:** Sentry / Highlight dominate; tough commercial play.
 
 ## Status
@@ -135,4 +134,4 @@ packages/errors/
 - **Current:** Empty placeholder.
 - **Owner:** Cody (solo dev).
 - **Priority tier:** Observability.
-- **Estimated learning return:** High. Typed error design, fingerprinting, retryability classification — universally applicable.
+- **Estimated learning return:** High. Typed error design, fingerprinting, retryability classification â€” universally applicable.

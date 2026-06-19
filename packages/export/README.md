@@ -1,4 +1,4 @@
-# @nekostack/export
+﻿# @nekostack/export
 
 > Versioned data export, GDPR DSAR (data subject access request) scaffold. The "give me my data" layer every product needs eventually and never thinks about until they're asked for it. Distinct from `backup` (operational disaster-recovery) and `saves` (per-game).
 
@@ -6,12 +6,11 @@
 
 | | |
 |---|---|
-| **Build tier** | SaaS layer — build before any product reaches production-with-paying-customers |
+| **Build tier** | SaaS layer â€” build before any product reaches production-with-paying-customers |
 | **Depends on** | `schema` (exporter schemas), `codex` (Codex entities have natural exporter shape), `audit` (every export audited), `auth` (permission-gated), `cli` (export subcommands), `compliance` (retention + redaction policies) |
 | **Used by** | NekoVibe (account export), NekoSystems (tenant / workflow data export), retail-ops, EdTech, Mara Kane (narrative bible snapshots), any product handling user data |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 8–12 weeks focused |
-| **Sellable?** | Strong OSS (niche is empty); plausible commercial as part of hosted compliance + export product (OneTrust competitor at SMB price) |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 8â€“12 weeks focused |
 
 ## Why this exists
 
@@ -27,7 +26,7 @@ If you haven't planned for it, you scramble to write a one-off script that appro
 
 `@nekostack/export` is the proper way to handle this from day one. You declare exporters per data domain. Each exporter knows the entity shape, the privacy posture (what's user data vs system data), the format options (JSON, CSV, Parquet, NDJSON), and the version. The framework handles streaming, chunking, file generation, and packaging.
 
-The same machinery handles the *reverse* — versioned imports with validation and migration. A user export from v1 of your schema can be imported into v2 with declared migration steps.
+The same machinery handles the *reverse* â€” versioned imports with validation and migration. A user export from v1 of your schema can be imported into v2 with declared migration steps.
 
 Building this yourself rather than using something like Airbyte / Singer is justified because:
 1. **Those are ETL tools.** Your problem isn't moving data between systems; it's giving a user their data.
@@ -57,7 +56,7 @@ Building this yourself rather than using something like Airbyte / Singer is just
 
 ## Boundary
 
-> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §27 for the full capability map.
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) Â§27 for the full capability map.
 
 ### Owns
 - Per-domain exporter definitions
@@ -86,7 +85,7 @@ Building this yourself rather than using something like Airbyte / Singer is just
 
 | Tool | What they do well | Where they fall short for us |
 |---|---|---|
-| **Airbyte / Fivetran / Stitch** | ETL pipelines. | Wrong shape — these move data between systems on schedule, not "user requests their data." |
+| **Airbyte / Fivetran / Stitch** | ETL pipelines. | Wrong shape â€” these move data between systems on schedule, not "user requests their data." |
 | **Singer.io** | Open-source ETL spec. | Same shape issue. |
 | **Hasura / PostgREST** | Read APIs over Postgres. | Real-time read, not bulk export with versioning. |
 | **GDPR-specific tools** (OneTrust, DataGrail) | Compliance-side workflow + audit. | Enterprise pricing, focused on legal workflow, not the technical export. |
@@ -98,11 +97,11 @@ The right framing: **a versioned export framework** specifically for "export the
 ## How this fits the NekoStack
 
 **Depends on:**
-- `@nekostack/schema` — exporter schemas, version declarations.
-- `@nekostack/codex` — Codex entities have natural exporter shape.
-- `@nekostack/audit` — every export emits an audit record.
-- `@nekostack/auth` — exports require explicit permission.
-- `@nekostack/cli` — `neko export` subcommands.
+- `@nekostack/schema` â€” exporter schemas, version declarations.
+- `@nekostack/codex` â€” Codex entities have natural exporter shape.
+- `@nekostack/audit` â€” every export emits an audit record.
+- `@nekostack/auth` â€” exports require explicit permission.
+- `@nekostack/cli` â€” `neko export` subcommands.
 
 **Used by:**
 - Any product that operates on user data: NekoVibe (account export), NekoSystems (tenant / workflow data export), retail-ops (operational data export), EdTech (progress export), Mara Kane (narrative bible snapshots).
@@ -120,34 +119,34 @@ The right framing: **a versioned export framework** specifically for "export the
 
 ```
 packages/export/
-├── src/
-│   ├── exporter/
-│   │   ├── define.ts         # defineExporter()
-│   │   ├── query.ts          # data source query
-│   │   └── transform.ts      # row-level transformation
-│   ├── format/
-│   │   ├── json.ts
-│   │   ├── ndjson.ts
-│   │   ├── csv.ts
-│   │   └── parquet.ts
-│   ├── streaming/
-│   │   ├── chunk.ts
-│   │   └── pipeline.ts
-│   ├── archive/
-│   │   ├── zip.ts
-│   │   ├── tar.ts
-│   │   └── manifest.ts
-│   ├── dsar/
-│   │   └── all-data.ts       # "everything about this user" orchestrator
-│   ├── import/
-│   │   ├── reader.ts
-│   │   ├── validator.ts
-│   │   └── migrate.ts
-│   ├── versioning/
-│   │   └── migration.ts
-│   └── cli.ts
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ exporter/
+â”‚   â”‚   â”œâ”€â”€ define.ts         # defineExporter()
+â”‚   â”‚   â”œâ”€â”€ query.ts          # data source query
+â”‚   â”‚   â””â”€â”€ transform.ts      # row-level transformation
+â”‚   â”œâ”€â”€ format/
+â”‚   â”‚   â”œâ”€â”€ json.ts
+â”‚   â”‚   â”œâ”€â”€ ndjson.ts
+â”‚   â”‚   â”œâ”€â”€ csv.ts
+â”‚   â”‚   â””â”€â”€ parquet.ts
+â”‚   â”œâ”€â”€ streaming/
+â”‚   â”‚   â”œâ”€â”€ chunk.ts
+â”‚   â”‚   â””â”€â”€ pipeline.ts
+â”‚   â”œâ”€â”€ archive/
+â”‚   â”‚   â”œâ”€â”€ zip.ts
+â”‚   â”‚   â”œâ”€â”€ tar.ts
+â”‚   â”‚   â””â”€â”€ manifest.ts
+â”‚   â”œâ”€â”€ dsar/
+â”‚   â”‚   â””â”€â”€ all-data.ts       # "everything about this user" orchestrator
+â”‚   â”œâ”€â”€ import/
+â”‚   â”‚   â”œâ”€â”€ reader.ts
+â”‚   â”‚   â”œâ”€â”€ validator.ts
+â”‚   â”‚   â””â”€â”€ migrate.ts
+â”‚   â”œâ”€â”€ versioning/
+â”‚   â”‚   â””â”€â”€ migration.ts
+â”‚   â””â”€â”€ cli.ts
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 Defining an exporter:
@@ -172,36 +171,36 @@ const archive = await exports.allForUser(userId, {
 
 ## Roadmap
 
-### v0.1 — Exporter definition + JSON
+### v0.1 â€” Exporter definition + JSON
 - `defineExporter`, simple JSON output.
 - In-memory packaging.
 
-### v0.2 — Streaming
+### v0.2 â€” Streaming
 - Streaming pipeline (no full-buffer).
 - NDJSON, CSV outputs.
 
-### v0.3 — Archive packaging
+### v0.3 â€” Archive packaging
 - ZIP and tar with manifest.
 - Schema version metadata.
 
-### v0.4 — DSAR orchestration
+### v0.4 â€” DSAR orchestration
 - Multi-exporter assembly.
 - User-scoped + tenant-scoped helpers.
 
-### v0.5 — Parquet output
+### v0.5 â€” Parquet output
 - Streaming Parquet generation.
 
-### v0.6 — Import side
+### v0.6 â€” Import side
 - Archive reader.
 - Schema-validated row-level import.
 
-### v0.7 — Migrations
+### v0.7 â€” Migrations
 - `from_vN_to_vN+1` declaration + execution.
 
-### v0.8 — Audit + auth integration
+### v0.8 â€” Audit + auth integration
 - Every export emits audit; permissions enforced.
 
-### v1.0 — Stable API
+### v1.0 â€” Stable API
 - Documentation site with GDPR recipes.
 
 ## Product potential
@@ -210,7 +209,6 @@ const archive = await exports.allForUser(userId, {
 
 **Open source release:** Strong. The "user data export framework for TS apps" niche is genuinely empty. Most products write one-off scripts. MIT release could attract real users, especially with GDPR pressure.
 
-**Commercial product:** Plausible as a **"hosted compliance + export"** product (OneTrust competitor at SMB price). Real opportunity given regulatory pressure.
 
 **Estimated effort to v1.0:** 8-12 weeks of focused work. Streaming pipelines and Parquet output consume the most time.
 
@@ -219,4 +217,4 @@ const archive = await exports.allForUser(userId, {
 - **Current:** Empty placeholder. Not started.
 - **Owner:** Cody (solo dev project).
 - **Priority tier:** SaaS layer. Build before any product reaches production-with-paying-customers status; afterward, regulators don't wait.
-- **Estimated learning return:** High. Schema evolution, streaming pipelines, format conversion, compliance-shaped design — all valuable.
+- **Estimated learning return:** High. Schema evolution, streaming pipelines, format conversion, compliance-shaped design â€” all valuable.

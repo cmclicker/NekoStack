@@ -1,4 +1,4 @@
-# @nekostack/a11y
+﻿# @nekostack/a11y
 
 > Accessibility utilities: focus management, keyboard navigation, ARIA helpers, contrast checking, reduced-motion respect, screen-reader patterns. The "make this actually usable for everyone" layer.
 
@@ -6,12 +6,11 @@
 
 | | |
 |---|---|
-| **Build tier** | Frontend depth — cross-cutting |
+| **Build tier** | Frontend depth â€” cross-cutting |
 | **Depends on** | `schema`, `theme` (high-contrast variant) |
 | **Used by** | `ui`, `form`, `table`, `chart`, `editor`, `motion`, `input`, every UI surface |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 6–10 weeks focused |
-| **Sellable?** | Modest — React Aria dominates but utility-shaped niche exists |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 6â€“10 weeks focused |
 
 ## Why this exists
 
@@ -87,56 +86,56 @@ Accessibility is non-negotiable but consistently shortchanged. Every UI surface 
 
 ```
 packages/a11y/
-├── src/
-│   ├── focus/
-│   │   ├── trap.ts
-│   │   ├── restore.ts
-│   │   └── autofocus.ts
-│   ├── keyboard/
-│   │   ├── arrow-nav.ts
-│   │   ├── tab-order.ts
-│   │   └── escape.ts
-│   ├── aria/
-│   │   ├── roles.ts
-│   │   ├── labels.ts
-│   │   └── live-region.ts
-│   ├── contrast/
-│   │   ├── check.ts
-│   │   └── warn.ts
-│   ├── reduced-motion/
-│   │   └── respect.ts
-│   ├── screen-reader/
-│   │   └── announce.ts
-│   ├── skip-link/
-│   │   └── generate.ts
-│   ├── test/
-│   │   └── axe.ts
-│   └── id/
-│       └── generate.ts
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ focus/
+â”‚   â”‚   â”œâ”€â”€ trap.ts
+â”‚   â”‚   â”œâ”€â”€ restore.ts
+â”‚   â”‚   â””â”€â”€ autofocus.ts
+â”‚   â”œâ”€â”€ keyboard/
+â”‚   â”‚   â”œâ”€â”€ arrow-nav.ts
+â”‚   â”‚   â”œâ”€â”€ tab-order.ts
+â”‚   â”‚   â””â”€â”€ escape.ts
+â”‚   â”œâ”€â”€ aria/
+â”‚   â”‚   â”œâ”€â”€ roles.ts
+â”‚   â”‚   â”œâ”€â”€ labels.ts
+â”‚   â”‚   â””â”€â”€ live-region.ts
+â”‚   â”œâ”€â”€ contrast/
+â”‚   â”‚   â”œâ”€â”€ check.ts
+â”‚   â”‚   â””â”€â”€ warn.ts
+â”‚   â”œâ”€â”€ reduced-motion/
+â”‚   â”‚   â””â”€â”€ respect.ts
+â”‚   â”œâ”€â”€ screen-reader/
+â”‚   â”‚   â””â”€â”€ announce.ts
+â”‚   â”œâ”€â”€ skip-link/
+â”‚   â”‚   â””â”€â”€ generate.ts
+â”‚   â”œâ”€â”€ test/
+â”‚   â”‚   â””â”€â”€ axe.ts
+â”‚   â””â”€â”€ id/
+â”‚       â””â”€â”€ generate.ts
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — Focus management
-### v0.2 — Keyboard navigation primitives
-### v0.3 — ARIA helpers
-### v0.4 — Reduced-motion
-### v0.5 — Screen-reader announce
-### v0.6 — Contrast checking
-### v0.7 — Test helpers
-### v1.0 — Stable API
+### v0.1 â€” Focus management
+### v0.2 â€” Keyboard navigation primitives
+### v0.3 â€” ARIA helpers
+### v0.4 â€” Reduced-motion
+### v0.5 â€” Screen-reader announce
+### v0.6 â€” Contrast checking
+### v0.7 â€” Test helpers
+### v1.0 â€” Stable API
 
 ## Product potential
 
 **Internal:** Universal.
-**Open source release:** Plausible — utility-shaped niche exists.
+**Open source release:** Plausible â€” utility-shaped niche exists.
 **Commercial:** None.
 
 ## Status
 
 - **Current:** Empty placeholder.
 - **Owner:** Cody (solo dev).
-- **Priority tier:** Frontend depth — cross-cutting.
+- **Priority tier:** Frontend depth â€” cross-cutting.
 - **Estimated learning return:** Very high. Focus management is subtle, ARIA semantics are deep, contrast math is real CS. Production-grade a11y is rare and valuable.

@@ -1,4 +1,4 @@
-# @nekostack/flags
+﻿# @nekostack/flags
 
 > Feature flags: rollouts, kill switches, percentage targeting, A/B experiments. **Distinct from entitlements** (which is plan-based gating). Both are gating, but for different reasons.
 
@@ -9,15 +9,14 @@
 | **Build tier** | SaaS layer |
 | **Depends on** | `schema` (flag definitions), `audit` (flag changes audited), `telemetry` (flag-evaluation events for experiments), `tenant` (tenant-targeted flags), `auth` (user-targeted flags) |
 | **Used by** | every product surface where a feature is rolling out, being A/B tested, or has a kill switch; `admin` for flag toggling UI |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 6–10 weeks focused |
-| **Sellable?** | Plausible OSS (LaunchDarkly / Unleash territory); commercial niche dominated by LaunchDarkly but room for cheaper self-hostable |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 6â€“10 weeks focused |
 
 ## Why this exists
 
 Flags answer "is feature X turned on for this user/tenant right now?" Entitlements answer "does this user/tenant's plan include feature X?" Both gate features, but the lifecycles are completely different:
 
-- **Flags** are dev-managed, short-lived (rollout → fully on → removed), can be killed instantly, often targeted at percentage of users.
+- **Flags** are dev-managed, short-lived (rollout â†’ fully on â†’ removed), can be killed instantly, often targeted at percentage of users.
 - **Entitlements** are product-management-managed, long-lived (the plan), tied to billing.
 
 Bundling them leads to confused code: "is this a billing question or a rollout question?" Splitting them makes both clearer.
@@ -43,7 +42,7 @@ Bundling them leads to confused code: "is this a billing question or a rollout q
 
 ## Boundary
 
-> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §77 (boundary clarifications section in BOUNDARIES.md).
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) Â§77 (boundary clarifications section in BOUNDARIES.md).
 
 ### Owns
 - Flag definitions + multivariate values
@@ -86,53 +85,53 @@ Bundling them leads to confused code: "is this a billing question or a rollout q
 ## Design philosophy
 
 - **Flags are temporary.** Old flags are debt. Stale-detection flags them after N days at 100%.
-- **Targeting is composable.** Percentage + attribute + tenant — combine cleanly.
-- **Experiments are assignment-stable.** Same user → same arm across visits (consistent hashing).
+- **Targeting is composable.** Percentage + attribute + tenant â€” combine cleanly.
+- **Experiments are assignment-stable.** Same user â†’ same arm across visits (consistent hashing).
 - **Audit every change.** Flipping a flag is a real action; record it.
 
 ## Architecture sketch
 
 ```
 packages/flags/
-├── src/
-│   ├── definition/
-│   │   ├── flag.ts          # Flag type
-│   │   └── catalog.ts
-│   ├── targeting/
-│   │   ├── percentage.ts
-│   │   ├── attribute.ts
-│   │   └── compose.ts
-│   ├── rollout/
-│   │   ├── gradual.ts
-│   │   └── canary.ts
-│   ├── kill/
-│   │   └── switch.ts
-│   ├── experiments/
-│   │   ├── assignment.ts    # consistent hashing
-│   │   └── arms.ts
-│   ├── stale/
-│   │   └── detect.ts        # CI warning
-│   ├── audit/
-│   │   └── emit.ts
-│   └── cli.ts
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ definition/
+â”‚   â”‚   â”œâ”€â”€ flag.ts          # Flag type
+â”‚   â”‚   â””â”€â”€ catalog.ts
+â”‚   â”œâ”€â”€ targeting/
+â”‚   â”‚   â”œâ”€â”€ percentage.ts
+â”‚   â”‚   â”œâ”€â”€ attribute.ts
+â”‚   â”‚   â””â”€â”€ compose.ts
+â”‚   â”œâ”€â”€ rollout/
+â”‚   â”‚   â”œâ”€â”€ gradual.ts
+â”‚   â”‚   â””â”€â”€ canary.ts
+â”‚   â”œâ”€â”€ kill/
+â”‚   â”‚   â””â”€â”€ switch.ts
+â”‚   â”œâ”€â”€ experiments/
+â”‚   â”‚   â”œâ”€â”€ assignment.ts    # consistent hashing
+â”‚   â”‚   â””â”€â”€ arms.ts
+â”‚   â”œâ”€â”€ stale/
+â”‚   â”‚   â””â”€â”€ detect.ts        # CI warning
+â”‚   â”œâ”€â”€ audit/
+â”‚   â”‚   â””â”€â”€ emit.ts
+â”‚   â””â”€â”€ cli.ts
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — Flag definition + evaluation
-### v0.2 — Targeting rules (percentage + attribute)
-### v0.3 — Kill switches
-### v0.4 — Experiments with consistent assignment
-### v0.5 — Stale-flag detection
-### v0.6 — Admin UI integration
-### v1.0 — Stable API
+### v0.1 â€” Flag definition + evaluation
+### v0.2 â€” Targeting rules (percentage + attribute)
+### v0.3 â€” Kill switches
+### v0.4 â€” Experiments with consistent assignment
+### v0.5 â€” Stale-flag detection
+### v0.6 â€” Admin UI integration
+### v1.0 â€” Stable API
 
 ## Product potential
 
 **Internal:** Useful for safe rollouts.
-**Open source release:** Plausible — Unleash / GrowthBook territory.
+**Open source release:** Plausible â€” Unleash / GrowthBook territory.
 **Commercial:** LaunchDarkly dominates; tough commercial play.
 
 ## Status

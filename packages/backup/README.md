@@ -1,4 +1,4 @@
-# @nekostack/backup
+﻿# @nekostack/backup
 
 > Operational backup, restore points, point-in-time recovery, retention, archive creation. The disaster-recovery layer. **Distinct from `export`** (user-facing data egress) and **`saves`** (per-game).
 
@@ -9,9 +9,8 @@
 | **Build tier** | Compliance / data governance |
 | **Depends on** | `schema`, `storage` (backup destination), `compliance` (retention policies), `audit` (backup operations), `time` (schedule + retention windows), `crypto` (at-rest encryption) |
 | **Used by** | every product in production; SRE / disaster-recovery procedures; `compliance` cites backup posture |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 8–14 weeks focused |
-| **Sellable?** | Modest — backup tooling is crowded but ops-grade backup-as-a-library is undersupplied |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 8â€“14 weeks focused |
 
 ## Why this exists
 
@@ -22,7 +21,7 @@ The three persistence words look similar but are distinct:
 
 Conflating them leads to messes:
 - Daily DB snapshot is called "backup" but doesn't satisfy point-in-time recovery requirements.
-- User exports are mistaken for backups (they're not — they're filtered + transformed).
+- User exports are mistaken for backups (they're not â€” they're filtered + transformed).
 - No restore test ever runs (so the "backup" is theoretical until you need it).
 
 `backup` is the operational disaster-recovery layer. Schedules, snapshots, retention enforcement, restore validation.
@@ -48,7 +47,7 @@ Conflating them leads to messes:
 
 ## Boundary
 
-> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §26 for the full capability map.
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) Â§26 for the full capability map.
 
 ### Owns
 - Backup creation + scheduling
@@ -98,42 +97,42 @@ Conflating them leads to messes:
 
 ```
 packages/backup/
-├── src/
-│   ├── create/
-│   │   ├── db-snapshot.ts
-│   │   ├── file-tree.ts
-│   │   └── object-store.ts
-│   ├── catalog/
-│   │   └── snapshots.ts
-│   ├── retention/
-│   │   ├── policy.ts
-│   │   └── enforce.ts
-│   ├── restore/
-│   │   ├── restore.ts
-│   │   └── pitr.ts            # point-in-time recovery
-│   ├── archive/
-│   │   └── cold.ts
-│   ├── validate/
-│   │   └── restore-test.ts
-│   └── cli.ts
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ create/
+â”‚   â”‚   â”œâ”€â”€ db-snapshot.ts
+â”‚   â”‚   â”œâ”€â”€ file-tree.ts
+â”‚   â”‚   â””â”€â”€ object-store.ts
+â”‚   â”œâ”€â”€ catalog/
+â”‚   â”‚   â””â”€â”€ snapshots.ts
+â”‚   â”œâ”€â”€ retention/
+â”‚   â”‚   â”œâ”€â”€ policy.ts
+â”‚   â”‚   â””â”€â”€ enforce.ts
+â”‚   â”œâ”€â”€ restore/
+â”‚   â”‚   â”œâ”€â”€ restore.ts
+â”‚   â”‚   â””â”€â”€ pitr.ts            # point-in-time recovery
+â”‚   â”œâ”€â”€ archive/
+â”‚   â”‚   â””â”€â”€ cold.ts
+â”‚   â”œâ”€â”€ validate/
+â”‚   â”‚   â””â”€â”€ restore-test.ts
+â”‚   â””â”€â”€ cli.ts
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — DB snapshot creation + catalog
-### v0.2 — Retention enforcement
-### v0.3 — Restore + validation
-### v0.4 — Point-in-time recovery
-### v0.5 — Archive / cold storage tier
-### v0.6 — Encrypted at rest
-### v1.0 — Stable API
+### v0.1 â€” DB snapshot creation + catalog
+### v0.2 â€” Retention enforcement
+### v0.3 â€” Restore + validation
+### v0.4 â€” Point-in-time recovery
+### v0.5 â€” Archive / cold storage tier
+### v0.6 â€” Encrypted at rest
+### v1.0 â€” Stable API
 
 ## Product potential
 
 **Internal:** Critical for any production system.
-**Open source release:** Modest — niche.
+**Open source release:** Modest â€” niche.
 **Commercial:** None directly; bundled into broader compliance offering.
 
 ## Status
@@ -141,4 +140,4 @@ packages/backup/
 - **Current:** Empty placeholder.
 - **Owner:** Cody (solo dev).
 - **Priority tier:** Compliance.
-- **Estimated learning return:** High. Backup architecture, retention policies, restore validation, point-in-time recovery — operational engineering skills.
+- **Estimated learning return:** High. Backup architecture, retention policies, restore validation, point-in-time recovery â€” operational engineering skills.

@@ -1,4 +1,4 @@
-# @nekostack/registry
+﻿# @nekostack/registry
 
 > The package metadata + canonical resource lookup + capability-to-package map. Reads `BOUNDARIES.md` at build time and exposes it as a queryable runtime registry. The "where does X live?" answer for code, not just humans.
 
@@ -6,12 +6,11 @@
 
 | | |
 |---|---|
-| **Build tier** | Meta / control plane — needed for capability-to-package programmatic queries |
-| **Depends on** | `schema`, `graph` (registry structure can have edges), `lint` (enforces BOUNDARIES.md ↔ registry consistency) |
+| **Build tier** | Meta / control plane â€” needed for capability-to-package programmatic queries |
+| **Depends on** | `schema`, `graph` (registry structure can have edges), `lint` (enforces BOUNDARIES.md â†” registry consistency) |
 | **Used by** | `cli` (subcommand discovery), `workspace` (package list), `lint` (boundary enforcement), `path` (package maturity in roadmap), `docs` (cross-link generation), LLM sessions answering "which package owns X?" |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 4–8 weeks focused |
-| **Sellable?** | Low — internal plumbing. MIT release as part of stack. |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 4â€“8 weeks focused |
 
 ## Why this exists
 
@@ -33,7 +32,7 @@ The build-time invariant: `BOUNDARIES.md` is canonical; `registry` parses it; `l
 - Package metadata registry (name / kind / maturity / version / dependencies).
 - Capability-to-package ownership map (sourced from `BOUNDARIES.md`).
 - Canonical resource ID lookup (`<namespace>:<kind>:<slug>` formats).
-- Alias resolution (legacy names → current names).
+- Alias resolution (legacy names â†’ current names).
 - Runtime module discovery (which packages are loaded).
 - Package maturity status (scaffold / prototype / usable / stable / deprecated).
 - Package release status (private / internal-only / OSS / commercial).
@@ -42,13 +41,13 @@ The build-time invariant: `BOUNDARIES.md` is canonical; `registry` parses it; `l
 
 ### Out of scope
 - npm registry / external package management (`npm`, `pnpm`).
-- `codex` entity registry (different layer — `codex` is for product content; registry is for system resources).
+- `codex` entity registry (different layer â€” `codex` is for product content; registry is for system resources).
 - Workspace package dependency graph computation (`workspace`).
 - Governance rule definitions (`governance`).
 
 ## Boundary
 
-> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §50 for the full capability map.
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) Â§50 for the full capability map.
 
 ### Owns
 - Package metadata registry
@@ -98,43 +97,43 @@ The build-time invariant: `BOUNDARIES.md` is canonical; `registry` parses it; `l
 
 ```
 packages/registry/
-├── src/
-│   ├── parse/
-│   │   ├── boundaries.ts     # BOUNDARIES.md → typed records
-│   │   ├── readme.ts         # per-package README Boundary section
-│   │   └── package-json.ts   # package.json metadata
-│   ├── query/
-│   │   ├── by-capability.ts  # "who owns X?"
-│   │   ├── by-package.ts     # "what does X own?"
-│   │   └── deps.ts           # "what depends on X?"
-│   ├── consistency/
-│   │   ├── gaps.ts           # unowned capabilities
-│   │   ├── conflicts.ts      # multi-owner capabilities
-│   │   └── drift.ts          # README ↔ BOUNDARIES drift
-│   ├── ids/
-│   │   ├── format.ts         # canonical ID conventions
-│   │   └── alias.ts
-│   ├── maturity/
-│   │   └── status.ts         # scaffold/prototype/usable/stable/deprecated
-│   └── cli.ts                # `neko registry verify / query / status`
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ parse/
+â”‚   â”‚   â”œâ”€â”€ boundaries.ts     # BOUNDARIES.md â†’ typed records
+â”‚   â”‚   â”œâ”€â”€ readme.ts         # per-package README Boundary section
+â”‚   â”‚   â””â”€â”€ package-json.ts   # package.json metadata
+â”‚   â”œâ”€â”€ query/
+â”‚   â”‚   â”œâ”€â”€ by-capability.ts  # "who owns X?"
+â”‚   â”‚   â”œâ”€â”€ by-package.ts     # "what does X own?"
+â”‚   â”‚   â””â”€â”€ deps.ts           # "what depends on X?"
+â”‚   â”œâ”€â”€ consistency/
+â”‚   â”‚   â”œâ”€â”€ gaps.ts           # unowned capabilities
+â”‚   â”‚   â”œâ”€â”€ conflicts.ts      # multi-owner capabilities
+â”‚   â”‚   â””â”€â”€ drift.ts          # README â†” BOUNDARIES drift
+â”‚   â”œâ”€â”€ ids/
+â”‚   â”‚   â”œâ”€â”€ format.ts         # canonical ID conventions
+â”‚   â”‚   â””â”€â”€ alias.ts
+â”‚   â”œâ”€â”€ maturity/
+â”‚   â”‚   â””â”€â”€ status.ts         # scaffold/prototype/usable/stable/deprecated
+â”‚   â””â”€â”€ cli.ts                # `neko registry verify / query / status`
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — BOUNDARIES.md parser
-### v0.2 — Query API (by capability / by package)
-### v0.3 — Gap + conflict detection (CI integration)
-### v0.4 — Drift detection (README ↔ BOUNDARIES)
-### v0.5 — Maturity status tracking
-### v0.6 — Canonical ID + alias resolution
-### v1.0 — Stable API
+### v0.1 â€” BOUNDARIES.md parser
+### v0.2 â€” Query API (by capability / by package)
+### v0.3 â€” Gap + conflict detection (CI integration)
+### v0.4 â€” Drift detection (README â†” BOUNDARIES)
+### v0.5 â€” Maturity status tracking
+### v0.6 â€” Canonical ID + alias resolution
+### v1.0 â€” Stable API
 
 ## Product potential
 
-**Internal:** High — keeps BOUNDARIES.md honest.
-**Open source release:** Marginal — useful only to NekoStack consumers.
+**Internal:** High â€” keeps BOUNDARIES.md honest.
+**Open source release:** Marginal â€” useful only to NekoStack consumers.
 **Commercial:** None.
 
 ## Status

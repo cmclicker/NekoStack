@@ -1,17 +1,16 @@
-# @nekostack/lint
+﻿# @nekostack/lint
 
-> Custom ESLint rules that enforce NekoStack architectural conventions. Catches the things type-checking and Prettier don't — the design patterns, the load-bearing casts, the "every service has a spec file" invariants.
+> Custom ESLint rules that enforce NekoStack architectural conventions. Catches the things type-checking and Prettier don't â€” the design patterns, the load-bearing casts, the "every service has a spec file" invariants.
 
 ## Quick reference
 
 | | |
 |---|---|
-| **Build tier** | Foundation primitive — build early so conventions are enforced from day one |
+| **Build tier** | Foundation primitive â€” build early so conventions are enforced from day one |
 | **Depends on** | ESLint (external), `@typescript-eslint/utils`, knowledge of `schema` / `config` / `api` / `auth` conventions |
 | **Used by** | every package's CI; every consuming project's `eslint.config.js`; IDE integrations |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 4–8 weeks (per-rule effort small; cumulative across ~25–30 rules is the cost) |
-| **Sellable?** | Niche — primarily useful to NekoStack consumers; MIT release as part of stack |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 4â€“8 weeks (per-rule effort small; cumulative across ~25â€“30 rules is the cost) |
 
 ## Why this exists
 
@@ -24,13 +23,13 @@ Type checking catches type errors. Prettier catches formatting. ESLint's default
 - "Schema files only re-export `@nekostack/schema` builders, never inline-define DSL fragments."
 - "Telemetry events must be defined in `*.events.ts` files and registered with the central catalog."
 
-These are exactly the kinds of conventions that drift the moment they're not enforced. We literally hit this in NekoVibe — an agent removed 15 load-bearing `as object` casts during a cleanup pass and silently broke the build, because no rule caught the pattern.
+These are exactly the kinds of conventions that drift the moment they're not enforced. We literally hit this in NekoVibe â€” an agent removed 15 load-bearing `as object` casts during a cleanup pass and silently broke the build, because no rule caught the pattern.
 
 `@nekostack/lint` is the package where those conventions live as executable lint rules. Run it locally, run it in CI, get instant feedback when a convention is violated. Every NekoStack-consuming project includes this as a dev dependency and runs it on save.
 
 Building this yourself rather than relying on generic ESLint plugins is justified because:
 1. **The rules are project-specific.** No third-party plugin knows that NekoStack uses `Prisma.InputJsonValue` casts for typed JSON columns.
-2. **You learn ESLint's custom-rule API.** AST traversal, scope analysis, fixer hints — real CS skills, very transferable to any future static-analysis work.
+2. **You learn ESLint's custom-rule API.** AST traversal, scope analysis, fixer hints â€” real CS skills, very transferable to any future static-analysis work.
 3. **Bug-prevention through enforcement.** Every time you catch a real bug with a hand-written rule, the same class of bug is prevented from recurring across every project that uses the rule.
 
 ## Scope
@@ -50,7 +49,7 @@ Building this yourself rather than relying on generic ESLint plugins is justifie
 
 ## Boundary
 
-> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §3, §45 for the full capability map.
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) Â§3, Â§45 for the full capability map.
 
 ### Owns
 - Custom ESLint rules enforcing NekoStack architectural patterns
@@ -62,7 +61,7 @@ Building this yourself rather than relying on generic ESLint plugins is justifie
 ### Does NOT own
 | Capability | Lives in |
 |---|---|
-| Generic JS/TS rules | external (`@typescript-eslint`, `eslint-plugin-react`, etc. — we extend these) |
+| Generic JS/TS rules | external (`@typescript-eslint`, `eslint-plugin-react`, etc. â€” we extend these) |
 | Prettier-style formatting | external (Prettier) |
 | Type checking | external (`tsc`) |
 | Runtime policy enforcement (lifecycle gates, kill-switches) | `governance` (static vs runtime) |
@@ -107,26 +106,26 @@ The right framing: `@nekostack/lint` is built **on top of** ESLint. We add the r
 
 ```
 packages/lint/
-├── src/
-│   ├── rules/
-│   │   ├── no-direct-process-env.ts
-│   │   ├── prisma-json-cast.ts
-│   │   ├── service-has-spec.ts
-│   │   ├── controller-no-service-import-cycle.ts
-│   │   ├── schema-no-inline-zod.ts
-│   │   ├── telemetry-events-registered.ts
-│   │   └── ... (~30 rules over time)
-│   ├── configs/
-│   │   ├── base.ts
-│   │   ├── typescript.ts
-│   │   ├── react.ts
-│   │   ├── nest.ts
-│   │   └── strict.ts
-│   └── plugin.ts             # ESLint plugin entry
-├── tests/
-│   └── rules/
-│       └── no-direct-process-env.test.ts
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ rules/
+â”‚   â”‚   â”œâ”€â”€ no-direct-process-env.ts
+â”‚   â”‚   â”œâ”€â”€ prisma-json-cast.ts
+â”‚   â”‚   â”œâ”€â”€ service-has-spec.ts
+â”‚   â”‚   â”œâ”€â”€ controller-no-service-import-cycle.ts
+â”‚   â”‚   â”œâ”€â”€ schema-no-inline-zod.ts
+â”‚   â”‚   â”œâ”€â”€ telemetry-events-registered.ts
+â”‚   â”‚   â””â”€â”€ ... (~30 rules over time)
+â”‚   â”œâ”€â”€ configs/
+â”‚   â”‚   â”œâ”€â”€ base.ts
+â”‚   â”‚   â”œâ”€â”€ typescript.ts
+â”‚   â”‚   â”œâ”€â”€ react.ts
+â”‚   â”‚   â”œâ”€â”€ nest.ts
+â”‚   â”‚   â””â”€â”€ strict.ts
+â”‚   â””â”€â”€ plugin.ts             # ESLint plugin entry
+â”œâ”€â”€ tests/
+â”‚   â””â”€â”€ rules/
+â”‚       â””â”€â”€ no-direct-process-env.test.ts
+â””â”€â”€ README.md
 ```
 
 Example rule (sketch):
@@ -156,24 +155,24 @@ export const noDirectProcessEnv: Rule = {
 
 ## Roadmap
 
-### v0.1 — Bootstrap
+### v0.1 â€” Bootstrap
 - ESLint plugin scaffolding.
 - Base config that re-exports `@typescript-eslint` recommended.
 - One real custom rule (e.g., `no-direct-process-env`) end-to-end with tests.
 
-### v0.2 — Convention rules
+### v0.2 â€” Convention rules
 - `service-has-spec`, `prisma-json-cast`, `schema-no-inline-zod`, `controller-no-service-cycle`.
 - Strict config combining all rules.
 
-### v0.3 — Framework configs
+### v0.3 â€” Framework configs
 - `react` config (React 19, hooks, refresh, a11y).
 - `nest` config (Nest 10+ idioms, decorator patterns).
 
-### v0.4 — Fixers
+### v0.4 â€” Fixers
 - Auto-fix for as many rules as safely possible.
 - `--fix` integration end-to-end.
 
-### v1.0 — Stable rule catalog
+### v1.0 â€” Stable rule catalog
 - Documentation site.
 - ~25-30 rules covering the major architectural conventions across NekoStack.
 - Migration guide for projects adopting the strict config.
@@ -184,7 +183,6 @@ export const noDirectProcessEnv: Rule = {
 
 **Open source release:** Plausible. Project-specific lint plugins do exist as OSS (e.g., `eslint-plugin-perfectionist`, `eslint-plugin-functional`). A "NekoStack-conventions" plugin would be niche externally but could attract users specifically using the rest of the stack.
 
-**Commercial product:** None directly. Lint plugins are non-monetizing in isolation.
 
 **Estimated effort to v1.0:** 4-8 weeks of focused work, mostly because each rule needs tests and a docs page. The plugin scaffolding itself is small.
 

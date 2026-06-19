@@ -1,17 +1,16 @@
-# @nekostack/crypto
+﻿# @nekostack/crypto
 
-> Safe wrappers around vetted cryptographic primitives. Hashing, signing, encryption, key derivation, random IDs. **Does not reinvent crypto** — wraps libsodium / Node crypto with NekoStack-conventional usage patterns and misuse guardrails.
+> Safe wrappers around vetted cryptographic primitives. Hashing, signing, encryption, key derivation, random IDs. **Does not reinvent crypto** â€” wraps libsodium / Node crypto with NekoStack-conventional usage patterns and misuse guardrails.
 
 ## Quick reference
 
 | | |
 |---|---|
-| **Build tier** | Security — substrate |
+| **Build tier** | Security â€” substrate |
 | **Depends on** | external: `libsodium-wrappers` and/or Node `crypto`; `schema` for typed outputs |
 | **Used by** | `auth` (token signing helpers), `secrets` (at-rest encryption), `audit` (hash chains), `storage` (at-rest encryption), `webhooks` (HMAC signatures), `id` (cryptographic random IDs) |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 4–8 weeks focused |
-| **Sellable?** | Low — substrate-wrapping is plumbing |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 4â€“8 weeks focused |
 
 ## Why this exists
 
@@ -19,17 +18,17 @@ The most dangerous crypto code is the code that *looks* like crypto code but isn
 
 `crypto` wraps battle-tested libraries (libsodium first; Node `crypto` as fallback) with NekoStack-conventional **misuse-resistant** APIs:
 
-- `encryptAtRest(plaintext, key)` — always XChaCha20-Poly1305, nonce auto-generated, never accepts a wrong-size key.
-- `signHmac(payload, key)` — always SHA-256, key length checked.
-- `hashChainLink(prev, payload)` — for audit's hash chain.
-- `derive(masterKey, context, length)` — HKDF-style derivation with required context binding.
+- `encryptAtRest(plaintext, key)` â€” always XChaCha20-Poly1305, nonce auto-generated, never accepts a wrong-size key.
+- `signHmac(payload, key)` â€” always SHA-256, key length checked.
+- `hashChainLink(prev, payload)` â€” for audit's hash chain.
+- `derive(masterKey, context, length)` â€” HKDF-style derivation with required context binding.
 
 **We don't write crypto.** We wrap correctly.
 
 ## Scope
 
 ### In scope
-- Hashing helpers (SHA-256, BLAKE2, Argon2 for passwords — though `auth` handles passwords directly).
+- Hashing helpers (SHA-256, BLAKE2, Argon2 for passwords â€” though `auth` handles passwords directly).
 - HMAC signing + verification.
 - Symmetric encryption at-rest (XChaCha20-Poly1305 via libsodium).
 - Asymmetric signing (Ed25519).
@@ -47,7 +46,7 @@ The most dangerous crypto code is the code that *looks* like crypto code but isn
 
 ## Boundary
 
-> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §33 for the full capability map.
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) Â§33 for the full capability map.
 
 ### Owns
 - Hashing wrappers
@@ -87,49 +86,49 @@ The most dangerous crypto code is the code that *looks* like crypto code but isn
 ## Design philosophy
 
 - **Don't reinvent.** Wrap libsodium first.
-- **Misuse-resistant by construction.** Wrong-size keys → compile error. Forgetting a nonce → impossible.
+- **Misuse-resistant by construction.** Wrong-size keys â†’ compile error. Forgetting a nonce â†’ impossible.
 - **Constant-time by default.** Comparisons use timing-safe ops.
-- **Algorithms picked for us, not for you.** We pick XChaCha20-Poly1305, Ed25519, HKDF-SHA256 — you don't get to choose AES-ECB.
+- **Algorithms picked for us, not for you.** We pick XChaCha20-Poly1305, Ed25519, HKDF-SHA256 â€” you don't get to choose AES-ECB.
 
 ## Architecture sketch
 
 ```
 packages/crypto/
-├── src/
-│   ├── hash/
-│   │   ├── sha256.ts
-│   │   ├── blake2.ts
-│   │   └── argon2.ts
-│   ├── hmac/
-│   │   ├── sign.ts
-│   │   └── verify.ts
-│   ├── encrypt/
-│   │   ├── at-rest.ts        # XChaCha20-Poly1305
-│   │   └── stream.ts
-│   ├── sign/
-│   │   └── ed25519.ts
-│   ├── derive/
-│   │   ├── hkdf.ts
-│   │   └── scrypt.ts
-│   ├── random/
-│   │   └── csprng.ts
-│   ├── chain/
-│   │   └── hash-link.ts
-│   └── compare/
-│       └── constant-time.ts
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ hash/
+â”‚   â”‚   â”œâ”€â”€ sha256.ts
+â”‚   â”‚   â”œâ”€â”€ blake2.ts
+â”‚   â”‚   â””â”€â”€ argon2.ts
+â”‚   â”œâ”€â”€ hmac/
+â”‚   â”‚   â”œâ”€â”€ sign.ts
+â”‚   â”‚   â””â”€â”€ verify.ts
+â”‚   â”œâ”€â”€ encrypt/
+â”‚   â”‚   â”œâ”€â”€ at-rest.ts        # XChaCha20-Poly1305
+â”‚   â”‚   â””â”€â”€ stream.ts
+â”‚   â”œâ”€â”€ sign/
+â”‚   â”‚   â””â”€â”€ ed25519.ts
+â”‚   â”œâ”€â”€ derive/
+â”‚   â”‚   â”œâ”€â”€ hkdf.ts
+â”‚   â”‚   â””â”€â”€ scrypt.ts
+â”‚   â”œâ”€â”€ random/
+â”‚   â”‚   â””â”€â”€ csprng.ts
+â”‚   â”œâ”€â”€ chain/
+â”‚   â”‚   â””â”€â”€ hash-link.ts
+â”‚   â””â”€â”€ compare/
+â”‚       â””â”€â”€ constant-time.ts
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — Hash + HMAC wrappers
-### v0.2 — Symmetric encryption
-### v0.3 — Key derivation
-### v0.4 — CSPRNG IDs
-### v0.5 — Hash chains
-### v0.6 — Ed25519 signatures
-### v1.0 — Stable API + security audit
+### v0.1 â€” Hash + HMAC wrappers
+### v0.2 â€” Symmetric encryption
+### v0.3 â€” Key derivation
+### v0.4 â€” CSPRNG IDs
+### v0.5 â€” Hash chains
+### v0.6 â€” Ed25519 signatures
+### v1.0 â€” Stable API + security audit
 
 ## Product potential
 
@@ -141,5 +140,5 @@ packages/crypto/
 
 - **Current:** Empty placeholder.
 - **Owner:** Cody (solo dev).
-- **Priority tier:** Security — substrate.
-- **Estimated learning return:** Very high. Misuse-resistant API design is a real CS topic; constant-time comparisons, KDF binding, AEAD semantics — all foundational.
+- **Priority tier:** Security â€” substrate.
+- **Estimated learning return:** Very high. Misuse-resistant API design is a real CS topic; constant-time comparisons, KDF binding, AEAD semantics â€” all foundational.

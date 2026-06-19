@@ -1,4 +1,4 @@
-# @nekostack/editor
+﻿# @nekostack/editor
 
 > Rich text editor built on ProseMirror. Schemas, plugins, collaborative editing primitives. The substrate for narrative drafts, agent prompt editing, admin notes, comments.
 
@@ -9,9 +9,8 @@
 | **Build tier** | Frontend depth |
 | **Depends on** | `schema`, `ui`, `theme`, `realtime` (collaborative editing optional), `md` (markdown round-trip) |
 | **Used by** | Mara Kane (narrative drafts), `prompts` (prompt template editor), `admin` (notes), `wiki` (page editing), narrative tooling |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 12–20 weeks focused |
-| **Sellable?** | Modest — Tiptap dominates; integration angle |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 12â€“20 weeks focused |
 
 ## Why this exists
 
@@ -80,40 +79,40 @@ Rich text editing is hard. ProseMirror is the right substrate. Tiptap is the pop
 
 ```
 packages/editor/
-├── src/
-│   ├── core/
-│   │   ├── editor.ts          # ProseMirror wrapper
-│   │   └── schema.ts
-│   ├── nodes/
-│   │   ├── paragraph.ts
-│   │   ├── headings.ts
-│   │   ├── lists.ts
-│   │   └── ...
-│   ├── plugins/
-│   │   ├── slash-command.ts
-│   │   ├── annotation.ts
-│   │   └── track-changes.ts
-│   ├── collab/
-│   │   └── yjs.ts             # via realtime
-│   ├── markdown/
-│   │   ├── from-md.ts
-│   │   └── to-md.ts
-│   └── react/
-│       └── component.tsx
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ core/
+â”‚   â”‚   â”œâ”€â”€ editor.ts          # ProseMirror wrapper
+â”‚   â”‚   â””â”€â”€ schema.ts
+â”‚   â”œâ”€â”€ nodes/
+â”‚   â”‚   â”œâ”€â”€ paragraph.ts
+â”‚   â”‚   â”œâ”€â”€ headings.ts
+â”‚   â”‚   â”œâ”€â”€ lists.ts
+â”‚   â”‚   â””â”€â”€ ...
+â”‚   â”œâ”€â”€ plugins/
+â”‚   â”‚   â”œâ”€â”€ slash-command.ts
+â”‚   â”‚   â”œâ”€â”€ annotation.ts
+â”‚   â”‚   â””â”€â”€ track-changes.ts
+â”‚   â”œâ”€â”€ collab/
+â”‚   â”‚   â””â”€â”€ yjs.ts             # via realtime
+â”‚   â”œâ”€â”€ markdown/
+â”‚   â”‚   â”œâ”€â”€ from-md.ts
+â”‚   â”‚   â””â”€â”€ to-md.ts
+â”‚   â””â”€â”€ react/
+â”‚       â””â”€â”€ component.tsx
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — Basic ProseMirror editor
-### v0.2 — Standard rich-text nodes
-### v0.3 — Markdown round-trip
-### v0.4 — Slash commands
-### v0.5 — Annotations
-### v0.6 — Collaborative editing
-### v0.7 — Track changes
-### v1.0 — Stable API
+### v0.1 â€” Basic ProseMirror editor
+### v0.2 â€” Standard rich-text nodes
+### v0.3 â€” Markdown round-trip
+### v0.4 â€” Slash commands
+### v0.5 â€” Annotations
+### v0.6 â€” Collaborative editing
+### v0.7 â€” Track changes
+### v1.0 â€” Stable API
 
 ## Product potential
 

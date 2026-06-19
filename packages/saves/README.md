@@ -1,4 +1,4 @@
-# @nekostack/saves
+﻿# @nekostack/saves
 
 > Versioned save data + cloud sync + migration + corruption recovery. The "player progress survives schema changes and bad shutdowns" layer.
 
@@ -9,13 +9,12 @@
 | **Build tier** | Game systems |
 | **Depends on** | `schema` (save shape), `migrate` (save migration patterns), `storage` (cloud sync destination), `crypto` (save encryption), `audit` (save mutations) |
 | **Used by** | every game project: NekoBattler, NekoGacha, Leytide, future tower-defense / autobattler modes |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 6–10 weeks focused |
-| **Sellable?** | Modest — game-specific niche |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 6â€“10 weeks focused |
 
 ## Why this exists
 
-Save data is the most player-emotionally-charged data in any game. Lose a save → players quit. Corrupt a save → support tickets forever. Old save fails to load after update → reviews tank.
+Save data is the most player-emotionally-charged data in any game. Lose a save â†’ players quit. Corrupt a save â†’ support tickets forever. Old save fails to load after update â†’ reviews tank.
 
 The standard problems:
 - Save schemas evolve; old saves must still load.
@@ -29,7 +28,7 @@ The standard problems:
 ### In scope
 - Save schema definition (typed, versioned).
 - Save slot management.
-- Migration on load (v1 save → v2 schema).
+- Migration on load (v1 save â†’ v2 schema).
 - Cloud sync (via `storage`).
 - Conflict resolution (multi-device).
 - Corruption recovery (last-known-good fallback).
@@ -44,7 +43,7 @@ The standard problems:
 
 ## Boundary
 
-> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §87 (in BOUNDARIES.md).
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) Â§87 (in BOUNDARIES.md).
 
 ### Owns
 - Versioned save schema
@@ -85,45 +84,45 @@ The standard problems:
 ## Design philosophy
 
 - **Versioned from day one.** Saves have a version tag; migrations are first-class.
-- **Last-known-good fallback.** Corruption → roll back to last valid save.
-- **Multi-device sync with conflict resolution.** Two devices write the same slot → resolve, don't lose data.
+- **Last-known-good fallback.** Corruption â†’ roll back to last valid save.
+- **Multi-device sync with conflict resolution.** Two devices write the same slot â†’ resolve, don't lose data.
 - **Saves are sacred.** Mutations are atomic; partial writes recoverable.
 
 ## Architecture sketch
 
 ```
 packages/saves/
-├── src/
-│   ├── schema/
-│   │   └── version.ts
-│   ├── slot/
-│   │   └── manager.ts
-│   ├── migrate/
-│   │   └── on-load.ts
-│   ├── cloud/
-│   │   └── sync.ts
-│   ├── conflict/
-│   │   └── resolve.ts
-│   ├── recovery/
-│   │   └── corruption.ts
-│   ├── audit/
-│   │   └── mutation.ts
-│   └── encrypt/
-│       └── at-rest.ts
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ schema/
+â”‚   â”‚   â””â”€â”€ version.ts
+â”‚   â”œâ”€â”€ slot/
+â”‚   â”‚   â””â”€â”€ manager.ts
+â”‚   â”œâ”€â”€ migrate/
+â”‚   â”‚   â””â”€â”€ on-load.ts
+â”‚   â”œâ”€â”€ cloud/
+â”‚   â”‚   â””â”€â”€ sync.ts
+â”‚   â”œâ”€â”€ conflict/
+â”‚   â”‚   â””â”€â”€ resolve.ts
+â”‚   â”œâ”€â”€ recovery/
+â”‚   â”‚   â””â”€â”€ corruption.ts
+â”‚   â”œâ”€â”€ audit/
+â”‚   â”‚   â””â”€â”€ mutation.ts
+â”‚   â””â”€â”€ encrypt/
+â”‚       â””â”€â”€ at-rest.ts
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — Versioned save schema
-### v0.2 — Save slot management
-### v0.3 — Migration on load
-### v0.4 — Corruption recovery
-### v0.5 — Cloud sync
-### v0.6 — Conflict resolution
-### v0.7 — At-rest encryption
-### v1.0 — Stable API
+### v0.1 â€” Versioned save schema
+### v0.2 â€” Save slot management
+### v0.3 â€” Migration on load
+### v0.4 â€” Corruption recovery
+### v0.5 â€” Cloud sync
+### v0.6 â€” Conflict resolution
+### v0.7 â€” At-rest encryption
+### v1.0 â€” Stable API
 
 ## Product potential
 
@@ -136,4 +135,4 @@ packages/saves/
 - **Current:** Empty placeholder.
 - **Owner:** Cody (solo dev).
 - **Priority tier:** Game systems.
-- **Estimated learning return:** High. Schema versioning, conflict resolution, corruption recovery — universal data engineering.
+- **Estimated learning return:** High. Schema versioning, conflict resolution, corruption recovery â€” universal data engineering.

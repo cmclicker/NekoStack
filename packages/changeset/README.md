@@ -1,4 +1,4 @@
-# @nekostack/changeset
+﻿# @nekostack/changeset
 
 > Dry-run / plan-apply / patch / rollback workflow for LLM-driven edits. The "show me what will change before doing it" layer.
 
@@ -7,11 +7,10 @@
 | | |
 |---|---|
 | **Build tier** | LLM-workflow safety |
-| **Depends on** | `schema`, `audit`, `governance` (apply-time gates), `review` (changeset review), `provenance` (changeset → output lineage), `history` (folded in for now: undo / diff) |
+| **Depends on** | `schema`, `audit`, `governance` (apply-time gates), `review` (changeset review), `provenance` (changeset â†’ output lineage), `history` (folded in for now: undo / diff) |
 | **Used by** | `sandbox` (dry-run for filesystem operations), `import` (rollback on failure), any LLM-driven file editor (Claude Code-style), agent tool calls that mutate state |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 6–10 weeks focused |
-| **Sellable?** | Strong — LLM-edit safety is a hot category |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 6â€“10 weeks focused |
 
 ## Why this exists
 
@@ -44,7 +43,7 @@ This is exactly the workflow Claude Code uses. `changeset` formalizes it as a pa
 
 ## Boundary
 
-> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §42 for the full capability map.
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) Â§42 for the full capability map.
 
 ### Owns
 - Changeset model
@@ -87,7 +86,7 @@ This is exactly the workflow Claude Code uses. `changeset` formalizes it as a pa
 
 - **Plan-first, apply-second.** Never modify without a written plan.
 - **Atomic.** Either the whole changeset applies or none of it does.
-- **Rollback on failure.** Partial apply → roll back.
+- **Rollback on failure.** Partial apply â†’ roll back.
 - **Preview for human.** Markdown render of what will change.
 - **Preview for LLM.** Structured JSON for the LLM to self-review before applying.
 
@@ -95,47 +94,47 @@ This is exactly the workflow Claude Code uses. `changeset` formalizes it as a pa
 
 ```
 packages/changeset/
-├── src/
-│   ├── model/
-│   │   ├── changeset.ts
-│   │   └── operation.ts
-│   ├── diff/
-│   │   ├── file.ts
-│   │   └── db.ts
-│   ├── preview/
-│   │   ├── markdown.ts
-│   │   └── json.ts
-│   ├── validate/
-│   │   └── via-governance.ts
-│   ├── apply/
-│   │   ├── atomic.ts
-│   │   └── transaction.ts
-│   ├── rollback/
-│   │   └── revert.ts
-│   ├── history/
-│   │   ├── stack.ts            # undo
-│   │   └── diff-compare.ts
-│   └── cli.ts
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ model/
+â”‚   â”‚   â”œâ”€â”€ changeset.ts
+â”‚   â”‚   â””â”€â”€ operation.ts
+â”‚   â”œâ”€â”€ diff/
+â”‚   â”‚   â”œâ”€â”€ file.ts
+â”‚   â”‚   â””â”€â”€ db.ts
+â”‚   â”œâ”€â”€ preview/
+â”‚   â”‚   â”œâ”€â”€ markdown.ts
+â”‚   â”‚   â””â”€â”€ json.ts
+â”‚   â”œâ”€â”€ validate/
+â”‚   â”‚   â””â”€â”€ via-governance.ts
+â”‚   â”œâ”€â”€ apply/
+â”‚   â”‚   â”œâ”€â”€ atomic.ts
+â”‚   â”‚   â””â”€â”€ transaction.ts
+â”‚   â”œâ”€â”€ rollback/
+â”‚   â”‚   â””â”€â”€ revert.ts
+â”‚   â”œâ”€â”€ history/
+â”‚   â”‚   â”œâ”€â”€ stack.ts            # undo
+â”‚   â”‚   â””â”€â”€ diff-compare.ts
+â”‚   â””â”€â”€ cli.ts
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — Changeset model + diff generation
-### v0.2 — Preview rendering (md + JSON)
-### v0.3 — Atomic apply
-### v0.4 — Rollback
-### v0.5 — Governance gate integration
-### v0.6 — Review integration
-### v0.7 — History stack (undo)
-### v1.0 — Stable API
+### v0.1 â€” Changeset model + diff generation
+### v0.2 â€” Preview rendering (md + JSON)
+### v0.3 â€” Atomic apply
+### v0.4 â€” Rollback
+### v0.5 â€” Governance gate integration
+### v0.6 â€” Review integration
+### v0.7 â€” History stack (undo)
+### v1.0 â€” Stable API
 
 ## Product potential
 
 **Internal:** Critical for LLM-paired dev workflows.
-**Open source release:** Strong — LLM-edit safety pattern is undersupplied as a library.
-**Commercial:** Real — agent / coding-assistant safety is a hot space.
+**Open source release:** Strong â€” LLM-edit safety pattern is undersupplied as a library.
+**Commercial:** Real â€” agent / coding-assistant safety is a hot space.
 
 ## Status
 

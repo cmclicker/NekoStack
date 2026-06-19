@@ -1,4 +1,4 @@
-# @nekostack/secrets
+﻿# @nekostack/secrets
 
 > Secret loading, masking, rotation, leak detection. The secret-lifecycle layer lifted out of `env` / `config`. Knows how to read secrets from local files in dev and from Vault / AWS Secrets Manager / 1Password in production, without leaking them through logs.
 
@@ -6,12 +6,11 @@
 
 | | |
 |---|---|
-| **Build tier** | Security — split out of `env` for explicit ownership |
+| **Build tier** | Security â€” split out of `env` for explicit ownership |
 | **Depends on** | `schema` (secret type tagging), `audit` (secret access audited), `crypto` (encryption helpers), `config` (some overlap on env-loading) |
 | **Used by** | `auth` (JWT signing secret, OAuth client secrets), `billing` (Stripe API key), `email` (Resend / SendGrid API key), `notify` (Web Push VAPID), every package needing API keys or signing secrets |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 4–8 weeks focused |
-| **Sellable?** | Modest — Doppler / Infisical / HashiCorp Vault territory; library-level niche is small but real |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 4â€“8 weeks focused |
 
 ## Why this exists
 
@@ -51,7 +50,7 @@ Lifting `secrets` out of `env` / `config` makes:
 
 ## Boundary
 
-> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §33 for the full capability map.
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) Â§33 for the full capability map.
 
 ### Owns
 - `Secret<T>` wrapper type
@@ -100,8 +99,8 @@ Lifting `secrets` out of `env` / `config` makes:
 ## Design philosophy
 
 - **Typed secrets, not strings.** `Secret<string>` is a different type than `string`. The compiler catches accidental misuse.
-- **Egress-time scrubbing.** Logs, errors, telemetry — anywhere secrets could leak, an automatic scrubber runs.
-- **Sources are interchangeable.** Same API for dev (`.env`) and prod (Vault) — adapter pattern.
+- **Egress-time scrubbing.** Logs, errors, telemetry â€” anywhere secrets could leak, an automatic scrubber runs.
+- **Sources are interchangeable.** Same API for dev (`.env`) and prod (Vault) â€” adapter pattern.
 - **Rotation grace periods.** Production secrets rotate without downtime; old + new accepted briefly.
 - **Audit every access.** Sensitive operation; every read goes to `audit`.
 
@@ -109,56 +108,56 @@ Lifting `secrets` out of `env` / `config` makes:
 
 ```
 packages/secrets/
-├── src/
-│   ├── type/
-│   │   ├── secret.ts         # Secret<T> wrapper with redacted serialization
-│   │   └── tag.ts            # tagged-as-secret marker
-│   ├── sources/
-│   │   ├── env-file.ts       # .env + .env.local (delegates to env)
-│   │   ├── vault.ts          # HashiCorp Vault adapter
-│   │   ├── aws-sm.ts         # AWS Secrets Manager
-│   │   ├── gcp-sm.ts         # GCP Secret Manager
-│   │   ├── op-cli.ts         # 1Password CLI
-│   │   └── local-dev.ts      # ephemeral dev mode
-│   ├── load/
-│   │   ├── chain.ts          # source priority + fallback
-│   │   └── boot.ts           # boot-time required-secret validation
-│   ├── rotate/
-│   │   ├── policy.ts         # rotation cadence declarations
-│   │   ├── grace.ts          # old + new accepted briefly
-│   │   └── audit.ts
-│   ├── scrub/
-│   │   ├── log.ts            # log-output egress scrubber
-│   │   ├── telemetry.ts
-│   │   └── error.ts
-│   ├── leak-detect/
-│   │   ├── code-scan.ts      # CI check for secrets-in-code
-│   │   └── entropy.ts
-│   └── cli.ts                # `neko secrets check / rotate / audit`
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ type/
+â”‚   â”‚   â”œâ”€â”€ secret.ts         # Secret<T> wrapper with redacted serialization
+â”‚   â”‚   â””â”€â”€ tag.ts            # tagged-as-secret marker
+â”‚   â”œâ”€â”€ sources/
+â”‚   â”‚   â”œâ”€â”€ env-file.ts       # .env + .env.local (delegates to env)
+â”‚   â”‚   â”œâ”€â”€ vault.ts          # HashiCorp Vault adapter
+â”‚   â”‚   â”œâ”€â”€ aws-sm.ts         # AWS Secrets Manager
+â”‚   â”‚   â”œâ”€â”€ gcp-sm.ts         # GCP Secret Manager
+â”‚   â”‚   â”œâ”€â”€ op-cli.ts         # 1Password CLI
+â”‚   â”‚   â””â”€â”€ local-dev.ts      # ephemeral dev mode
+â”‚   â”œâ”€â”€ load/
+â”‚   â”‚   â”œâ”€â”€ chain.ts          # source priority + fallback
+â”‚   â”‚   â””â”€â”€ boot.ts           # boot-time required-secret validation
+â”‚   â”œâ”€â”€ rotate/
+â”‚   â”‚   â”œâ”€â”€ policy.ts         # rotation cadence declarations
+â”‚   â”‚   â”œâ”€â”€ grace.ts          # old + new accepted briefly
+â”‚   â”‚   â””â”€â”€ audit.ts
+â”‚   â”œâ”€â”€ scrub/
+â”‚   â”‚   â”œâ”€â”€ log.ts            # log-output egress scrubber
+â”‚   â”‚   â”œâ”€â”€ telemetry.ts
+â”‚   â”‚   â””â”€â”€ error.ts
+â”‚   â”œâ”€â”€ leak-detect/
+â”‚   â”‚   â”œâ”€â”€ code-scan.ts      # CI check for secrets-in-code
+â”‚   â”‚   â””â”€â”€ entropy.ts
+â”‚   â””â”€â”€ cli.ts                # `neko secrets check / rotate / audit`
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — Secret<T> type + redacted serialization
-### v0.2 — Env-file + OS env source adapters
-### v0.3 — Vault + AWS SM adapters
-### v0.4 — Egress scrubbers (log / telemetry / error)
-### v0.5 — Rotation policies + grace periods
-### v0.6 — Secrets-in-code CI detection
-### v0.7 — 1Password / GCP SM adapters
-### v1.0 — Stable API
+### v0.1 â€” Secret<T> type + redacted serialization
+### v0.2 â€” Env-file + OS env source adapters
+### v0.3 â€” Vault + AWS SM adapters
+### v0.4 â€” Egress scrubbers (log / telemetry / error)
+### v0.5 â€” Rotation policies + grace periods
+### v0.6 â€” Secrets-in-code CI detection
+### v0.7 â€” 1Password / GCP SM adapters
+### v1.0 â€” Stable API
 
 ## Product potential
 
-**Internal:** Essential — secret leaks are CVE-level events.
-**Open source release:** Plausible — niche between Doppler (hosted) and rolling your own.
-**Commercial:** Marginal — Doppler / Infisical / Vault dominate.
+**Internal:** Essential â€” secret leaks are CVE-level events.
+**Open source release:** Plausible â€” niche between Doppler (hosted) and rolling your own.
+**Commercial:** Marginal â€” Doppler / Infisical / Vault dominate.
 
 ## Status
 
 - **Current:** Empty placeholder.
 - **Owner:** Cody (solo dev).
 - **Priority tier:** Security. Build early since secret leaks are catastrophic.
-- **Estimated learning return:** High. Secret lifecycle, redaction patterns, rotation strategies, source-adapter design, leak detection — all directly applicable to production security work.
+- **Estimated learning return:** High. Secret lifecycle, redaction patterns, rotation strategies, source-adapter design, leak detection â€” all directly applicable to production security work.

@@ -1,4 +1,4 @@
-# @nekostack/telemetry
+﻿# @nekostack/telemetry
 
 > Typed event schemas, structured ingestion, time-series query, privacy-aware logging. The product-analytics layer. Distinct from `log` (runtime debug), `audit` (compliance-grade), `trace` (request spans), `metrics` (counters), and `events` (event sourcing source-of-truth).
 
@@ -6,12 +6,11 @@
 
 | | |
 |---|---|
-| **Build tier** | Force multiplier — build early, observability is a habit not a retrofit |
+| **Build tier** | Force multiplier â€” build early, observability is a habit not a retrofit |
 | **Depends on** | `schema` (event schemas), `lint` (enforces all events in `*.events.ts` registered to catalog), `secure` (PII scrubbing primitives) |
 | **Used by** | `auth` (access-decision events), `audit` (subset), `rules` (fire events), `entitlements` (usage events), every product surface |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 6–12 weeks focused |
-| **Sellable?** | Plausible OSS (typed-event-catalog niche undersupplied); commercial "self-hosted typed-events analytics" at sub-PostHog pricing tier |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 6â€“12 weeks focused |
 
 ## Why this exists
 
@@ -26,7 +25,7 @@ The first has no schema, no aggregation, no privacy story. The second hits the w
 - Audit which events contain PII.
 - Stop renting and own the data.
 
-`@nekostack/telemetry` is the typed-events-first answer. Every event is defined in a `*.events.ts` file with a schema. The catalog is centrally registered (enforced by `@nekostack/lint`). Emission is typed against the catalog — emitting an undeclared event is a compile error. Sinks (console, file, OpenTelemetry, custom) are pluggable. Time-series queries run against the local store or a remote backend.
+`@nekostack/telemetry` is the typed-events-first answer. Every event is defined in a `*.events.ts` file with a schema. The catalog is centrally registered (enforced by `@nekostack/lint`). Emission is typed against the catalog â€” emitting an undeclared event is a compile error. Sinks (console, file, OpenTelemetry, custom) are pluggable. Time-series queries run against the local store or a remote backend.
 
 Building this yourself rather than using Segment / PostHog / Sentry is justified because:
 1. **Schema discipline.** Generic analytics libraries accept any property bag. Your events are typed and validated.
@@ -48,15 +47,15 @@ Building this yourself rather than using Segment / PostHog / Sentry is justified
 - Time-series aggregation: bucket by minute/hour/day, count/sum/avg.
 
 ### Out of scope
-- Long-term cold storage (Parquet on S3, etc.) — could come later, not in v1.
+- Long-term cold storage (Parquet on S3, etc.) â€” could come later, not in v1.
 - Real-time anomaly detection. Different package or external tool.
-- APM-style distributed tracing — that's `@nekostack/trace`. Telemetry is for events; trace is for spans.
-- Frontend session replay (Hotjar-style) — different shape.
+- APM-style distributed tracing â€” that's `@nekostack/trace`. Telemetry is for events; trace is for spans.
+- Frontend session replay (Hotjar-style) â€” different shape.
 - Marketing analytics dashboards. We provide the data; visualization is consumer-side.
 
 ## Boundary
 
-> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §16 for the full capability map. Critical clarification: telemetry, log, audit, trace, metrics, and events are all distinct.
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) Â§16 for the full capability map. Critical clarification: telemetry, log, audit, trace, metrics, and events are all distinct.
 
 ### Owns
 - Typed event catalog + centralized registry
@@ -98,15 +97,15 @@ The right framing: `@nekostack/telemetry` is **the typed front-end** of an obser
 ## How this fits the NekoStack
 
 **Depends on:**
-- `@nekostack/schema` — event schemas.
-- `@nekostack/lint` — enforces that all events are registered in `*.events.ts` files.
+- `@nekostack/schema` â€” event schemas.
+- `@nekostack/lint` â€” enforces that all events are registered in `*.events.ts` files.
 
 **Used by:**
-- `@nekostack/auth` — emits access-decision events.
-- `@nekostack/audit` — audit events are a tagged subset of telemetry events.
-- `@nekostack/rules` — emits rule-fire events.
-- `@nekostack/entitlements` — emits usage events.
-- Every product surface — `puzzle.completed`, `champion.balance.changed`, `agent.action.taken`, `order.placed`, etc.
+- `@nekostack/auth` â€” emits access-decision events.
+- `@nekostack/audit` â€” audit events are a tagged subset of telemetry events.
+- `@nekostack/rules` â€” emits rule-fire events.
+- `@nekostack/entitlements` â€” emits usage events.
+- Every product surface â€” `puzzle.completed`, `champion.balance.changed`, `agent.action.taken`, `order.placed`, etc.
 
 ## Design philosophy
 
@@ -121,31 +120,31 @@ The right framing: `@nekostack/telemetry` is **the typed front-end** of an obser
 
 ```
 packages/telemetry/
-├── src/
-│   ├── catalog/
-│   │   ├── register.ts       # registerEvent(name, schema)
-│   │   └── lookup.ts
-│   ├── emit/
-│   │   ├── core.ts           # emit() — validates + routes to sinks
-│   │   └── batch.ts          # batching for high-throughput emission
-│   ├── pii/
-│   │   ├── scrub.ts          # redaction
-│   │   └── hash.ts           # SHA-256 hashing of bounded identifiers
-│   ├── sinks/
-│   │   ├── console.ts        # pretty CLI
-│   │   ├── ndjson.ts         # file-based NDJSON
-│   │   ├── sqlite.ts         # local store
-│   │   ├── otlp.ts           # OpenTelemetry OTLP
-│   │   └── custom.ts         # plug-in contract
-│   ├── query/
-│   │   ├── filter.ts         # by time, type, predicate
-│   │   └── aggregate.ts      # time-bucket aggregation
-│   ├── sample/
-│   │   └── head.ts           # head sampling strategies
-│   └── replay/
-│       └── replay.ts         # replay recorded events
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ catalog/
+â”‚   â”‚   â”œâ”€â”€ register.ts       # registerEvent(name, schema)
+â”‚   â”‚   â””â”€â”€ lookup.ts
+â”‚   â”œâ”€â”€ emit/
+â”‚   â”‚   â”œâ”€â”€ core.ts           # emit() â€” validates + routes to sinks
+â”‚   â”‚   â””â”€â”€ batch.ts          # batching for high-throughput emission
+â”‚   â”œâ”€â”€ pii/
+â”‚   â”‚   â”œâ”€â”€ scrub.ts          # redaction
+â”‚   â”‚   â””â”€â”€ hash.ts           # SHA-256 hashing of bounded identifiers
+â”‚   â”œâ”€â”€ sinks/
+â”‚   â”‚   â”œâ”€â”€ console.ts        # pretty CLI
+â”‚   â”‚   â”œâ”€â”€ ndjson.ts         # file-based NDJSON
+â”‚   â”‚   â”œâ”€â”€ sqlite.ts         # local store
+â”‚   â”‚   â”œâ”€â”€ otlp.ts           # OpenTelemetry OTLP
+â”‚   â”‚   â””â”€â”€ custom.ts         # plug-in contract
+â”‚   â”œâ”€â”€ query/
+â”‚   â”‚   â”œâ”€â”€ filter.ts         # by time, type, predicate
+â”‚   â”‚   â””â”€â”€ aggregate.ts      # time-bucket aggregation
+â”‚   â”œâ”€â”€ sample/
+â”‚   â”‚   â””â”€â”€ head.ts           # head sampling strategies
+â”‚   â””â”€â”€ replay/
+â”‚       â””â”€â”€ replay.ts         # replay recorded events
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 Defining and emitting:
@@ -193,32 +192,32 @@ const dailyCounts = telemetry.aggregate(completions, {
 
 ## Roadmap
 
-### v0.1 — Schema + emit
+### v0.1 â€” Schema + emit
 - `defineEvent`, `registerEvent`, `emit`.
 - Console sink only.
 
-### v0.2 — File sinks
+### v0.2 â€” File sinks
 - NDJSON file sink.
 - SQLite sink with timestamped table.
 
-### v0.3 — PII handling
+### v0.3 â€” PII handling
 - Field tagging.
 - Scrub/hash egress filters.
 
-### v0.4 — Sampling
+### v0.4 â€” Sampling
 - Head sampling configuration.
 
-### v0.5 — Query layer
+### v0.5 â€” Query layer
 - Filter API, time-range, predicate.
 - Time-bucket aggregation.
 
-### v0.6 — OTLP sink
+### v0.6 â€” OTLP sink
 - OpenTelemetry export for production.
 
-### v0.7 — Replay
+### v0.7 â€” Replay
 - Recorded-event replay tool (`neko telemetry replay`).
 
-### v1.0 — Stable API
+### v1.0 â€” Stable API
 - Documentation site with patterns: product analytics, audit, anti-cheat signals.
 - Performance benchmarks (events/sec at each sink).
 
@@ -228,7 +227,6 @@ const dailyCounts = telemetry.aggregate(completions, {
 
 **Open source release:** Plausible. The typed-event-catalog pattern is genuinely undersupplied in JS observability. Most tools are either too generic (Segment) or too heavy (PostHog). A small typed-first library could attract users. MIT release.
 
-**Commercial product:** Plausible as **"hosted typed-events analytics"** at a friendlier price point than PostHog. Niche but real. Alternatively, as a self-hosted appliance.
 
 **Estimated effort to v1.0:** 6-12 weeks of focused work. Core is small; the sinks and the query layer are where time goes.
 
@@ -236,5 +234,5 @@ const dailyCounts = telemetry.aggregate(completions, {
 
 - **Current:** Empty placeholder. Not started.
 - **Owner:** Cody (solo dev project).
-- **Priority tier:** Force multiplier. Build early — observability is a habit, and if it's not there from day one it never gets retrofitted properly.
-- **Estimated learning return:** High. Event schema design, time-series patterns, sink architecture, PII discipline, sampling strategies — all transferable to any future data-pipeline work.
+- **Priority tier:** Force multiplier. Build early â€” observability is a habit, and if it's not there from day one it never gets retrofitted properly.
+- **Estimated learning return:** High. Event schema design, time-series patterns, sink architecture, PII discipline, sampling strategies â€” all transferable to any future data-pipeline work.

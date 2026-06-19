@@ -1,4 +1,4 @@
-# @nekostack/md
+﻿# @nekostack/md
 
 > Markdown processing with custom plugins. Frontmatter parsing, code highlighting, math, cross-references, embeds. The substrate beneath `docs`, `wiki`, `editor`, narrative tooling.
 
@@ -6,12 +6,11 @@
 
 | | |
 |---|---|
-| **Build tier** | Frontend depth — content substrate |
+| **Build tier** | Frontend depth â€” content substrate |
 | **Depends on** | `schema` (frontmatter shapes); external: unified / remark / rehype |
 | **Used by** | `docs` (doc generation), `wiki` (page rendering), `editor` (markdown round-trip), `cms` (markdown content), Mara Kane (narrative drafts), NekoSystems (tenant-facing docs + knowledge content) |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 4–8 weeks focused |
-| **Sellable?** | Low — unified/remark dominate; integration angle |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 4â€“8 weeks focused |
 
 ## Why this exists
 
@@ -26,7 +25,7 @@ You have a *lot* of markdown across projects. Every consumer needs slightly diff
 - Code highlighting (Shiki / Prism).
 - Math (KaTeX).
 - Custom plugins (entity links to `codex`, boundary refs to BOUNDARIES.md).
-- Markdown → AST → markdown round-trip (for `editor`).
+- Markdown â†’ AST â†’ markdown round-trip (for `editor`).
 - Linting (broken links, missing frontmatter fields).
 
 ### Out of scope
@@ -43,7 +42,7 @@ You have a *lot* of markdown across projects. Every consumer needs slightly diff
 - Code highlighting
 - Math rendering
 - Custom plugins (codex links, boundary refs)
-- Round-trip (md → AST → md)
+- Round-trip (md â†’ AST â†’ md)
 - Markdown linting
 
 ### Does NOT own
@@ -73,45 +72,45 @@ You have a *lot* of markdown across projects. Every consumer needs slightly diff
 
 - **unified/remark substrate.** Don't reinvent.
 - **Custom plugins for NekoStack conventions.** Codex entity refs, boundary refs.
-- **Round-trip-clean.** Markdown → AST → markdown produces identical output.
+- **Round-trip-clean.** Markdown â†’ AST â†’ markdown produces identical output.
 
 ## Architecture sketch
 
 ```
 packages/md/
-├── src/
-│   ├── parse/
-│   │   └── remark.ts
-│   ├── render/
-│   │   ├── html.ts
-│   │   └── jsx.tsx
-│   ├── frontmatter/
-│   │   └── parse.ts            # schema-validated
-│   ├── highlight/
-│   │   └── shiki.ts
-│   ├── math/
-│   │   └── katex.ts
-│   ├── plugins/
-│   │   ├── codex-entity.ts
-│   │   └── boundary-ref.ts
-│   ├── round-trip/
-│   │   └── stringify.ts
-│   └── lint/
-│       └── check.ts
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ parse/
+â”‚   â”‚   â””â”€â”€ remark.ts
+â”‚   â”œâ”€â”€ render/
+â”‚   â”‚   â”œâ”€â”€ html.ts
+â”‚   â”‚   â””â”€â”€ jsx.tsx
+â”‚   â”œâ”€â”€ frontmatter/
+â”‚   â”‚   â””â”€â”€ parse.ts            # schema-validated
+â”‚   â”œâ”€â”€ highlight/
+â”‚   â”‚   â””â”€â”€ shiki.ts
+â”‚   â”œâ”€â”€ math/
+â”‚   â”‚   â””â”€â”€ katex.ts
+â”‚   â”œâ”€â”€ plugins/
+â”‚   â”‚   â”œâ”€â”€ codex-entity.ts
+â”‚   â”‚   â””â”€â”€ boundary-ref.ts
+â”‚   â”œâ”€â”€ round-trip/
+â”‚   â”‚   â””â”€â”€ stringify.ts
+â”‚   â””â”€â”€ lint/
+â”‚       â””â”€â”€ check.ts
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — unified/remark wrapper
-### v0.2 — Frontmatter parsing
-### v0.3 — Code highlighting
-### v0.4 — Math
-### v0.5 — Custom plugins
-### v0.6 — Round-trip
-### v0.7 — Linting
-### v1.0 — Stable API
+### v0.1 â€” unified/remark wrapper
+### v0.2 â€” Frontmatter parsing
+### v0.3 â€” Code highlighting
+### v0.4 â€” Math
+### v0.5 â€” Custom plugins
+### v0.6 â€” Round-trip
+### v0.7 â€” Linting
+### v1.0 â€” Stable API
 
 ## Product potential
 
@@ -123,5 +122,5 @@ packages/md/
 
 - **Current:** Empty placeholder.
 - **Owner:** Cody (solo dev).
-- **Priority tier:** Frontend depth — content substrate.
+- **Priority tier:** Frontend depth â€” content substrate.
 - **Estimated learning return:** Moderate. AST manipulation, plugin authoring, round-trip semantics.

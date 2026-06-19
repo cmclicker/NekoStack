@@ -1,4 +1,4 @@
-# @nekostack/actions
+﻿# @nekostack/actions
 
 > Unified action / command registry across CLI + UI + agents. Permission-aware, audited, undoable. The "what's the canonical name for this operation?" layer.
 
@@ -9,13 +9,12 @@
 | **Build tier** | Utility primitives |
 | **Depends on** | `schema` (action input/output), `permissions`, `audit`, `cli` (CLI surface), `ui` (command palette surface), `tools` (agent surface), `changeset` (undoable actions) |
 | **Used by** | `cli` (subcommands as actions), `ui` (command palette), `tools` (LLM tool registry parity), `admin` (bulk actions), any product action |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 6–10 weeks focused |
-| **Sellable?** | Modest — command-palette niche |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 6â€“10 weeks focused |
 
 ## Why this exists
 
-The same operation ("delete this champion") might be invoked from CLI (`neko champion delete`), UI command palette (Cmd+K → "Delete champion"), keyboard shortcut, or LLM tool call. Without a unified registry, each surface re-declares. `actions` is the unification.
+The same operation ("delete this champion") might be invoked from CLI (`neko champion delete`), UI command palette (Cmd+K â†’ "Delete champion"), keyboard shortcut, or LLM tool call. Without a unified registry, each surface re-declares. `actions` is the unification.
 
 ## Scope
 
@@ -34,7 +33,7 @@ The same operation ("delete this champion") might be invoked from CLI (`neko cha
 - CLI argv parsing (`cli`).
 - Command palette UI (`ui`).
 - Permission catalog (`permissions`).
-- Tool registry for LLM (`tools` — we parallel).
+- Tool registry for LLM (`tools` â€” we parallel).
 
 ## Boundary
 
@@ -82,36 +81,36 @@ The same operation ("delete this champion") might be invoked from CLI (`neko cha
 
 ```
 packages/actions/
-├── src/
-│   ├── registry/
-│   │   └── catalog.ts
-│   ├── binding/
-│   │   ├── cli.ts
-│   │   ├── ui.ts
-│   │   ├── shortcut.ts
-│   │   └── tool.ts
-│   ├── execute/
-│   │   └── invoke.ts
-│   ├── permission/
-│   │   └── gate.ts             # via permissions
-│   ├── audit/
-│   │   └── emit.ts
-│   └── undoable/
-│       └── via-changeset.ts
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ registry/
+â”‚   â”‚   â””â”€â”€ catalog.ts
+â”‚   â”œâ”€â”€ binding/
+â”‚   â”‚   â”œâ”€â”€ cli.ts
+â”‚   â”‚   â”œâ”€â”€ ui.ts
+â”‚   â”‚   â”œâ”€â”€ shortcut.ts
+â”‚   â”‚   â””â”€â”€ tool.ts
+â”‚   â”œâ”€â”€ execute/
+â”‚   â”‚   â””â”€â”€ invoke.ts
+â”‚   â”œâ”€â”€ permission/
+â”‚   â”‚   â””â”€â”€ gate.ts             # via permissions
+â”‚   â”œâ”€â”€ audit/
+â”‚   â”‚   â””â”€â”€ emit.ts
+â”‚   â””â”€â”€ undoable/
+â”‚       â””â”€â”€ via-changeset.ts
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — Action registry
-### v0.2 — CLI binding
-### v0.3 — UI command palette binding
-### v0.4 — Keyboard shortcuts
-### v0.5 — Tool-call binding (LLM)
-### v0.6 — Permission + audit
-### v0.7 — Undoable actions
-### v1.0 — Stable API
+### v0.1 â€” Action registry
+### v0.2 â€” CLI binding
+### v0.3 â€” UI command palette binding
+### v0.4 â€” Keyboard shortcuts
+### v0.5 â€” Tool-call binding (LLM)
+### v0.6 â€” Permission + audit
+### v0.7 â€” Undoable actions
+### v1.0 â€” Stable API
 
 ## Product potential
 

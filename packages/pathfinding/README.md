@@ -1,6 +1,6 @@
-# @nekostack/pathfinding
+﻿# @nekostack/pathfinding
 
-> A*, Dijkstra, jump-point search, navmesh, hierarchical pathfinding. Spatial path-planning algorithms. Distinct from `graph` (generic graph) — pathfinding is spatial-aware.
+> A*, Dijkstra, jump-point search, navmesh, hierarchical pathfinding. Spatial path-planning algorithms. Distinct from `graph` (generic graph) â€” pathfinding is spatial-aware.
 
 ## Quick reference
 
@@ -9,9 +9,8 @@
 | **Build tier** | Game systems |
 | **Depends on** | `schema`, `graph` (substrate for graph-shaped maps), `tilemap` (spatial grid representation) |
 | **Used by** | Leytide (NPC + player navigation), tower defense, any game with worlds bigger than a screen |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 6–10 weeks focused |
-| **Sellable?** | Plausible OSS — solid TS pathfinding library is undersupplied |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 6â€“10 weeks focused |
 
 ## Why this exists
 
@@ -19,7 +18,7 @@ Pathfinding is well-studied. JS implementations exist but are mostly toys. Real 
 - A* with custom heuristics.
 - Jump-point search (faster on grids).
 - Navmesh (for non-grid worlds).
-- Hierarchical pathfinding (HPA* — cluster-then-refine for huge worlds).
+- Hierarchical pathfinding (HPA* â€” cluster-then-refine for huge worlds).
 - Dynamic re-planning on obstacle changes.
 
 `pathfinding` is the TS implementation.
@@ -44,7 +43,7 @@ Pathfinding is well-studied. JS implementations exist but are mostly toys. Real 
 
 ## Boundary
 
-> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §43 for the full capability map.
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) Â§43 for the full capability map.
 
 ### Owns
 - A* / Dijkstra / JPS
@@ -79,7 +78,7 @@ Pathfinding is well-studied. JS implementations exist but are mostly toys. Real 
 
 ## Design philosophy
 
-- **Multiple algorithms.** Right tool for the map (grid → JPS; mesh → navmesh-A*; huge → HPA*).
+- **Multiple algorithms.** Right tool for the map (grid â†’ JPS; mesh â†’ navmesh-A*; huge â†’ HPA*).
 - **Custom heuristics.** Plug in distance functions.
 - **Dynamic re-plan.** Obstacles appear; recompute affected paths.
 
@@ -87,45 +86,45 @@ Pathfinding is well-studied. JS implementations exist but are mostly toys. Real 
 
 ```
 packages/pathfinding/
-├── src/
-│   ├── a-star/
-│   │   ├── search.ts
-│   │   └── heuristic.ts
-│   ├── dijkstra/
-│   │   └── search.ts
-│   ├── jps/
-│   │   └── jump-point.ts
-│   ├── navmesh/
-│   │   ├── mesh.ts
-│   │   └── search.ts
-│   ├── hierarchical/
-│   │   └── hpa.ts
-│   ├── smooth/
-│   │   └── path.ts
-│   ├── multi-agent/
-│   │   └── cooperative.ts
-│   └── dynamic/
-│       └── replan.ts
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ a-star/
+â”‚   â”‚   â”œâ”€â”€ search.ts
+â”‚   â”‚   â””â”€â”€ heuristic.ts
+â”‚   â”œâ”€â”€ dijkstra/
+â”‚   â”‚   â””â”€â”€ search.ts
+â”‚   â”œâ”€â”€ jps/
+â”‚   â”‚   â””â”€â”€ jump-point.ts
+â”‚   â”œâ”€â”€ navmesh/
+â”‚   â”‚   â”œâ”€â”€ mesh.ts
+â”‚   â”‚   â””â”€â”€ search.ts
+â”‚   â”œâ”€â”€ hierarchical/
+â”‚   â”‚   â””â”€â”€ hpa.ts
+â”‚   â”œâ”€â”€ smooth/
+â”‚   â”‚   â””â”€â”€ path.ts
+â”‚   â”œâ”€â”€ multi-agent/
+â”‚   â”‚   â””â”€â”€ cooperative.ts
+â”‚   â””â”€â”€ dynamic/
+â”‚       â””â”€â”€ replan.ts
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — A* + heuristics
-### v0.2 — Dijkstra
-### v0.3 — JPS for grids
-### v0.4 — Navmesh
-### v0.5 — Path smoothing
-### v0.6 — HPA*
-### v0.7 — Dynamic re-planning
-### v0.8 — Multi-agent
-### v1.0 — Stable API
+### v0.1 â€” A* + heuristics
+### v0.2 â€” Dijkstra
+### v0.3 â€” JPS for grids
+### v0.4 â€” Navmesh
+### v0.5 â€” Path smoothing
+### v0.6 â€” HPA*
+### v0.7 â€” Dynamic re-planning
+### v0.8 â€” Multi-agent
+### v1.0 â€” Stable API
 
 ## Product potential
 
 **Internal:** Critical for Leytide.
-**Open source release:** Plausible — TS pathfinding gap.
+**Open source release:** Plausible â€” TS pathfinding gap.
 **Commercial:** Marginal.
 
 ## Status
@@ -133,4 +132,4 @@ packages/pathfinding/
 - **Current:** Empty placeholder.
 - **Owner:** Cody (solo dev).
 - **Priority tier:** Game systems.
-- **Estimated learning return:** Very high. A* / heuristics / JPS / navmesh — classic and important CS.
+- **Estimated learning return:** Very high. A* / heuristics / JPS / navmesh â€” classic and important CS.

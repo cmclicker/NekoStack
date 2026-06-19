@@ -1,4 +1,4 @@
-# @nekostack/tools
+﻿# @nekostack/tools
 
 > Agent function / tool registry. Schema-validated tool definitions, sandboxed execution via `sandbox`, observability. The "what can the LLM actually do?" layer.
 
@@ -9,9 +9,8 @@
 | **Build tier** | AI / LLM |
 | **Depends on** | `schema` (tool input/output), `prompts` (tools registered with prompts), `sandbox` (safe execution), `audit` (tool call audit), `provenance`, `permissions` (tool authorization), `governance` (forbidden tools) |
 | **Used by** | NekoSystems (agentic features inside the Business-OS SaaS), `chat` (tool-using conversations), any agentic application |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 8–14 weeks focused |
-| **Sellable?** | Strong — agent tool-use is a major commercial space |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 8â€“14 weeks focused |
 
 ## Why this exists
 
@@ -33,7 +32,7 @@ Modern LLMs do tool-calling: "search for X", "open this file", "execute this com
 - Sandboxed execution via `sandbox`.
 - Tool-call audit + telemetry.
 - Tool result validation.
-- Provider-format mapping (Anthropic tool format ↔ OpenAI tool format).
+- Provider-format mapping (Anthropic tool format â†” OpenAI tool format).
 - Tool composition (call multiple tools, chain results).
 
 ### Out of scope
@@ -44,7 +43,7 @@ Modern LLMs do tool-calling: "search for X", "open this file", "execute this com
 
 ## Boundary
 
-> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §41 for the full capability map.
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) Â§41 for the full capability map.
 
 ### Owns
 - Tool definition DSL
@@ -94,47 +93,47 @@ Modern LLMs do tool-calling: "search for X", "open this file", "execute this com
 
 ```
 packages/tools/
-├── src/
-│   ├── define/
-│   │   └── tool.ts            # defineTool({ input, output, handler, auth })
-│   ├── registry/
-│   │   └── catalog.ts
-│   ├── authorize/
-│   │   └── check.ts           # via permissions
-│   ├── execute/
-│   │   └── via-sandbox.ts
-│   ├── format/
-│   │   ├── anthropic.ts
-│   │   └── openai.ts
-│   ├── compose/
-│   │   └── chain.ts
-│   ├── audit/
-│   │   └── emit.ts
-│   └── cli.ts
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ define/
+â”‚   â”‚   â””â”€â”€ tool.ts            # defineTool({ input, output, handler, auth })
+â”‚   â”œâ”€â”€ registry/
+â”‚   â”‚   â””â”€â”€ catalog.ts
+â”‚   â”œâ”€â”€ authorize/
+â”‚   â”‚   â””â”€â”€ check.ts           # via permissions
+â”‚   â”œâ”€â”€ execute/
+â”‚   â”‚   â””â”€â”€ via-sandbox.ts
+â”‚   â”œâ”€â”€ format/
+â”‚   â”‚   â”œâ”€â”€ anthropic.ts
+â”‚   â”‚   â””â”€â”€ openai.ts
+â”‚   â”œâ”€â”€ compose/
+â”‚   â”‚   â””â”€â”€ chain.ts
+â”‚   â”œâ”€â”€ audit/
+â”‚   â”‚   â””â”€â”€ emit.ts
+â”‚   â””â”€â”€ cli.ts
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — Tool definition + registry
-### v0.2 — Anthropic format mapping
-### v0.3 — OpenAI format mapping
-### v0.4 — Authorization
-### v0.5 — Sandbox execution integration
-### v0.6 — Audit + telemetry
-### v0.7 — Composition / chaining
-### v1.0 — Stable API
+### v0.1 â€” Tool definition + registry
+### v0.2 â€” Anthropic format mapping
+### v0.3 â€” OpenAI format mapping
+### v0.4 â€” Authorization
+### v0.5 â€” Sandbox execution integration
+### v0.6 â€” Audit + telemetry
+### v0.7 â€” Composition / chaining
+### v1.0 â€” Stable API
 
 ## Product potential
 
 **Internal:** Critical for NekoSystems.
-**Open source release:** Strong — provider-neutral tool registry is undersupplied.
-**Commercial:** Real — agent platforms are a hot space.
+**Open source release:** Strong â€” provider-neutral tool registry is undersupplied.
+**Commercial:** Real â€” agent platforms are a hot space.
 
 ## Status
 
 - **Current:** Empty placeholder.
 - **Owner:** Cody (solo dev).
 - **Priority tier:** AI / LLM.
-- **Estimated learning return:** Very high. Tool-use semantics, authorization patterns, provider format mapping — increasingly important.
+- **Estimated learning return:** Very high. Tool-use semantics, authorization patterns, provider format mapping â€” increasingly important.

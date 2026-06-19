@@ -1,4 +1,4 @@
-# @nekostack/graph
+﻿# @nekostack/graph
 
 > Generic graph primitives: DAG, cycle detection, topological sort, traversal, shortest path (non-spatial), diffing. The "non-spatial-graph algorithms" foundation.
 
@@ -9,9 +9,8 @@
 | **Build tier** | Utility primitives |
 | **Depends on** | `schema` (graph type definitions) |
 | **Used by** | `codex` (entity graph), `decision` (decision dependency graph), `workspace` (package dependency graph), `path` (roadmap milestone graph), `progression` (unlock graph), `taxonomy` (hierarchy) |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 4–8 weeks focused |
-| **Sellable?** | Low — substrate |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 4â€“8 weeks focused |
 
 ## Why this exists
 
@@ -26,13 +25,13 @@ Note: `pathfinding` is for **spatial** paths (A* on maps). `graph` is for non-sp
 - Cycle detection.
 - Topological sort.
 - BFS / DFS traversal.
-- Shortest path (non-spatial — Dijkstra over arbitrary edge weights).
+- Shortest path (non-spatial â€” Dijkstra over arbitrary edge weights).
 - Graph diffing (compare two graphs).
 - Graph serialization (DOT / JSON).
 
 ### Out of scope
 - Spatial pathfinding (`pathfinding`).
-- Typed entity graph (`codex` — uses us).
+- Typed entity graph (`codex` â€” uses us).
 - Visualization rendering (`canvas` / external).
 
 ## Boundary
@@ -78,36 +77,36 @@ Note: `pathfinding` is for **spatial** paths (A* on maps). `graph` is for non-sp
 
 ```
 packages/graph/
-├── src/
-│   ├── dag/
-│   │   └── primitives.ts
-│   ├── cycle/
-│   │   └── detect.ts
-│   ├── topo-sort/
-│   │   └── sort.ts
-│   ├── traverse/
-│   │   ├── bfs.ts
-│   │   └── dfs.ts
-│   ├── shortest-path/
-│   │   └── dijkstra.ts
-│   ├── diff/
-│   │   └── compare.ts
-│   └── serialize/
-│       ├── dot.ts
-│       └── json.ts
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ dag/
+â”‚   â”‚   â””â”€â”€ primitives.ts
+â”‚   â”œâ”€â”€ cycle/
+â”‚   â”‚   â””â”€â”€ detect.ts
+â”‚   â”œâ”€â”€ topo-sort/
+â”‚   â”‚   â””â”€â”€ sort.ts
+â”‚   â”œâ”€â”€ traverse/
+â”‚   â”‚   â”œâ”€â”€ bfs.ts
+â”‚   â”‚   â””â”€â”€ dfs.ts
+â”‚   â”œâ”€â”€ shortest-path/
+â”‚   â”‚   â””â”€â”€ dijkstra.ts
+â”‚   â”œâ”€â”€ diff/
+â”‚   â”‚   â””â”€â”€ compare.ts
+â”‚   â””â”€â”€ serialize/
+â”‚       â”œâ”€â”€ dot.ts
+â”‚       â””â”€â”€ json.ts
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — DAG primitives + cycle detection
-### v0.2 — Topological sort
-### v0.3 — Traversal (BFS/DFS)
-### v0.4 — Shortest path
-### v0.5 — Diffing
-### v0.6 — Serialization
-### v1.0 — Stable API
+### v0.1 â€” DAG primitives + cycle detection
+### v0.2 â€” Topological sort
+### v0.3 â€” Traversal (BFS/DFS)
+### v0.4 â€” Shortest path
+### v0.5 â€” Diffing
+### v0.6 â€” Serialization
+### v1.0 â€” Stable API
 
 ## Product potential
 
@@ -120,4 +119,4 @@ packages/graph/
 - **Current:** Empty placeholder.
 - **Owner:** Cody (solo dev).
 - **Priority tier:** Utility primitives.
-- **Estimated learning return:** Very high. Classic graph algorithms — DAG, topological sort, traversal, shortest path — fundamental CS.
+- **Estimated learning return:** Very high. Classic graph algorithms â€” DAG, topological sort, traversal, shortest path â€” fundamental CS.

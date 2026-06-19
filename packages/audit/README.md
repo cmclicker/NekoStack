@@ -1,4 +1,4 @@
-# @nekostack/audit
+﻿# @nekostack/audit
 
 > Tamper-evident audit log infrastructure. Append-only, hash-chained, queryable. The compliance-grade record of "who did what, when." Distinct from `log` (debug), `telemetry` (analytics), `trace` (spans), `events` (event sourcing).
 
@@ -6,12 +6,11 @@
 
 | | |
 |---|---|
-| **Build tier** | Observability — compliance-grade |
+| **Build tier** | Observability â€” compliance-grade |
 | **Depends on** | `schema` (audit record shape), `crypto` (hash chain), `tenant` (tenant scope), `time`, `storage` (durable log storage) |
 | **Used by** | `auth` (AccessDecision audits), `permissions` (role changes), `entitlements` (denials), `flags` (changes), `billing` (subscription changes), `governance` (waivers), `actions` (action audit), `secrets` (access audit), `import` / `export` (data movement audit), every sensitive operation |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 8–12 weeks focused |
-| **Sellable?** | Plausible — compliance-grade audit-as-a-library is undersupplied; commercial as part of compliance offering |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 8â€“12 weeks focused |
 
 ## Why this exists
 
@@ -48,7 +47,7 @@ The right shape for audit is fundamentally different from logging:
 
 ## Boundary
 
-> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §21 for the full capability map.
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) Â§21 for the full capability map.
 
 ### Owns
 - Audit event records
@@ -101,50 +100,50 @@ The right shape for audit is fundamentally different from logging:
 
 ```
 packages/audit/
-├── src/
-│   ├── record/
-│   │   ├── event.ts          # AuditEvent type
-│   │   └── catalog.ts        # registered event kinds
-│   ├── chain/
-│   │   ├── hash.ts           # SHA-256 chaining
-│   │   └── verify.ts         # chain integrity check
-│   ├── storage/
-│   │   ├── append.ts         # append-only writes
-│   │   └── adapter.ts        # SQLite / Postgres / S3
-│   ├── query/
-│   │   ├── by-tenant.ts
-│   │   ├── by-subject.ts
-│   │   ├── by-actor.ts
-│   │   └── by-time.ts
-│   ├── retention/
-│   │   ├── policy.ts
-│   │   └── enforce.ts        # delete expired records
-│   ├── export/
-│   │   └── via-export.ts     # integration with @nekostack/export
-│   └── cli.ts
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ record/
+â”‚   â”‚   â”œâ”€â”€ event.ts          # AuditEvent type
+â”‚   â”‚   â””â”€â”€ catalog.ts        # registered event kinds
+â”‚   â”œâ”€â”€ chain/
+â”‚   â”‚   â”œâ”€â”€ hash.ts           # SHA-256 chaining
+â”‚   â”‚   â””â”€â”€ verify.ts         # chain integrity check
+â”‚   â”œâ”€â”€ storage/
+â”‚   â”‚   â”œâ”€â”€ append.ts         # append-only writes
+â”‚   â”‚   â””â”€â”€ adapter.ts        # SQLite / Postgres / S3
+â”‚   â”œâ”€â”€ query/
+â”‚   â”‚   â”œâ”€â”€ by-tenant.ts
+â”‚   â”‚   â”œâ”€â”€ by-subject.ts
+â”‚   â”‚   â”œâ”€â”€ by-actor.ts
+â”‚   â”‚   â””â”€â”€ by-time.ts
+â”‚   â”œâ”€â”€ retention/
+â”‚   â”‚   â”œâ”€â”€ policy.ts
+â”‚   â”‚   â””â”€â”€ enforce.ts        # delete expired records
+â”‚   â”œâ”€â”€ export/
+â”‚   â”‚   â””â”€â”€ via-export.ts     # integration with @nekostack/export
+â”‚   â””â”€â”€ cli.ts
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — Audit event schema + append
-### v0.2 — Hash chain
-### v0.3 — Query API (tenant / subject / actor / time)
-### v0.4 — Retention enforcement
-### v0.5 — Verification (`audit verify` reports chain integrity)
-### v0.6 — Export integration
-### v1.0 — Stable API
+### v0.1 â€” Audit event schema + append
+### v0.2 â€” Hash chain
+### v0.3 â€” Query API (tenant / subject / actor / time)
+### v0.4 â€” Retention enforcement
+### v0.5 â€” Verification (`audit verify` reports chain integrity)
+### v0.6 â€” Export integration
+### v1.0 â€” Stable API
 
 ## Product potential
 
 **Internal:** Critical for any product with compliance / regulatory exposure.
-**Open source release:** Plausible — tamper-evident audit library is undersupplied.
-**Commercial:** Real — compliance tooling is a growing market.
+**Open source release:** Plausible â€” tamper-evident audit library is undersupplied.
+**Commercial:** Real â€” compliance tooling is a growing market.
 
 ## Status
 
 - **Current:** Empty placeholder.
 - **Owner:** Cody (solo dev).
 - **Priority tier:** Observability / compliance.
-- **Estimated learning return:** Very high. Append-only log design, hash chains, retention enforcement, audit query patterns — foundational compliance + security engineering.
+- **Estimated learning return:** Very high. Append-only log design, hash chains, retention enforcement, audit query patterns â€” foundational compliance + security engineering.

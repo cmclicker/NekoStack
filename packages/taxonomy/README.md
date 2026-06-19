@@ -1,4 +1,4 @@
-# @nekostack/taxonomy
+﻿# @nekostack/taxonomy
 
 > Tags / categories / hierarchies / aliases. The "how do we classify this?" layer. Powers tag clouds, filters, search facets, content navigation.
 
@@ -9,9 +9,8 @@
 | **Build tier** | Content / narrative |
 | **Depends on** | `schema`, `codex` (entities can be tagged), `graph` (hierarchy as DAG), `search` (faceted filters consume), `audit` |
 | **Used by** | `search` (faceted filters), `cms` (content tagging), `wiki` (category navigation), NekoLife (activities tagged by domain), NekoBattler (champion tags), any content-classified project |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 4–8 weeks focused |
-| **Sellable?** | Modest — taxonomy primitive niche |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 4â€“8 weeks focused |
 
 ## Why this exists
 
@@ -77,37 +76,37 @@ Every content product has tagging. Most reinvent: free-form strings vs registere
 
 ```
 packages/taxonomy/
-├── src/
-│   ├── catalog/
-│   │   ├── register.ts
-│   │   └── normalize.ts
-│   ├── hierarchy/
-│   │   └── tree.ts             # via graph
-│   ├── aliases/
-│   │   └── synonym.ts
-│   ├── multi-tag/
-│   │   └── apply.ts
-│   ├── filter/
-│   │   └── by-tag.ts
-│   ├── operations/
-│   │   ├── merge.ts
-│   │   ├── split.ts
-│   │   └── rename.ts
-│   └── analytics/
-│       └── usage.ts
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ catalog/
+â”‚   â”‚   â”œâ”€â”€ register.ts
+â”‚   â”‚   â””â”€â”€ normalize.ts
+â”‚   â”œâ”€â”€ hierarchy/
+â”‚   â”‚   â””â”€â”€ tree.ts             # via graph
+â”‚   â”œâ”€â”€ aliases/
+â”‚   â”‚   â””â”€â”€ synonym.ts
+â”‚   â”œâ”€â”€ multi-tag/
+â”‚   â”‚   â””â”€â”€ apply.ts
+â”‚   â”œâ”€â”€ filter/
+â”‚   â”‚   â””â”€â”€ by-tag.ts
+â”‚   â”œâ”€â”€ operations/
+â”‚   â”‚   â”œâ”€â”€ merge.ts
+â”‚   â”‚   â”œâ”€â”€ split.ts
+â”‚   â”‚   â””â”€â”€ rename.ts
+â”‚   â””â”€â”€ analytics/
+â”‚       â””â”€â”€ usage.ts
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — Catalog + normalization
-### v0.2 — Hierarchy
-### v0.3 — Aliases
-### v0.4 — Multi-tagging
-### v0.5 — Filters
-### v0.6 — Merge / split / rename
-### v1.0 — Stable API
+### v0.1 â€” Catalog + normalization
+### v0.2 â€” Hierarchy
+### v0.3 â€” Aliases
+### v0.4 â€” Multi-tagging
+### v0.5 â€” Filters
+### v0.6 â€” Merge / split / rename
+### v1.0 â€” Stable API
 
 ## Product potential
 

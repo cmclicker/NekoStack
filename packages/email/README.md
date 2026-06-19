@@ -1,4 +1,4 @@
-# @nekostack/email
+﻿# @nekostack/email
 
 > Email-specific: templates, deliverability, bounce handling, list hygiene. The email channel that `notify` dispatches through, plus standalone use for receipts / dunning / marketing.
 
@@ -9,16 +9,15 @@
 | **Build tier** | SaaS layer |
 | **Depends on** | `schema` (email template metadata), `audit` (sends audited), `secrets` (Resend API key), Resend SDK (or SendGrid / AWS SES adapters) |
 | **Used by** | `notify` (email channel), `billing` (receipts + dunning), `auth` (verification + password reset), every product sending email |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 4–8 weeks focused |
-| **Sellable?** | Modest — Resend / Postmark / SendGrid dominate; library-level integration value |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 4â€“8 weeks focused |
 
 ## Why this exists
 
 Every product sends emails. The recurring problems:
 - Template rendering with localization (`locale` integration).
 - Bounce handling (suppress further sends to bouncing addresses).
-- Deliverability (SPF / DKIM / DMARC awareness — though setup is operational).
+- Deliverability (SPF / DKIM / DMARC awareness â€” though setup is operational).
 - Unsubscribe link generation + handling.
 - List hygiene (don't email suppressed addresses).
 
@@ -44,7 +43,7 @@ A thin wrapper over Resend (or SES / Postmark via adapter) handles these once. N
 
 ## Boundary
 
-> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §14 for the full capability map.
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) Â§14 for the full capability map.
 
 ### Owns
 - Email template authoring + rendering
@@ -93,45 +92,45 @@ A thin wrapper over Resend (or SES / Postmark via adapter) handles these once. N
 
 ```
 packages/email/
-├── src/
-│   ├── send/
-│   │   ├── send.ts
-│   │   └── test-mode.ts
-│   ├── adapters/
-│   │   ├── resend.ts
-│   │   ├── sendgrid.ts
-│   │   └── ses.ts
-│   ├── template/
-│   │   ├── react-email.ts
-│   │   └── render.ts
-│   ├── bounce/
-│   │   ├── handler.ts
-│   │   └── webhook.ts
-│   ├── suppression/
-│   │   └── list.ts
-│   ├── unsubscribe/
-│   │   ├── token.ts
-│   │   └── link.ts
-│   └── cli.ts
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ send/
+â”‚   â”‚   â”œâ”€â”€ send.ts
+â”‚   â”‚   â””â”€â”€ test-mode.ts
+â”‚   â”œâ”€â”€ adapters/
+â”‚   â”‚   â”œâ”€â”€ resend.ts
+â”‚   â”‚   â”œâ”€â”€ sendgrid.ts
+â”‚   â”‚   â””â”€â”€ ses.ts
+â”‚   â”œâ”€â”€ template/
+â”‚   â”‚   â”œâ”€â”€ react-email.ts
+â”‚   â”‚   â””â”€â”€ render.ts
+â”‚   â”œâ”€â”€ bounce/
+â”‚   â”‚   â”œâ”€â”€ handler.ts
+â”‚   â”‚   â””â”€â”€ webhook.ts
+â”‚   â”œâ”€â”€ suppression/
+â”‚   â”‚   â””â”€â”€ list.ts
+â”‚   â”œâ”€â”€ unsubscribe/
+â”‚   â”‚   â”œâ”€â”€ token.ts
+â”‚   â”‚   â””â”€â”€ link.ts
+â”‚   â””â”€â”€ cli.ts
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — Resend adapter + send
-### v0.2 — React Email templates + locale integration
-### v0.3 — Bounce / complaint handling
-### v0.4 — Suppression list
-### v0.5 — Unsubscribe tokens
-### v0.6 — SendGrid + SES adapters
-### v1.0 — Stable API
+### v0.1 â€” Resend adapter + send
+### v0.2 â€” React Email templates + locale integration
+### v0.3 â€” Bounce / complaint handling
+### v0.4 â€” Suppression list
+### v0.5 â€” Unsubscribe tokens
+### v0.6 â€” SendGrid + SES adapters
+### v1.0 â€” Stable API
 
 ## Product potential
 
 **Internal:** Required for any product with email.
-**Open source release:** Modest — wraps a provider; thin.
-**Commercial:** None — Resend / Postmark dominate.
+**Open source release:** Modest â€” wraps a provider; thin.
+**Commercial:** None â€” Resend / Postmark dominate.
 
 ## Status
 

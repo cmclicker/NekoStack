@@ -1,4 +1,4 @@
-# @nekostack/trace
+﻿# @nekostack/trace
 
 > Distributed tracing (OpenTelemetry-compatible). Spans, propagation, baggage, sampling. The "where did this request go and how long did each step take?" layer.
 
@@ -9,16 +9,15 @@
 | **Build tier** | Observability |
 | **Depends on** | external: OpenTelemetry SDK; integrates with `log` (correlation), `errors` (error spans), `fetch` (outbound span propagation), `api` (inbound span creation), `realtime` (per-message spans) |
 | **Used by** | every backend; `log` for correlation IDs; debugging slow requests; cross-service request tracking |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 6–10 weeks focused |
-| **Sellable?** | Low — OpenTelemetry is the standard; wrapping is niche |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 6â€“10 weeks focused |
 
 ## Why this exists
 
 OpenTelemetry is the standard for distributed tracing. NekoStack wraps it with conventional configuration:
 - Auto-instrumentation for common substrates (HTTP, Prisma, Redis).
 - NekoStack-specific span naming.
-- Trace ↔ log correlation built in.
+- Trace â†” log correlation built in.
 - Sampling defaults that work for solo-dev scale.
 
 ## Scope
@@ -30,7 +29,7 @@ OpenTelemetry is the standard for distributed tracing. NekoStack wraps it with c
 - Sampling (head + tail).
 - Auto-instrumentation adapters.
 - OTLP export.
-- Trace ↔ log correlation.
+- Trace â†” log correlation.
 - Error span integration.
 
 ### Out of scope
@@ -42,7 +41,7 @@ OpenTelemetry is the standard for distributed tracing. NekoStack wraps it with c
 
 ## Boundary
 
-> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §18 for the full capability map.
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) Â§18 for the full capability map.
 
 ### Owns
 - Span creation / propagation
@@ -50,7 +49,7 @@ OpenTelemetry is the standard for distributed tracing. NekoStack wraps it with c
 - Baggage
 - Sampling (head + tail)
 - OTLP export
-- Trace ↔ log correlation
+- Trace â†” log correlation
 - Auto-instrumentation adapters
 
 ### Does NOT own
@@ -89,38 +88,38 @@ OpenTelemetry is the standard for distributed tracing. NekoStack wraps it with c
 
 ```
 packages/trace/
-├── src/
-│   ├── span/
-│   │   ├── create.ts
-│   │   └── propagate.ts
-│   ├── traceparent/
-│   │   └── w3c.ts
-│   ├── baggage/
-│   │   └── context.ts
-│   ├── sample/
-│   │   ├── head.ts
-│   │   └── tail.ts
-│   ├── exporters/
-│   │   └── otlp.ts
-│   ├── instrumentation/
-│   │   ├── http.ts
-│   │   ├── prisma.ts
-│   │   └── redis.ts
-│   └── correlation/
-│       └── log.ts
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ span/
+â”‚   â”‚   â”œâ”€â”€ create.ts
+â”‚   â”‚   â””â”€â”€ propagate.ts
+â”‚   â”œâ”€â”€ traceparent/
+â”‚   â”‚   â””â”€â”€ w3c.ts
+â”‚   â”œâ”€â”€ baggage/
+â”‚   â”‚   â””â”€â”€ context.ts
+â”‚   â”œâ”€â”€ sample/
+â”‚   â”‚   â”œâ”€â”€ head.ts
+â”‚   â”‚   â””â”€â”€ tail.ts
+â”‚   â”œâ”€â”€ exporters/
+â”‚   â”‚   â””â”€â”€ otlp.ts
+â”‚   â”œâ”€â”€ instrumentation/
+â”‚   â”‚   â”œâ”€â”€ http.ts
+â”‚   â”‚   â”œâ”€â”€ prisma.ts
+â”‚   â”‚   â””â”€â”€ redis.ts
+â”‚   â””â”€â”€ correlation/
+â”‚       â””â”€â”€ log.ts
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — OpenTelemetry SDK wrapper
-### v0.2 — W3C propagation
-### v0.3 — Auto-instrumentation
-### v0.4 — Sampling
-### v0.5 — Log correlation
-### v0.6 — OTLP export
-### v1.0 — Stable API
+### v0.1 â€” OpenTelemetry SDK wrapper
+### v0.2 â€” W3C propagation
+### v0.3 â€” Auto-instrumentation
+### v0.4 â€” Sampling
+### v0.5 â€” Log correlation
+### v0.6 â€” OTLP export
+### v1.0 â€” Stable API
 
 ## Product potential
 

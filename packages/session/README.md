@@ -1,4 +1,4 @@
-# @nekostack/session
+﻿# @nekostack/session
 
 > Dev session records, handoff summaries, resume-context bundles. The package that answers "what was I doing?" when you come back to a project after weeks. Especially load-bearing for LLM-paired development across multiple chat sessions.
 
@@ -6,22 +6,21 @@
 
 | | |
 |---|---|
-| **Build tier** | Meta / control plane — essential for cross-session continuity in solo LLM-paired work |
+| **Build tier** | Meta / control plane â€” essential for cross-session continuity in solo LLM-paired work |
 | **Depends on** | `schema`, `workspace` (current project context), `path` (linkage to roadmap), `decision` (decisions made in session), `review` (reviews triggered in session), `provenance` (artifact lineage), `changeset` (changesets in session), `time` |
 | **Used by** | the developer at the start of each work session; Claude / LLM session-resume flows; cross-session continuity across days/weeks/months |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 6–10 weeks focused |
-| **Sellable?** | Plausible: "session memory for LLM-paired dev workflows" is genuinely novel and undersupplied |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 6â€“10 weeks focused |
 
 ## Why this exists
 
-A solo dev with 8 projects and LLM-paired work sessions has a brutal continuity problem: each Claude session starts cold. The developer remembers the rough shape ("I was working on NekoBattler's elements synergy"), but the LLM doesn't — and the developer doesn't remember details after a week.
+A solo dev with 8 projects and LLM-paired work sessions has a brutal continuity problem: each Claude session starts cold. The developer remembers the rough shape ("I was working on NekoBattler's elements synergy"), but the LLM doesn't â€” and the developer doesn't remember details after a week.
 
 The naive solution is to dump chat transcripts. That doesn't scale. Even within a single session, the meaningful state is buried under tool calls and reasoning.
 
-`session` is the package that captures **structured session state** — not the full chat, but the durable artifacts: goal, project touched, files modified, decisions made, reviews triggered, changesets applied, blockers hit, next steps. At session end, the agent produces a typed `SessionRecord`. At session resume, the new agent reads it and reconstructs context in ~one tool call.
+`session` is the package that captures **structured session state** â€” not the full chat, but the durable artifacts: goal, project touched, files modified, decisions made, reviews triggered, changesets applied, blockers hit, next steps. At session end, the agent produces a typed `SessionRecord`. At session resume, the new agent reads it and reconstructs context in ~one tool call.
 
-This is precisely the gap that this entire NekoStack-bootstrap conversation has been demonstrating — manually doing the work that this package would automate.
+This is precisely the gap that this entire NekoStack-bootstrap conversation has been demonstrating â€” manually doing the work that this package would automate.
 
 ## Scope
 
@@ -31,7 +30,7 @@ This is precisely the gap that this entire NekoStack-bootstrap conversation has 
 - Auto-capture from `path`, `decision`, `review`, `changeset`, `provenance` events during a session.
 - Resume-context bundle generator (what a new agent needs to read).
 - "What was I doing?" query.
-- Project-cooldown handling (long-paused project → resume prompts).
+- Project-cooldown handling (long-paused project â†’ resume prompts).
 - Session-to-roadmap linkage (session feeds back into `path`).
 - Context-switch audit (when did you switch projects, why).
 
@@ -43,7 +42,7 @@ This is precisely the gap that this entire NekoStack-bootstrap conversation has 
 
 ## Boundary
 
-> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §6 for the full capability map.
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) Â§6 for the full capability map.
 
 ### Owns
 - `SessionRecord` type + lifecycle
@@ -97,36 +96,36 @@ This is precisely the gap that this entire NekoStack-bootstrap conversation has 
 
 ```
 packages/session/
-├── src/
-│   ├── record/
-│   │   ├── session.ts        # SessionRecord type
-│   │   ├── lifecycle.ts      # state machine
-│   │   └── capture.ts        # auto-capture from events
-│   ├── resume/
-│   │   ├── bundle.ts         # resume-context bundle generator
-│   │   └── prompts.ts        # what to prompt the new agent with
-│   ├── cooldown/
-│   │   └── resurrection.ts   # long-paused project handling
-│   ├── linkage/
-│   │   ├── path.ts           # feeds path roadmap
-│   │   ├── decision.ts
-│   │   ├── review.ts
-│   │   ├── changeset.ts
-│   │   └── provenance.ts
-│   └── cli.ts                # `neko session start / end / resume`
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ record/
+â”‚   â”‚   â”œâ”€â”€ session.ts        # SessionRecord type
+â”‚   â”‚   â”œâ”€â”€ lifecycle.ts      # state machine
+â”‚   â”‚   â””â”€â”€ capture.ts        # auto-capture from events
+â”‚   â”œâ”€â”€ resume/
+â”‚   â”‚   â”œâ”€â”€ bundle.ts         # resume-context bundle generator
+â”‚   â”‚   â””â”€â”€ prompts.ts        # what to prompt the new agent with
+â”‚   â”œâ”€â”€ cooldown/
+â”‚   â”‚   â””â”€â”€ resurrection.ts   # long-paused project handling
+â”‚   â”œâ”€â”€ linkage/
+â”‚   â”‚   â”œâ”€â”€ path.ts           # feeds path roadmap
+â”‚   â”‚   â”œâ”€â”€ decision.ts
+â”‚   â”‚   â”œâ”€â”€ review.ts
+â”‚   â”‚   â”œâ”€â”€ changeset.ts
+â”‚   â”‚   â””â”€â”€ provenance.ts
+â”‚   â””â”€â”€ cli.ts                # `neko session start / end / resume`
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — SessionRecord + lifecycle
-### v0.2 — Auto-capture from path/decision/review/changeset events
-### v0.3 — Resume-context bundle generator
-### v0.4 — Cross-project context-switch audit
-### v0.5 — Project cooldown + resurrection prompts
-### v0.6 — LLM resume integration (prompts package consumes)
-### v1.0 — Stable API + LLM-resume recipes
+### v0.1 â€” SessionRecord + lifecycle
+### v0.2 â€” Auto-capture from path/decision/review/changeset events
+### v0.3 â€” Resume-context bundle generator
+### v0.4 â€” Cross-project context-switch audit
+### v0.5 â€” Project cooldown + resurrection prompts
+### v0.6 â€” LLM resume integration (prompts package consumes)
+### v1.0 â€” Stable API + LLM-resume recipes
 
 ## Product potential
 
@@ -141,4 +140,4 @@ packages/session/
 - **Current:** Empty placeholder.
 - **Owner:** Cody (solo dev).
 - **Priority tier:** Meta / control plane. Build alongside `path` since they're tightly coupled.
-- **Estimated learning return:** Very high. Cross-session state design, resume-context bundling, LLM-readable structured state, event-driven auto-capture — all novel and transferable.
+- **Estimated learning return:** Very high. Cross-session state design, resume-context bundling, LLM-readable structured state, event-driven auto-capture â€” all novel and transferable.

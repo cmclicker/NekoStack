@@ -1,4 +1,4 @@
-# @nekostack/replay
+﻿# @nekostack/replay
 
 > Deterministic replay from seed + actions. Recording, playback, diffing, sharing. Powers anti-cheat verification, balance debugging, spectator mode, replay sharing.
 
@@ -9,9 +9,8 @@
 | **Build tier** | Game systems |
 | **Depends on** | `schema`, `sim` (replay reruns a sim), `rules` (deterministic), `random` (seeded), `events` (action log), `storage` (replay file storage) |
 | **Used by** | NekoBattler (combat replays + anti-cheat), Leytide (player-action replay), NekoGacha (pull verification), any deterministic game |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 8–12 weeks focused |
-| **Sellable?** | Plausible OSS — TS deterministic replay library is rare |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 8â€“12 weeks focused |
 
 ## Why this exists
 
@@ -19,7 +18,7 @@ Deterministic replay is the foundation of:
 - **Anti-cheat:** server replays the client's actions; if the result differs from the client's, the client cheated.
 - **Balance debugging:** re-run the exact game that produced this weird outcome.
 - **Spectator mode:** clients see real-time game by replaying server actions.
-- **Replay sharing:** "watch how I beat this fight" — the URL is just seed + actions.
+- **Replay sharing:** "watch how I beat this fight" â€” the URL is just seed + actions.
 
 Done right, a replay is small (just the seed + the actions). The whole game state regenerates from those inputs.
 
@@ -43,7 +42,7 @@ Done right, a replay is small (just the seed + the actions). The whole game stat
 
 ## Boundary
 
-> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §86 (in BOUNDARIES.md).
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) Â§86 (in BOUNDARIES.md).
 
 ### Owns
 - Replay recording
@@ -81,43 +80,43 @@ Done right, a replay is small (just the seed + the actions). The whole game stat
 
 ```
 packages/replay/
-├── src/
-│   ├── record/
-│   │   ├── capture.ts
-│   │   └── action.ts
-│   ├── playback/
-│   │   └── rerun.ts          # via sim
-│   ├── format/
-│   │   ├── encode.ts
-│   │   ├── decode.ts
-│   │   └── version.ts
-│   ├── diff/
-│   │   └── compare.ts
-│   ├── compress/
-│   │   └── pack.ts
-│   ├── share/
-│   │   └── url.ts
-│   ├── anti-cheat/
-│   │   └── verify.ts
-│   └── cli.ts
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ record/
+â”‚   â”‚   â”œâ”€â”€ capture.ts
+â”‚   â”‚   â””â”€â”€ action.ts
+â”‚   â”œâ”€â”€ playback/
+â”‚   â”‚   â””â”€â”€ rerun.ts          # via sim
+â”‚   â”œâ”€â”€ format/
+â”‚   â”‚   â”œâ”€â”€ encode.ts
+â”‚   â”‚   â”œâ”€â”€ decode.ts
+â”‚   â”‚   â””â”€â”€ version.ts
+â”‚   â”œâ”€â”€ diff/
+â”‚   â”‚   â””â”€â”€ compare.ts
+â”‚   â”œâ”€â”€ compress/
+â”‚   â”‚   â””â”€â”€ pack.ts
+â”‚   â”œâ”€â”€ share/
+â”‚   â”‚   â””â”€â”€ url.ts
+â”‚   â”œâ”€â”€ anti-cheat/
+â”‚   â”‚   â””â”€â”€ verify.ts
+â”‚   â””â”€â”€ cli.ts
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 ## Roadmap
 
-### v0.1 — Record + playback
-### v0.2 — Replay format (versioned)
-### v0.3 — Diff
-### v0.4 — Compression
-### v0.5 — Sharing URLs
-### v0.6 — Anti-cheat verification
-### v1.0 — Stable API
+### v0.1 â€” Record + playback
+### v0.2 â€” Replay format (versioned)
+### v0.3 â€” Diff
+### v0.4 â€” Compression
+### v0.5 â€” Sharing URLs
+### v0.6 â€” Anti-cheat verification
+### v1.0 â€” Stable API
 
 ## Product potential
 
 **Internal:** Powerful for NekoBattler, Leytide.
-**Open source release:** Strong — niche is empty.
+**Open source release:** Strong â€” niche is empty.
 **Commercial:** Marginal.
 
 ## Status

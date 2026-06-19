@@ -1,4 +1,4 @@
-# @nekostack/form
+﻿# @nekostack/form
 
 > Declarative form schema + state + validation + UX. Drives forms from `@nekostack/schema` definitions. The "30% of every web app" layer that nobody gets quite right.
 
@@ -6,12 +6,11 @@
 
 | | |
 |---|---|
-| **Build tier** | Project unblocker — forms are ubiquitous; daily friction without it |
+| **Build tier** | Project unblocker â€” forms are ubiquitous; daily friction without it |
 | **Depends on** | `schema` (form schemas reuse this), `ui` (bindings produce props for UI components), `a11y` (accessible-error patterns) |
 | **Used by** | every UI surface taking input: profile editors, settings, content authoring, agent prompt editors, retail-ops data entry, narrative metadata, puzzle authoring, admin |
-| **Status** | Empty placeholder — not started |
-| **Est. to v1.0** | 8–14 weeks focused |
-| **Sellable?** | Plausible MIT (schema-first niche undersupplied); form-builder SaaS (Typeform/Tally) is different shape and not our direction |
+| **Status** | Empty placeholder â€” not started |
+| **Est. to v1.0** | 8â€“14 weeks focused |
 
 ## Why this exists
 
@@ -36,8 +35,8 @@ The libraries (React Hook Form, Formik, TanStack Form) cover the state-managemen
 
 Building this yourself rather than adopting React Hook Form + Zod resolver is justified because:
 1. **Schema-driven, not glue-driven.** RHF + Zod requires connecting two systems. Our form *is* the schema.
-2. **Async validation is first-class.** Username uniqueness, server-side checks, debounced field-level async — not bolted on.
-3. **Multi-step orchestration.** Wizards, branching flows, conditional fields — declared at the schema layer.
+2. **Async validation is first-class.** Username uniqueness, server-side checks, debounced field-level async â€” not bolted on.
+3. **Multi-step orchestration.** Wizards, branching flows, conditional fields â€” declared at the schema layer.
 4. **UI integration is direct.** Form bindings produce props that `@nekostack/ui` components consume natively.
 
 ## Scope
@@ -62,7 +61,7 @@ Building this yourself rather than adopting React Hook Form + Zod resolver is ju
 
 ## Boundary
 
-> See [`BOUNDARIES.md`](../../BOUNDARIES.md) §36, §7 for the full capability map.
+> See [`BOUNDARIES.md`](../../BOUNDARIES.md) Â§36, Â§7 for the full capability map.
 
 ### Owns
 - Form definition built on `schema`
@@ -105,11 +104,11 @@ The right framing: **TanStack Form's API + uniforms' schema-driven philosophy + 
 ## How this fits the NekoStack
 
 **Depends on:**
-- `@nekostack/schema` — form schemas use the same DSL.
-- `@nekostack/ui` — field bindings produce props for UI components.
+- `@nekostack/schema` â€” form schemas use the same DSL.
+- `@nekostack/ui` â€” field bindings produce props for UI components.
 
 **Used by:**
-- Every form in every consuming project. Profile edit forms, settings, content authoring, agent prompt editors, retail-ops data entry, narrative metadata, puzzle authoring, admin dashboards — all of it.
+- Every form in every consuming project. Profile edit forms, settings, content authoring, agent prompt editors, retail-ops data entry, narrative metadata, puzzle authoring, admin dashboards â€” all of it.
 
 ## Design philosophy
 
@@ -124,31 +123,31 @@ The right framing: **TanStack Form's API + uniforms' schema-driven philosophy + 
 
 ```
 packages/form/
-├── src/
-│   ├── core/
-│   │   ├── form.ts           # createForm()
-│   │   ├── state.ts          # form state machine
-│   │   ├── field.ts          # field state + bindings
-│   │   └── validator.ts      # schema-driven + async
-│   ├── react/
-│   │   ├── useForm.ts
-│   │   ├── useField.ts
-│   │   ├── Field.tsx         # binding helper component
-│   │   └── FormProvider.tsx
-│   ├── conditional/
-│   │   ├── when.ts           # show-when conditions
-│   │   └── compute.ts        # reactive computed fields
-│   ├── wizard/
-│   │   ├── step.ts
-│   │   └── branch.ts         # conditional step routing
-│   ├── array/
-│   │   └── field-array.ts
-│   ├── submit/
-│   │   └── optimistic.ts
-│   └── errors/
-│       └── map.ts            # schema errors → field errors
-├── tests/
-└── README.md
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ core/
+â”‚   â”‚   â”œâ”€â”€ form.ts           # createForm()
+â”‚   â”‚   â”œâ”€â”€ state.ts          # form state machine
+â”‚   â”‚   â”œâ”€â”€ field.ts          # field state + bindings
+â”‚   â”‚   â””â”€â”€ validator.ts      # schema-driven + async
+â”‚   â”œâ”€â”€ react/
+â”‚   â”‚   â”œâ”€â”€ useForm.ts
+â”‚   â”‚   â”œâ”€â”€ useField.ts
+â”‚   â”‚   â”œâ”€â”€ Field.tsx         # binding helper component
+â”‚   â”‚   â””â”€â”€ FormProvider.tsx
+â”‚   â”œâ”€â”€ conditional/
+â”‚   â”‚   â”œâ”€â”€ when.ts           # show-when conditions
+â”‚   â”‚   â””â”€â”€ compute.ts        # reactive computed fields
+â”‚   â”œâ”€â”€ wizard/
+â”‚   â”‚   â”œâ”€â”€ step.ts
+â”‚   â”‚   â””â”€â”€ branch.ts         # conditional step routing
+â”‚   â”œâ”€â”€ array/
+â”‚   â”‚   â””â”€â”€ field-array.ts
+â”‚   â”œâ”€â”€ submit/
+â”‚   â”‚   â””â”€â”€ optimistic.ts
+â”‚   â””â”€â”€ errors/
+â”‚       â””â”€â”€ map.ts            # schema errors â†’ field errors
+â”œâ”€â”€ tests/
+â””â”€â”€ README.md
 ```
 
 Usage:
@@ -186,37 +185,37 @@ function ProfileForm() {
 
 ## Roadmap
 
-### v0.1 — Core state machine
+### v0.1 â€” Core state machine
 - `createForm()`, field state, basic validation.
 - React `useForm` / `useField` hooks.
 
-### v0.2 — Schema integration
+### v0.2 â€” Schema integration
 - Validation derived from `@nekostack/schema`.
 - Error mapping.
 
-### v0.3 — Async validation
+### v0.3 â€” Async validation
 - Debounced per-field async checks.
 - Cancellation on field change.
 
-### v0.4 — Field bindings
+### v0.4 â€” Field bindings
 - `Field` component with render-prop pattern.
 - `@nekostack/ui` integration documented.
 
-### v0.5 — Conditional fields
+### v0.5 â€” Conditional fields
 - Show-when declarations.
 - Reactive computed fields.
 
-### v0.6 — Field arrays
+### v0.6 â€” Field arrays
 - Repeatable groups with add/remove/reorder.
 
-### v0.7 — Multi-step wizards
+### v0.7 â€” Multi-step wizards
 - Step machine with branching.
 - Per-step validation gates.
 
-### v0.8 — Optimistic submission
+### v0.8 â€” Optimistic submission
 - Optimistic updates with rollback on error.
 
-### v1.0 — Stable API
+### v1.0 â€” Stable API
 - Documentation site.
 - Migration recipes from React Hook Form.
 
@@ -226,7 +225,6 @@ function ProfileForm() {
 
 **Open source release:** Plausible. Crowded space, but schema-driven first-class is undersupplied. MIT release.
 
-**Commercial product:** Unlikely as a library. A form-builder SaaS (Typeform / Tally) is a different shape and we're not building one.
 
 **Estimated effort to v1.0:** 8-14 weeks of focused work. State machine is well-understood; async validation, conditional fields, and wizard branching are where time goes.
 
@@ -235,4 +233,4 @@ function ProfileForm() {
 - **Current:** Empty placeholder. Not started.
 - **Owner:** Cody (solo dev project).
 - **Priority tier:** Project unblocker. Forms are ubiquitous; the lack of one consistent layer creates daily friction.
-- **Estimated learning return:** High. Form state machines, validation orchestration, conditional reactive UI, async coordination — all transferable to any future UI work.
+- **Estimated learning return:** High. Form state machines, validation orchestration, conditional reactive UI, async coordination â€” all transferable to any future UI work.
