@@ -1,6 +1,6 @@
 {
   "name": "@nekostack/ui",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": false,
   "license": "Apache-2.0",
   "description": "Vanilla CSS component library — 92 components, zero JS/React, token-pure. Consumes @nekostack/theme CSS custom properties.",
@@ -19,7 +19,11 @@
     "./preview": "./preview.html"
   },
   "files": [
-    "dist",
+    "dist/ui.css",
+    "dist/ui.min.css",
+    "dist/components.json",
+    "dist/index.js",
+    "dist/index.d.ts",
     "preview.html",
     "docs/*.md",
     "CONVENTIONS.md",
