@@ -249,6 +249,12 @@ section {
   color: transparent;
 }
 
+/* On light surfaces, primary/secondary can be pastel — use text tokens instead
+   so gradient-clipped numbers always meet WCAG AA contrast. */
+[data-mode="light"] .stat-band__num {
+  background: linear-gradient(120deg, var(--neko-color-semantic-text-base), var(--neko-color-semantic-text-muted));
+}
+
 .stat-band__label {
   margin-top: var(--neko-spacing-2);
   color: var(--neko-color-semantic-text-muted);
