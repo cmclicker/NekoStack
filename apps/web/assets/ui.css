@@ -134,6 +134,59 @@
   }
 }
 
+/* custom scrollbars injected by theme tokens */
+:root {
+  --neko-scrollbar-w: 12px;
+  --neko-scrollbar-h: 12px;
+  --neko-scrollbar-track: var(--neko-color-semantic-bg-sunken);
+  --neko-scrollbar-thumb: var(--neko-color-semantic-border-base);
+  --neko-scrollbar-thumb-hover: var(--neko-color-semantic-text-muted);
+  --neko-scrollbar-border: 3px solid var(--neko-color-semantic-bg-sunken);
+  --neko-scrollbar-radius: var(--neko-radius-full, 9999px);
+}
+
+[data-theme="synthwave"] {
+  --neko-scrollbar-w: 8px;
+  --neko-scrollbar-h: 8px;
+  --neko-scrollbar-thumb: var(--neko-color-semantic-primary);
+  --neko-scrollbar-thumb-hover: var(--neko-color-semantic-secondary);
+  --neko-scrollbar-border: 1px solid var(--neko-color-semantic-bg-base);
+  --neko-scrollbar-radius: 0;
+}
+
+[data-theme="cupcake"] {
+  --neko-scrollbar-w: 16px;
+  --neko-scrollbar-h: 16px;
+  --neko-scrollbar-thumb: var(--neko-color-semantic-secondary);
+  --neko-scrollbar-thumb-hover: var(--neko-color-semantic-primary);
+  --neko-scrollbar-border: 4px solid var(--neko-color-semantic-bg-sunken);
+}
+
+::-webkit-scrollbar {
+  width: var(--neko-scrollbar-w);
+  height: var(--neko-scrollbar-h);
+}
+
+::-webkit-scrollbar-track {
+  background: var(--neko-scrollbar-track);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--neko-scrollbar-thumb);
+  border: var(--neko-scrollbar-border);
+  border-radius: var(--neko-scrollbar-radius);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--neko-scrollbar-thumb-hover);
+}
+
+/* Firefox scrollbar support */
+:where(html, body) {
+  scrollbar-width: thin;
+  scrollbar-color: var(--neko-scrollbar-thumb) var(--neko-scrollbar-track);
+}
+
 /* ===================== layout ===================== */
 /* layout — structural primitives. No interactive elements (no hover/focus/disabled states apply).
    Defines: .neko-container (+ --sm/--lg/--full), .neko-stack (vertical gap),
