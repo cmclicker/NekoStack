@@ -142,6 +142,7 @@ section {
     radial-gradient(60% 60% at 50% 0%, var(--neko-color-semantic-primary-soft), transparent 70%),
     radial-gradient(50% 50% at 80% 20%, var(--neko-color-semantic-secondary-soft), transparent 70%);
   pointer-events: none;
+  animation: pulseGlow 8s ease-in-out infinite alternate;
 }
 
 .hero > * {
@@ -206,7 +207,44 @@ section {
 
 .install__cmd {
   color: var(--neko-color-semantic-text-base);
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  border-right: 2px solid var(--neko-color-semantic-primary);
+  width: 21ch; /* "npm install nekostack" length */
+  animation: typing 1.5s steps(21, end) 0.5s both, blink 0.75s step-end infinite;
 }
+
+/* ---- Cinematic Animations ---- */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulseGlow {
+  0% { opacity: 0.6; transform: scale(1); }
+  100% { opacity: 1; transform: scale(1.05); }
+}
+
+@keyframes typing {
+  from { width: 0; }
+  to { width: 21ch; }
+}
+
+@keyframes blink {
+  50% { border-color: transparent; }
+}
+
+.animate-fade-up {
+  opacity: 0;
+  animation: fadeUp 0.8s var(--neko-motion-easing-standard) forwards;
+}
+
+.delay-100 { animation-delay: 100ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-400 { animation-delay: 400ms; }
+.delay-500 { animation-delay: 500ms; }
 
 .install__copy {
   border: 0;

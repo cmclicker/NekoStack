@@ -50,28 +50,28 @@
   <!-- ===== hero ===== -->
   <section class="hero" id="top">
     <div class="wrap">
-      <div class="hero__badges">
+      <div class="hero__badges animate-fade-up">
         <span class="neko-badge neko-badge--success neko-badge--pill">v1.0 released</span>
         <span class="neko-badge neko-badge--secondary neko-badge--pill">5 packages</span>
         <span class="neko-badge neko-badge--info neko-badge--pill">2,364 tests</span>
         <span class="neko-badge neko-badge--pill">Apache-2.0</span>
       </div>
 
-      <h1>Define once.<br /><span class="gradient-text">Generate everything.</span></h1>
+      <h1 class="animate-fade-up delay-100">Define once.<br /><span class="gradient-text">Generate everything.</span></h1>
 
-      <p class="hero__lead">
+      <p class="hero__lead animate-fade-up delay-200">
         NekoStack is a schema-first, full-stack utility suite. Describe your data
         shape one time and emit Zod validators, JSON Schema, OpenAPI, and TypeScript
         from a single canonical IR — then ship it with a CLI, design tokens, and a
         token-pure component library.
       </p>
 
-      <div class="hero__cta">
+      <div class="hero__cta animate-fade-up delay-300">
         <a class="neko-btn neko-btn--lg" href="#install">Get started</a>
         <a class="neko-btn neko-btn--outline neko-btn--lg" href="https://github.com/cmclicker/NekoStack">View on GitHub</a>
       </div>
 
-      <div class="install">
+      <div class="install animate-fade-up delay-400">
         <span class="install__prompt">$</span>
         <span class="install__cmd" id="install-cmd">npm install nekostack</span>
         <button class="install__copy" data-copy="npm install nekostack">Copy</button>
@@ -159,7 +159,7 @@ $ neko schema <span class="tok-fn">generate</span></code></pre>
       </p>
 
       <div class="pkg-grid">
-        <article class="neko-card">
+        <article class="neko-card animate-fade-up">
           <div class="neko-card__body">
             <h3 class="neko-card__title" style="font-size:var(--neko-font-size-lg);">Hand-written everywhere</h3>
             <p class="pkg-card__desc">A TS interface, a Zod schema, a JSON Schema, an OpenAPI spec — all maintained by hand. Add a field in one, forget the other three. The bugs stay silent until the unhappy path.</p>
@@ -167,7 +167,7 @@ $ neko schema <span class="tok-fn">generate</span></code></pre>
           </div>
         </article>
 
-        <article class="neko-card">
+        <article class="neko-card animate-fade-up delay-100">
           <div class="neko-card__body">
             <h3 class="neko-card__title" style="font-size:var(--neko-font-size-lg);">Zod as the source</h3>
             <p class="pkg-card__desc">Great at runtime — but every non-Zod consumer (OpenAPI clients, a Python backend, JSON Schema tooling) glues through adapters that drift, and you're locked to Zod's release cadence.</p>
@@ -175,7 +175,7 @@ $ neko schema <span class="tok-fn">generate</span></code></pre>
           </div>
         </article>
 
-        <article class="neko-card" style="border-color: var(--neko-color-semantic-primary);">
+        <article class="neko-card animate-fade-up delay-200" style="border-color: var(--neko-color-semantic-primary); box-shadow: 0 0 20px -5px var(--neko-color-semantic-primary-soft);">
           <div class="neko-card__body">
             <h3 class="neko-card__title" style="font-size:var(--neko-font-size-lg);">NekoStack</h3>
             <p class="pkg-card__desc">One canonical IR → Zod, JSON Schema, OpenAPI, and TypeScript, regenerated deterministically. Where an output can't be faithful, it marks the gap instead of lying.</p>
