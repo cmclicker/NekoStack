@@ -1,6 +1,6 @@
 {
   "$comment": "Hand-edited control-plane config. Drives scripts/generate-status.mjs. Edit this file (and the per-package ROADMAP/CHANGELOG) to update what STATUS.md shows.",
-  "active_workstream": "@nekostack/schema",
+  "active_workstream": "@nekostack/lint",
   "doctrine": "PRODUCT_THESIS.md",
   "packages": [
     {
@@ -16,13 +16,36 @@
       "tag_prefix": "schema-v",
       "roadmap": "packages/schema/docs/internal/ROADMAP.md",
       "changelog": "packages/schema/CHANGELOG.md"
+    },
+    {
+      "name": "@nekostack/cli",
+      "dir": "packages/cli",
+      "tag_prefix": "cli-v",
+      "roadmap": "packages/cli/docs/internal/ROADMAP.md",
+      "changelog": "packages/cli/CHANGELOG.md"
+    },
+    {
+      "name": "@nekostack/theme",
+      "dir": "packages/theme",
+      "tag_prefix": "theme-v",
+      "roadmap": "packages/theme/docs/internal/ROADMAP.md",
+      "changelog": "packages/theme/CHANGELOG.md"
+    },
+    {
+      "name": "@nekostack/ui",
+      "dir": "packages/ui",
+      "tag_prefix": "ui-v",
+      "roadmap": "packages/ui/docs/internal/ROADMAP.md",
+      "changelog": "packages/ui/CHANGELOG.md"
     }
   ],
   "next_actions": [
-    "migrate-runner v0.1.0 shipped and verified with 405 tests (full purity suite restored). schema v1.0.0 shipped — public API frozen, Apache-2.0, nekostack metapackage published.",
-    "Pivot to v1.0 Hardening: Freeze the public API surface of @nekostack/schema and @nekostack/migrate-runner. No new feature work until v1.0 is stamped.",
-    "Draft the 'Zod-to-NekoStack' migration guide and complete the IssueCode catalog documentation.",
-    "Resolve the remaining 'Still-open' implementation decisions in the schema package README (Transform precedence, Async refinements).",
-    "Identify performance benchmarks against Zod/TypeBox to prove production readiness."
+    "Five packages published at v1.0+: schema, cli, migrate-runner, theme, ui. Metapackage at v1.1.1.",
+    "Phase 0 gap still open: lint, test, config are scaffolds (export {}). These are now Phase 1 in the rewritten ROADMAP.",
+    "NEXT: @nekostack/lint — convention enforcement. Every package shipped without it accrues drift. Build lint first, run it retroactively on all five shipped packages.",
+    "THEN: @nekostack/test — shared testing substrate so subsequent packages don't reinvent fixtures.",
+    "THEN: @nekostack/config — boot-time schema validation, required by api and auth.",
+    "THEN: @nekostack/governance (Phase 2) — moved from Phase 8. Encode PRODUCT_THESIS four-question gate as CI policy, not a markdown doc.",
+    "CI updated: theme and ui now in --filter list. Rule: any package graduating from scaffold must be added to CI filter in the same PR."
   ]
 }
