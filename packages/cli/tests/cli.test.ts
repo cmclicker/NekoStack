@@ -225,7 +225,7 @@ describe("buildCli — shape", () => {
 
 describe("bin/neko — wiring sanity", () => {
   const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-  const BIN = readFileSync(join(ROOT, "bin", "neko"), "utf8");
+  const BIN = readFileSync(join(ROOT, "bin", "neko.js"), "utf8");
   const PKG = require(join(ROOT, "package.json")) as {
     bin: Record<string, string>;
   };
@@ -239,7 +239,7 @@ describe("bin/neko — wiring sanity", () => {
   });
 
   it("package.json bin entry points at the launcher script", () => {
-    expect(PKG.bin?.neko).toBe("./bin/neko");
+    expect(PKG.bin?.neko).toBe("./bin/neko.js");
   });
 });
 

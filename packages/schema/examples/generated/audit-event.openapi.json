@@ -73,6 +73,6 @@
     "irHash": "sha256:bf0aa787125c09f239d5bdba22b5821c371898926aeb3bc128be79ef48bbd08b",
     "schemaId": "com.nekostack.audit.AuditEvent",
     "schemaVersion": "1.0.0",
-    "sourceHash": "sha256:ccf5bddc88ede3b41537f44e6bd18ae201c7107982ec7d89e7c1415cad1c42bc"
+    "sourceHash": "sha256:f47a76754204e1edc77e37f1a48217b7d9c464799bb7a2064aac1cf71859fe84"
   }
 }
