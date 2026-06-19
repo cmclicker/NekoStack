@@ -126,3 +126,29 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* custom scrollbars injected by theme tokens */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--neko-color-semantic-bg-sunken);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--neko-color-semantic-border-base);
+  border: 3px solid var(--neko-color-semantic-bg-sunken);
+  border-radius: var(--neko-radius-full, 9999px);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--neko-color-semantic-text-muted);
+}
+
+/* Firefox scrollbar support */
+:where(html, body) {
+  scrollbar-width: thin;
+  scrollbar-color: var(--neko-color-semantic-border-base) var(--neko-color-semantic-bg-sunken);
+}
