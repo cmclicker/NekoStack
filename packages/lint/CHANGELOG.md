@@ -4,6 +4,36 @@ Per-milestone changes. Pairs with git tags (`lint-vX.Y.Z`). Format: newest first
 
 ---
 
+## lint-v0.5.0 — 2026-06-20
+
+PR #86 · Module-boundary and quality rules.
+
+### What shipped
+
+**Four new rules**
+
+- **`consistent-type-imports`** (**auto-fixer**) — flags `import { T }` bindings that are used exclusively in type positions (type annotations, type aliases, generic parameters) and never as values. Auto-fix adds the `type` modifier inline: `import { type T, Value }`. Works without a TypeScript project reference — uses AST parent-chain analysis. 10 tests (5 valid, 5 invalid with fixer output verified).
+
+- **`no-console-in-module`** — flags `console.log`, `console.debug`, `console.info`, `console.dir`, and `console.table` in non-test source files. `console.error` and `console.warn` are permitted as they signal real runtime problems. Test files (`.spec.ts`, `.test.ts`, `__tests__/`) are fully exempt. 11 tests (5 valid, 6 invalid).
+
+- **`nest-event-handler-has-spec`** — flags `@EventPattern` and `@MessagePattern` decorated methods in files that have no co-located spec. Extends the `service-has-spec` discipline to NestJS microservice event handler classes. Reports each decorated method individually. Uses the same injectable `_setExistsSync` test seam as `service-has-spec`. 6 tests (3 valid, 3 invalid).
+
+- **`no-direct-date-now`** — flags `Date.now()` and `new Date()` (no arguments) in non-test source files. `new Date(value)` for parsing a specific timestamp is permitted. Enforces the injectable-clock pattern — callers should receive a timestamp or clock service as a dependency so time can be controlled in tests. 10 tests (5 valid, 5 invalid).
+
+**Config updates**
+
+- `base` — adds `consistent-type-imports: warn` and `no-console-in-module: warn` (universal rules for all NekoStack projects)
+- `strict` — escalates `consistent-type-imports` to `error`, `no-console-in-module` to `error`; adds `no-direct-date-now: warn`
+- `nest` — adds `nest-event-handler-has-spec: warn` and `no-direct-date-now: warn`
+
+**Package**
+
+- Version: `0.4.0` → `0.5.0`
+- Total tests: 105 → 142 (+37)
+- Total rules: 11 → 15
+
+---
+
 ## lint-v0.4.0 — 2026-06-19
 
 PR #TBD · Security rules + first auto-fixer milestone.

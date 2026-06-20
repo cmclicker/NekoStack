@@ -16,6 +16,8 @@ export const nest = [
       '@nekostack/service-has-spec': 'warn',
       '@nekostack/controller-no-service-cycle': 'error',
       '@nekostack/nest-no-orm-in-controller': 'error',
+      '@nekostack/nest-event-handler-has-spec': 'warn',
+      '@nekostack/no-direct-date-now': 'warn',
     } as const,
   },
 ];

@@ -57,7 +57,7 @@ Status: **shipped** ([#83](https://github.com/cmclicker/NekoStack/pull/83), merg
 
 ## v0.5 — Module-boundary and quality rules
 
-Status: **not started**. Target: ~4 new rules, ~40 new tests → ~145 total.
+Status: **shipped** ([#86](https://github.com/cmclicker/NekoStack/pull/86), merged 2026-06-20). 37 new tests → 142 total.
 
 - **`consistent-type-imports`** — flags `import { SomeType }` where `import type { SomeType }` should be used; **auto-fixer** adds the `type` modifier. Unique value: enforces the NekoStack convention of separating runtime and type-only imports to enable `isolatedModules` and improve tree-shaking.
 - **`no-console-in-module`** — flags `console.log` / `console.debug` in non-test, non-script source files (allow `console.error` / `console.warn` which are intentional); covers cases where a logger like `@nekostack/logger` (future) should be used instead.
