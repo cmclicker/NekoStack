@@ -215,15 +215,17 @@ function diffDefault(
     ];
   }
   // Both have a default — compare values.
-  if (!jsonEqual(beforeDefault!.value, afterDefault!.value)) {
+  // Guard for TypeScript narrowing; both branches above return early for undefined cases.
+  if (beforeDefault === undefined || afterDefault === undefined) return [];
+  if (!jsonEqual(beforeDefault.value, afterDefault.value)) {
     return [
       {
         severity: "breaking",
         path,
         kind: "default_value_changed",
-        before: beforeDefault!.value,
-        after: afterDefault!.value,
-        message: `Default value changed from ${formatValue(beforeDefault!.value)} to ${formatValue(afterDefault!.value)}`,
+        before: beforeDefault.value,
+        after: afterDefault.value,
+        message: `Default value changed from ${formatValue(beforeDefault.value)} to ${formatValue(afterDefault.value)}`,
       },
     ];
   }

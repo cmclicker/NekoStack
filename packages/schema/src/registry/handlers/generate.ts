@@ -158,12 +158,14 @@ function discriminatorsFor(
   // get the version-suffixed slug to stay unique.
   const idCounts = new Map<string, number>();
   for (const s of named) {
-    const id = s.node.metadata!.id!;
+    const id = s.node.metadata?.id;
+    if (!id) continue; // named was pre-filtered; this guard lets TypeScript narrow
     idCounts.set(id, (idCounts.get(id) ?? 0) + 1);
   }
 
   for (const s of named) {
-    const id = s.node.metadata!.id!;
+    const id = s.node.metadata?.id;
+    if (!id) continue; // same guard
     const version = s.node.metadata?.version;
     const idSlug = slugify(id);
     const sameIdElsewhere = (idCounts.get(id) ?? 0) > 1;

@@ -21,7 +21,7 @@ import { nestControllerResponseType } from './rules/nest-controller-response-typ
 export const plugin = {
   meta: {
     name: '@nekostack/lint',
-    version: '0.6.0',
+    version: '1.0.0',
   },
   rules: {
     'no-direct-process-env': noDirectProcessEnv,

@@ -6,7 +6,7 @@
 
 - **Package:** @nekostack/lint
 - **Latest release:** [`lint-v0.6.0`](https://github.com/cmclicker/NekoStack/releases/tag/lint-v0.6.0) — 2026-06-20
-- **Active target:** v1.0 — Stable rule catalog
+- **Active target:** _(no `← *active target*` marker found in ROADMAP)_
 - **Doctrine in force:** [NekoStack — Product Thesis](../PRODUCT_THESIS.md)
 
 ## Latest milestones

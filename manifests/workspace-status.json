@@ -165,7 +165,7 @@
       "dir": "packages/lint",
       "latest_release": "lint-v0.6.0",
       "latest_release_date": "2026-06-20",
-      "active_target": "v1.0 — Stable rule catalog",
+      "active_target": null,
       "test_count": 188,
       "milestones": [
         {
