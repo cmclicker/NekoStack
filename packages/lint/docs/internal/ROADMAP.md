@@ -28,11 +28,13 @@ Includes:
 
 ## v0.3 — Framework configs
 
-Status: **in progress (PR open)**.
+Status: **shipped** ([#81](https://github.com/cmclicker/NekoStack/pull/81), merged 2026-06-19).
 
-- `/react` config — `react-no-inline-style` rule + curated NekoStack rule set for React 19 projects
-- `/nest` config — `nest-no-orm-in-controller` rule + full server-side rule set for NestJS 10+ projects
-- Two new rules, two new configs, 20 new tests (69 total)
+- `react-no-inline-style` — flags `style={...}` JSX attributes; 10 tests
+- `nest-no-orm-in-controller` — flags ORM imports in controller files; 10 tests
+- `react` config — exported as `./react`; curated rule set for React 19
+- `nest` config — exported as `./nest`; full server-side rule set for NestJS 10+
+- 69 total tests (20 new + 49 from v0.2)
 
 ## v0.4 — Auto-fixers
 

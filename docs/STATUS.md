@@ -64,8 +64,8 @@ Test counts come from each package's most recent CHANGELOG entry. After validati
 1. Five packages published at v1.0+: schema, cli, migrate-runner, theme, ui. Metapackage at v1.1.1.
 2. @nekostack/lint v0.1 shipped (2026-06-20, PR #79): plugin, base config, no-direct-process-env rule, 11 tests.
 3. @nekostack/lint v0.2 shipped (2026-06-20, PR #80): schema-no-inline-zod, prisma-json-cast, service-has-spec, controller-no-service-cycle, strict config. 49 total tests.
-4. NEXT: @nekostack/lint v0.3 — framework configs: /react (React 19, hooks, a11y) and /nest (NestJS 10+ idioms).
-5. THEN: @nekostack/test — shared testing substrate so subsequent packages don't reinvent fixtures.
+4. @nekostack/lint v0.3 shipped (2026-06-19, PR #81): react-no-inline-style, nest-no-orm-in-controller, ./react config, ./nest config. 69 total tests.
+5. NEXT: @nekostack/test — shared testing substrate so subsequent packages don't reinvent fixtures.
 6. THEN: @nekostack/config — boot-time schema validation, required by api and auth.
 7. THEN: @nekostack/governance (Phase 2) — encode PRODUCT_THESIS four-question gate as CI policy, not a markdown doc.
 
