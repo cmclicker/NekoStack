@@ -82,9 +82,10 @@ Test counts come from each package's most recent CHANGELOG entry. After validati
 4. @nekostack/lint v0.3 shipped (2026-06-19, PR #81): react-no-inline-style, nest-no-orm-in-controller, ./react config, ./nest config. 69 total tests.
 5. @nekostack/test v0.1 shipped (2026-06-19, PR #82): createRuleTester, createJsxRuleTester. 5 tests.
 6. @nekostack/lint v0.4 shipped (2026-06-19, PR #83): no-hardcoded-secrets, no-raw-sql, schema-export-type (auto-fix), react-no-dangerously-set-html. 105 total tests.
-7. NEXT: @nekostack/lint v0.5 — consistent-type-imports, no-console-in-module, nest-event-handler-has-spec, no-direct-date-now.
-8. THEN: @nekostack/config — boot-time schema validation, required by api and auth.
-9. THEN: @nekostack/governance (Phase 2) — encode PRODUCT_THESIS four-question gate as CI policy, not a markdown doc.
+7. @nekostack/lint v0.5 shipped (2026-06-20, PR #86): consistent-type-imports (auto-fix), no-console-in-module, nest-event-handler-has-spec, no-direct-date-now. 142 total tests.
+8. NEXT: @nekostack/lint v0.6 — no-type-assertion-to-any, no-non-null-assertion, react-hook-naming, nest-controller-response-type, recommended config.
+9. THEN: @nekostack/config — boot-time schema validation, required by api and auth.
+10. THEN: @nekostack/governance (Phase 2) — encode PRODUCT_THESIS four-question gate as CI policy, not a markdown doc.
 
 ## How to refresh
 
