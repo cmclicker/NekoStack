@@ -1,7 +1,12 @@
-import { createRuleTester } from '@nekostack/test';
+import { afterAll, describe, it } from 'vitest';
+import { RuleTester } from '@typescript-eslint/rule-tester';
 import { nestControllerResponseType } from '../../src/rules/nest-controller-response-type.js';
 
-const tester = createRuleTester();
+RuleTester.afterAll = afterAll;
+RuleTester.describe = describe as typeof RuleTester.describe;
+RuleTester.it = it as typeof RuleTester.it;
+
+const tester = new RuleTester();
 
 tester.run('nest-controller-response-type', nestControllerResponseType, {
   valid: [

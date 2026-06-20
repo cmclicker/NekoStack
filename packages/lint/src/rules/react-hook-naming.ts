@@ -96,6 +96,7 @@ export const reactHookNaming = createRule({
       CallExpression(node) {
         if (stack.length === 0) return;
         const frame = stack[stack.length - 1];
+        if (!frame) return;
         const callee = node.callee;
         let name: string | null = null;
         if (callee.type === AST_NODE_TYPES.Identifier) {
