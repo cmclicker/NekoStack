@@ -51,6 +51,13 @@
       "tag_prefix": "test-v",
       "roadmap": "packages/test/docs/internal/ROADMAP.md",
       "changelog": "packages/test/CHANGELOG.md"
+    },
+    {
+      "name": "@nekostack/config",
+      "dir": "packages/config",
+      "tag_prefix": "config-v",
+      "roadmap": "packages/config/docs/internal/ROADMAP.md",
+      "changelog": "packages/config/CHANGELOG.md"
     }
   ],
   "next_actions": [
@@ -63,7 +70,9 @@
     "@nekostack/lint v0.5 shipped (2026-06-20, PR #86): consistent-type-imports (auto-fix), no-console-in-module, nest-event-handler-has-spec, no-direct-date-now. 142 total tests.",
     "@nekostack/lint v0.6 shipped (2026-06-20, PR #88): no-type-assertion-to-any, no-non-null-assertion, react-hook-naming, nest-controller-response-type, recommended config. 188 total tests.",
     "@nekostack/lint v1.0 shipped (2026-06-20, PR #89): 19 rule docs, CONFIGS.md, MIGRATION_GUIDE.md, @nekostack/schema linted with recommended on CI. 188 total tests. Package flipped public.",
-    "NEXT: @nekostack/config — boot-time schema validation, required by api and auth.",
+    "NEXT: @nekostack/config v0.1 (in progress, PR #TBD): defineConfig(), c.* field builders, Secret<T>, boot validation, dotenv precedence. 59 tests.",
+    "THEN: @nekostack/config v0.2 — neko config check CLI verb, ESLint rule tightening.",
+    "THEN: @nekostack/config v0.3 — configToJsonSchema() + configToMarkdown() for agent-facing config introspection.",
     "THEN: @nekostack/governance (Phase 2) — encode PRODUCT_THESIS four-question gate as CI policy, not a markdown doc."
   ]
 }

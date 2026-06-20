@@ -105,7 +105,7 @@
   <section class="page-hero">
     <div class="wrap">
       <div class="hero__badges">
-        <span class="neko-badge neko-badge--success neko-badge--pill">22 releases</span>
+        <span class="neko-badge neko-badge--success neko-badge--pill">23 releases</span>
         <span class="neko-badge neko-badge--pill">Generated from status SSOT</span>
         <span class="neko-badge neko-badge--pill">Apache-2.0</span>
       </div>
@@ -118,11 +118,11 @@
   <div class="progress-strip">
     <div class="wrap progress-strip__inner">
       <div class="progress-stat">
-        <span class="progress-stat__num progress-stat__num--primary">7</span>
+        <span class="progress-stat__num progress-stat__num--primary">8</span>
         <span class="progress-stat__label">packages tracked</span>
       </div>
       <div class="progress-stat">
-        <span class="progress-stat__num progress-stat__num--green">22</span>
+        <span class="progress-stat__num progress-stat__num--green">23</span>
         <span class="progress-stat__label">releases recorded</span>
       </div>
       <div class="progress-stat">
@@ -313,10 +313,17 @@
       <article class="hist-card">
         <header class="hist-card__head">
           <h3 class="hist-card__name">@nekostack/lint</h3>
-          <div class="hist-card__meta"><a class="hist-card__latest" href="https://github.com/cmclicker/NekoStack/releases/tag/lint-v0.6.0" target="_blank" rel="noopener">lint-v0.6.0</a><span class="hist-card__date">June 20, 2026</span><span class="hist-card__tests">188 tests</span></div>
+          <div class="hist-card__meta"><a class="hist-card__latest" href="https://github.com/cmclicker/NekoStack/releases/tag/lint-v1.0.0" target="_blank" rel="noopener">lint-v1.0.0</a><span class="hist-card__date">June 20, 2026</span></div>
         </header>
         
         <ol class="hist-timeline">
+          <li class="hist-event">
+            <a class="hist-event__tag" href="https://github.com/cmclicker/NekoStack/releases/tag/lint-v1.0.0" target="_blank" rel="noopener">lint-v1.0.0</a>
+            <div class="hist-event__body">
+              <span class="hist-event__date">June 20, 2026</span>
+              <p class="hist-event__summary">PR <a href="https://github.com/cmclicker/NekoStack/pull/89" target="_blank" rel="noopener">#89</a> · Stable rule catalog, full docs, CI integration.</p>
+            </div>
+          </li>
           <li class="hist-event">
             <a class="hist-event__tag" href="https://github.com/cmclicker/NekoStack/releases/tag/lint-v0.6.0" target="_blank" rel="noopener">lint-v0.6.0</a>
             <div class="hist-event__body">
@@ -381,7 +388,9 @@
           <li>@nekostack/lint v0.5 shipped (2026-06-20, PR #86): consistent-type-imports (auto-fix), no-console-in-module, nest-event-handler-has-spec, no-direct-date-now. 142 total tests.</li>
           <li>@nekostack/lint v0.6 shipped (2026-06-20, PR #88): no-type-assertion-to-any, no-non-null-assertion, react-hook-naming, nest-controller-response-type, recommended config. 188 total tests.</li>
           <li>@nekostack/lint v1.0 shipped (2026-06-20, PR #89): 19 rule docs, CONFIGS.md, MIGRATION_GUIDE.md, @nekostack/schema linted with recommended on CI. 188 total tests. Package flipped public.</li>
-          <li>NEXT: @nekostack/config — boot-time schema validation, required by api and auth.</li>
+          <li>NEXT: @nekostack/config v0.1 (in progress, PR #TBD): defineConfig(), c.* field builders, Secret&lt;T&gt;, boot validation, dotenv precedence. 59 tests.</li>
+          <li>THEN: @nekostack/config v0.2 — neko config check CLI verb, ESLint rule tightening.</li>
+          <li>THEN: @nekostack/config v0.3 — configToJsonSchema() + configToMarkdown() for agent-facing config introspection.</li>
           <li>THEN: @nekostack/governance (Phase 2) — encode PRODUCT_THESIS four-question gate as CI policy, not a markdown doc.</li>
       </ol>
     </section>
