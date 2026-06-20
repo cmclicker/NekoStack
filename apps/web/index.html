@@ -134,7 +134,7 @@
     <div class="wrap">
       <div class="hero__badges animate-fade-up">
         <span class="neko-badge neko-badge--success neko-badge--pill">v1.0 released</span>
-        <span class="neko-badge neko-badge--secondary neko-badge--pill">5 packages</span>
+        <span class="neko-badge neko-badge--secondary neko-badge--pill">6 packages</span>
         <span class="neko-badge neko-badge--info neko-badge--pill">2,029 tests</span>
         <span class="neko-badge neko-badge--pill">Apache-2.0</span>
       </div>
@@ -165,7 +165,7 @@
   <div class="stat-band">
     <div class="wrap stat-band__grid">
       <div>
-        <div class="stat-band__num">5</div>
+        <div class="stat-band__num">6</div>
         <div class="stat-band__label">published packages</div>
       </div>
       <div>
@@ -313,17 +313,25 @@ $ neko schema <span class="tok-fn">generate</span></code></pre>
   <section id="packages" class="stat-band" style="border-bottom:0;">
     <div class="wrap">
       <span class="eyebrow">The suite</span>
-      <h2 class="section-title">Five shipped. A full stack in motion.</h2>
+      <h2 class="section-title">Six shipped. A full stack in motion.</h2>
       <p class="section-lead">
-        NekoStack isn't five packages — it's a 108-package, schema-first full stack,
+        NekoStack isn't six packages — it's a 108-package, schema-first full stack,
         designed under one IR-first design language so an app's data, API, UI, auth,
-        and tooling all speak the same dialect. Five are shipped at v1.0 today;
+        and tooling all speak the same dialect. Six are shipped at v1.0 today;
         the rest are specced — each with a written capability boundary — and built
         one vertical slice at a time. Install the suite with <code>nekostack</code>,
         or pull scoped packages à la carte. All Apache-2.0.
       </p>
 
       <div class="pkg-grid">
+        <article class="neko-card pkg-card">
+          <div class="neko-card__body">
+            <h3 class="neko-card__title">@nekostack/lint</h3>
+            <p class="pkg-card__desc">ESLint flat-config suite for TypeScript, React, Node, and NestJS. 20+ rules, module-boundary enforcement, type-safety rules. 188 tests.</p>
+            <code class="pkg-card__install">npm i @nekostack/lint</code>
+          </div>
+        </article>
+
         <article class="neko-card pkg-card">
           <div class="neko-card__body">
             <h3 class="neko-card__title">@nekostack/schema</h3>
@@ -367,7 +375,7 @@ $ neko schema <span class="tok-fn">generate</span></code></pre>
         <article class="neko-card pkg-card" style="border-color: var(--neko-color-semantic-primary);">
           <div class="neko-card__body">
             <h3 class="neko-card__title">nekostack</h3>
-            <p class="pkg-card__desc">The metapackage. One install pins version-locked, tested-together copies of all five primitives.</p>
+            <p class="pkg-card__desc">The metapackage. One install pins version-locked, tested-together copies of all six primitives.</p>
             <code class="pkg-card__install">npm i nekostack</code>
           </div>
         </article>

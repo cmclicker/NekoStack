@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Roadmap — NekoStack</title>
-  <meta name="description" content="NekoStack development roadmap. 5 packages shipped at v1.0+. @nekostack/lint is next." />
+  <meta name="description" content="NekoStack development roadmap. 6 packages shipped at v1.0+. @nekostack/config in progress." />
   <link rel="canonical" href="https://cmclicker.github.io/NekoStack/roadmap.html" />
   <link rel="stylesheet" href="assets/neko.css" />
   <link rel="stylesheet" href="assets/ui.css" />
@@ -246,6 +246,9 @@
       gap: var(--neko-spacing-3);
       margin-bottom: var(--neko-spacing-4);
     }
+    details.milestone-detail > summary { list-style: none; cursor: pointer; }
+    details.milestone-detail > summary::-webkit-details-marker { display: none; }
+    details.milestone-detail:not([open]) > summary { margin-bottom: 0; }
     .milestone-detail__ver {
       font-family: var(--neko-font-mono);
       font-size: var(--neko-font-size-sm);
@@ -443,7 +446,8 @@
       <div class="hero__badges">
 <!-- rm:gen:hero-badges -->
         <span class="neko-badge neko-badge--success neko-badge--pill">6 shipped</span>
-        <span class="neko-badge neko-badge--warning neko-badge--pill">@nekostack/lint in progress</span>
+        <span class="neko-badge neko-badge--success neko-badge--pill">@nekostack/lint v1.0 ✓</span>
+        <span class="neko-badge neko-badge--warning neko-badge--pill">config in progress</span>
         <span class="neko-badge neko-badge--pill">Apache-2.0</span>
 <!-- /rm:gen:hero-badges -->
       </div>
@@ -486,8 +490,15 @@
     <section class="rm-section">
       <div class="section-label"><span class="section-label__dot dot--green"></span> Shipped at v1.0+</div>
       <h2 class="section-title">Published packages</h2>
-      <p class="section-sub">Five scoped packages and a metapackage, all at v1.0 or above on npm. Apache-2.0.</p>
+      <p class="section-sub">Six scoped packages and a metapackage, all at v1.0 or above on npm. Apache-2.0.</p>
       <div class="shipped-grid">
+
+        <div class="shipped-card">
+          <div class="shipped-card__name">@nekostack/lint</div>
+          <span class="shipped-card__ver">v1.0.0</span>
+          <p class="shipped-card__desc">ESLint flat-config suite for TypeScript, React, Node, and NestJS. 20+ rules, module-boundary enforcement, type-safety rules. 188 tests.</p>
+          <a class="shipped-card__npm" href="https://www.npmjs.com/package/@nekostack/lint">npmjs.com/package/@nekostack/lint →</a>
+        </div>
 
         <div class="shipped-card">
           <div class="shipped-card__name">@nekostack/schema</div>
@@ -534,17 +545,17 @@
       </div>
     </section>
 
-    <!-- ===== in progress: lint ===== -->
+    <!-- ===== phase 1 ===== -->
     <section class="rm-section">
-      <div class="section-label"><span class="section-label__dot dot--amber"></span> In progress</div>
-      <h2 class="section-title">Phase 1 — Foundation Closure</h2>
-      <p class="section-sub">Closing the Phase 0 gap. <code>@nekostack/lint</code> v0.5 and <code>@nekostack/test</code> v0.1 shipped — two of four Phase 1 packages underway.</p>
+      <div class="section-label"><span class="section-label__dot dot--green"></span> Phase 1 — Foundation Closure</div>
+      <h2 class="section-title">Developer tooling</h2>
+      <p class="section-sub"><code>@nekostack/lint</code> v1.0 and <code>@nekostack/test</code> v0.1 shipped. <code>@nekostack/config</code> in progress.</p>
 
       <div class="next-up-card">
         <div class="next-up-header">
           <div>
             <div style="display:flex; align-items:center; gap: var(--neko-spacing-3); margin-bottom: var(--neko-spacing-2);">
-              <span class="next-up-badge">🔥 In progress</span>
+              <span class="next-up-badge" style="background: color-mix(in srgb, var(--neko-color-semantic-success) 15%, transparent); color: var(--neko-color-semantic-success); border-color: color-mix(in srgb, var(--neko-color-semantic-success) 30%, transparent);">✓ Shipped</span>
               <span style="font-size: var(--neko-font-size-xs); color: var(--neko-color-semantic-text-muted);"><!-- rm:gen:lint-phase-meta -->Phase 1 · Package 1 of 4 · v1.0 shipped 2026-06-20<!-- /rm:gen:lint-phase-meta --></span>
             </div>
             <div class="next-up-title">@nekostack/lint</div>
@@ -594,12 +605,12 @@
         </div>
 
         <!-- rm:gen:lint-card-v0-1-header -->
-        <div class="milestone-detail" style="border-color: color-mix(in srgb, var(--neko-color-semantic-success) 25%, transparent);">
-          <div class="milestone-detail__header">
+        <details class="milestone-detail" style="border-color: color-mix(in srgb, var(--neko-color-semantic-success) 25%, transparent);">
+          <summary class="milestone-detail__header">
             <span class="milestone-detail__ver" style="color: var(--neko-color-semantic-success);">v0.1</span>
             <span class="milestone-detail__title">Bootstrap</span>
             <span class="milestone-detail__tag" style="color: var(--neko-color-semantic-success); background: color-mix(in srgb, var(--neko-color-semantic-success) 10%, transparent); border-color: color-mix(in srgb, var(--neko-color-semantic-success) 25%, transparent);">✓ Shipped</span>
-          </div>
+          </summary>
 <!-- /rm:gen:lint-card-v0-1-header -->
           <ul class="milestone-detail__list">
             <li>Flat-config plugin object (<code>src/plugin.ts</code>) with meta + rules map</li>
@@ -608,15 +619,15 @@
             <li>11 <code>RuleTester</code> fixture tests (5 valid, 6 invalid)</li>
             <li>Added to CI <code>--filter</code> in the same PR</li>
           </ul>
-        </div>
+        </details>
 
         <!-- rm:gen:lint-card-v0-2-header -->
-        <div class="milestone-detail" style="border-color: color-mix(in srgb, var(--neko-color-semantic-success) 25%, transparent);">
-          <div class="milestone-detail__header">
+        <details class="milestone-detail" style="border-color: color-mix(in srgb, var(--neko-color-semantic-success) 25%, transparent);">
+          <summary class="milestone-detail__header">
             <span class="milestone-detail__ver" style="color: var(--neko-color-semantic-success);">v0.2</span>
             <span class="milestone-detail__title">Convention rules</span>
             <span class="milestone-detail__tag" style="color: var(--neko-color-semantic-success); background: color-mix(in srgb, var(--neko-color-semantic-success) 10%, transparent); border-color: color-mix(in srgb, var(--neko-color-semantic-success) 25%, transparent);">✓ Shipped</span>
-          </div>
+          </summary>
 <!-- /rm:gen:lint-card-v0-2-header -->
           <ul class="milestone-detail__list">
             <li><code>schema-no-inline-zod</code> — flags <code>z.TYPE()</code> calls outside schema files; 11 tests</li>
@@ -626,15 +637,15 @@
             <li><code>strict</code> config — enables all five rules; exported as <code>./strict</code></li>
             <li>49 total tests (38 new + 11 from v0.1)</li>
           </ul>
-        </div>
+        </details>
 
         <!-- rm:gen:lint-card-v0-3-header -->
-        <div class="milestone-detail" style="border-color: color-mix(in srgb, var(--neko-color-semantic-success) 25%, transparent);">
-          <div class="milestone-detail__header">
+        <details class="milestone-detail" style="border-color: color-mix(in srgb, var(--neko-color-semantic-success) 25%, transparent);">
+          <summary class="milestone-detail__header">
             <span class="milestone-detail__ver" style="color: var(--neko-color-semantic-success);">v0.3</span>
             <span class="milestone-detail__title">Framework configs</span>
             <span class="milestone-detail__tag" style="color: var(--neko-color-semantic-success); background: color-mix(in srgb, var(--neko-color-semantic-success) 10%, transparent); border-color: color-mix(in srgb, var(--neko-color-semantic-success) 25%, transparent);">✓ Shipped</span>
-          </div>
+          </summary>
 <!-- /rm:gen:lint-card-v0-3-header -->
           <ul class="milestone-detail__list">
             <li><code>react-no-inline-style</code> — flags <code>style={...}</code> JSX attributes; use token-based classes instead; 10 tests</li>
@@ -643,15 +654,15 @@
             <li><code>nest</code> config — exported as <code>./nest</code>; full server-side rule set for NestJS 10+ projects</li>
             <li>69 total tests (20 new + 49 from v0.2)</li>
           </ul>
-        </div>
+        </details>
 
         <!-- rm:gen:lint-card-v0-4-header -->
-        <div class="milestone-detail" style="border-color: color-mix(in srgb, var(--neko-color-semantic-success) 25%, transparent);">
-          <div class="milestone-detail__header">
+        <details class="milestone-detail" style="border-color: color-mix(in srgb, var(--neko-color-semantic-success) 25%, transparent);">
+          <summary class="milestone-detail__header">
             <span class="milestone-detail__ver" style="color: var(--neko-color-semantic-success);">v0.4</span>
             <span class="milestone-detail__title">Security rules + first auto-fixer</span>
             <span class="milestone-detail__tag" style="color: var(--neko-color-semantic-success); background: color-mix(in srgb, var(--neko-color-semantic-success) 10%, transparent); border-color: color-mix(in srgb, var(--neko-color-semantic-success) 25%, transparent);">✓ Shipped</span>
-          </div>
+          </summary>
 <!-- /rm:gen:lint-card-v0-4-header -->
           <ul class="milestone-detail__list">
             <li><code>no-hardcoded-secrets</code> — flags secret-named variables assigned string literals + well-known credential prefixes (Stripe, GitHub, AWS, Google); test files exempt; 11 tests</li>
@@ -661,15 +672,15 @@
             <li><code>base</code> config hardened: <code>no-hardcoded-secrets</code> added as universal security baseline</li>
             <li>105 total tests (36 new + 69 from v0.3)</li>
           </ul>
-        </div>
+        </details>
 
         <!-- rm:gen:lint-card-v0-5-header -->
-        <div class="milestone-detail" style="border-color: color-mix(in srgb, var(--neko-color-semantic-success) 25%, transparent);">
-          <div class="milestone-detail__header">
+        <details class="milestone-detail" style="border-color: color-mix(in srgb, var(--neko-color-semantic-success) 25%, transparent);">
+          <summary class="milestone-detail__header">
             <span class="milestone-detail__ver" style="color: var(--neko-color-semantic-success);">v0.5</span>
             <span class="milestone-detail__title">Module-boundary + quality rules</span>
             <span class="milestone-detail__tag" style="color: var(--neko-color-semantic-success); background: color-mix(in srgb, var(--neko-color-semantic-success) 10%, transparent); border-color: color-mix(in srgb, var(--neko-color-semantic-success) 25%, transparent);">✓ Shipped</span>
-          </div>
+          </summary>
 <!-- /rm:gen:lint-card-v0-5-header -->
           <ul class="milestone-detail__list">
             <li><code>consistent-type-imports</code> — flags <code>import { Type }</code> where <code>import type { Type }</code> is required; <strong>auto-fixer</strong> adds the <code>type</code> modifier</li>
@@ -677,15 +688,15 @@
             <li><code>nest-event-handler-has-spec</code> — extends <code>service-has-spec</code> to <code>@EventPattern</code> / <code>@MessagePattern</code> decorated methods</li>
             <li><code>no-direct-date-now</code> — flags <code>Date.now()</code> and <code>new Date()</code> outside test files; enforces injectable clock pattern</li>
           </ul>
-        </div>
+        </details>
 
         <!-- rm:gen:lint-card-v0-6-header -->
-        <div class="milestone-detail" style="border-color: color-mix(in srgb, var(--neko-color-semantic-success) 25%, transparent);">
-          <div class="milestone-detail__header">
+        <details class="milestone-detail" style="border-color: color-mix(in srgb, var(--neko-color-semantic-success) 25%, transparent);">
+          <summary class="milestone-detail__header">
             <span class="milestone-detail__ver" style="color: var(--neko-color-semantic-success);">v0.6</span>
             <span class="milestone-detail__title">Type-safety</span>
             <span class="milestone-detail__tag" style="color: var(--neko-color-semantic-success); background: color-mix(in srgb, var(--neko-color-semantic-success) 10%, transparent); border-color: color-mix(in srgb, var(--neko-color-semantic-success) 25%, transparent);">✓ Shipped</span>
-          </div>
+          </summary>
 <!-- /rm:gen:lint-card-v0-6-header -->
           <ul class="milestone-detail__list">
             <li><code>no-type-assertion-to-any</code> — flags <code>x as any</code> and <code>&lt;any&gt;x</code>; use <code>unknown</code> + type guard or the specific target type instead</li>
@@ -694,16 +705,16 @@
             <li><code>nest-controller-response-type</code> — flags <code>@Get</code> / <code>@Post</code> / … handler methods without an explicit return type</li>
             <li>New <code>./recommended</code> config — sensible defaults for any TypeScript project; layer <code>./react</code> or <code>./nest</code> on top</li>
           </ul>
-        </div>
+        </details>
 
         <!-- remaining milestones -->
         <!-- rm:gen:lint-card-v1-0-header -->
-        <div class="milestone-detail" style="border-color: color-mix(in srgb, var(--neko-color-semantic-success) 25%, transparent);">
-          <div class="milestone-detail__header">
+        <details class="milestone-detail" style="border-color: color-mix(in srgb, var(--neko-color-semantic-success) 25%, transparent);">
+          <summary class="milestone-detail__header">
             <span class="milestone-detail__ver" style="color: var(--neko-color-semantic-success);">v1.0</span>
             <span class="milestone-detail__title">Stable catalog</span>
             <span class="milestone-detail__tag" style="color: var(--neko-color-semantic-success); background: color-mix(in srgb, var(--neko-color-semantic-success) 10%, transparent); border-color: color-mix(in srgb, var(--neko-color-semantic-success) 25%, transparent);">✓ Shipped</span>
-          </div>
+          </summary>
 <!-- /rm:gen:lint-card-v1-0-header -->
           <ul class="milestone-detail__list">
             <li>19 rule docs (<code>docs/rules/*.md</code>) — Why, examples, options, when-to-disable for every shipped rule</li>
@@ -711,7 +722,7 @@
             <li><code>docs/MIGRATION_GUIDE.md</code> — zero → base → recommended → strict upgrade path</li>
             <li><code>@nekostack/schema</code> linted with <code>recommended</code> on every CI run</li>
           </ul>
-        </div>
+        </details>
 
 <!-- rm:gen:lint-upcoming -->
         <div class="upcoming-milestones"></div>
@@ -723,26 +734,26 @@
         <div class="next-up-header">
           <div>
             <div style="display:flex; align-items:center; gap: var(--neko-spacing-3); margin-bottom: var(--neko-spacing-2);">
-              <span class="next-up-badge">🔥 In progress</span>
+              <span class="next-up-badge" style="background: color-mix(in srgb, var(--neko-color-semantic-success) 15%, transparent); color: var(--neko-color-semantic-success); border-color: color-mix(in srgb, var(--neko-color-semantic-success) 30%, transparent);">✓ v0.1 Shipped</span>
               <span style="font-size: var(--neko-font-size-xs); color: var(--neko-color-semantic-text-muted);">Phase 1 · Package 2 of 4 · v0.1 shipped 2026-06-19</span>
             </div>
             <div class="next-up-title">@nekostack/test</div>
             <p class="next-up-tagline">Shared testing substrate — utilities and fixture builders so every new package starts with a real test harness, not a blank slate.</p>
           </div>
         </div>
-        <div class="milestone-detail" style="border-color: color-mix(in srgb, var(--neko-color-semantic-success) 25%, transparent); margin-top: var(--neko-spacing-4);">
-          <div class="milestone-detail__header">
+        <details class="milestone-detail" style="border-color: color-mix(in srgb, var(--neko-color-semantic-success) 25%, transparent); margin-top: var(--neko-spacing-4);">
+          <summary class="milestone-detail__header">
             <span class="milestone-detail__ver" style="color: var(--neko-color-semantic-success);">v0.1</span>
             <span class="milestone-detail__title">Bootstrap</span>
             <span class="milestone-detail__tag" style="color: var(--neko-color-semantic-success); background: color-mix(in srgb, var(--neko-color-semantic-success) 10%, transparent); border-color: color-mix(in srgb, var(--neko-color-semantic-success) 25%, transparent);">✓ Shipped</span>
-          </div>
+          </summary>
           <ul class="milestone-detail__list">
             <li><code>createRuleTester(config?)</code> — wires vitest hooks onto <code>RuleTester</code> statics; replaces 3-line boilerplate across all lint test files</li>
             <li><code>createJsxRuleTester()</code> — convenience wrapper with <code>ecmaFeatures.jsx: true</code> pre-set</li>
             <li>Peer deps: <code>@typescript-eslint/rule-tester ≥ 8</code>, <code>vitest ≥ 2</code></li>
             <li>5 tests</li>
           </ul>
-        </div>
+        </details>
       </div>
     </section>
 
@@ -766,9 +777,9 @@
             <p class="phase-desc">Closes the Phase 0 gap. Every package built without <code>lint</code> and <code>test</code> accrues convention debt that compounds with each new addition.</p>
             <div class="phase-done">Done when: any new package can be linted, type-checked, and tested using only NekoStack tooling — no per-package reinvention.</div>
             <div class="pkg-chips">
-              <span class="pkg-chip pkg-chip--next">lint ⚡</span>
-              <span class="pkg-chip">test</span>
-              <span class="pkg-chip">config</span>
+              <span class="pkg-chip" style="border-color: var(--neko-color-semantic-success); color: var(--neko-color-semantic-success);">lint ✓</span>
+              <span class="pkg-chip pkg-chip--next">test ⚡</span>
+              <span class="pkg-chip pkg-chip--next">config ⚡</span>
             </div>
           </div>
         </details>
