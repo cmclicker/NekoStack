@@ -20,6 +20,10 @@ export const strict = [
       '@nekostack/consistent-type-imports': 'error',
       '@nekostack/no-console-in-module': 'error',
       '@nekostack/no-direct-date-now': 'warn',
+      '@nekostack/no-type-assertion-to-any': 'error',
+      '@nekostack/no-non-null-assertion': 'error',
+      '@nekostack/react-hook-naming': 'warn',
+      '@nekostack/nest-controller-response-type': 'warn',
     } as const,
   },
 ];

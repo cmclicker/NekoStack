@@ -4,6 +4,44 @@ Per-milestone changes. Pairs with git tags (`lint-vX.Y.Z`). Format: newest first
 
 ---
 
+## lint-v0.6.0 — 2026-06-20
+
+PR #TBD · Type-safety rules + recommended config.
+
+### What shipped
+
+**Four new rules**
+
+- **`no-type-assertion-to-any`** — flags `x as any` and `<any>x` type assertions. Asserting to `any` silences TypeScript entirely and defeats type-checking. Use `unknown` with a type guard, or assert to the specific type needed. Reports both `TSAsExpression` and `TSTypeAssertion` forms. 11 tests (5 valid, 6 invalid).
+
+- **`no-non-null-assertion`** — flags the postfix non-null assertion operator `x!`. The `!` removes `null` and `undefined` from a type without any runtime guarantee. Use optional chaining (`?.`), nullish coalescing (`??`), or an explicit null guard instead. 11 tests (5 valid, 6 invalid).
+
+- **`react-hook-naming`** — flags named functions (function declarations and named arrow function expressions) that call React hooks (detected by `use[A-Z]` callee pattern) but are not named with the `use` prefix or as a PascalCase component. Hook calls inside anonymous callbacks are attributed to the innermost named function, so helpers that merely pass anonymous hook-calling callbacks are not flagged. Test files are exempt. 12 tests (7 valid, 5 invalid).
+
+- **`nest-controller-response-type`** — flags NestJS controller route handler methods decorated with `@Get`, `@Post`, `@Put`, `@Delete`, `@Patch`, `@Head`, `@Options`, or `@All` that lack an explicit return type annotation. Without return types the API surface is undocumented in source and TypeScript cannot verify response shape mismatches. Active only in `*.controller.*` files. 12 tests (6 valid, 6 invalid).
+
+**New config: `recommended`**
+
+- `@nekostack/lint/recommended` — sensible defaults for any TypeScript project. More opinionated than `base`, less framework-specific than `strict`/`react`/`nest`. Includes all `base` rules, schema conventions (`schema-no-inline-zod: warn`, `schema-export-type: warn`), spec coverage (`service-has-spec: warn`), architecture (`controller-no-service-cycle: error`), and the new type-safety rules (`no-type-assertion-to-any: error`, `no-non-null-assertion: warn`). Layer `./react` or `./nest` on top for framework-specific rules.
+
+**Config updates**
+
+- `strict` — adds `no-type-assertion-to-any: error`, `no-non-null-assertion: error`, `react-hook-naming: warn`, `nest-controller-response-type: warn`
+- `react` — adds `no-type-assertion-to-any: error`, `no-non-null-assertion: warn`, `react-hook-naming: warn`
+- `nest` — adds `no-type-assertion-to-any: error`, `no-non-null-assertion: warn`, `nest-controller-response-type: warn`
+
+**Package**
+
+- Version: `0.5.0` → `0.6.0`
+- Exports: added `./recommended` subpath
+- 46 new tests → **188 total**
+
+### Test count
+
+- 142 → 188 (+46 net).
+
+---
+
 ## lint-v0.5.0 — 2026-06-20
 
 PR #86 · Module-boundary and quality rules.

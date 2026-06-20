@@ -66,15 +66,15 @@ Status: **shipped** ([#86](https://github.com/cmclicker/NekoStack/pull/86), merg
 
 ---
 
-## v0.6 — Type-safety rules + config polish
+## v0.6 — Type-safety rules + recommended config ← *active target*
 
-Status: **not started**. Target: ~4 new rules, `recommended` config → ~185 total tests.
+Status: **shipped** (#TBD, merged 2026-06-20). 46 new tests → 188 total.
 
-- **`no-type-assertion-to-any`** — flags `as any` and `<any>` type assertions outside test files; these bypass TypeScript's safety guarantees and should use proper Zod validation or explicit `unknown` narrowing.
-- **`no-non-null-assertion`** — flags `!` non-null assertions outside test files and generated code; prefer optional chaining or explicit null checks.
-- **`react-hook-naming`** — flags custom hooks (functions in components/ or hooks/ directories that use `use*` hooks internally) whose name does not start with `use`; required for the React compiler's rule-of-hooks checks.
-- **`nest-controller-response-type`** — flags controller methods with implicit `any` return type; every endpoint should declare its response DTO explicitly.
-- New **`recommended`** config — lighter alternative to `strict`; omits the most opinionated rules (`service-has-spec`, `schema-export-type` warns only) for teams adopting incrementally.
+- **`no-type-assertion-to-any`** — flags `x as any` and `<any>x`; use `unknown` + type guard or the specific target type instead.
+- **`no-non-null-assertion`** — flags postfix `x!`; use optional chaining, nullish coalescing, or an explicit null check.
+- **`react-hook-naming`** — flags named functions that call React hooks (`use[A-Z]` callees) but are not named `use*` or PascalCase; hook calls inside anonymous callbacks are attributed to the innermost frame.
+- **`nest-controller-response-type`** — flags `@Get`/`@Post`/`@Put`/`@Delete`/`@Patch`/`@Head`/`@Options`/`@All` methods in `*.controller.*` files without an explicit return type.
+- New **`recommended`** config (`./recommended`) — sensible defaults for any TypeScript project; layer `./react` or `./nest` on top for framework-specific rules.
 
 ---
 
