@@ -297,10 +297,13 @@ function renderHistoryHtml(model) {
       </a>
       <nav class="site-nav__links">
         <a href="index.html#how">How it works</a>
+        <a href="index.html#why">Why NekoStack</a>
         <a href="index.html#packages">Packages</a>
+        <a href="index.html#benchmarks">Benchmarks</a>
+        <a href="index.html#playground">Playground</a>
+        <a href="index.html#install">Install</a>
         <a href="roadmap.html">Roadmap</a>
         <a href="history.html" style="color: var(--neko-color-semantic-text-base);">History</a>
-        <a href="index.html#install">Install</a>
       </nav>
       <div class="site-nav__actions">
         <a class="neko-btn neko-btn--ghost neko-btn--sm" href="https://github.com/${GH_REPO}">GitHub</a>

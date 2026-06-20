@@ -23,6 +23,85 @@
   <link rel="stylesheet" href="assets/neko.css" />
   <link rel="stylesheet" href="assets/ui.css" />
   <link rel="stylesheet" href="assets/site.css" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "SoftwareApplication",
+        "name": "NekoStack",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Windows, macOS, Linux",
+        "url": "https://cmclicker.github.io/NekoStack/",
+        "codeRepository": "https://github.com/cmclicker/NekoStack",
+        "description": "An opinionated, schema-first full-stack utility suite. Define your data shape once and generate Zod, JSON Schema, OpenAPI, and TypeScript — plus a CLI, design tokens, and a token-pure component library.",
+        "license": "https://www.apache.org/licenses/LICENSE-2.0",
+        "softwareVersion": "1.0.0",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "programmingLanguage": "TypeScript",
+        "keywords": "schema-first, typescript, zod, openapi, json-schema, code generation, developer tools, ESLint, design tokens"
+      },
+      {
+        "@type": "Organization",
+        "name": "NekoStack",
+        "url": "https://cmclicker.github.io/NekoStack/",
+        "location": {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Central Arkansas",
+            "addressRegion": "AR",
+            "addressCountry": "US"
+          }
+        },
+        "sameAs": [
+          "https://github.com/cmclicker/NekoStack",
+          "https://www.npmjs.com/package/nekostack"
+        ]
+      }
+    ]
+  }
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "How do I keep Zod and OpenAPI in sync?",
+        "acceptedAnswer": { "@type": "Answer", "text": "NekoStack solves this at the source. You define your schema once using the NekoStack DSL, and the CLI generates Zod, JSON Schema, OpenAPI 3.1, and TypeScript types from a single canonical IR. When you change the schema, all four outputs regenerate from the same source — they can't drift because they share one origin." }
+      },
+      {
+        "@type": "Question",
+        "name": "What is schema-first development?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Schema-first development means defining your data shapes before writing business logic. NekoStack formalizes this: you write a .schema.ts file using the NekoStack DSL, run the CLI to generate all downstream artifacts, and your API spec, runtime validators, and TypeScript types are automatically synchronized." }
+      },
+      {
+        "@type": "Question",
+        "name": "What is the difference between NekoStack and Zod?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Zod is a runtime validation library. NekoStack uses your schema definition to generate Zod validators — along with JSON Schema, OpenAPI, and TypeScript types. You define once; NekoStack emits everything. Zod is an internal engine inside @nekostack/schema, not the surface the developer touches." }
+      },
+      {
+        "@type": "Question",
+        "name": "Can NekoStack help with AI and LLM agent development?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes — this is a core use case. AI agents hallucinate without hard constraints. NekoStack schemas create mathematically verifiable contracts: when an agent generates code or data that violates a schema constraint, Zod rejects the mutation before it can corrupt state. Agents can self-correct using the structured Zod error trace." }
+      },
+      {
+        "@type": "Question",
+        "name": "Does NekoStack work with React?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes. @nekostack/schema generates TypeScript types and Zod validators that work in any React project. @nekostack/ui ships zero-JS CSS components that layer cleanly over any framework. @nekostack/lint includes React-specific ESLint rules. @nekostack/theme tokens are CSS custom properties — framework-agnostic by design." }
+      },
+      {
+        "@type": "Question",
+        "name": "Where is NekoStack developed?",
+        "acceptedAnswer": { "@type": "Answer", "text": "NekoStack is developed and maintained in Central Arkansas, United States. It's an independent, open-source project — Apache-2.0 licensed and built in the open on GitHub." }
+      }
+    ]
+  }
+  </script>
 </head>
 <body>
 
@@ -56,7 +135,7 @@
       <div class="hero__badges animate-fade-up">
         <span class="neko-badge neko-badge--success neko-badge--pill">v1.0 released</span>
         <span class="neko-badge neko-badge--secondary neko-badge--pill">5 packages</span>
-        <span class="neko-badge neko-badge--info neko-badge--pill">2,364 tests</span>
+        <span class="neko-badge neko-badge--info neko-badge--pill">2,029 tests</span>
         <span class="neko-badge neko-badge--pill">Apache-2.0</span>
       </div>
 
@@ -90,7 +169,7 @@
         <div class="stat-band__label">published packages</div>
       </div>
       <div>
-        <div class="stat-band__num">2,364</div>
+        <div class="stat-band__num">2,029</div>
         <div class="stat-band__label">tests passing</div>
       </div>
       <div>
@@ -411,7 +490,7 @@ $ neko schema <span class="tok-fn">generate</span></code></pre>
           <span class="showcase-cell__label">Stat</span>
           <div class="neko-stat">
             <div class="neko-stat__label">Tests passing</div>
-            <div class="neko-stat__value">2,364</div>
+            <div class="neko-stat__value">2,029</div>
             <div class="neko-stat__delta neko-stat__delta--up">all green</div>
           </div>
         </div>
@@ -564,6 +643,135 @@ $ npx neko schema check <span class="tok-str">"./schemas/**/*"</span></code></pr
     </div>
   </section>
 
+  <!-- ===== agentic guardrail ===== -->
+  <section id="agentic" style="padding-block: var(--neko-spacing-20); border-top: 1px solid var(--neko-color-semantic-border-subtle);">
+    <div class="wrap">
+      <div class="feature-row" style="align-items: flex-start;">
+        <div>
+          <span class="eyebrow">Built for AI-assisted dev</span>
+          <h2 class="section-title">The schema catches what the AI misses.</h2>
+          <p class="section-lead">
+            AI coding agents are fast — but they hallucinate. They invent field names,
+            pass floats where integers belong, assign values to the wrong slot. In a
+            traditional project those mistakes land silently in production.
+          </p>
+          <p class="section-lead" style="margin-top: var(--neko-spacing-4);">
+            NekoStack schemas create a hard contract. Every state mutation is validated
+            against the IR before it commits. An agent that violates the contract gets
+            a structured Zod error trace it can read and self-correct from — not a
+            silent bug three layers deep.
+          </p>
+          <ul class="feature-list" style="margin-top: var(--neko-spacing-6);">
+            <li><span class="tick">✓</span> Schemas are the guardrails, not the prompts</li>
+            <li><span class="tick">✓</span> <code>Secret&lt;T&gt;</code> prevents agents from accidentally serializing credentials</li>
+            <li><span class="tick">✓</span> Structured errors give agents a self-repair path, not just a crash</li>
+            <li><span class="tick">✓</span> One schema definition → runtime validator + agent tool definition (roadmap)</li>
+          </ul>
+        </div>
+
+        <div style="min-width: 0; flex: 1;">
+          <div class="code-panel">
+            <div class="code-panel__bar" style="background: color-mix(in srgb, var(--neko-color-semantic-error) 12%, var(--neko-color-semantic-bg-sunken));">
+              <span class="code-panel__dot" style="background: #ff5f57;"></span>
+              <span class="code-panel__dot" style="background: #ffbd2e;"></span>
+              <span class="code-panel__dot" style="background: #28c840;"></span>
+              <span class="code-panel__file" style="color: var(--neko-color-semantic-error);">console — schema rejected agent mutation</span>
+            </div>
+<pre style="margin:0; padding: var(--neko-spacing-5); font-family: var(--neko-font-mono); font-size: var(--neko-font-size-sm); line-height: 1.7; overflow-x: auto;"><code><span style="color: var(--neko-color-semantic-error); font-weight: 600;">STATE MUTATION REJECTED BY NEKOSTACK SCHEMA</span>
+
+<span style="color: var(--neko-color-semantic-text-muted);">ZodError: [</span>
+  <span style="color: var(--neko-color-semantic-text-muted);">{</span>
+    <span style="color: var(--neko-color-primitive-pink-400);">"code"</span><span style="color: var(--neko-color-semantic-text-muted);">:</span> <span style="color: var(--neko-color-semantic-success);">"invalid_type"</span><span style="color: var(--neko-color-semantic-text-muted);">,</span>
+    <span style="color: var(--neko-color-primitive-pink-400);">"expected"</span><span style="color: var(--neko-color-semantic-text-muted);">:</span> <span style="color: var(--neko-color-semantic-success);">"integer"</span><span style="color: var(--neko-color-semantic-text-muted);">,</span>
+    <span style="color: var(--neko-color-primitive-pink-400);">"received"</span><span style="color: var(--neko-color-semantic-text-muted);">:</span> <span style="color: var(--neko-color-semantic-error);">"float"</span><span style="color: var(--neko-color-semantic-text-muted);">,</span>
+    <span style="color: var(--neko-color-primitive-pink-400);">"path"</span><span style="color: var(--neko-color-semantic-text-muted);">: [</span><span style="color: var(--neko-color-semantic-success);">"resources"</span><span style="color: var(--neko-color-semantic-text-muted);">, </span><span style="color: var(--neko-color-semantic-warning);">1</span><span style="color: var(--neko-color-semantic-text-muted);">, </span><span style="color: var(--neko-color-semantic-success);">"amount"</span><span style="color: var(--neko-color-semantic-text-muted);">]</span>
+  <span style="color: var(--neko-color-semantic-text-muted);">}</span>
+<span style="color: var(--neko-color-semantic-text-muted);">]</span>
+
+<span style="color: var(--neko-color-semantic-text-muted);">    at validateAndCommit (engine.ts:38:74)</span>
+
+<span style="color: var(--neko-color-semantic-text-muted); font-style: italic;">// Agent set ratePerSecond: 0.5 → stone.amount became 0.5
+// Schema: amount: s.number().int().min(0)  ← must be integer
+// State rolled back. Agent read the trace and self-corrected.</span></code></pre>
+          </div>
+          <p class="muted" style="margin-top: var(--neko-spacing-3); font-size: var(--neko-font-size-sm);">
+            Real output from an AI agent building on NekoStack. The schema caught a float-vs-integer
+            hallucination on every tick — agent read the Zod trace, identified the constraint, corrected
+            the logic. No silent corruption.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== faq ===== -->
+  <section id="faq" style="padding-block: var(--neko-spacing-16) var(--neko-spacing-20); border-top: 1px solid var(--neko-color-semantic-border-subtle);">
+    <div class="wrap">
+      <span class="eyebrow">FAQ</span>
+      <h2 class="section-title" style="margin-bottom: var(--neko-spacing-10);">Common questions</h2>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 520px), 1fr)); gap: var(--neko-spacing-8);">
+
+        <div>
+          <h3 style="font-size: var(--neko-font-size-base); font-weight: 600; margin: 0 0 var(--neko-spacing-2);">How do I keep Zod and OpenAPI in sync?</h3>
+          <p class="muted" style="margin: 0; font-size: var(--neko-font-size-sm); line-height: 1.65;">
+            You don't — NekoStack does it for you. Define your schema once in the NekoStack DSL; the CLI
+            generates Zod, JSON Schema, OpenAPI 3.1, and TypeScript types from a single IR.
+            When the schema changes, all four regenerate. They can't drift because they share one source.
+          </p>
+        </div>
+
+        <div>
+          <h3 style="font-size: var(--neko-font-size-base); font-weight: 600; margin: 0 0 var(--neko-spacing-2);">What's the difference between NekoStack and Zod?</h3>
+          <p class="muted" style="margin: 0; font-size: var(--neko-font-size-sm); line-height: 1.65;">
+            Zod is a runtime validation library. NekoStack generates Zod validators from your schema — along
+            with OpenAPI, JSON Schema, and TypeScript types. Zod is an internal engine inside
+            <code>@nekostack/schema</code>, not the surface you touch.
+          </p>
+        </div>
+
+        <div>
+          <h3 style="font-size: var(--neko-font-size-base); font-weight: 600; margin: 0 0 var(--neko-spacing-2);">Can NekoStack help with AI agent development?</h3>
+          <p class="muted" style="margin: 0; font-size: var(--neko-font-size-sm); line-height: 1.65;">
+            Yes — this is a core use case. AI agents hallucinate without hard constraints. NekoStack schemas
+            create mathematically verifiable contracts: a mutation that violates a constraint gets rejected with
+            a structured Zod error the agent can read and self-correct from. Prompt guardrails are soft;
+            schema guardrails are hard.
+          </p>
+        </div>
+
+        <div>
+          <h3 style="font-size: var(--neko-font-size-base); font-weight: 600; margin: 0 0 var(--neko-spacing-2);">Does NekoStack work with React / Next.js?</h3>
+          <p class="muted" style="margin: 0; font-size: var(--neko-font-size-sm); line-height: 1.65;">
+            Yes. Generated TypeScript types and Zod validators work in any React or Next.js project.
+            <code>@nekostack/ui</code> ships zero-JS CSS components — framework-agnostic.
+            <code>@nekostack/theme</code> tokens are CSS custom properties that layer cleanly over any stack.
+          </p>
+        </div>
+
+        <div>
+          <h3 style="font-size: var(--neko-font-size-base); font-weight: 600; margin: 0 0 var(--neko-spacing-2);">What is schema-first development?</h3>
+          <p class="muted" style="margin: 0; font-size: var(--neko-font-size-sm); line-height: 1.65;">
+            Define your data shapes before writing business logic. With NekoStack you write a
+            <code>.schema.ts</code> file, run <code>neko schema generate</code>, and your API spec,
+            runtime validators, and TypeScript types are automatically synchronized. The schema is the
+            source of truth — everything downstream is a deterministic projection of it.
+          </p>
+        </div>
+
+        <div>
+          <h3 style="font-size: var(--neko-font-size-base); font-weight: 600; margin: 0 0 var(--neko-spacing-2);">Where is NekoStack built?</h3>
+          <p class="muted" style="margin: 0; font-size: var(--neko-font-size-sm); line-height: 1.65;">
+            NekoStack is independently designed and maintained in Central Arkansas, United States —
+            outside of Silicon Valley, in the open, Apache-2.0 licensed. One developer, one
+            opinionated stack, no VC runway required.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
   <!-- ===== footer ===== -->
   <footer class="site-footer">
     <div class="wrap site-footer__grid">
@@ -574,6 +782,9 @@ $ npx neko schema check <span class="tok-str">"./schemas/**/*"</span></code></pr
         </a>
         <p class="muted" style="margin-top:12px;max-width:32ch;">
           A hand-crafted, opinionated full-stack utility suite. Built by one developer, in the open.
+        </p>
+        <p style="margin-top:10px; font-size: var(--neko-font-size-xs); color: var(--neko-color-semantic-text-muted);">
+          🌲 Engineered in Central Arkansas, USA
         </p>
       </div>
       <nav class="site-footer__links">
