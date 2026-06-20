@@ -39,7 +39,7 @@
 
 | Tag | Date | Summary |
 |---|---|---|
-| [`theme-v1.0.0`](https://github.com/cmclicker/NekoStack/releases/tag/theme-v1.0.0) | 2026-06-19 | [Tag](https://github.com/cmclicker/NekoStack/releases/tag/theme-v1.0.0) · First public release. **(SYSTEM LOGIC V1.1 TARGET)** |
+| [`theme-v1.0.0`](https://github.com/cmclicker/NekoStack/releases/tag/theme-v1.0.0) | 2026-06-19 | [Tag](https://github.com/cmclicker/NekoStack/releases/tag/theme-v1.0.0) · First public release. |
 
 ### @nekostack/ui
 
@@ -84,8 +84,6 @@ Test counts come from each package's most recent CHANGELOG entry. After validati
 7. NEXT: @nekostack/lint v0.5 — consistent-type-imports, no-console-in-module, nest-event-handler-has-spec, no-direct-date-now.
 8. THEN: @nekostack/config — boot-time schema validation, required by api and auth.
 9. THEN: @nekostack/governance (Phase 2) — encode PRODUCT_THESIS four-question gate as CI policy, not a markdown doc.
-10. **NEXT FEATURE:** History Portal component implementation across multiple packages (to be formally tracked in `packages/*/ROADMAP.md`).
-11. **CORE LOGIC UPGRADE:** Theme v1.1 development — focusing on systemic logic and component atomization to reduce boilerplate across the stack.
 
 ## How to refresh
 
