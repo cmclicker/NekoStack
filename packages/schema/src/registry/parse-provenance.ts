@@ -99,10 +99,13 @@ function parseJsdocHeader(content: string): Result<ParsedProvenance> {
     );
   }
   const fields = new Map<string, string>();
-  for (const line of block[1]!.split(/\r?\n/)) {
+  for (const line of (block[1] ?? '').split(/\r?\n/)) {
     const m = JSDOC_FIELD.exec(line);
     if (!m) continue;
-    fields.set(m[1]!, m[2]!);
+    const key = m[1];
+    const value = m[2];
+    if (key === undefined || value === undefined) continue;
+    fields.set(key, value);
   }
   return assembleProvenance(fields);
 }

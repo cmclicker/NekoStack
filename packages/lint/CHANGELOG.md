@@ -4,6 +4,37 @@ Per-milestone changes. Pairs with git tags (`lint-vX.Y.Z`). Format: newest first
 
 ---
 
+## lint-v1.0.0 — 2026-06-20
+
+PR [#TBD](https://github.com/cmclicker/NekoStack/pull/TBD) · Stable rule catalog, full docs, CI integration.
+
+### What shipped
+
+**19 rule docs (`docs/rules/*.md`)**
+
+Structured documentation for every shipped rule with Why section, Incorrect/Correct examples, Options table, and When to disable guidance. All files are linked from the rule's `meta.docs.url`.
+
+Rules documented: `no-direct-process-env`, `schema-no-inline-zod`, `prisma-json-cast`, `service-has-spec`, `controller-no-service-cycle`, `react-no-inline-style`, `nest-no-orm-in-controller`, `no-hardcoded-secrets`, `no-raw-sql`, `schema-export-type`, `react-no-dangerously-set-html`, `consistent-type-imports`, `no-console-in-module`, `nest-event-handler-has-spec`, `no-direct-date-now`, `no-type-assertion-to-any`, `no-non-null-assertion`, `react-hook-naming`, `nest-controller-response-type`.
+
+**Config reference (`docs/CONFIGS.md`)**
+
+Full config documentation: config hierarchy diagram, per-rule severity table for all five configs (`base`, `recommended`, `strict`, `react`, `nest`), and usage examples.
+
+**Migration guide (`docs/MIGRATION_GUIDE.md`)**
+
+Step-by-step upgrade path: zero → `base`, `base` → `recommended`, `recommended` → `strict`, layering framework configs, and incremental adoption patterns.
+
+**CI linting of `@nekostack/schema`**
+
+`@nekostack/schema` is now linted with `@nekostack/lint/recommended` on every CI run. The package ships `eslint.config.mjs` + `eslint` + `typescript-eslint` devDependencies; the Turbo `lint` task runs after `build`. Strict cleanup of `@nekostack/schema`'s ~30 non-null assertions is tracked as a v1.x item.
+
+**Package**
+
+- Version: `0.6.0` → `1.0.0`
+- 188 tests (unchanged — no new rules this milestone)
+
+---
+
 ## lint-v0.6.0 — 2026-06-20
 
 PR [#88](https://github.com/cmclicker/NekoStack/pull/88) · merge commit [`2a9dd2c`](https://github.com/cmclicker/NekoStack/commit/2a9dd2cda8dcc69e852a25a4d44cdb91cb913a86). Type-safety rules + recommended config.
