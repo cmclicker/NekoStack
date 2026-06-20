@@ -4,9 +4,9 @@
 
 ## Active workstream
 
-- **Package:** @nekostack/lint
-- **Latest release:** [`lint-v0.6.0`](https://github.com/cmclicker/NekoStack/releases/tag/lint-v0.6.0) — 2026-06-20
-- **Active target:** _(no `← *active target*` marker found in ROADMAP)_
+- **Package:** @nekostack/config
+- **Latest release:** [`migrate-runner-v1.0.0`](https://github.com/cmclicker/NekoStack/releases/tag/migrate-runner-v1.0.0) — 2026-06-19
+- **Active target:** v0.1.X+ — Optional runner CLI + adapter expansion
 - **Doctrine in force:** [NekoStack — Product Thesis](../PRODUCT_THESIS.md)
 
 ## Latest milestones
@@ -90,8 +90,8 @@ Test counts come from each package's most recent CHANGELOG entry. After validati
 6. @nekostack/lint v0.4 shipped (2026-06-19, PR #83): no-hardcoded-secrets, no-raw-sql, schema-export-type (auto-fix), react-no-dangerously-set-html. 105 total tests.
 7. @nekostack/lint v0.5 shipped (2026-06-20, PR #86): consistent-type-imports (auto-fix), no-console-in-module, nest-event-handler-has-spec, no-direct-date-now. 142 total tests.
 8. @nekostack/lint v0.6 shipped (2026-06-20, PR #88): no-type-assertion-to-any, no-non-null-assertion, react-hook-naming, nest-controller-response-type, recommended config. 188 total tests.
-9. NEXT: @nekostack/lint v1.0 — rule docs (docs/rules/*.md for all 19 rules), config documentation tables, MIGRATION.md, CI linting of @nekostack/schema with strict.
-10. THEN: @nekostack/config — boot-time schema validation, required by api and auth.
+9. @nekostack/lint v1.0 shipped (2026-06-20, PR #89): 19 rule docs, CONFIGS.md, MIGRATION_GUIDE.md, @nekostack/schema linted with recommended on CI. 188 total tests. Package flipped public.
+10. NEXT: @nekostack/config — boot-time schema validation, required by api and auth.
 11. THEN: @nekostack/governance (Phase 2) — encode PRODUCT_THESIS four-question gate as CI policy, not a markdown doc.
 
 ## How to refresh
