@@ -27,17 +27,28 @@ Building this rather than adopting Zod is justified because:
 ## Scope
 
 ### In scope
-- DSL: object, array, primitives, union, enum, literal, recursive (via `s.lazy()`), optional/nullable/nullish/default, transform.
-- **Date typing** — explicit per use case: `s.isoDateTime()`, `s.isoDate()`, `s.epochMs()`, `s.dateObject()` (runtime-only).
-- **Two refinement classes** — *portable constraints* (min/max/regex/format/etc.) and *runtime-only* refinements (custom predicates).
+
+**Shipped (v1.0)**
+- DSL: `s.string()`, `s.number()`, `s.boolean()`, `s.literal()`, `s.enum()`, `s.array()`, `s.object()` — modifiers: optional / nullable / nullish / default.
 - Canonical IR: every builder produces a normalized `SchemaNode` tree; generators consume only IR.
 - Generators: TypeScript types, Zod validators, JSON Schema (draft 2020-12), OpenAPI 3.1 component schemas.
 - Composition: `extend`, `omit`, `pick`, `partial`, `required`, and conflict-safe `merge` (with explicit `override`).
-- Schema identity: reverse-DNS IDs + versions for cross-package + recursive references.
-- Validation runtime: structured `Issue[]` with stable, normalized codes.
+- Schema identity: reverse-DNS IDs + versions for cross-package references.
+- Portable constraints: min / max / regex / format / etc. (compile to all four output targets).
+- Validation runtime: structured `Issue[]` with stable, normalized codes; `parse` / `safeParse` / `validate`.
 - Strict-by-default object behavior; explicit `.stripUnknown()` / `.passthrough()` opt-ins.
 - Generated artifact lifecycle: deterministic headers, source-hash tracking, freshness checks.
 - CLI commands (via `@nekostack/cli`): `schema generate`, `schema check`, `schema diff`.
+
+**Reserved IR capacity — not yet built (post-v1.0 minors)**
+
+These IR node kinds are planned and have reserved slots in the node type, but their builders and generator paths are not implemented. Calling them throws `UnsupportedNodeKindError` at runtime.
+
+- `s.lazy()` — recursive / self-referential schemas.
+- `s.union()` / `s.discriminatedUnion()` — sum types.
+- Date types: `s.isoDateTime()`, `s.isoDate()`, `s.epochMs()`, `s.dateObject()`.
+- Transforms — value-transforming modifiers.
+- Runtime-only refinements — custom predicate functions (`s.refine()`); portable constraints above are fully shipped.
 
 ### Out of scope
 - Database schema generation (DDL) — `@nekostack/migrate` territory.
