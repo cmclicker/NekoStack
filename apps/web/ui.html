@@ -9,13 +9,48 @@
   <link rel="stylesheet" href="assets/neko.css" />
   <link rel="stylesheet" href="assets/ui.css" />
   <style>
-    body { margin: 0; min-height: 100vh; display: grid; grid-template-columns: 16rem 1fr; }
+    body { margin: 0; min-height: 100vh; display: flex; flex-direction: column; }
+    .preview-layout { display: grid; grid-template-columns: 16rem 1fr; flex: 1; overflow: hidden; }
     .preview-sidebar {
-      position: sticky; top: 0; align-self: start; height: 100vh; overflow-y: auto;
+      position: sticky; top: var(--neko-layout-header-height); align-self: start;
+      height: calc(100vh - var(--neko-layout-header-height)); overflow-y: auto;
       padding: var(--neko-spacing-4);
       background: var(--neko-color-semantic-bg-raised);
       border-right: 1px solid var(--neko-color-semantic-border-base);
     }
+    /* ---- site nav ---- */
+    .site-nav {
+      position: sticky; top: 0; z-index: 100;
+      background: color-mix(in srgb, var(--neko-color-semantic-bg-sunken) 88%, transparent);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--neko-color-semantic-border-subtle);
+    }
+    .site-nav__inner {
+      display: flex; align-items: center; gap: var(--neko-spacing-6);
+      height: var(--neko-layout-header-height);
+      max-width: 100%; padding-inline: var(--neko-spacing-6);
+    }
+    .brand {
+      display: flex; align-items: center; gap: var(--neko-spacing-2);
+      font-weight: 800; font-size: var(--neko-font-size-lg); letter-spacing: -0.01em;
+      color: var(--neko-color-semantic-text-base); text-decoration: none;
+    }
+    .brand__mark {
+      width: 28px; height: 28px; display: grid; place-items: center;
+      border-radius: var(--neko-radius-sm);
+      background: var(--neko-color-semantic-primary); color: var(--neko-color-semantic-primary-content);
+      font-weight: 800;
+    }
+    .brand__pink { color: var(--neko-color-semantic-primary); }
+    .site-nav__links { display: flex; gap: var(--neko-spacing-5); margin-left: var(--neko-spacing-4); }
+    .site-nav__links a {
+      color: var(--neko-color-semantic-text-muted); font-size: var(--neko-font-size-sm); font-weight: 500;
+      text-decoration: none;
+      transition: color var(--neko-motion-duration-fast) var(--neko-motion-easing-standard);
+    }
+    .site-nav__links a:hover { color: var(--neko-color-semantic-text-base); }
+    .site-nav__actions { margin-left: auto; display: flex; align-items: center; gap: var(--neko-spacing-3); }
+    @media (max-width: 820px) { .site-nav__links { display: none; } }
     .preview-sidebar h1 { font-size: var(--neko-font-size-lg); margin: 0 0 var(--neko-spacing-3); }
     .preview-controls { display: flex; flex-direction: column; gap: var(--neko-spacing-2); margin-bottom: var(--neko-spacing-4); padding-bottom: var(--neko-spacing-4); border-bottom: 1px solid var(--neko-color-semantic-border-subtle); }
     .preview-controls label { font-size: var(--neko-font-size-xs); font-weight: 600; color: var(--neko-color-semantic-text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
@@ -42,9 +77,32 @@
 </head>
 <body>
 
+  <header class="site-nav">
+    <div class="site-nav__inner">
+      <a class="brand" href="index.html">
+        <span class="brand__mark">N</span>
+        <span>Neko<span class="brand__pink">Stack</span></span>
+      </a>
+      <nav class="site-nav__links">
+        <a href="index.html#how">How it works</a>
+        <a href="index.html#why">Why NekoStack</a>
+        <a href="index.html#packages">Packages</a>
+        <a href="index.html#benchmarks">Benchmarks</a>
+        <a href="index.html#playground">Playground</a>
+        <a href="index.html#install">Install</a>
+        <a href="roadmap.html">Roadmap</a>
+        <a href="history.html">History</a>
+      </nav>
+      <div class="site-nav__actions">
+        <a class="neko-btn neko-btn--ghost neko-btn--sm" href="https://github.com/cmclicker/NekoStack">GitHub</a>
+        <a class="neko-btn neko-btn--sm" href="https://www.npmjs.com/package/nekostack">npm</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="preview-layout">
   <aside class="preview-sidebar">
     <h1>@nekostack/ui</h1>
-    <a href="index.html" style="color:var(--neko-color-semantic-link); font-size:var(--neko-font-size-sm); margin-bottom:var(--neko-spacing-4); display:block; text-decoration:none;">&larr; Back to NekoStack</a>
     <div class="preview-controls">
       <label>Theme
         <select id="theme-select">
@@ -1073,6 +1131,7 @@
     </section>
 
   </main>
+  </div><!-- /.preview-layout -->
 
   <script>
     const NAV = [
