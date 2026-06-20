@@ -5,8 +5,8 @@
 ## Active workstream
 
 - **Package:** @nekostack/lint
-- **Latest release:** [`lint-v0.5.0`](https://github.com/cmclicker/NekoStack/releases/tag/lint-v0.5.0) — 2026-06-20
-- **Active target:** v0.6 — Type-safety rules + recommended config
+- **Latest release:** [`lint-v0.6.0`](https://github.com/cmclicker/NekoStack/releases/tag/lint-v0.6.0) — 2026-06-20
+- **Active target:** v1.0 — Stable rule catalog
 - **Doctrine in force:** [NekoStack — Product Thesis](../PRODUCT_THESIS.md)
 
 ## Latest milestones
@@ -57,6 +57,7 @@
 
 | Tag | Date | Summary |
 |---|---|---|
+| [`lint-v0.6.0`](https://github.com/cmclicker/NekoStack/releases/tag/lint-v0.6.0) | 2026-06-20 | PR [#88](https://github.com/cmclicker/NekoStack/pull/88) · merge commit [`2a9dd2c`](https://github.com/cmclicker/NekoStack/commit/2a9dd2cda8dcc69e852a25a4d44cdb91cb913a86). |
 | [`lint-v0.5.0`](https://github.com/cmclicker/NekoStack/releases/tag/lint-v0.5.0) | 2026-06-20 | PR #86 · Module-boundary and quality rules. |
 | [`lint-v0.4.0`](https://github.com/cmclicker/NekoStack/releases/tag/lint-v0.4.0) | 2026-06-19 | PR #TBD · Security rules + first auto-fixer milestone. |
 | [`lint-v0.3.0`](https://github.com/cmclicker/NekoStack/releases/tag/lint-v0.3.0) | 2026-06-19 | PR #TBD · Framework configs milestone. |
@@ -76,7 +77,7 @@ Test counts come from each package's most recent CHANGELOG entry. After validati
 - **@nekostack/cli:** _(no `### Test count` line in latest CHANGELOG entry)_
 - **@nekostack/theme:** 78 tests recorded (latest: theme-v1.0.0)
 - **@nekostack/ui:** _(no `### Test count` line in latest CHANGELOG entry)_
-- **@nekostack/lint:** _(no `### Test count` line in latest CHANGELOG entry)_
+- **@nekostack/lint:** 188 tests recorded (latest: lint-v0.6.0)
 - **@nekostack/test:** 5 tests recorded (latest: test-v0.1.0)
 
 ## Next actions
@@ -88,9 +89,10 @@ Test counts come from each package's most recent CHANGELOG entry. After validati
 5. @nekostack/test v0.1 shipped (2026-06-19, PR #82): createRuleTester, createJsxRuleTester. 5 tests.
 6. @nekostack/lint v0.4 shipped (2026-06-19, PR #83): no-hardcoded-secrets, no-raw-sql, schema-export-type (auto-fix), react-no-dangerously-set-html. 105 total tests.
 7. @nekostack/lint v0.5 shipped (2026-06-20, PR #86): consistent-type-imports (auto-fix), no-console-in-module, nest-event-handler-has-spec, no-direct-date-now. 142 total tests.
-8. NEXT: @nekostack/lint v0.6 — no-type-assertion-to-any, no-non-null-assertion, react-hook-naming, nest-controller-response-type, recommended config.
-9. THEN: @nekostack/config — boot-time schema validation, required by api and auth.
-10. THEN: @nekostack/governance (Phase 2) — encode PRODUCT_THESIS four-question gate as CI policy, not a markdown doc.
+8. @nekostack/lint v0.6 shipped (2026-06-20, PR #88): no-type-assertion-to-any, no-non-null-assertion, react-hook-naming, nest-controller-response-type, recommended config. 188 total tests.
+9. NEXT: @nekostack/lint v1.0 — rule docs (docs/rules/*.md for all 19 rules), config documentation tables, MIGRATION.md, CI linting of @nekostack/schema with strict.
+10. THEN: @nekostack/config — boot-time schema validation, required by api and auth.
+11. THEN: @nekostack/governance (Phase 2) — encode PRODUCT_THESIS four-question gate as CI policy, not a markdown doc.
 
 ## How to refresh
 

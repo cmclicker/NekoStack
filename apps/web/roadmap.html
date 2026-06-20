@@ -440,7 +440,7 @@
       <div class="hero__badges">
 <!-- rm:gen:hero-badges -->
         <span class="neko-badge neko-badge--success neko-badge--pill">5 shipped</span>
-        <span class="neko-badge neko-badge--warning neko-badge--pill">@nekostack/lint v0.5 ✓ — v0.6 next</span>
+        <span class="neko-badge neko-badge--warning neko-badge--pill">@nekostack/lint v0.6 ✓ — v1.0 next</span>
         <span class="neko-badge neko-badge--pill">Apache-2.0</span>
 <!-- /rm:gen:hero-badges -->
       </div>
@@ -542,7 +542,7 @@
           <div>
             <div style="display:flex; align-items:center; gap: var(--neko-spacing-3); margin-bottom: var(--neko-spacing-2);">
               <span class="next-up-badge">🔥 In progress</span>
-              <span style="font-size: var(--neko-font-size-xs); color: var(--neko-color-semantic-text-muted);"><!-- rm:gen:lint-phase-meta -->Phase 1 · Package 1 of 4 · v0.5 shipped 2026-06-20<!-- /rm:gen:lint-phase-meta --></span>
+              <span style="font-size: var(--neko-font-size-xs); color: var(--neko-color-semantic-text-muted);"><!-- rm:gen:lint-phase-meta -->Phase 1 · Package 1 of 4 · v0.6 shipped 2026-06-20<!-- /rm:gen:lint-phase-meta --></span>
             </div>
             <div class="next-up-title">@nekostack/lint</div>
             <p class="next-up-tagline">Custom ESLint rules that enforce NekoStack architectural conventions — the things type-checking and Prettier don't catch.</p>
@@ -577,12 +577,12 @@
             <div class="milestone__ver">v0.5</div>
             <div class="milestone__name">Module quality</div>
           </div>
-          <div class="milestone milestone--active">
+          <div class="milestone milestone--done">
             <div class="milestone__dot"><div class="milestone__dot-inner"></div></div>
             <div class="milestone__ver">v0.6</div>
             <div class="milestone__name">Type-safety</div>
           </div>
-          <div class="milestone">
+          <div class="milestone milestone--active">
             <div class="milestone__dot"><div class="milestone__dot-inner"></div></div>
             <div class="milestone__ver">v1.0</div>
             <div class="milestone__name">Stable catalog</div>
@@ -676,15 +676,26 @@
           </ul>
         </div>
 
+        <!-- rm:gen:lint-card-v0-6-header -->
+        <div class="milestone-detail" style="border-color: color-mix(in srgb, var(--neko-color-semantic-success) 25%, transparent);">
+          <div class="milestone-detail__header">
+            <span class="milestone-detail__ver" style="color: var(--neko-color-semantic-success);">v0.6</span>
+            <span class="milestone-detail__title">Type-safety</span>
+            <span class="milestone-detail__tag" style="color: var(--neko-color-semantic-success); background: color-mix(in srgb, var(--neko-color-semantic-success) 10%, transparent); border-color: color-mix(in srgb, var(--neko-color-semantic-success) 25%, transparent);">✓ Shipped</span>
+          </div>
+<!-- /rm:gen:lint-card-v0-6-header -->
+          <ul class="milestone-detail__list">
+            <li><code>no-type-assertion-to-any</code> — flags <code>x as any</code> and <code>&lt;any&gt;x</code>; use <code>unknown</code> + type guard or the specific target type instead</li>
+            <li><code>no-non-null-assertion</code> — flags postfix <code>x!</code>; use optional chaining, nullish coalescing, or an explicit null check</li>
+            <li><code>react-hook-naming</code> — flags named functions that call React hooks but aren't named <code>use*</code> or PascalCase; anonymous callbacks exempt</li>
+            <li><code>nest-controller-response-type</code> — flags <code>@Get</code> / <code>@Post</code> / … handler methods without an explicit return type</li>
+            <li>New <code>./recommended</code> config — sensible defaults for any TypeScript project; layer <code>./react</code> or <code>./nest</code> on top</li>
+          </ul>
+        </div>
+
         <!-- remaining milestones -->
 <!-- rm:gen:lint-upcoming -->
-        <div class="upcoming-milestones">
-          <div class="upcoming-card">
-            <div class="upcoming-card__ver">v1.0</div>
-            <div class="upcoming-card__title">Stable catalog</div>
-            <div class="upcoming-card__desc">~20 rules documented. All configs complete. Migration guide. CI linting of <code>@nekostack/schema</code> with <code>/strict</code>.</div>
-          </div>
-        </div>
+        <div class="upcoming-milestones"></div>
 <!-- /rm:gen:lint-upcoming -->
       </div>
 

@@ -6,7 +6,7 @@ Per-milestone changes. Pairs with git tags (`lint-vX.Y.Z`). Format: newest first
 
 ## lint-v0.6.0 — 2026-06-20
 
-PR #TBD · Type-safety rules + recommended config.
+PR [#88](https://github.com/cmclicker/NekoStack/pull/88) · merge commit [`2a9dd2c`](https://github.com/cmclicker/NekoStack/commit/2a9dd2cda8dcc69e852a25a4d44cdb91cb913a86). Type-safety rules + recommended config.
 
 ### What shipped
 

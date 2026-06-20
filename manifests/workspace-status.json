@@ -163,11 +163,16 @@
     {
       "name": "@nekostack/lint",
       "dir": "packages/lint",
-      "latest_release": "lint-v0.5.0",
+      "latest_release": "lint-v0.6.0",
       "latest_release_date": "2026-06-20",
-      "active_target": "v0.6 — Type-safety rules + recommended config",
-      "test_count": null,
+      "active_target": "v1.0 — Stable rule catalog",
+      "test_count": 188,
       "milestones": [
+        {
+          "tag": "lint-v0.6.0",
+          "date": "2026-06-20",
+          "summary": "PR [#88](https://github.com/cmclicker/NekoStack/pull/88) · merge commit [`2a9dd2c`](https://github.com/cmclicker/NekoStack/commit/2a9dd2cda8dcc69e852a25a4d44cdb91cb913a86)."
+        },
         {
           "tag": "lint-v0.5.0",
           "date": "2026-06-20",
@@ -209,7 +214,8 @@
     "@nekostack/test v0.1 shipped (2026-06-19, PR #82): createRuleTester, createJsxRuleTester. 5 tests.",
     "@nekostack/lint v0.4 shipped (2026-06-19, PR #83): no-hardcoded-secrets, no-raw-sql, schema-export-type (auto-fix), react-no-dangerously-set-html. 105 total tests.",
     "@nekostack/lint v0.5 shipped (2026-06-20, PR #86): consistent-type-imports (auto-fix), no-console-in-module, nest-event-handler-has-spec, no-direct-date-now. 142 total tests.",
-    "NEXT: @nekostack/lint v0.6 — no-type-assertion-to-any, no-non-null-assertion, react-hook-naming, nest-controller-response-type, recommended config.",
+    "@nekostack/lint v0.6 shipped (2026-06-20, PR #88): no-type-assertion-to-any, no-non-null-assertion, react-hook-naming, nest-controller-response-type, recommended config. 188 total tests.",
+    "NEXT: @nekostack/lint v1.0 — rule docs (docs/rules/*.md for all 19 rules), config documentation tables, MIGRATION.md, CI linting of @nekostack/schema with strict.",
     "THEN: @nekostack/config — boot-time schema validation, required by api and auth.",
     "THEN: @nekostack/governance (Phase 2) — encode PRODUCT_THESIS four-question gate as CI policy, not a markdown doc."
   ]

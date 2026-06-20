@@ -66,9 +66,9 @@ Status: **shipped** ([#86](https://github.com/cmclicker/NekoStack/pull/86), merg
 
 ---
 
-## v0.6 — Type-safety rules + recommended config ← *active target*
+## v0.6 — Type-safety rules + recommended config
 
-Status: **shipped** (#TBD, merged 2026-06-20). 46 new tests → 188 total.
+Status: **shipped** ([#88](https://github.com/cmclicker/NekoStack/pull/88), merged 2026-06-20). 46 new tests → 188 total.
 
 - **`no-type-assertion-to-any`** — flags `x as any` and `<any>x`; use `unknown` + type guard or the specific target type instead.
 - **`no-non-null-assertion`** — flags postfix `x!`; use optional chaining, nullish coalescing, or an explicit null check.
@@ -78,7 +78,7 @@ Status: **shipped** (#TBD, merged 2026-06-20). 46 new tests → 188 total.
 
 ---
 
-## v1.0 — Stable rule catalog
+## v1.0 — Stable rule catalog ← *active target*
 
 Status: **not started**. Target: ~20 rules, all configs complete, migration guide.
 
