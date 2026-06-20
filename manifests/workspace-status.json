@@ -153,11 +153,17 @@
     {
       "name": "@nekostack/test",
       "dir": "packages/test",
-      "latest_release": null,
-      "latest_release_date": null,
+      "latest_release": "test-v0.1.0",
+      "latest_release_date": "2026-06-19",
       "active_target": null,
-      "test_count": null,
-      "milestones": []
+      "test_count": 5,
+      "milestones": [
+        {
+          "tag": "test-v0.1.0",
+          "date": "2026-06-19",
+          "summary": "PR #TBD · Bootstrap milestone."
+        }
+      ]
     }
   ],
   "next_actions": [
