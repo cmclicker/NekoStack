@@ -6,6 +6,16 @@ Published to npm as `@nekostack/cli` (Apache-2.0).
 
 ---
 
+## cli-v1.0.1 — 2026-06-19
+
+[Tag](https://github.com/cmclicker/NekoStack/releases/tag/cli-v1.0.1) · Patch fix for npm binary registration.
+
+### Fixed
+
+- **`bin/neko` → `bin/neko.js`** — npm's Windows ESM validator silently dropped the extensionless binary entry on publish, so `neko` was never registered as a global command after `npm install -g @nekostack/cli`. Renamed to `bin/neko.js` and updated `package.json` `"bin"` accordingly. The binary is now correctly installed on all platforms.
+
+---
+
 ## cli-v1.0.0 — 2026-06-19
 
 [Tag](https://github.com/cmclicker/NekoStack/releases/tag/cli-v1.0.0) · First public release.

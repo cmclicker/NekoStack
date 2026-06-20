@@ -6,6 +6,17 @@ Published to npm as `@nekostack/ui` (Apache-2.0).
 
 ---
 
+## ui-v1.0.1 — 2026-06-19
+
+[Tag](https://github.com/cmclicker/NekoStack/releases/tag/ui-v1.0.1) · Patch fix for npm publish artifact hygiene.
+
+### Fixed
+
+- **Narrowed `files` glob** — the v1.0.0 publish used `"files": ["dist"]` which shipped stale build artifacts (`dist/src/Button.js`, `dist/tests/`, `dist/.tsbuildinfo`) to consumers. Changed to an explicit allow-list: `ui.css`, `ui.min.css`, `components.json`, `index.js`, `index.d.ts`. Tarball shrank from 29 files to 12.
+- **Rebuilt `dist/`** before publish to remove the stale `Button.js` artifact that had been included in v1.0.0.
+
+---
+
 ## ui-v1.0.0 — 2026-06-19
 
 [Tag](https://github.com/cmclicker/NekoStack/releases/tag/ui-v1.0.0) · First public release.
