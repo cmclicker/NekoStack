@@ -438,7 +438,7 @@
     <div class="wrap">
       <div class="hero__badges">
         <span class="neko-badge neko-badge--success neko-badge--pill">5 shipped</span>
-        <span class="neko-badge neko-badge--warning neko-badge--pill">@nekostack/lint v0.1 ✓ — v0.2 next</span>
+        <span class="neko-badge neko-badge--warning neko-badge--pill">@nekostack/lint v0.2 ✓ — v0.3 next</span>
         <span class="neko-badge neko-badge--pill">Apache-2.0</span>
       </div>
       <h1>Development <span class="gradient-text">Roadmap</span></h1>
@@ -535,7 +535,7 @@
           <div>
             <div style="display:flex; align-items:center; gap: var(--neko-spacing-3); margin-bottom: var(--neko-spacing-2);">
               <span class="next-up-badge">🔥 In progress</span>
-              <span style="font-size: var(--neko-font-size-xs); color: var(--neko-color-semantic-text-muted);">Phase 1 · Package 1 of 4 · v0.1 shipped 2026-06-20</span>
+              <span style="font-size: var(--neko-font-size-xs); color: var(--neko-color-semantic-text-muted);">Phase 1 · Package 1 of 4 · v0.2 shipped 2026-06-20</span>
             </div>
             <div class="next-up-title">@nekostack/lint</div>
             <p class="next-up-tagline">Custom ESLint rules that enforce NekoStack architectural conventions — the things type-checking and Prettier don't catch.</p>
@@ -549,12 +549,12 @@
             <div class="milestone__ver">v0.1</div>
             <div class="milestone__name">Bootstrap</div>
           </div>
-          <div class="milestone milestone--active">
+          <div class="milestone milestone--done">
             <div class="milestone__dot"><div class="milestone__dot-inner"></div></div>
             <div class="milestone__ver">v0.2</div>
             <div class="milestone__name">Convention rules</div>
           </div>
-          <div class="milestone">
+          <div class="milestone milestone--active">
             <div class="milestone__dot"><div class="milestone__dot-inner"></div></div>
             <div class="milestone__ver">v0.3</div>
             <div class="milestone__name">Framework configs</div>
@@ -587,29 +587,38 @@
           </ul>
         </div>
 
-        <!-- v0.2 active detail -->
+        <!-- v0.2 done summary -->
+        <div class="milestone-detail" style="border-color: color-mix(in srgb, var(--neko-color-semantic-success) 25%, transparent);">
+          <div class="milestone-detail__header">
+            <span class="milestone-detail__ver" style="color: var(--neko-color-semantic-success);">v0.2</span>
+            <span class="milestone-detail__title">Convention rules</span>
+            <span class="milestone-detail__tag" style="color: var(--neko-color-semantic-success); background: color-mix(in srgb, var(--neko-color-semantic-success) 10%, transparent); border-color: color-mix(in srgb, var(--neko-color-semantic-success) 25%, transparent);">✓ Shipped</span>
+          </div>
+          <ul class="milestone-detail__list">
+            <li><code>schema-no-inline-zod</code> — flags <code>z.TYPE()</code> calls outside schema files; 11 tests</li>
+            <li><code>prisma-json-cast</code> — flags property access on <code>Prisma.JsonValue</code> typed vars without a cast; 12 tests</li>
+            <li><code>service-has-spec</code> — flags <code>*.service.ts</code> files missing a co-located spec; 5 tests</li>
+            <li><code>controller-no-service-cycle</code> — flags controller-to-controller imports; 10 tests</li>
+            <li><code>strict</code> config — enables all five rules; exported as <code>./strict</code></li>
+            <li>49 total tests (38 new + 11 from v0.1)</li>
+          </ul>
+        </div>
+
+        <!-- v0.3 active detail -->
         <div class="milestone-detail">
           <div class="milestone-detail__header">
-            <span class="milestone-detail__ver">v0.2</span>
-            <span class="milestone-detail__title">Convention rules</span>
+            <span class="milestone-detail__ver">v0.3</span>
+            <span class="milestone-detail__title">Framework configs</span>
             <span class="milestone-detail__tag">Up next</span>
           </div>
           <ul class="milestone-detail__list">
-            <li><code>schema-no-inline-zod</code> — prohibit inline <code>z.*</code> calls outside <code>@nekostack/schema</code></li>
-            <li><code>prisma-json-cast</code> — require <code>as unknown as Prisma.InputJsonValue</code> for typed JSON column writes</li>
-            <li><code>service-has-spec</code> — every <code>*.service.ts</code> must have a matching <code>*.spec.ts</code></li>
-            <li><code>controller-no-service-cycle</code> — controllers must not import services that import controllers</li>
-            <li>Strict config enabling all rules</li>
+            <li><code>/react</code> config — React 19, hooks rules, fast-refresh, a11y linting</li>
+            <li><code>/nest</code> config — NestJS 10+ idioms, decorator patterns, injection scope rules</li>
           </ul>
         </div>
 
         <!-- remaining milestones -->
         <div class="upcoming-milestones">
-          <div class="upcoming-card">
-            <div class="upcoming-card__ver">v0.3</div>
-            <div class="upcoming-card__title">Framework configs</div>
-            <div class="upcoming-card__desc"><code>/react</code> config (React 19, hooks, a11y) and <code>/nest</code> config (NestJS 10+ idioms, decorator patterns).</div>
-          </div>
           <div class="upcoming-card">
             <div class="upcoming-card__ver">v0.4</div>
             <div class="upcoming-card__title">Auto-fixers</div>

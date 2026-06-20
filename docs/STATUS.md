@@ -32,7 +32,7 @@
 
 | Tag | Date | Summary |
 |---|---|---|
-| [`cli-v1.0.1`](https://github.com/cmclicker/NekoStack/releases/tag/cli-v1.0.1) | — | — |
+| [`cli-v1.0.1`](https://github.com/cmclicker/NekoStack/releases/tag/cli-v1.0.1) | 2026-06-19 | [Tag](https://github.com/cmclicker/NekoStack/releases/tag/cli-v1.0.1) · Patch fix for npm binary registration. |
 | [`cli-v1.0.0`](https://github.com/cmclicker/NekoStack/releases/tag/cli-v1.0.0) | 2026-06-19 | [Tag](https://github.com/cmclicker/NekoStack/releases/tag/cli-v1.0.0) · First public release. |
 
 ### @nekostack/theme
@@ -45,7 +45,7 @@
 
 | Tag | Date | Summary |
 |---|---|---|
-| [`ui-v1.0.1`](https://github.com/cmclicker/NekoStack/releases/tag/ui-v1.0.1) | — | — |
+| [`ui-v1.0.1`](https://github.com/cmclicker/NekoStack/releases/tag/ui-v1.0.1) | 2026-06-19 | [Tag](https://github.com/cmclicker/NekoStack/releases/tag/ui-v1.0.1) · Patch fix for npm publish artifact hygiene. |
 | [`ui-v1.0.0`](https://github.com/cmclicker/NekoStack/releases/tag/ui-v1.0.0) | 2026-06-19 | [Tag](https://github.com/cmclicker/NekoStack/releases/tag/ui-v1.0.0) · First public release. |
 
 ## Validation snapshot
@@ -62,11 +62,12 @@ Test counts come from each package's most recent CHANGELOG entry. After validati
 ## Next actions
 
 1. Five packages published at v1.0+: schema, cli, migrate-runner, theme, ui. Metapackage at v1.1.1.
-2. @nekostack/lint v0.1 shipped (2026-06-20, PR #79): plugin, base config, no-direct-process-env rule, 11 tests. Working toward v1.0 before publishing to npm.
-3. NEXT: @nekostack/lint v0.2 — convention rules: schema-no-inline-zod, prisma-json-cast, service-has-spec, controller-no-service-cycle. Strict config.
-4. THEN: @nekostack/test — shared testing substrate so subsequent packages don't reinvent fixtures.
-5. THEN: @nekostack/config — boot-time schema validation, required by api and auth.
-6. THEN: @nekostack/governance (Phase 2) — moved from Phase 8. Encode PRODUCT_THESIS four-question gate as CI policy, not a markdown doc.
+2. @nekostack/lint v0.1 shipped (2026-06-20, PR #79): plugin, base config, no-direct-process-env rule, 11 tests.
+3. @nekostack/lint v0.2 shipped (2026-06-20, PR #80): schema-no-inline-zod, prisma-json-cast, service-has-spec, controller-no-service-cycle, strict config. 49 total tests.
+4. NEXT: @nekostack/lint v0.3 — framework configs: /react (React 19, hooks, a11y) and /nest (NestJS 10+ idioms).
+5. THEN: @nekostack/test — shared testing substrate so subsequent packages don't reinvent fixtures.
+6. THEN: @nekostack/config — boot-time schema validation, required by api and auth.
+7. THEN: @nekostack/governance (Phase 2) — encode PRODUCT_THESIS four-question gate as CI policy, not a markdown doc.
 
 ## How to refresh
 

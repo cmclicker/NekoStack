@@ -48,10 +48,11 @@
   ],
   "next_actions": [
     "Five packages published at v1.0+: schema, cli, migrate-runner, theme, ui. Metapackage at v1.1.1.",
-    "@nekostack/lint v0.1 shipped (2026-06-20, PR #79): plugin, base config, no-direct-process-env rule, 11 tests. Working toward v1.0 before publishing to npm.",
-    "NEXT: @nekostack/lint v0.2 — convention rules: schema-no-inline-zod, prisma-json-cast, service-has-spec, controller-no-service-cycle. Strict config.",
+    "@nekostack/lint v0.1 shipped (2026-06-20, PR #79): plugin, base config, no-direct-process-env rule, 11 tests.",
+    "@nekostack/lint v0.2 shipped (2026-06-20, PR #80): schema-no-inline-zod, prisma-json-cast, service-has-spec, controller-no-service-cycle, strict config. 49 total tests.",
+    "NEXT: @nekostack/lint v0.3 — framework configs: /react (React 19, hooks, a11y) and /nest (NestJS 10+ idioms).",
     "THEN: @nekostack/test — shared testing substrate so subsequent packages don't reinvent fixtures.",
     "THEN: @nekostack/config — boot-time schema validation, required by api and auth.",
-    "THEN: @nekostack/governance (Phase 2) — moved from Phase 8. Encode PRODUCT_THESIS four-question gate as CI policy, not a markdown doc."
+    "THEN: @nekostack/governance (Phase 2) — encode PRODUCT_THESIS four-question gate as CI policy, not a markdown doc."
   ]
 }

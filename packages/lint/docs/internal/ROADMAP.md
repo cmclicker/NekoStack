@@ -16,15 +16,15 @@ Includes:
 
 ## v0.2 — Convention rules
 
-Status: **in progress** (PR open, not merged).
+Status: **shipped** ([#80](https://github.com/cmclicker/NekoStack/pull/80), merged 2026-06-20).
 
-Shipped:
+Includes:
 - `schema-no-inline-zod` — flags `z.TYPE()` calls outside schema files; 11 tests
 - `prisma-json-cast` — flags property access on `Prisma.JsonValue`/`JsonValue` typed vars without cast; 12 tests
 - `service-has-spec` — flags `*.service.ts` files missing a co-located spec; 5 tests
 - `controller-no-service-cycle` — flags controller-to-controller imports; 10 tests
 - `strict` config — enables all five rules, exported as `./strict`
-- Total test count: 49 (38 new + 11 from v0.1)
+- 49 total tests (38 new + 11 from v0.1)
 
 ## v0.3 — Framework configs
 
