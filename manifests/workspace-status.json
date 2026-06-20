@@ -14,6 +14,8 @@
     "packages/ui/CHANGELOG.md",
     "packages/lint/docs/internal/ROADMAP.md",
     "packages/lint/CHANGELOG.md",
+    "packages/test/docs/internal/ROADMAP.md",
+    "packages/test/CHANGELOG.md",
     "git tags"
   ],
   "active_workstream": "@nekostack/lint",
@@ -136,6 +138,21 @@
     {
       "name": "@nekostack/lint",
       "dir": "packages/lint",
+      "latest_release": "lint-v0.3.0",
+      "latest_release_date": "2026-06-19",
+      "active_target": null,
+      "test_count": null,
+      "milestones": [
+        {
+          "tag": "lint-v0.3.0",
+          "date": "2026-06-19",
+          "summary": "PR #TBD · Framework configs milestone."
+        }
+      ]
+    },
+    {
+      "name": "@nekostack/test",
+      "dir": "packages/test",
       "latest_release": null,
       "latest_release_date": null,
       "active_target": null,
