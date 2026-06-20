@@ -4,9 +4,9 @@
 
 ## Active workstream
 
-- **Package:** @nekostack/schema
-- **Latest release:** [`schema-v1.0.0`](https://github.com/cmclicker/NekoStack/releases/tag/schema-v1.0.0) — 2026-06-19
-- **Active target:** v1.0 — Stable API
+- **Package:** @nekostack/lint
+- **Latest release:** [`migrate-runner-v1.0.0`](https://github.com/cmclicker/NekoStack/releases/tag/migrate-runner-v1.0.0) — 2026-06-19
+- **Active target:** v0.1.X+ — Optional runner CLI + adapter expansion
 - **Doctrine in force:** [NekoStack — Product Thesis](../PRODUCT_THESIS.md)
 
 ## Latest milestones
@@ -28,20 +28,45 @@
 | [`schema-v0.6.0`](https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.6.0) | 2026-05-18 | Runtime validation as a NekoStack-owned workflow on the v0.2 source-generator + v0.5 composition foundation. |
 | [`schema-v0.5.0`](https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.5.0) | 2026-05-17 | Composition layer on the v0.1 IR foundation. |
 
+### @nekostack/cli
+
+| Tag | Date | Summary |
+|---|---|---|
+| [`cli-v1.0.1`](https://github.com/cmclicker/NekoStack/releases/tag/cli-v1.0.1) | — | — |
+| [`cli-v1.0.0`](https://github.com/cmclicker/NekoStack/releases/tag/cli-v1.0.0) | 2026-06-19 | [Tag](https://github.com/cmclicker/NekoStack/releases/tag/cli-v1.0.0) · First public release. |
+
+### @nekostack/theme
+
+| Tag | Date | Summary |
+|---|---|---|
+| [`theme-v1.0.0`](https://github.com/cmclicker/NekoStack/releases/tag/theme-v1.0.0) | 2026-06-19 | [Tag](https://github.com/cmclicker/NekoStack/releases/tag/theme-v1.0.0) · First public release. |
+
+### @nekostack/ui
+
+| Tag | Date | Summary |
+|---|---|---|
+| [`ui-v1.0.1`](https://github.com/cmclicker/NekoStack/releases/tag/ui-v1.0.1) | — | — |
+| [`ui-v1.0.0`](https://github.com/cmclicker/NekoStack/releases/tag/ui-v1.0.0) | 2026-06-19 | [Tag](https://github.com/cmclicker/NekoStack/releases/tag/ui-v1.0.0) · First public release. |
+
 ## Validation snapshot
 
 Test counts come from each package's most recent CHANGELOG entry. After validating a release, update the package CHANGELOG and run `npm run status:generate`.
 
 - **@nekostack/migrate-runner:** 405 tests recorded (latest: migrate-runner-v1.0.0)
 - **@nekostack/schema:** 1294 tests recorded (latest: schema-v1.0.0)
+- **@nekostack/cli:** _(no `### Test count` line in latest CHANGELOG entry)_
+- **@nekostack/theme:** 78 tests recorded (latest: theme-v1.0.0)
+- **@nekostack/ui:** _(no `### Test count` line in latest CHANGELOG entry)_
 
 ## Next actions
 
-1. migrate-runner v0.1.0 shipped and verified with 405 tests (full purity suite restored). schema v1.0.0 shipped — public API frozen, Apache-2.0, nekostack metapackage published.
-2. Pivot to v1.0 Hardening: Freeze the public API surface of @nekostack/schema and @nekostack/migrate-runner. No new feature work until v1.0 is stamped.
-3. Draft the 'Zod-to-NekoStack' migration guide and complete the IssueCode catalog documentation.
-4. Resolve the remaining 'Still-open' implementation decisions in the schema package README (Transform precedence, Async refinements).
-5. Identify performance benchmarks against Zod/TypeBox to prove production readiness.
+1. Five packages published at v1.0+: schema, cli, migrate-runner, theme, ui. Metapackage at v1.1.1.
+2. Phase 0 gap still open: lint, test, config are scaffolds (export {}). These are now Phase 1 in the rewritten ROADMAP.
+3. NEXT: @nekostack/lint — convention enforcement. Every package shipped without it accrues drift. Build lint first, run it retroactively on all five shipped packages.
+4. THEN: @nekostack/test — shared testing substrate so subsequent packages don't reinvent fixtures.
+5. THEN: @nekostack/config — boot-time schema validation, required by api and auth.
+6. THEN: @nekostack/governance (Phase 2) — moved from Phase 8. Encode PRODUCT_THESIS four-question gate as CI policy, not a markdown doc.
+7. CI updated: theme and ui now in --filter list. Rule: any package graduating from scaffold must be added to CI filter in the same PR.
 
 ## How to refresh
 
