@@ -165,7 +165,8 @@
     "@nekostack/lint v0.1 shipped (2026-06-20, PR #79): plugin, base config, no-direct-process-env rule, 11 tests.",
     "@nekostack/lint v0.2 shipped (2026-06-20, PR #80): schema-no-inline-zod, prisma-json-cast, service-has-spec, controller-no-service-cycle, strict config. 49 total tests.",
     "@nekostack/lint v0.3 shipped (2026-06-19, PR #81): react-no-inline-style, nest-no-orm-in-controller, ./react config, ./nest config. 69 total tests.",
-    "NEXT: @nekostack/test — shared testing substrate so subsequent packages don't reinvent fixtures.",
+    "@nekostack/test v0.1 shipped (2026-06-19, PR #82): createRuleTester, createJsxRuleTester. 5 tests.",
+    "NEXT: @nekostack/config — boot-time schema validation, required by api and auth.",
     "THEN: @nekostack/config — boot-time schema validation, required by api and auth.",
     "THEN: @nekostack/governance (Phase 2) — encode PRODUCT_THESIS four-question gate as CI policy, not a markdown doc."
   ]

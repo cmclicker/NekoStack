@@ -4,7 +4,7 @@ Authoritative source for "what ships when."
 
 ## v0.1 — Bootstrap
 
-Status: **in progress (PR open)**.
+Status: **shipped** ([#82](https://github.com/cmclicker/NekoStack/pull/82), merged 2026-06-19).
 
 - `createRuleTester(config?)` — vitest-wired RuleTester factory
 - `createJsxRuleTester()` — JSX-enabled convenience wrapper
