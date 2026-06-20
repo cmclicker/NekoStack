@@ -6,7 +6,7 @@
 
 - **Package:** @nekostack/lint
 - **Latest release:** [`lint-v0.5.0`](https://github.com/cmclicker/NekoStack/releases/tag/lint-v0.5.0) — 2026-06-20
-- **Active target:** _(no `← *active target*` marker found in ROADMAP)_
+- **Active target:** v0.6 — Type-safety rules + recommended config
 - **Doctrine in force:** [NekoStack — Product Thesis](../PRODUCT_THESIS.md)
 
 ## Latest milestones

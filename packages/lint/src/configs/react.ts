@@ -14,6 +14,9 @@ export const react = [
       '@nekostack/schema-export-type': 'warn',
       '@nekostack/react-no-inline-style': 'warn',
       '@nekostack/react-no-dangerously-set-html': 'error',
+      '@nekostack/no-type-assertion-to-any': 'error',
+      '@nekostack/no-non-null-assertion': 'warn',
+      '@nekostack/react-hook-naming': 'warn',
     } as const,
   },
 ];

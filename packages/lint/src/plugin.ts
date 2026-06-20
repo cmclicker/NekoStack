@@ -13,11 +13,15 @@ import { consistentTypeImports } from './rules/consistent-type-imports.js';
 import { noConsoleInModule } from './rules/no-console-in-module.js';
 import { nestEventHandlerHasSpec } from './rules/nest-event-handler-has-spec.js';
 import { noDirectDateNow } from './rules/no-direct-date-now.js';
+import { noTypeAssertionToAny } from './rules/no-type-assertion-to-any.js';
+import { noNonNullAssertion } from './rules/no-non-null-assertion.js';
+import { reactHookNaming } from './rules/react-hook-naming.js';
+import { nestControllerResponseType } from './rules/nest-controller-response-type.js';
 
 export const plugin = {
   meta: {
     name: '@nekostack/lint',
-    version: '0.5.0',
+    version: '0.6.0',
   },
   rules: {
     'no-direct-process-env': noDirectProcessEnv,
@@ -35,5 +39,9 @@ export const plugin = {
     'no-console-in-module': noConsoleInModule,
     'nest-event-handler-has-spec': nestEventHandlerHasSpec,
     'no-direct-date-now': noDirectDateNow,
+    'no-type-assertion-to-any': noTypeAssertionToAny,
+    'no-non-null-assertion': noNonNullAssertion,
+    'react-hook-naming': reactHookNaming,
+    'nest-controller-response-type': nestControllerResponseType,
   },
 } as const;

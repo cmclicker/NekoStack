@@ -18,6 +18,9 @@ export const nest = [
       '@nekostack/nest-no-orm-in-controller': 'error',
       '@nekostack/nest-event-handler-has-spec': 'warn',
       '@nekostack/no-direct-date-now': 'warn',
+      '@nekostack/no-type-assertion-to-any': 'error',
+      '@nekostack/no-non-null-assertion': 'warn',
+      '@nekostack/nest-controller-response-type': 'warn',
     } as const,
   },
 ];
