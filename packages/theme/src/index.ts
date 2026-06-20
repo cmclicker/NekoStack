@@ -9,10 +9,10 @@
 import * as rawTokens from '../dist/tokens';
 
 // Export key data structures instead of a blanket export (*).
-export const Theme = rawTokens.themes;
+export const Theme = rawTokens.tokens.themes;
 export const ModeUtility = {
-    getTheme: (themeName: string, modeName: 'dark' | 'light') => {
-        const themeData = rawTokens.themes[themeName];
+    getTheme: (themeName: ThemeName, modeName: 'dark' | 'light') => {
+        const themeData = rawTokens.tokens.themes[themeName];
         if (!themeData || !themeData.modes[modeName]) {
             throw new Error(`Theme or mode not found: ${themeName} / ${modeName}`);
         }
@@ -22,8 +22,9 @@ export const ModeUtility = {
 };
 
 export const isDark = (modeName: 'dark' | 'light') => modeName === 'dark';
-export type ThemePalette = typeof rawTokens.themes[any].modes['dark']; // Use the most detailed mode for typing consistency.
-export type ThemeName = keyof typeof rawTokens.themes;
+// The palette type is exactly what ModeUtility.getTheme returns for a mode.
+export type ThemePalette = ReturnType<typeof ModeUtility.getTheme>;
+export type ThemeName = keyof typeof rawTokens.tokens.themes;
 
 // Export all necessary exports from the original structure, but keep them grouped under clear APIs.
 export * from '../dist/tokens';
