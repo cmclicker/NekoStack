@@ -27,6 +27,11 @@
 | [`schema-v0.7.0`](https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.7.0) | 2026-05-19 | Registry-lite + `neko schema *`. |
 | [`schema-v0.6.0`](https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.6.0) | 2026-05-18 | Runtime validation as a NekoStack-owned workflow on the v0.2 source-generator + v0.5 composition foundation. |
 | [`schema-v0.5.0`](https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.5.0) | 2026-05-17 | Composition layer on the v0.1 IR foundation. |
+| [`schema-v0.4.0`](https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.4.0) | 2026-05-17 | Fourth generator on the v0.1 IR foundation. |
+| [`schema-v0.3.0`](https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.3.0) | 2026-05-17 | Third generator on the v0.1 IR foundation. |
+| [`schema-v0.2.1`](https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.2.1) | 2026-05-16 | Patch release on the v0.2 line — proof artifacts + generator output polish from the dogfood pass. |
+| [`schema-v0.2.0`](https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.2.0) | 2026-05-16 | — |
+| [`schema-v0.1.0`](https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.1.0) | 2026-05-16 | First package phase accepted under [`standards/package-development.md`](../../standards/package-development.md). |
 
 ### @nekostack/cli
 
