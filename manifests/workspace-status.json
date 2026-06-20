@@ -16,6 +16,8 @@
     "packages/lint/CHANGELOG.md",
     "packages/test/docs/internal/ROADMAP.md",
     "packages/test/CHANGELOG.md",
+    "packages/config/docs/internal/ROADMAP.md",
+    "packages/config/CHANGELOG.md",
     "git tags"
   ],
   "active_workstream": "@nekostack/config",
@@ -163,11 +165,16 @@
     {
       "name": "@nekostack/lint",
       "dir": "packages/lint",
-      "latest_release": "lint-v0.6.0",
+      "latest_release": "lint-v1.0.0",
       "latest_release_date": "2026-06-20",
       "active_target": null,
-      "test_count": 188,
+      "test_count": null,
       "milestones": [
+        {
+          "tag": "lint-v1.0.0",
+          "date": "2026-06-20",
+          "summary": "PR [#89](https://github.com/cmclicker/NekoStack/pull/89) · Stable rule catalog, full docs, CI integration."
+        },
         {
           "tag": "lint-v0.6.0",
           "date": "2026-06-20",
@@ -204,6 +211,15 @@
           "summary": "PR #TBD · Bootstrap milestone."
         }
       ]
+    },
+    {
+      "name": "@nekostack/config",
+      "dir": "packages/config",
+      "latest_release": null,
+      "latest_release_date": null,
+      "active_target": "v0.1 — Bootstrap",
+      "test_count": null,
+      "milestones": []
     }
   ],
   "next_actions": [
@@ -216,7 +232,9 @@
     "@nekostack/lint v0.5 shipped (2026-06-20, PR #86): consistent-type-imports (auto-fix), no-console-in-module, nest-event-handler-has-spec, no-direct-date-now. 142 total tests.",
     "@nekostack/lint v0.6 shipped (2026-06-20, PR #88): no-type-assertion-to-any, no-non-null-assertion, react-hook-naming, nest-controller-response-type, recommended config. 188 total tests.",
     "@nekostack/lint v1.0 shipped (2026-06-20, PR #89): 19 rule docs, CONFIGS.md, MIGRATION_GUIDE.md, @nekostack/schema linted with recommended on CI. 188 total tests. Package flipped public.",
-    "NEXT: @nekostack/config — boot-time schema validation, required by api and auth.",
+    "NEXT: @nekostack/config v0.1 (in progress, PR #TBD): defineConfig(), c.* field builders, Secret<T>, boot validation, dotenv precedence. 59 tests.",
+    "THEN: @nekostack/config v0.2 — neko config check CLI verb, ESLint rule tightening.",
+    "THEN: @nekostack/config v0.3 — configToJsonSchema() + configToMarkdown() for agent-facing config introspection.",
     "THEN: @nekostack/governance (Phase 2) — encode PRODUCT_THESIS four-question gate as CI policy, not a markdown doc."
   ]
 }
