@@ -30,10 +30,15 @@ Five packages published at v1.0+, plus the metapackage:
 | `@nekostack/ui` | v1.0.1 | Component library built on the token system |
 | `nekostack` | v1.1.1 | Metapackage — installs all five above |
 
-**Phase 0 gap (scaffold only, `export {}`, v0.0.0):**
-`lint`, `test`, `config`, `env`
+**Phase 1 — in progress:**
 
-These are the open debt from skipping Phase 0. They are not blocking any shipped product today, but they become the primary drift vector as more packages land.
+| Package | Status |
+|---|---|
+| `@nekostack/lint` | **v0.1 shipped** (2026-06-20) — plugin, base config, `no-direct-process-env` rule, 11 tests. Working toward v1.0 before publishing to npm. |
+| `@nekostack/test` | scaffold (`export {}`) — next after lint reaches v1.0 |
+| `@nekostack/config` | scaffold (`export {}`) |
+
+`env` (devcontainer/docker-compose) is deprioritized until a product needs containerized local dev.
 
 ---
 
@@ -41,11 +46,11 @@ These are the open debt from skipping Phase 0. They are not blocking any shipped
 
 **Close the Phase 0 gap.** Every additional package built without `lint` and `test` is accruing convention debt that becomes harder to backfill.
 
-| Package | Why now | Approximate effort |
+| Package | Status | Notes |
 |---|---|---|
-| `lint` | Convention enforcement from day one — already past day one. The longer this waits, the more drift each new package bakes in. | 4–8 weeks |
-| `test` | Shared factory / golden / schema-integration substrate. Every subsequent package without it reinvents fixtures. | 3–5 weeks |
-| `config` | Boot-time schema validation. Required by any backend package; `@nekostack/api` and `@nekostack/auth` both need it. | 1–2 weeks |
+| `lint` | **v0.1 in progress** | Plugin + base config + `no-direct-process-env` shipped (PR #79). v0.2–v1.0 ahead. |
+| `test` | scaffold | 3–5 weeks once lint v1.0 lands |
+| `config` | scaffold | 1–2 weeks — needed by `api` and `auth` |
 
 `env` (devcontainer / docker-compose) is deprioritized until a product needs containerized local dev. Pull it forward if that becomes urgent.
 

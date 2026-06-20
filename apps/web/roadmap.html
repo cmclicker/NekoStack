@@ -216,12 +216,18 @@
       background: color-mix(in srgb, var(--neko-color-semantic-warning) 15%, transparent);
       box-shadow: 0 0 10px color-mix(in srgb, var(--neko-color-semantic-warning) 40%, transparent);
     }
+    .milestone--done .milestone__dot {
+      border-color: var(--neko-color-semantic-success);
+      background: color-mix(in srgb, var(--neko-color-semantic-success) 15%, transparent);
+    }
     .milestone__dot-inner {
       width: 8px; height: 8px;
       border-radius: 50%;
       background: var(--neko-color-semantic-border-base);
     }
     .milestone--active .milestone__dot-inner { background: var(--neko-color-semantic-warning); }
+    .milestone--done .milestone__dot-inner { background: var(--neko-color-semantic-success); }
+    .milestone--done .milestone__ver { color: var(--neko-color-semantic-success); }
     .milestone__ver { font-family: var(--neko-font-mono); font-size: var(--neko-font-size-xs); font-weight: 700; color: var(--neko-color-semantic-text-muted); }
     .milestone--active .milestone__ver { color: var(--neko-color-semantic-warning); }
     .milestone__name { font-size: var(--neko-font-size-xs); color: var(--neko-color-semantic-text-muted); text-align: center; }
@@ -432,7 +438,7 @@
     <div class="wrap">
       <div class="hero__badges">
         <span class="neko-badge neko-badge--success neko-badge--pill">5 shipped</span>
-        <span class="neko-badge neko-badge--warning neko-badge--pill">@nekostack/lint next</span>
+        <span class="neko-badge neko-badge--warning neko-badge--pill">@nekostack/lint v0.1 ✓ — v0.2 next</span>
         <span class="neko-badge neko-badge--pill">Apache-2.0</span>
       </div>
       <h1>Development <span class="gradient-text">Roadmap</span></h1>
@@ -450,7 +456,7 @@
         </div>
         <div class="progress-stat">
           <span class="progress-stat__num progress-stat__num--amber">1</span>
-          <span class="progress-stat__label">package next up</span>
+          <span class="progress-stat__label">package in progress</span>
         </div>
         <div class="progress-stat">
           <span class="progress-stat__num progress-stat__num--muted">101</span>
@@ -518,9 +524,9 @@
       </div>
     </section>
 
-    <!-- ===== next up: lint ===== -->
+    <!-- ===== in progress: lint ===== -->
     <section class="rm-section">
-      <div class="section-label"><span class="section-label__dot dot--amber"></span> Next up</div>
+      <div class="section-label"><span class="section-label__dot dot--amber"></span> In progress</div>
       <h2 class="section-title">Phase 1 — Foundation Closure</h2>
       <p class="section-sub">Closing the Phase 0 gap. Lint enforces conventions from day one — the longer it waits, the more drift each new package bakes in.</p>
 
@@ -528,8 +534,8 @@
         <div class="next-up-header">
           <div>
             <div style="display:flex; align-items:center; gap: var(--neko-spacing-3); margin-bottom: var(--neko-spacing-2);">
-              <span class="next-up-badge">⚡ Next up</span>
-              <span style="font-size: var(--neko-font-size-xs); color: var(--neko-color-semantic-text-muted);">Phase 1 · Package 1 of 3</span>
+              <span class="next-up-badge">🔥 In progress</span>
+              <span style="font-size: var(--neko-font-size-xs); color: var(--neko-color-semantic-text-muted);">Phase 1 · Package 1 of 3 · v0.1 shipped 2026-06-20</span>
             </div>
             <div class="next-up-title">@nekostack/lint</div>
             <p class="next-up-tagline">Custom ESLint rules that enforce NekoStack architectural conventions — the things type-checking and Prettier don't catch.</p>
@@ -538,12 +544,12 @@
 
         <!-- milestone track -->
         <div class="milestones">
-          <div class="milestone milestone--active">
+          <div class="milestone milestone--done">
             <div class="milestone__dot"><div class="milestone__dot-inner"></div></div>
             <div class="milestone__ver">v0.1</div>
             <div class="milestone__name">Bootstrap</div>
           </div>
-          <div class="milestone">
+          <div class="milestone milestone--active">
             <div class="milestone__dot"><div class="milestone__dot-inner"></div></div>
             <div class="milestone__ver">v0.2</div>
             <div class="milestone__name">Convention rules</div>
@@ -565,29 +571,40 @@
           </div>
         </div>
 
-        <!-- v0.1 detail -->
-        <div class="milestone-detail">
+        <!-- v0.1 done summary -->
+        <div class="milestone-detail" style="border-color: color-mix(in srgb, var(--neko-color-semantic-success) 25%, transparent);">
           <div class="milestone-detail__header">
-            <span class="milestone-detail__ver">v0.1</span>
+            <span class="milestone-detail__ver" style="color: var(--neko-color-semantic-success);">v0.1</span>
             <span class="milestone-detail__title">Bootstrap</span>
-            <span class="milestone-detail__tag">Starting next</span>
+            <span class="milestone-detail__tag" style="color: var(--neko-color-semantic-success); background: color-mix(in srgb, var(--neko-color-semantic-success) 10%, transparent); border-color: color-mix(in srgb, var(--neko-color-semantic-success) 25%, transparent);">✓ Shipped</span>
           </div>
           <ul class="milestone-detail__list">
-            <li>ESLint flat-config plugin scaffolding — <code>@nekostack/eslint-plugin</code> and <code>@nekostack/eslint-config</code></li>
-            <li>Base config extending <code>@typescript-eslint/recommended</code></li>
-            <li>First real rule: <code>no-direct-process-env</code> — catches <code>process.env.X</code> access outside <code>@nekostack/config</code></li>
-            <li><code>RuleTester</code> fixture tests — valid + invalid cases for every rule</li>
-            <li>Added to CI <code>--filter</code> list in the same PR</li>
+            <li>Flat-config plugin object (<code>src/plugin.ts</code>) with meta + rules map</li>
+            <li>Base config (<code>src/configs/base.ts</code>) — flat-config array consumers spread into <code>eslint.config.ts</code></li>
+            <li>Rule: <code>no-direct-process-env</code> — catches <code>process.env</code> and <code>process["env"]</code> outside <code>@nekostack/config</code></li>
+            <li>11 <code>RuleTester</code> fixture tests (5 valid, 6 invalid)</li>
+            <li>Added to CI <code>--filter</code> in the same PR</li>
           </ul>
         </div>
 
-        <!-- upcoming milestones -->
-        <div class="upcoming-milestones">
-          <div class="upcoming-card">
-            <div class="upcoming-card__ver">v0.2</div>
-            <div class="upcoming-card__title">Convention rules</div>
-            <div class="upcoming-card__desc">4 architectural rules: <code>schema-no-inline-zod</code>, <code>prisma-json-cast</code>, <code>service-has-spec</code>, <code>controller-no-service-cycle</code>. Strict config enabled.</div>
+        <!-- v0.2 active detail -->
+        <div class="milestone-detail">
+          <div class="milestone-detail__header">
+            <span class="milestone-detail__ver">v0.2</span>
+            <span class="milestone-detail__title">Convention rules</span>
+            <span class="milestone-detail__tag">Up next</span>
           </div>
+          <ul class="milestone-detail__list">
+            <li><code>schema-no-inline-zod</code> — prohibit inline <code>z.*</code> calls outside <code>@nekostack/schema</code></li>
+            <li><code>prisma-json-cast</code> — require <code>as unknown as Prisma.InputJsonValue</code> for typed JSON column writes</li>
+            <li><code>service-has-spec</code> — every <code>*.service.ts</code> must have a matching <code>*.spec.ts</code></li>
+            <li><code>controller-no-service-cycle</code> — controllers must not import services that import controllers</li>
+            <li>Strict config enabling all rules</li>
+          </ul>
+        </div>
+
+        <!-- remaining milestones -->
+        <div class="upcoming-milestones">
           <div class="upcoming-card">
             <div class="upcoming-card__ver">v0.3</div>
             <div class="upcoming-card__title">Framework configs</div>

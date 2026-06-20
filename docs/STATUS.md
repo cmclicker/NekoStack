@@ -5,8 +5,8 @@
 ## Active workstream
 
 - **Package:** @nekostack/lint
-- **Latest release:** [`migrate-runner-v1.0.0`](https://github.com/cmclicker/NekoStack/releases/tag/migrate-runner-v1.0.0) — 2026-06-19
-- **Active target:** v0.1.X+ — Optional runner CLI + adapter expansion
+- **Latest release:** _(none yet)_
+- **Active target:** _(no `← *active target*` marker found in ROADMAP)_
 - **Doctrine in force:** [NekoStack — Product Thesis](../PRODUCT_THESIS.md)
 
 ## Latest milestones
@@ -57,16 +57,16 @@ Test counts come from each package's most recent CHANGELOG entry. After validati
 - **@nekostack/cli:** _(no `### Test count` line in latest CHANGELOG entry)_
 - **@nekostack/theme:** 78 tests recorded (latest: theme-v1.0.0)
 - **@nekostack/ui:** _(no `### Test count` line in latest CHANGELOG entry)_
+- **@nekostack/lint:** _(no `### Test count` line in latest CHANGELOG entry)_
 
 ## Next actions
 
 1. Five packages published at v1.0+: schema, cli, migrate-runner, theme, ui. Metapackage at v1.1.1.
-2. Phase 0 gap still open: lint, test, config are scaffolds (export {}). These are now Phase 1 in the rewritten ROADMAP.
-3. NEXT: @nekostack/lint — convention enforcement. Every package shipped without it accrues drift. Build lint first, run it retroactively on all five shipped packages.
+2. @nekostack/lint v0.1 shipped (2026-06-20, PR #79): plugin, base config, no-direct-process-env rule, 11 tests. Working toward v1.0 before publishing to npm.
+3. NEXT: @nekostack/lint v0.2 — convention rules: schema-no-inline-zod, prisma-json-cast, service-has-spec, controller-no-service-cycle. Strict config.
 4. THEN: @nekostack/test — shared testing substrate so subsequent packages don't reinvent fixtures.
 5. THEN: @nekostack/config — boot-time schema validation, required by api and auth.
 6. THEN: @nekostack/governance (Phase 2) — moved from Phase 8. Encode PRODUCT_THESIS four-question gate as CI policy, not a markdown doc.
-7. CI updated: theme and ui now in --filter list. Rule: any package graduating from scaffold must be added to CI filter in the same PR.
 
 ## How to refresh
 

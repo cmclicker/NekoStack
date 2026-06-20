@@ -12,6 +12,8 @@
     "packages/theme/CHANGELOG.md",
     "packages/ui/docs/internal/ROADMAP.md",
     "packages/ui/CHANGELOG.md",
+    "packages/lint/docs/internal/ROADMAP.md",
+    "packages/lint/CHANGELOG.md",
     "git tags"
   ],
   "active_workstream": "@nekostack/lint",
@@ -130,15 +132,23 @@
           "summary": "[Tag](https://github.com/cmclicker/NekoStack/releases/tag/ui-v1.0.0) · First public release."
         }
       ]
+    },
+    {
+      "name": "@nekostack/lint",
+      "dir": "packages/lint",
+      "latest_release": null,
+      "latest_release_date": null,
+      "active_target": null,
+      "test_count": null,
+      "milestones": []
     }
   ],
   "next_actions": [
     "Five packages published at v1.0+: schema, cli, migrate-runner, theme, ui. Metapackage at v1.1.1.",
-    "Phase 0 gap still open: lint, test, config are scaffolds (export {}). These are now Phase 1 in the rewritten ROADMAP.",
-    "NEXT: @nekostack/lint — convention enforcement. Every package shipped without it accrues drift. Build lint first, run it retroactively on all five shipped packages.",
+    "@nekostack/lint v0.1 shipped (2026-06-20, PR #79): plugin, base config, no-direct-process-env rule, 11 tests. Working toward v1.0 before publishing to npm.",
+    "NEXT: @nekostack/lint v0.2 — convention rules: schema-no-inline-zod, prisma-json-cast, service-has-spec, controller-no-service-cycle. Strict config.",
     "THEN: @nekostack/test — shared testing substrate so subsequent packages don't reinvent fixtures.",
     "THEN: @nekostack/config — boot-time schema validation, required by api and auth.",
-    "THEN: @nekostack/governance (Phase 2) — moved from Phase 8. Encode PRODUCT_THESIS four-question gate as CI policy, not a markdown doc.",
-    "CI updated: theme and ui now in --filter list. Rule: any package graduating from scaffold must be added to CI filter in the same PR."
+    "THEN: @nekostack/governance (Phase 2) — moved from Phase 8. Encode PRODUCT_THESIS four-question gate as CI policy, not a markdown doc."
   ]
 }
