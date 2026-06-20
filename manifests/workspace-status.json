@@ -77,6 +77,31 @@
           "tag": "schema-v0.5.0",
           "date": "2026-05-17",
           "summary": "Composition layer on the v0.1 IR foundation."
+        },
+        {
+          "tag": "schema-v0.4.0",
+          "date": "2026-05-17",
+          "summary": "Fourth generator on the v0.1 IR foundation."
+        },
+        {
+          "tag": "schema-v0.3.0",
+          "date": "2026-05-17",
+          "summary": "Third generator on the v0.1 IR foundation."
+        },
+        {
+          "tag": "schema-v0.2.1",
+          "date": "2026-05-16",
+          "summary": "Patch release on the v0.2 line — proof artifacts + generator output polish from the dogfood pass."
+        },
+        {
+          "tag": "schema-v0.2.0",
+          "date": "2026-05-16",
+          "summary": null
+        },
+        {
+          "tag": "schema-v0.1.0",
+          "date": "2026-05-16",
+          "summary": "First package phase accepted under [`standards/package-development.md`](../../standards/package-development.md)."
         }
       ]
     },

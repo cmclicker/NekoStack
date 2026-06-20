@@ -19,7 +19,6 @@ const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const CONFIG_PATH = join(REPO_ROOT, "manifests", "workspace.config.json");
 const MANIFEST_PATH = join(REPO_ROOT, "manifests", "workspace-status.json");
 const STATUS_PATH = join(REPO_ROOT, "docs", "STATUS.md");
-const MILESTONE_LIMIT = 5;
 const GH_REPO = "cmclicker/NekoStack";
 
 function readJson(path) {
@@ -137,7 +136,7 @@ function buildPackageStatus(pkg) {
   const entries = parseChangelogEntries(changelogText, pkg.tag_prefix);
   const latestRelease = tags.length > 0 ? tags[tags.length - 1] : null;
 
-  const recent = tags.slice(-MILESTONE_LIMIT).reverse();
+  const recent = [...tags].reverse();
   const milestones = recent.map((tag) => {
     const entry = entries.get(tag);
     return {

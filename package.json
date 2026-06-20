@@ -27,6 +27,8 @@
     "status:check": "node scripts/generate-status.mjs check",
     "site:generate": "node scripts/generate-site-history.mjs generate",
     "site:check": "node scripts/generate-site-history.mjs check",
+    "roadmap:generate": "node scripts/generate-site-roadmap.mjs generate",
+    "roadmap:check": "node scripts/generate-site-roadmap.mjs check",
     "evaluate": "node scripts/evaluate-readiness.mjs",
     "evaluate:run": "node scripts/evaluate-readiness.mjs --run",
     "gate": "node scripts/evaluate-readiness.mjs --gate"

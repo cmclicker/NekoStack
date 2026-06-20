@@ -49,3 +49,5 @@ jobs:
       # the status gate above.
       - name: Site history drift gate
         run: npm run site:check
+      - name: Roadmap drift gate
+        run: npm run roadmap:check
