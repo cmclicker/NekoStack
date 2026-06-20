@@ -213,6 +213,7 @@ function renderHistoryHtml(model) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Release History — NekoStack</title>
   <meta name="description" content="NekoStack release history — every package milestone, generated from the workspace status source of truth. Zero drift." />
+  <link rel="canonical" href="https://cmclicker.github.io/NekoStack/history.html" />
   <link rel="stylesheet" href="assets/neko.css" />
   <link rel="stylesheet" href="assets/ui.css" />
   <link rel="stylesheet" href="assets/site.css" />
