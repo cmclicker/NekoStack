@@ -54,6 +54,12 @@
 |---|---|---|
 | [`lint-v0.3.0`](https://github.com/cmclicker/NekoStack/releases/tag/lint-v0.3.0) | 2026-06-19 | PR #TBD · Framework configs milestone. |
 
+### @nekostack/test
+
+| Tag | Date | Summary |
+|---|---|---|
+| [`test-v0.1.0`](https://github.com/cmclicker/NekoStack/releases/tag/test-v0.1.0) | 2026-06-19 | PR #TBD · Bootstrap milestone. |
+
 ## Validation snapshot
 
 Test counts come from each package's most recent CHANGELOG entry. After validating a release, update the package CHANGELOG and run `npm run status:generate`.
@@ -64,7 +70,7 @@ Test counts come from each package's most recent CHANGELOG entry. After validati
 - **@nekostack/theme:** 78 tests recorded (latest: theme-v1.0.0)
 - **@nekostack/ui:** _(no `### Test count` line in latest CHANGELOG entry)_
 - **@nekostack/lint:** _(no `### Test count` line in latest CHANGELOG entry)_
-- **@nekostack/test:** _(no `### Test count` line in latest CHANGELOG entry)_
+- **@nekostack/test:** 5 tests recorded (latest: test-v0.1.0)
 
 ## Next actions
 
