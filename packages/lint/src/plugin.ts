@@ -9,11 +9,15 @@ import { noHardcodedSecrets } from './rules/no-hardcoded-secrets.js';
 import { noRawSql } from './rules/no-raw-sql.js';
 import { schemaExportType } from './rules/schema-export-type.js';
 import { reactNoDangerouslySetHtml } from './rules/react-no-dangerously-set-html.js';
+import { consistentTypeImports } from './rules/consistent-type-imports.js';
+import { noConsoleInModule } from './rules/no-console-in-module.js';
+import { nestEventHandlerHasSpec } from './rules/nest-event-handler-has-spec.js';
+import { noDirectDateNow } from './rules/no-direct-date-now.js';
 
 export const plugin = {
   meta: {
     name: '@nekostack/lint',
-    version: '0.4.0',
+    version: '0.5.0',
   },
   rules: {
     'no-direct-process-env': noDirectProcessEnv,
@@ -27,5 +31,9 @@ export const plugin = {
     'no-raw-sql': noRawSql,
     'schema-export-type': schemaExportType,
     'react-no-dangerously-set-html': reactNoDangerouslySetHtml,
+    'consistent-type-imports': consistentTypeImports,
+    'no-console-in-module': noConsoleInModule,
+    'nest-event-handler-has-spec': nestEventHandlerHasSpec,
+    'no-direct-date-now': noDirectDateNow,
   },
 } as const;

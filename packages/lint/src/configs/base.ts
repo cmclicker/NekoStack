@@ -9,6 +9,8 @@ export const base = [
     rules: {
       '@nekostack/no-direct-process-env': 'error',
       '@nekostack/no-hardcoded-secrets': 'error',
+      '@nekostack/consistent-type-imports': 'warn',
+      '@nekostack/no-console-in-module': 'warn',
     } as const,
   },
 ];

@@ -17,6 +17,9 @@ export const strict = [
       '@nekostack/react-no-inline-style': 'warn',
       '@nekostack/react-no-dangerously-set-html': 'error',
       '@nekostack/nest-no-orm-in-controller': 'error',
+      '@nekostack/consistent-type-imports': 'error',
+      '@nekostack/no-console-in-module': 'error',
+      '@nekostack/no-direct-date-now': 'warn',
     } as const,
   },
 ];

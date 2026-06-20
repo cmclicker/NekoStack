@@ -14,3 +14,7 @@ export { noHardcodedSecrets } from './rules/no-hardcoded-secrets.js';
 export { noRawSql } from './rules/no-raw-sql.js';
 export { schemaExportType } from './rules/schema-export-type.js';
 export { reactNoDangerouslySetHtml } from './rules/react-no-dangerously-set-html.js';
+export { consistentTypeImports } from './rules/consistent-type-imports.js';
+export { noConsoleInModule } from './rules/no-console-in-module.js';
+export { nestEventHandlerHasSpec } from './rules/nest-event-handler-has-spec.js';
+export { noDirectDateNow } from './rules/no-direct-date-now.js';
