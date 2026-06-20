@@ -16,15 +16,15 @@ Includes:
 
 ## v0.2 — Convention rules
 
-Status: **not started**.
+Status: **in progress** (PR open, not merged).
 
-Target rules:
-- `schema-no-inline-zod` — prohibit inline `z.*` calls outside `@nekostack/schema`
-- `prisma-json-cast` — require `as unknown as Prisma.InputJsonValue` for typed JSON column writes
-- `service-has-spec` — every `*.service.ts` must have a matching `*.spec.ts`
-- `controller-no-service-cycle` — controllers must not import services that import controllers
-
-Plus: strict config enabling all rules.
+Shipped:
+- `schema-no-inline-zod` — flags `z.TYPE()` calls outside schema files; 11 tests
+- `prisma-json-cast` — flags property access on `Prisma.JsonValue`/`JsonValue` typed vars without cast; 12 tests
+- `service-has-spec` — flags `*.service.ts` files missing a co-located spec; 5 tests
+- `controller-no-service-cycle` — flags controller-to-controller imports; 10 tests
+- `strict` config — enables all five rules, exported as `./strict`
+- Total test count: 49 (38 new + 11 from v0.1)
 
 ## v0.3 — Framework configs
 

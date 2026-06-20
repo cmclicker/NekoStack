@@ -1,6 +1,6 @@
 {
   "name": "@nekostack/lint",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "license": "Apache-2.0",
   "type": "module",
@@ -14,6 +14,10 @@
     "./base": {
       "types": "./dist/src/configs/base.d.ts",
       "default": "./dist/src/configs/base.js"
+    },
+    "./strict": {
+      "types": "./dist/src/configs/strict.d.ts",
+      "default": "./dist/src/configs/strict.js"
     }
   },
   "files": [
