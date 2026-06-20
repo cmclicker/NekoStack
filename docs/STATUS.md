@@ -5,7 +5,7 @@
 ## Active workstream
 
 - **Package:** @nekostack/lint
-- **Latest release:** [`lint-v0.3.0`](https://github.com/cmclicker/NekoStack/releases/tag/lint-v0.3.0) — 2026-06-19
+- **Latest release:** [`lint-v0.4.0`](https://github.com/cmclicker/NekoStack/releases/tag/lint-v0.4.0) — 2026-06-19
 - **Active target:** _(no `← *active target*` marker found in ROADMAP)_
 - **Doctrine in force:** [NekoStack — Product Thesis](../PRODUCT_THESIS.md)
 
@@ -52,6 +52,7 @@
 
 | Tag | Date | Summary |
 |---|---|---|
+| [`lint-v0.4.0`](https://github.com/cmclicker/NekoStack/releases/tag/lint-v0.4.0) | 2026-06-19 | PR #TBD · Security rules + first auto-fixer milestone. |
 | [`lint-v0.3.0`](https://github.com/cmclicker/NekoStack/releases/tag/lint-v0.3.0) | 2026-06-19 | PR #TBD · Framework configs milestone. |
 
 ### @nekostack/test
@@ -79,9 +80,10 @@ Test counts come from each package's most recent CHANGELOG entry. After validati
 3. @nekostack/lint v0.2 shipped (2026-06-20, PR #80): schema-no-inline-zod, prisma-json-cast, service-has-spec, controller-no-service-cycle, strict config. 49 total tests.
 4. @nekostack/lint v0.3 shipped (2026-06-19, PR #81): react-no-inline-style, nest-no-orm-in-controller, ./react config, ./nest config. 69 total tests.
 5. @nekostack/test v0.1 shipped (2026-06-19, PR #82): createRuleTester, createJsxRuleTester. 5 tests.
-6. NEXT: @nekostack/config — boot-time schema validation, required by api and auth.
-7. THEN: @nekostack/config — boot-time schema validation, required by api and auth.
-8. THEN: @nekostack/governance (Phase 2) — encode PRODUCT_THESIS four-question gate as CI policy, not a markdown doc.
+6. @nekostack/lint v0.4 shipped (2026-06-19, PR #83): no-hardcoded-secrets, no-raw-sql, schema-export-type (auto-fix), react-no-dangerously-set-html. 105 total tests.
+7. NEXT: @nekostack/lint v0.5 — consistent-type-imports, no-console-in-module, nest-event-handler-has-spec, no-direct-date-now.
+8. THEN: @nekostack/config — boot-time schema validation, required by api and auth.
+9. THEN: @nekostack/governance (Phase 2) — encode PRODUCT_THESIS four-question gate as CI policy, not a markdown doc.
 
 ## How to refresh
 

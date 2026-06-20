@@ -34,7 +34,7 @@ Five packages published at v1.0+, plus the metapackage:
 
 | Package | Status |
 |---|---|
-| `@nekostack/lint` | **v0.3 shipped** (2026-06-19) — 7 rules, `strict`/`react`/`nest` configs, 69 tests. Working toward v1.0. |
+| `@nekostack/lint` | **v0.4 shipped** (2026-06-19) — 11 rules, `base`/`strict`/`react`/`nest` configs, 105 tests. Working toward v1.0. |
 | `@nekostack/test` | **v0.1 shipped** (2026-06-19) — `createRuleTester`, `createJsxRuleTester`, 5 tests. Working toward v1.0. |
 | `@nekostack/config` | scaffold (`export {}`) |
 | `@nekostack/secrets` | scaffold — ships after `config` |
@@ -49,7 +49,7 @@ Five packages published at v1.0+, plus the metapackage:
 
 | Package | Status | Notes |
 |---|---|---|
-| `lint` | **v0.3 shipped** | v0.1–v0.3 shipped (PRs #79–#81). 7 rules, `strict`/`react`/`nest` configs, 69 tests. v0.4–v1.0 ahead. |
+| `lint` | **v0.4 shipped** | v0.1–v0.4 shipped (PRs #79–#83). 11 rules, `base`/`strict`/`react`/`nest` configs, 105 tests. v0.5–v1.0 ahead. |
 | `test` | **v0.1 shipped** | PR #82. `createRuleTester` + `createJsxRuleTester`. 5 tests. v0.2+ ahead. |
 | `config` | scaffold | 1–2 weeks — needed by `api` and `auth` |
 | `secrets` | scaffold | Secret management (API keys, DB credentials, signing secrets). The correct substitute that `no-direct-process-env` points to. Ships after `config`. ~2–4 weeks. |

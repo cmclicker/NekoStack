@@ -43,7 +43,7 @@ Status: **shipped** ([#81](https://github.com/cmclicker/NekoStack/pull/81), merg
 
 ## v0.4 — Security rules + first auto-fixer
 
-Status: **in progress (PR open)**.
+Status: **shipped** ([#83](https://github.com/cmclicker/NekoStack/pull/83), merged 2026-06-19).
 
 - `no-hardcoded-secrets` — flags secret-named vars (`password`, `apiKey`, `token`, …) assigned string literals + well-known credential value prefixes (Stripe, GitHub, AWS, Google, PEM headers); test files exempt; 11 tests
 - `no-raw-sql` — flags unsafe Prisma raw-query methods; distinguishes safe tagged-template `$queryRaw`/`$executeRaw` from unsafe call form; always flags `$queryRawUnsafe`/`$executeRawUnsafe`; 10 tests

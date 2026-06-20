@@ -438,7 +438,7 @@
     <div class="wrap">
       <div class="hero__badges">
         <span class="neko-badge neko-badge--success neko-badge--pill">5 shipped</span>
-        <span class="neko-badge neko-badge--warning neko-badge--pill">@nekostack/lint v0.3 ✓ — v0.4 next</span>
+        <span class="neko-badge neko-badge--warning neko-badge--pill">@nekostack/lint v0.4 ✓ — v0.5 next</span>
         <span class="neko-badge neko-badge--pill">Apache-2.0</span>
       </div>
       <h1>Development <span class="gradient-text">Roadmap</span></h1>
@@ -528,14 +528,14 @@
     <section class="rm-section">
       <div class="section-label"><span class="section-label__dot dot--amber"></span> In progress</div>
       <h2 class="section-title">Phase 1 — Foundation Closure</h2>
-      <p class="section-sub">Closing the Phase 0 gap. <code>@nekostack/lint</code> v0.3 and <code>@nekostack/test</code> v0.1 shipped this week — two of four Phase 1 packages underway.</p>
+      <p class="section-sub">Closing the Phase 0 gap. <code>@nekostack/lint</code> v0.4 and <code>@nekostack/test</code> v0.1 shipped — two of four Phase 1 packages underway.</p>
 
       <div class="next-up-card">
         <div class="next-up-header">
           <div>
             <div style="display:flex; align-items:center; gap: var(--neko-spacing-3); margin-bottom: var(--neko-spacing-2);">
               <span class="next-up-badge">🔥 In progress</span>
-              <span style="font-size: var(--neko-font-size-xs); color: var(--neko-color-semantic-text-muted);">Phase 1 · Package 1 of 4 · v0.3 shipped 2026-06-19</span>
+              <span style="font-size: var(--neko-font-size-xs); color: var(--neko-color-semantic-text-muted);">Phase 1 · Package 1 of 4 · v0.4 shipped 2026-06-19</span>
             </div>
             <div class="next-up-title">@nekostack/lint</div>
             <p class="next-up-tagline">Custom ESLint rules that enforce NekoStack architectural conventions — the things type-checking and Prettier don't catch.</p>
@@ -559,12 +559,12 @@
             <div class="milestone__ver">v0.3</div>
             <div class="milestone__name">Framework configs</div>
           </div>
-          <div class="milestone milestone--active">
+          <div class="milestone milestone--done">
             <div class="milestone__dot"><div class="milestone__dot-inner"></div></div>
             <div class="milestone__ver">v0.4</div>
-            <div class="milestone__name">Auto-fixers</div>
+            <div class="milestone__name">Security rules</div>
           </div>
-          <div class="milestone">
+          <div class="milestone milestone--active">
             <div class="milestone__dot"><div class="milestone__dot-inner"></div></div>
             <div class="milestone__ver">v1.0</div>
             <div class="milestone__name">Stable catalog</div>
@@ -620,25 +620,49 @@
           </ul>
         </div>
 
-        <!-- v0.4 active detail -->
+        <!-- v0.4 shipped -->
+        <div class="milestone-detail" style="border-color: color-mix(in srgb, var(--neko-color-semantic-success) 25%, transparent);">
+          <div class="milestone-detail__header">
+            <span class="milestone-detail__ver" style="color: var(--neko-color-semantic-success);">v0.4</span>
+            <span class="milestone-detail__title">Security rules + first auto-fixer</span>
+            <span class="milestone-detail__tag" style="color: var(--neko-color-semantic-success); background: color-mix(in srgb, var(--neko-color-semantic-success) 10%, transparent); border-color: color-mix(in srgb, var(--neko-color-semantic-success) 25%, transparent);">✓ Shipped</span>
+          </div>
+          <ul class="milestone-detail__list">
+            <li><code>no-hardcoded-secrets</code> — flags secret-named variables assigned string literals + well-known credential prefixes (Stripe, GitHub, AWS, Google); test files exempt; 11 tests</li>
+            <li><code>no-raw-sql</code> — flags unsafe Prisma raw-query methods; distinguishes safe tagged-template form from unsafe call form; 10 tests</li>
+            <li><code>schema-export-type</code> — flags exported Zod schemas missing a <code>z.infer&lt;typeof schema&gt;</code> type alias; <strong>auto-fixer</strong> inserts the type export; 8 tests</li>
+            <li><code>react-no-dangerously-set-html</code> — flags <code>dangerouslySetInnerHTML</code> prop (XSS risk); 7 tests</li>
+            <li><code>base</code> config hardened: <code>no-hardcoded-secrets</code> added as universal security baseline</li>
+            <li>105 total tests (36 new + 69 from v0.3)</li>
+          </ul>
+        </div>
+
+        <!-- v0.5 up next -->
         <div class="milestone-detail">
           <div class="milestone-detail__header">
-            <span class="milestone-detail__ver">v0.4</span>
-            <span class="milestone-detail__title">Auto-fixers</span>
+            <span class="milestone-detail__ver">v0.5</span>
+            <span class="milestone-detail__title">Module-boundary + quality rules</span>
             <span class="milestone-detail__tag">Up next</span>
           </div>
           <ul class="milestone-detail__list">
-            <li>Mechanical auto-fix for every rule where the correction is safe and unambiguous</li>
-            <li><code>--fix</code> integration tested end-to-end via <code>RuleTester</code> output assertions</li>
+            <li><code>consistent-type-imports</code> — flags <code>import { Type }</code> where <code>import type { Type }</code> is required; <strong>auto-fixer</strong> adds the <code>type</code> modifier</li>
+            <li><code>no-console-in-module</code> — flags <code>console.log</code> / <code>console.debug</code> in non-test source files; permits <code>console.error</code> / <code>console.warn</code></li>
+            <li><code>nest-event-handler-has-spec</code> — extends <code>service-has-spec</code> to <code>@EventPattern</code> / <code>@MessagePattern</code> decorated methods</li>
+            <li><code>no-direct-date-now</code> — flags <code>Date.now()</code> and <code>new Date()</code> outside test files; enforces injectable clock pattern</li>
           </ul>
         </div>
 
         <!-- remaining milestones -->
         <div class="upcoming-milestones">
           <div class="upcoming-card">
+            <div class="upcoming-card__ver">v0.6</div>
+            <div class="upcoming-card__title">Type-safety rules</div>
+            <div class="upcoming-card__desc"><code>no-type-assertion-to-any</code>, <code>no-non-null-assertion</code>, <code>react-hook-naming</code>, <code>nest-controller-response-type</code>, <code>recommended</code> config.</div>
+          </div>
+          <div class="upcoming-card">
             <div class="upcoming-card__ver">v1.0</div>
             <div class="upcoming-card__title">Stable catalog</div>
-            <div class="upcoming-card__desc">~25–30 rules covering major NekoStack architectural conventions. Full docs. Migration guide for adopting <code>/strict</code>.</div>
+            <div class="upcoming-card__desc">~20 rules documented. All configs complete. Migration guide. CI linting of <code>@nekostack/schema</code> with <code>/strict</code>.</div>
           </div>
         </div>
       </div>

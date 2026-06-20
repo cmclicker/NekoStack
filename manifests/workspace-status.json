@@ -138,11 +138,16 @@
     {
       "name": "@nekostack/lint",
       "dir": "packages/lint",
-      "latest_release": "lint-v0.3.0",
+      "latest_release": "lint-v0.4.0",
       "latest_release_date": "2026-06-19",
       "active_target": null,
       "test_count": null,
       "milestones": [
+        {
+          "tag": "lint-v0.4.0",
+          "date": "2026-06-19",
+          "summary": "PR #TBD · Security rules + first auto-fixer milestone."
+        },
         {
           "tag": "lint-v0.3.0",
           "date": "2026-06-19",
@@ -172,7 +177,8 @@
     "@nekostack/lint v0.2 shipped (2026-06-20, PR #80): schema-no-inline-zod, prisma-json-cast, service-has-spec, controller-no-service-cycle, strict config. 49 total tests.",
     "@nekostack/lint v0.3 shipped (2026-06-19, PR #81): react-no-inline-style, nest-no-orm-in-controller, ./react config, ./nest config. 69 total tests.",
     "@nekostack/test v0.1 shipped (2026-06-19, PR #82): createRuleTester, createJsxRuleTester. 5 tests.",
-    "NEXT: @nekostack/config — boot-time schema validation, required by api and auth.",
+    "@nekostack/lint v0.4 shipped (2026-06-19, PR #83): no-hardcoded-secrets, no-raw-sql, schema-export-type (auto-fix), react-no-dangerously-set-html. 105 total tests.",
+    "NEXT: @nekostack/lint v0.5 — consistent-type-imports, no-console-in-module, nest-event-handler-has-spec, no-direct-date-now.",
     "THEN: @nekostack/config — boot-time schema validation, required by api and auth.",
     "THEN: @nekostack/governance (Phase 2) — encode PRODUCT_THESIS four-question gate as CI policy, not a markdown doc."
   ]
