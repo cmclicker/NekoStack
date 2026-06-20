@@ -38,7 +38,7 @@ jobs:
       # Add a --filter here whenever a new package graduates from scaffold to real.
       # Turbo silently skips tasks a package doesn't declare (e.g. ui has no typecheck).
       - name: Typecheck + build + test (implemented packages)
-        run: npx turbo run typecheck build test --filter=@nekostack/schema --filter=@nekostack/cli --filter=@nekostack/migrate-runner --filter=@nekostack/theme --filter=@nekostack/ui --filter=@nekostack/lint
+        run: npx turbo run typecheck build test --filter=@nekostack/schema --filter=@nekostack/cli --filter=@nekostack/migrate-runner --filter=@nekostack/theme --filter=@nekostack/ui --filter=@nekostack/lint --filter=@nekostack/test
 
       - name: Status drift gate
         run: npm run status:check

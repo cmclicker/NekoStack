@@ -44,6 +44,13 @@
       "tag_prefix": "lint-v",
       "roadmap": "packages/lint/docs/internal/ROADMAP.md",
       "changelog": "packages/lint/CHANGELOG.md"
+    },
+    {
+      "name": "@nekostack/test",
+      "dir": "packages/test",
+      "tag_prefix": "test-v",
+      "roadmap": "packages/test/docs/internal/ROADMAP.md",
+      "changelog": "packages/test/CHANGELOG.md"
     }
   ],
   "next_actions": [

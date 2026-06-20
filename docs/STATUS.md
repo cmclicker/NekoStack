@@ -5,7 +5,7 @@
 ## Active workstream
 
 - **Package:** @nekostack/lint
-- **Latest release:** _(none yet)_
+- **Latest release:** [`lint-v0.3.0`](https://github.com/cmclicker/NekoStack/releases/tag/lint-v0.3.0) — 2026-06-19
 - **Active target:** _(no `← *active target*` marker found in ROADMAP)_
 - **Doctrine in force:** [NekoStack — Product Thesis](../PRODUCT_THESIS.md)
 
@@ -48,6 +48,12 @@
 | [`ui-v1.0.1`](https://github.com/cmclicker/NekoStack/releases/tag/ui-v1.0.1) | 2026-06-19 | [Tag](https://github.com/cmclicker/NekoStack/releases/tag/ui-v1.0.1) · Patch fix for npm publish artifact hygiene. |
 | [`ui-v1.0.0`](https://github.com/cmclicker/NekoStack/releases/tag/ui-v1.0.0) | 2026-06-19 | [Tag](https://github.com/cmclicker/NekoStack/releases/tag/ui-v1.0.0) · First public release. |
 
+### @nekostack/lint
+
+| Tag | Date | Summary |
+|---|---|---|
+| [`lint-v0.3.0`](https://github.com/cmclicker/NekoStack/releases/tag/lint-v0.3.0) | 2026-06-19 | PR #TBD · Framework configs milestone. |
+
 ## Validation snapshot
 
 Test counts come from each package's most recent CHANGELOG entry. After validating a release, update the package CHANGELOG and run `npm run status:generate`.
@@ -58,6 +64,7 @@ Test counts come from each package's most recent CHANGELOG entry. After validati
 - **@nekostack/theme:** 78 tests recorded (latest: theme-v1.0.0)
 - **@nekostack/ui:** _(no `### Test count` line in latest CHANGELOG entry)_
 - **@nekostack/lint:** _(no `### Test count` line in latest CHANGELOG entry)_
+- **@nekostack/test:** _(no `### Test count` line in latest CHANGELOG entry)_
 
 ## Next actions
 
