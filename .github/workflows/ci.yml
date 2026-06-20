@@ -42,3 +42,10 @@ jobs:
 
       - name: Status drift gate
         run: npm run status:check
+
+      # The public site's release history is generated from workspace-status.json
+      # (see scripts/generate-site-history.mjs). If the SSOT changed but
+      # apps/web/history.html wasn't regenerated, this fails — same discipline as
+      # the status gate above.
+      - name: Site history drift gate
+        run: npm run site:check
