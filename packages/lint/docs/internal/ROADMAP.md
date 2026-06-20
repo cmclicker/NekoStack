@@ -80,7 +80,7 @@ Status: **shipped** ([#88](https://github.com/cmclicker/NekoStack/pull/88), merg
 
 ## v1.0 — Stable rule catalog
 
-Status: **shipped** ([#TBD](https://github.com/cmclicker/NekoStack/pull/TBD), merged 2026-06-20). 188 total tests (unchanged — docs + CI milestone).
+Status: **shipped** ([#89](https://github.com/cmclicker/NekoStack/pull/89), merged 2026-06-20). 188 total tests (unchanged — docs + CI milestone).
 
 Done-criteria met:
 - ✓ All 19 shipped rules have structured `docs/rules/*.md` files with examples and options

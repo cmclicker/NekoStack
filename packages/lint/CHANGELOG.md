@@ -6,7 +6,7 @@ Per-milestone changes. Pairs with git tags (`lint-vX.Y.Z`). Format: newest first
 
 ## lint-v1.0.0 — 2026-06-20
 
-PR [#TBD](https://github.com/cmclicker/NekoStack/pull/TBD) · Stable rule catalog, full docs, CI integration.
+PR [#89](https://github.com/cmclicker/NekoStack/pull/89) · Stable rule catalog, full docs, CI integration.
 
 ### What shipped
 
