@@ -4,6 +4,45 @@ Per-milestone changes. Pairs with git tags (`lint-vX.Y.Z`). Format: newest first
 
 ---
 
+## lint-v0.4.0 — 2026-06-19
+
+PR #TBD · Security rules + first auto-fixer milestone.
+
+### What shipped
+
+**Four new rules**
+
+- **`no-hardcoded-secrets`** — flags string literals in secret-named bindings (`password`, `apiKey`, `token`, `secret`, `privateKey`, …) and string values matching well-known credential prefixes (Stripe `sk_live_`/`pk_live_`, GitHub `ghp_`/`gho_`, AWS `AKIA`, Google `AIza`, PEM headers, Slack `xoxb-`). Test files (`.test.ts`, `.spec.ts`, `tests/`) are exempt. 11 tests (6 valid, 5 invalid).
+
+- **`no-raw-sql`** — flags unsafe Prisma raw-query methods. Key distinction: `$queryRaw` and `$executeRaw` are flagged only in **call** form (`prisma.$queryRaw('...')`) — the tagged-template form (`` prisma.$queryRaw`SELECT…` ``) is safe because Prisma parameterises at the tag level. `$queryRawUnsafe` and `$executeRawUnsafe` are always flagged regardless of form. 10 tests (5 valid, 5 invalid).
+
+- **`schema-export-type`** (**auto-fixer**) — flags exported Zod schema constants in `.schema.ts` files that have no corresponding `export type T = z.infer<typeof schema>` declaration. Auto-fix inserts the type export immediately after the schema declaration. Handles default, namespace, and named `z` imports. 8 tests (5 valid, 3 invalid with fixer output verified).
+
+- **`react-no-dangerously-set-html`** — flags the `dangerouslySetInnerHTML` JSX prop. Setting raw HTML without sanitisation exposes the app to XSS. Rule requires a documented `eslint-disable` comment with justification for any approved exception. 7 tests (4 valid, 3 invalid).
+
+**Config updates**
+
+- `base` — adds `no-hardcoded-secrets: error` (security baseline for every project regardless of framework)
+- `strict` — adds all four new rules (`no-hardcoded-secrets`, `no-raw-sql`, `schema-export-type: warn`, `react-no-dangerously-set-html`)
+- `react` — adds `no-hardcoded-secrets`, `schema-export-type: warn`, `react-no-dangerously-set-html`
+- `nest` — adds `no-hardcoded-secrets`, `no-raw-sql`, `schema-export-type: warn`
+
+**Package**
+- Version bumped to `0.4.0`
+- `plugin.ts` meta version updated to `0.4.0`
+
+### Test count
+
+105 total (36 new + 69 from v0.3).
+
+### Not in scope (deferred)
+- `consistent-type-imports` auto-fixer → v0.5
+- Named import support for `schema-no-inline-zod` (`import { object } from 'zod'`) → v0.5
+- `no-direct-date-now` → v0.5
+- `no-type-assertion-to-any` → v0.6
+
+---
+
 ## lint-v0.3.0 — 2026-06-19
 
 PR #TBD · Framework configs milestone.
