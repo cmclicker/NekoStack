@@ -37,6 +37,7 @@ Five packages published at v1.0+, plus the metapackage:
 | `@nekostack/lint` | **v0.1 shipped** (2026-06-20) — plugin, base config, `no-direct-process-env` rule, 11 tests. Working toward v1.0 before publishing to npm. |
 | `@nekostack/test` | scaffold (`export {}`) — next after lint reaches v1.0 |
 | `@nekostack/config` | scaffold (`export {}`) |
+| `@nekostack/secrets` | scaffold — ships after `config` |
 
 `env` (devcontainer/docker-compose) is deprioritized until a product needs containerized local dev.
 
@@ -51,6 +52,7 @@ Five packages published at v1.0+, plus the metapackage:
 | `lint` | **v0.1 in progress** | Plugin + base config + `no-direct-process-env` shipped (PR #79). v0.2–v1.0 ahead. |
 | `test` | scaffold | 3–5 weeks once lint v1.0 lands |
 | `config` | scaffold | 1–2 weeks — needed by `api` and `auth` |
+| `secrets` | scaffold | Secret management (API keys, DB credentials, signing secrets). The correct substitute that `no-direct-process-env` points to. Ships after `config`. ~2–4 weeks. |
 
 `env` (devcontainer / docker-compose) is deprioritized until a product needs containerized local dev. Pull it forward if that becomes urgent.
 
@@ -92,6 +94,7 @@ Cross-cutting infrastructure every production-grade package needs. Build before 
 | `health` | Liveness vs readiness probes. | 3–5 weeks |
 | `telemetry` | Typed product analytics event catalog. | 6–12 weeks |
 | `audit` | Tamper-evident compliance log. | 8–12 weeks |
+| `crypto` | Thin wrapper around battle-tested crypto primitives (hashing, HMAC, signing, constant-time comparison). Required by `auth` (Phase 4). NekoStack does not implement crypto — it owns only the policy/composition layer. | 3–5 weeks |
 
 Optional in this phase: `trace`, `metrics`. Pull them forward if distributed tracing or SLO gates become urgent before Phase 9.
 
@@ -117,6 +120,8 @@ The first consuming product. `ui` and `theme` already migrated in the pre-roadma
 | `form` | Form state + schema-driven validation | 8–14 weeks |
 | `md` | Markdown processing | 4–8 weeks |
 | `api` | Contract-first API | 12–20 weeks |
+| `chart` | Data visualization primitives (bar, line, pie, sparkline). Admin dashboards and game analytics both need this; avoids per-product charting library decisions. | 4–8 weeks |
+| `table` | Data table with sorting, filtering, pagination. Needed by admin CRUD views, leaderboards, and game management screens. | 4–6 weeks |
 
 **Done when:** NekoVibe runs entirely on NekoStack packages, with no inline reimplementations of the capabilities above.
 
@@ -162,6 +167,7 @@ Commercial SaaS shape. Build when the first product is ready to monetize.
 | `compliance` | GDPR / SOC 2 profiles + retention | 12–20 weeks |
 | `backup` | Operational disaster recovery | 8–14 weeks |
 | `limits` | Rate limiting + abuse detection | 4–8 weeks |
+| `secure` | Security utilities: CSRF protection, content security policy helpers, input sanitization, secure header presets. Wraps battle-tested libraries — NekoStack owns the policy layer, not the cryptographic implementation. | 4–8 weeks |
 
 **Done when:** Stack supports a commercial SaaS product end-to-end: paying customers, plan changes, compliance posture, abuse mitigation.
 
@@ -285,6 +291,7 @@ Build as needed. None is critical to ship a product; each addresses a specific p
 | `docs` | When the documentation site itself is ready | 8–12 weeks |
 | `templates` | After Phase 10: starter content stabilized | 6–10 weeks |
 | `seed` | After Phase 6: domain factories settled | 2–4 weeks |
+| `map` | When a product needs geographic map rendering (Leaflet / MapboxGL abstraction) | 4–8 weeks |
 
 ---
 
@@ -328,7 +335,7 @@ At part-time solo cadence (4–8 focused hours/week):
 - Phase 4 (NekoVibe slice) — 6–12 months
 - Through Phase 7 (NekoBattler migrated) — roughly 24–36 months from now
 
-This is fine. The point isn't to finish all 107; the point is that the *shape* of the eventual stack is known, and any package built tomorrow fits the plan.
+This is fine. The point isn't to finish all 108; the point is that the *shape* of the eventual stack is known, and any package built tomorrow fits the plan.
 
 ---
 
