@@ -5,7 +5,7 @@
 ## Active workstream
 
 - **Package:** @nekostack/lint
-- **Latest release:** [`lint-v0.4.0`](https://github.com/cmclicker/NekoStack/releases/tag/lint-v0.4.0) — 2026-06-19
+- **Latest release:** [`lint-v0.5.0`](https://github.com/cmclicker/NekoStack/releases/tag/lint-v0.5.0) — 2026-06-20
 - **Active target:** _(no `← *active target*` marker found in ROADMAP)_
 - **Doctrine in force:** [NekoStack — Product Thesis](../PRODUCT_THESIS.md)
 
@@ -52,6 +52,7 @@
 
 | Tag | Date | Summary |
 |---|---|---|
+| [`lint-v0.5.0`](https://github.com/cmclicker/NekoStack/releases/tag/lint-v0.5.0) | 2026-06-20 | PR #86 · Module-boundary and quality rules. |
 | [`lint-v0.4.0`](https://github.com/cmclicker/NekoStack/releases/tag/lint-v0.4.0) | 2026-06-19 | PR #TBD · Security rules + first auto-fixer milestone. |
 | [`lint-v0.3.0`](https://github.com/cmclicker/NekoStack/releases/tag/lint-v0.3.0) | 2026-06-19 | PR #TBD · Framework configs milestone. |
 

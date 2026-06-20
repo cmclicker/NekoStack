@@ -6,10 +6,18 @@
   "active_workstream": "@nekostack/lint",
   "stats": {
     "packageCount": 7,
-    "releaseCount": 15,
-    "latestOverall": "2026-06-19"
+    "releaseCount": 16,
+    "latestOverall": "2026-06-20"
   },
   "events": [
+    {
+      "id": "@nekostack/lint@lint-v0.5.0",
+      "packageName": "@nekostack/lint",
+      "tag": "lint-v0.5.0",
+      "date": "2026-06-20",
+      "summary": "Module-boundary and quality rules.",
+      "url": "https://github.com/cmclicker/NekoStack/releases/tag/lint-v0.5.0"
+    },
     {
       "id": "@nekostack/cli@cli-v1.0.1",
       "packageName": "@nekostack/cli",
