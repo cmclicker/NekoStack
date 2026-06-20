@@ -28,10 +28,11 @@ Includes:
 
 ## v0.3 — Framework configs
 
-Status: **not started**.
+Status: **in progress (PR open)**.
 
-- `/react` config (React 19, hooks, refresh, a11y rules)
-- `/nest` config (NestJS 10+ idioms, decorator patterns)
+- `/react` config — `react-no-inline-style` rule + curated NekoStack rule set for React 19 projects
+- `/nest` config — `nest-no-orm-in-controller` rule + full server-side rule set for NestJS 10+ projects
+- Two new rules, two new configs, 20 new tests (69 total)
 
 ## v0.4 — Auto-fixers
 

@@ -4,6 +4,40 @@ Per-milestone changes. Pairs with git tags (`lint-vX.Y.Z`). Format: newest first
 
 ---
 
+## lint-v0.3.0 — 2026-06-19
+
+PR #TBD · Framework configs milestone.
+
+### What shipped
+
+**Two new rules**
+
+- **`react-no-inline-style`** — flags any `style={...}` JSX attribute (object literals, variable references, expressions). NekoStack exposes design tokens through `@nekostack/theme` and `@nekostack/ui`; inline styles bypass the token system. 10 tests (5 valid, 5 invalid).
+
+- **`nest-no-orm-in-controller`** — flags direct ORM imports (Prisma, TypeORM, Mongoose, MikroORM) inside NestJS controller files (`.controller.ts` or `controllers/`). Controllers must delegate persistence to injected services. Covers `@prisma/*`, `typeorm`, `@nestjs/typeorm`, `@nestjs/mongoose`, `mongoose`, `@mikro-orm/*`. 10 tests (5 valid, 5 invalid).
+
+**Two new framework configs**
+
+- **`react` config** (`./react` export) — enables `no-direct-process-env`, `schema-no-inline-zod`, `prisma-json-cast` (errors) and `react-no-inline-style` (warn) for React 19 projects.
+
+- **`nest` config** (`./nest` export) — enables the full server-side rule set: `no-direct-process-env`, `schema-no-inline-zod`, `prisma-json-cast`, `controller-no-service-cycle` (errors), `service-has-spec` (warn), and `nest-no-orm-in-controller` (error) for NestJS 10+ projects.
+
+**Package**
+- Version bumped to `0.3.0`
+- `./react` and `./nest` added to `exports` map
+- `plugin.ts` meta version updated to `0.3.0`
+
+### Test count
+
+69 total (49 from v0.2 + 20 new).
+
+### Not in scope (deferred)
+- Auto-fixers for either new rule
+- `react-no-leaked-subscription` (requires control-flow analysis)
+- Importing external plugins (eslint-plugin-react, eslint-plugin-react-hooks, jsx-a11y) — consumers wire those up alongside the NekoStack config
+
+---
+
 ## lint-v0.2.0 — 2026-06-19
 
 PR #TBD · Convention rules milestone.
