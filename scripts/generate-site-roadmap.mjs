@@ -114,15 +114,20 @@ const lintShippedMilestones = lintMilestones.filter((m) => m.state === 'done');
 const lintActiveMilestone = lintMilestones.find((m) => m.state === 'active');
 const lintUpcomingMilestones = lintMilestones.filter((m) => m.state === 'upcoming');
 
-// Badge text: "@nekostack/lint v0.5 ✓ — v0.6 next"
+// Badge text: "@nekostack/lint v0.5 ✓ — v0.6 next" / "v1.0 ✓ shipped" when done
 const activeShortVer = lintLatestTag
   ? lintLatestTag.replace('lint-', '').replace(/\.0$/, '')
   : null;
 const nextVer = lintActiveMilestone?.ver ?? null;
-const badgeText =
-  activeShortVer && nextVer
+const lintFullyShipped = activeShortVer && !nextVer;
+const badgeText = lintFullyShipped
+  ? `@nekostack/lint ${activeShortVer} ✓ shipped`
+  : activeShortVer && nextVer
     ? `@nekostack/lint ${activeShortVer} ✓ — ${nextVer} next`
     : '@nekostack/lint in progress';
+
+// Active workstream (from workspace config)
+const activeWorkstream = status.active_workstream ?? null;
 
 // ─── Styling constants ────────────────────────────────────────────────────────
 const S_BORDER =
@@ -135,11 +140,20 @@ const S_TAG =
 
 // ─── Fragment generators ───────────────────────────────────────────────────────
 function genHeroBadges() {
-  return [
+  const badges = [
     `        <span class="neko-badge neko-badge--success neko-badge--pill">${shippedCount} shipped</span>`,
-    `        <span class="neko-badge neko-badge--warning neko-badge--pill">${badgeText}</span>`,
-    `        <span class="neko-badge neko-badge--pill">Apache-2.0</span>`,
-  ].join('\n');
+  ];
+  if (lintFullyShipped) {
+    badges.push(`        <span class="neko-badge neko-badge--success neko-badge--pill">@nekostack/lint v1.0 ✓</span>`);
+  } else {
+    badges.push(`        <span class="neko-badge neko-badge--warning neko-badge--pill">${badgeText}</span>`);
+  }
+  if (activeWorkstream && activeWorkstream !== '@nekostack/lint') {
+    const short = activeWorkstream.replace('@nekostack/', '');
+    badges.push(`        <span class="neko-badge neko-badge--warning neko-badge--pill">${short} in progress</span>`);
+  }
+  badges.push(`        <span class="neko-badge neko-badge--pill">Apache-2.0</span>`);
+  return badges.join('\n');
 }
 
 function genProgressStrip() {
@@ -198,21 +212,21 @@ function genLintCardHeader(m) {
   const title = m.cardTitle ?? m.name;
   if (m.state === 'done') {
     return [
-      `        <div class="milestone-detail" style="${S_BORDER}">`,
-      `          <div class="milestone-detail__header">`,
+      `        <details class="milestone-detail" style="${S_BORDER}">`,
+      `          <summary class="milestone-detail__header">`,
       `            <span class="milestone-detail__ver" style="${S_VER}">${m.ver}</span>`,
       `            <span class="milestone-detail__title">${title}</span>`,
       `            <span class="milestone-detail__tag" style="${S_TAG}">✓ Shipped</span>`,
-      `          </div>`,
+      `          </summary>`,
     ].join('\n');
   }
   return [
-    `        <div class="milestone-detail">`,
-    `          <div class="milestone-detail__header">`,
+    `        <details class="milestone-detail">`,
+    `          <summary class="milestone-detail__header">`,
     `            <span class="milestone-detail__ver">${m.ver}</span>`,
     `            <span class="milestone-detail__title">${title}</span>`,
     `            <span class="milestone-detail__tag">Up next</span>`,
-    `          </div>`,
+    `          </summary>`,
   ].join('\n');
 }
 
