@@ -98,6 +98,21 @@
         "@type": "Question",
         "name": "Where is NekoStack developed?",
         "acceptedAnswer": { "@type": "Answer", "text": "NekoStack is developed and maintained in Central Arkansas, United States. It's an independent, open-source project — Apache-2.0 licensed and built in the open on GitHub." }
+      },
+      {
+        "@type": "Question",
+        "name": "How do I type-check environment variables in Node.js?",
+        "acceptedAnswer": { "@type": "Answer", "text": "@nekostack/config provides typed, boot-time environment validation. You define your config shape with field builders and Secret<T> wrappers, and the package validates all values at startup — catching misconfiguration before your app accepts traffic. Supports dotenv precedence, required/optional fields, and custom validators. Errors surface at boot, not at runtime when a missing env var causes a hard-to-trace crash." }
+      },
+      {
+        "@type": "Question",
+        "name": "What ESLint flat config rules should I use for TypeScript?",
+        "acceptedAnswer": { "@type": "Answer", "text": "@nekostack/lint is a flat-config ESLint suite with 20+ rules for TypeScript, React, Node, and NestJS projects. It enforces architectural conventions — module-boundary isolation, type-safety patterns, import discipline — that type-checking and Prettier miss. Drop it into eslint.config.js for a batteries-included linting baseline. 188 tests, zero peer-dependency conflicts." }
+      },
+      {
+        "@type": "Question",
+        "name": "How do I prevent schema drift between Zod, OpenAPI, and TypeScript?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Schema drift happens when Zod validators, OpenAPI specs, and TypeScript types are maintained separately and fall out of sync. @nekostack/schema solves this at the source: one schema definition generates all four artifacts — Zod, JSON Schema, OpenAPI 3.1, and TypeScript types — from a single canonical IR. They can't drift because they share one origin. Run neko schema to regenerate after any schema change." }
       }
     ]
   }
