@@ -6,6 +6,25 @@ Published to npm as `@nekostack/schema` (Apache-2.0). Milestone identifiers pair
 
 ---
 
+## schema-v1.0.2 — 2026-06-21
+
+Documentation and packaging accuracy patch. No source behavior changes; generated artifact headers now stamp the correct version.
+
+### Fixed
+
+- **`GENERATOR_VERSION`** corrected from `@nekostack/schema@0.8.0` → `@nekostack/schema@1.0.1` in `src/generators/version.ts` and rebuilt dist. Previously every generated artifact header carried a stale `0.8.0` stamp despite the package being at v1.0.x.
+- **`dist/src/index.js` header comment** corrected from `v0.5` → `v1.0.1`.
+- **README — Zod dependency claim** clarified: the runtime validation path (`validate()`, `parse()`, `safeParse()`) performs a top-level Zod import and is inoperable without it. Zod is auto-installed as a peer dep by npm 7+; the prior "no runtime deps" statement was imprecise.
+- **README — unbuilt API sections** each gated with a `> Not yet implemented — planned for v1.1` callout: date types (`s.isoDateTime()` etc.), `.refine()`, `.transform()`, `s.union()` / `s.discriminatedUnion()`, `s.lazy()`, `.coerceFromString()`. The contracts remain as planned-API documentation; the callouts make the implementation status unambiguous.
+- **README — regex flags caveat** added to the Refinement portability section: `s.string().regex(/pattern/i)` (with flags) is rejected by the JSON Schema and OpenAPI generators in v1.0.x.
+- **README — `duplicate_schema_id` behavior** corrected: `buildRegistry()` returns `Result.failure`, it does not throw.
+
+### Test count
+
+- 1294 passing (unchanged)
+
+---
+
 ## schema-v1.0.0 — 2026-06-19
 
 First stable release. **Public API frozen.** No source changes from v0.8.0 — this milestone freezes the exported surface and ships release metadata (Apache-2.0 license; the `nekostack` metapackage).

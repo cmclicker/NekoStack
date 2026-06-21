@@ -125,6 +125,8 @@ Without this, the DSL is the source of truth in name only — every generator st
 
 ### Date types
 
+> **Not yet implemented — planned for v1.1.** The builders below (`s.isoDateTime()`, `s.isoDate()`, `s.epochMs()`, `s.dateObject()`) do not exist in v1.0.x. The `DateNode` IR type exists and generators reserve slots for it, but calling these builders throws `UnsupportedNodeKindError`. The contract below is the planned API.
+
 `s.date()` is rejected as ambiguous. Date handling is explicit per use case:
 
 | DSL | Runtime input | Serialized form | JSON Schema | When to use |
@@ -154,15 +156,19 @@ The most under-specified part of any schema system. NekoStack pins these explici
 
 A refinement is either **portable** (representable in every output format) or **runtime-only** (only representable in Zod / runtime validators). The DSL forces the distinction at definition time.
 
-**Portable constraints** map to known output features:
+**Portable constraints** map to known output features and are **fully shipped in v1.0**:
 
 ```ts
 s.string().min(3)            // → JSON Schema minLength
 s.string().max(50)           // → maxLength
-s.string().regex(/^NEKO_/)   // → pattern
+s.string().regex(/^NEKO_/)   // → pattern (flags unsupported — see note below)
 s.string().email()           // → format: email
 s.number().int().min(0)      // → integer minimum
 ```
+
+> **Regex flags caveat (v1.0):** `s.string().regex(/^NEKO_/i)` — a regex *with flags* — is rejected by the JSON Schema and OpenAPI generators (`UnsupportedNodeKindError: regexFlags`). TypeScript and Zod generators accept it. If your schema uses a flagged regex, it cannot be generated across all four outputs until v1.1 adds flag-aware JSON Schema emission (e.g., via `(?i)` inline flag syntax).
+
+> **Not yet implemented — planned for v1.1.** The `.refine()` method does not exist on any builder in v1.0.x. The `RefinementNode` IR type exists but the DSL builder throws `UnsupportedNodeKindError`. The contract below is the planned API.
 
 **Runtime-only refinements** are custom predicates only Zod / our runtime can execute:
 
@@ -207,12 +213,14 @@ Strict-by-default is non-negotiable for auth, API, and config schemas. Permissiv
 
 ### Schema identity ($id / $ref strategy)
 
+> **`s.lazy()` not yet implemented — planned for v1.1.** The example below shows the planned recursive-schema API. In v1.0.x `s.lazy()` does not exist; the `RecursiveRefNode` IR type exists but throws `UnsupportedNodeKindError` at the generator boundary. Schema `.id()` and `.version()` are fully shipped for non-recursive schemas.
+
 Recursive and cross-package schemas require stable identifiers. NekoStack uses reverse-DNS-style IDs with versions:
 
 ```ts
 const User = s.object({
   id: s.string().uuid(),
-  manager: s.lazy(() => User).optional(),
+  manager: s.lazy(() => User).optional(),   // s.lazy — v1.1
 })
   .id("com.nekostack.auth.User")
   .version("1.0.0")
@@ -247,6 +255,8 @@ Other composition operators (`extend`, `pick`, `omit`, `partial`, `required`) ca
 
 ### Transform semantics
 
+> **Not yet implemented — planned for v1.1.** `.transform()` does not exist on any builder in v1.0.x. The `TransformNode` IR type exists and all four generators throw `UnsupportedNodeKindError` uniformly when they encounter one, but the DSL builder is not yet shipped. The contract below is the planned API.
+
 Transforms create two distinct types — the *input* the validator accepts and the *output* it returns:
 
 ```ts
@@ -268,6 +278,8 @@ s.infer<typeof ParsedAge>    // alias to output (Zod-compatible default)
 JSON Schema and OpenAPI outputs describe the **input** type (the wire format). The transformation only happens at runtime, so non-runtime outputs cannot represent it — semantic-loss metadata flags this.
 
 ### Union policy
+
+> **Not yet implemented — planned for v1.1.** `s.union()` and `s.discriminatedUnion()` do not exist in v1.0.x. The `UnionNode` IR type exists and generators throw `UnsupportedNodeKindError` uniformly when they encounter one, but the DSL builders are not yet shipped. The contract below is the planned API.
 
 Two union forms with different semantics:
 
@@ -315,6 +327,8 @@ parse(Age, "42");  // ❌ Issue { code: "invalid_type", expected: "number", rece
 ```
 
 Explicit coercion is opt-in via a separate constructor (not a chainable method on the base type):
+
+> **Not yet implemented — planned for v1.1.** `.coerceFromString()` does not exist on any builder in v1.0.x. The contract below is the planned API.
 
 ```ts
 s.number().coerceFromString();       // accepts "42" → 42
@@ -408,11 +422,11 @@ A companion spec doc (deferred to v1.0) will detail header format, the exact has
 
 The package is foundational within NekoStack — no NekoStack-package dependencies. External dependencies are classified:
 
-- **Runtime (in the published package):** none in the core; the IR + builders + generators are pure TS. Specific generators may pull tiny utility libs (e.g., a JSON Schema validator dependency for self-conformance tests stays dev-only).
-- **Peer:** Zod, when the consumer uses the generated Zod validator at runtime. Declared as peerDep so consumers control the Zod version.
-- **Dev-only:** Zod (for self-tests), `ajv` (JSON Schema conformance), `@redocly/openapi-core` (OpenAPI fixture validation).
+- **Runtime (in the published package):** `zod` — required by the runtime validation layer (`validate()`, `parse()`, `safeParse()`). npm 7+ auto-installs it via `peerDependencies`; consumers who only use the IR + generators without runtime validation will still have it installed unless they use `--no-optional-peer-deps`. The IR, builders, and generators are pure TS; only the runtime validation path imports Zod.
+- **Peer:** `zod ^3.22.0` — declared as peerDep so consumers control the Zod version. Auto-installed by npm 7+.
+- **Dev-only:** `ajv` (JSON Schema conformance), `@redocly/openapi-core` (OpenAPI fixture validation).
 
-The package can *generate* Zod without *requiring* Zod at runtime; consumers wanting runtime validation install Zod themselves.
+The IR, builders, and generators have no hard Zod dependency. The runtime validation path (`dist/src/runtime/zod-compile.js`) does a top-level Zod import and will throw `ERR_MODULE_NOT_FOUND` if Zod is absent. In practice Zod is always present (auto-installed as a peer dep), but the "no runtime deps" statement in prior versions was imprecise.
 
 ---
 
@@ -539,7 +553,7 @@ These are stable API contracts guaranteed not to change in v1.x.
 
 - **No Async Refinements.** `refineAsync` is explicitly rejected. Validation must remain a pure, synchronous, CPU-bound operation. If a check requires I/O (e.g., querying a database to see if a username is taken), it is **Business Logic**, not **Shape Validation**, and belongs in a Controller or Service.
 - **Recursive Schema Cycles (`A → B → A`).** `s.lazy()` MUST take a string ID representing the target schema (e.g., `s.lazy("com.nekostack.User")`). The compiler does not attempt to resolve this during definition. It is resolved safely at runtime by querying the `schemaRegistry`. If the ID doesn't exist, it throws `recursive_reference_unresolved`.
-- **Cross-package schema-id collision policy.** If `@nekostack/auth` and a consuming project both define `com.nekostack.auth.User@1.0.0` with different IR hashes, the registry `buildRegistry()` function will fail loudly with a `duplicate_schema_id` error. There is no silent overriding or "prefer local." The registry is the single source of truth.
+- **Cross-package schema-id collision policy.** If `@nekostack/auth` and a consuming project both define `com.nekostack.auth.User@1.0.0` with different IR hashes, the registry `buildRegistry()` function returns a `Result.failure` with code `duplicate_schema_id` (it does not throw). There is no silent overriding or "prefer local." The registry is the single source of truth.
 
 ## Still-open implementation decisions
 
