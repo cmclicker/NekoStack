@@ -5,8 +5,8 @@
   ],
   "active_workstream": "@nekostack/config",
   "stats": {
-    "packageCount": 8,
-    "releaseCount": 23,
+    "packageCount": 9,
+    "releaseCount": 25,
     "latestOverall": "2026-06-20"
   },
   "events": [
@@ -113,6 +113,22 @@
       "date": "2026-06-19",
       "summary": "First public release.",
       "url": "https://github.com/cmclicker/NekoStack/releases/tag/ui-v1.0.0"
+    },
+    {
+      "id": "nekostack@nekostack-v1.1.1",
+      "packageName": "nekostack",
+      "tag": "nekostack-v1.1.1",
+      "date": "2026-06-19",
+      "summary": "Patch bump to track cli and ui patch releases.",
+      "url": "https://github.com/cmclicker/NekoStack/releases/tag/nekostack-v1.1.1"
+    },
+    {
+      "id": "nekostack@nekostack-v1.1.0",
+      "packageName": "nekostack",
+      "tag": "nekostack-v1.1.0",
+      "date": "2026-06-19",
+      "summary": "First public release of the metapackage.",
+      "url": "https://github.com/cmclicker/NekoStack/releases/tag/nekostack-v1.1.0"
     },
     {
       "id": "@nekostack/migrate-runner@migrate-runner-v0.1.0",

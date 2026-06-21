@@ -155,6 +155,9 @@ function buildPackageStatus(pkg) {
     latest_release_date: latestEntry?.date ?? null,
     active_target: parseActiveTarget(roadmapText),
     test_count: latestEntry?.testCount ?? null,
+    // Optional editorial annotation (e.g. release-history lineage / context).
+    // Lives in workspace.config.json; surfaced in the site history modal.
+    note: pkg.note ?? null,
     milestones,
   };
 }

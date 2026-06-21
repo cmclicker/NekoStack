@@ -6,6 +6,25 @@
   <title>Roadmap — NekoStack</title>
   <meta name="description" content="NekoStack development roadmap. 6 packages shipped at v1.0+. @nekostack/config in progress." />
   <link rel="canonical" href="https://cmclicker.github.io/NekoStack/roadmap.html" />
+  <meta property="og:title" content="NekoStack Development Roadmap — 108 Packages Planned" />
+  <meta property="og:description" content="11 phases from schema tooling to full-stack SaaS primitives. 6 packages shipped at v1.0+. @nekostack/config in progress. Track progress and contribute." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://cmclicker.github.io/NekoStack/roadmap.html" />
+  <meta property="og:image" content="https://cmclicker.github.io/NekoStack/assets/og-image.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="NekoStack Roadmap — 108 Packages, 11 Phases" />
+  <meta name="twitter:description" content="6 shipped. 1 in progress. 101 planned across phases covering schema, auth, billing, AI, and more." />
+  <meta name="twitter:image" content="https://cmclicker.github.io/NekoStack/assets/og-image.png" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "NekoStack", "item": "https://cmclicker.github.io/NekoStack/" },
+      { "@type": "ListItem", "position": 2, "name": "Roadmap", "item": "https://cmclicker.github.io/NekoStack/roadmap.html" }
+    ]
+  }
+  </script>
   <link rel="stylesheet" href="assets/neko.css" />
   <link rel="stylesheet" href="assets/ui.css" />
   <link rel="stylesheet" href="assets/site.css" />
@@ -137,6 +156,29 @@
       padding: var(--neko-spacing-8);
       box-shadow: 0 0 32px color-mix(in srgb, var(--neko-color-semantic-warning) 12%, transparent);
     }
+    .next-up-card--shipped {
+      border-color: color-mix(in srgb, var(--neko-color-semantic-success) 35%, transparent);
+      box-shadow: 0 0 24px color-mix(in srgb, var(--neko-color-semantic-success) 8%, transparent);
+    }
+    /* collapsible milestone history inside a shipped card */
+    .milestone-history { margin-top: var(--neko-spacing-4); }
+    .milestone-history > summary {
+      list-style: none; -webkit-appearance: none; cursor: pointer;
+      display: flex; align-items: center; gap: var(--neko-spacing-2);
+      font-size: var(--neko-font-size-sm); color: var(--neko-color-semantic-text-muted);
+      border-top: 1px solid var(--neko-color-semantic-border-subtle);
+      padding-top: var(--neko-spacing-4); user-select: none;
+    }
+    .milestone-history > summary::-webkit-details-marker { display: none; }
+    .milestone-history > summary::before { content: '▶'; font-size: 0.6em; opacity: 0.6; }
+    .milestone-history[open] > summary::before { content: '▼'; }
+    /* "Release history" link on shipped-grid cards */
+    .shipped-card__history {
+      font-size: var(--neko-font-size-xs); color: var(--neko-color-semantic-text-muted);
+      text-decoration: none; margin-top: auto; padding-top: var(--neko-spacing-2);
+      border-top: 1px solid var(--neko-color-semantic-border-subtle);
+    }
+    .shipped-card__history:hover { color: var(--neko-color-semantic-success); }
     .next-up-header {
       display: flex;
       align-items: flex-start;
@@ -498,6 +540,7 @@
           <span class="shipped-card__ver">v1.0.0</span>
           <p class="shipped-card__desc">ESLint flat-config suite for TypeScript, React, Node, and NestJS. 20+ rules, module-boundary enforcement, type-safety rules. 188 tests.</p>
           <a class="shipped-card__npm" href="https://www.npmjs.com/package/@nekostack/lint">npmjs.com/package/@nekostack/lint →</a>
+          <a class="shipped-card__history" href="history.html#modal-lint">Release history ↗</a>
         </div>
 
         <div class="shipped-card">
@@ -505,6 +548,7 @@
           <span class="shipped-card__ver">v1.0.0</span>
           <p class="shipped-card__desc">Canonical IR. Define once, emit Zod, TypeScript, JSON Schema, and OpenAPI. Runtime validation, registry, diff, and migration planning. 1,294 tests.</p>
           <a class="shipped-card__npm" href="https://www.npmjs.com/package/@nekostack/schema">npmjs.com/package/@nekostack/schema →</a>
+          <a class="shipped-card__history" href="history.html#modal-schema">Release history ↗</a>
         </div>
 
         <div class="shipped-card">
@@ -512,6 +556,7 @@
           <span class="shipped-card__ver">v1.0.1</span>
           <p class="shipped-card__desc"><code>neko schema *</code> and <code>neko schema migrate *</code> verbs. Filesystem discovery, dynamic schema loading, stdout/stderr formatting, locked exit codes.</p>
           <a class="shipped-card__npm" href="https://www.npmjs.com/package/@nekostack/cli">npmjs.com/package/@nekostack/cli →</a>
+          <a class="shipped-card__history" href="history.html#modal-cli">Release history ↗</a>
         </div>
 
         <div class="shipped-card">
@@ -519,6 +564,7 @@
           <span class="shipped-card__ver">v1.0.0</span>
           <p class="shipped-card__desc">Safe migration execution. Pre-validate → transform → post-validate. Dry-run, validate-only, resumability, partial failure handling. 405 tests.</p>
           <a class="shipped-card__npm" href="https://www.npmjs.com/package/@nekostack/migrate-runner">npmjs.com/package/@nekostack/migrate-runner →</a>
+          <a class="shipped-card__history" href="history.html#modal-migrate-runner">Release history ↗</a>
         </div>
 
         <div class="shipped-card">
@@ -526,6 +572,7 @@
           <span class="shipped-card__ver">v1.0.0</span>
           <p class="shipped-card__desc">Design tokens (DTCG spec), CSS custom properties, multi-theme system. Synthwave dark, synthwave light, and system-default. Tailwind preset included.</p>
           <a class="shipped-card__npm" href="https://www.npmjs.com/package/@nekostack/theme">npmjs.com/package/@nekostack/theme →</a>
+          <a class="shipped-card__history" href="history.html#modal-theme">Release history ↗</a>
         </div>
 
         <div class="shipped-card">
@@ -533,6 +580,7 @@
           <span class="shipped-card__ver">v1.0.1</span>
           <p class="shipped-card__desc">92-component vanilla-CSS library. Zero JS/React runtime dependencies. Consumes theme tokens directly. Buttons, badges, forms, modals, and more.</p>
           <a class="shipped-card__npm" href="https://www.npmjs.com/package/@nekostack/ui">npmjs.com/package/@nekostack/ui →</a>
+          <a class="shipped-card__history" href="history.html#modal-ui">Release history ↗</a>
         </div>
 
         <div class="shipped-card">
@@ -540,6 +588,7 @@
           <span class="shipped-card__ver">v1.1.1</span>
           <p class="shipped-card__desc">Metapackage. Install the full suite in one command — schema, cli, migrate-runner, theme, and ui. Use scoped packages à la carte if you prefer.</p>
           <a class="shipped-card__npm" href="https://www.npmjs.com/package/nekostack">npmjs.com/package/nekostack →</a>
+          <a class="shipped-card__history" href="history.html#modal-nekostack">Release history ↗</a>
         </div>
 
       </div>
@@ -551,7 +600,7 @@
       <h2 class="section-title">Developer tooling</h2>
       <p class="section-sub"><code>@nekostack/lint</code> v1.0 and <code>@nekostack/test</code> v0.1 shipped. <code>@nekostack/config</code> in progress.</p>
 
-      <div class="next-up-card">
+      <div class="next-up-card next-up-card--shipped">
         <div class="next-up-header">
           <div>
             <div style="display:flex; align-items:center; gap: var(--neko-spacing-3); margin-bottom: var(--neko-spacing-2);">
@@ -562,6 +611,9 @@
             <p class="next-up-tagline">Custom ESLint rules that enforce NekoStack architectural conventions — the things type-checking and Prettier don't catch.</p>
           </div>
         </div>
+
+        <details class="milestone-history">
+          <summary>Milestone history · v0.1 → v1.0 · 7 versions shipped</summary>
 
         <!-- milestone track -->
         <div class="milestones">
@@ -727,10 +779,12 @@
 <!-- rm:gen:lint-upcoming -->
         <div class="upcoming-milestones"></div>
 <!-- /rm:gen:lint-upcoming -->
+
+        </details><!-- /milestone-history -->
       </div>
 
       <!-- @nekostack/test companion card -->
-      <div class="next-up-card" style="margin-top: var(--neko-spacing-6);">
+      <div class="next-up-card next-up-card--shipped" style="margin-top: var(--neko-spacing-6);">
         <div class="next-up-header">
           <div>
             <div style="display:flex; align-items:center; gap: var(--neko-spacing-3); margin-bottom: var(--neko-spacing-2);">
@@ -752,6 +806,55 @@
             <li><code>createJsxRuleTester()</code> — convenience wrapper with <code>ecmaFeatures.jsx: true</code> pre-set</li>
             <li>Peer deps: <code>@typescript-eslint/rule-tester ≥ 8</code>, <code>vitest ≥ 2</code></li>
             <li>5 tests</li>
+          </ul>
+        </details>
+      </div>
+      <!-- @nekostack/config companion card -->
+      <div class="next-up-card" style="margin-top: var(--neko-spacing-6);">
+        <div class="next-up-header">
+          <div>
+            <div style="display:flex; align-items:center; gap: var(--neko-spacing-3); margin-bottom: var(--neko-spacing-2);">
+              <span class="next-up-badge">🔥 In progress</span>
+              <span style="font-size: var(--neko-font-size-xs); color: var(--neko-color-semantic-text-muted);">Phase 1 · Package 3 of 4 · v0.1 in progress</span>
+            </div>
+            <div class="next-up-title">@nekostack/config</div>
+            <p class="next-up-tagline">Typed boot-time environment validation — <code>defineConfig()</code>, <code>c.*</code> field builders, <code>Secret&lt;T&gt;</code>, and dotenv precedence. Catches misconfiguration at startup, not runtime.</p>
+          </div>
+        </div>
+        <details class="milestone-detail" style="margin-top: var(--neko-spacing-4);">
+          <summary class="milestone-detail__header">
+            <span class="milestone-detail__ver">v0.1</span>
+            <span class="milestone-detail__title">Boot validation</span>
+            <span class="milestone-detail__tag">In progress</span>
+          </summary>
+          <ul class="milestone-detail__list">
+            <li><code>defineConfig(schema, options?)</code> — typed config factory; validates on boot, throws with a clear diff on mismatch</li>
+            <li><code>c.string()</code>, <code>c.number()</code>, <code>c.boolean()</code>, <code>c.enum()</code>, <code>c.url()</code> — field builders with optional/default/coerce support</li>
+            <li><code>Secret&lt;T&gt;</code> — opaque wrapper that prevents secrets from leaking into logs or error messages</li>
+            <li>Dotenv precedence: <code>.env.local</code> → <code>.env.{NODE_ENV}</code> → <code>.env</code> → process.env</li>
+            <li>59 tests</li>
+          </ul>
+        </details>
+        <details class="milestone-detail" style="margin-top: var(--neko-spacing-3);">
+          <summary class="milestone-detail__header">
+            <span class="milestone-detail__ver">v0.2</span>
+            <span class="milestone-detail__title">CLI verb</span>
+            <span class="milestone-detail__tag">Up next</span>
+          </summary>
+          <ul class="milestone-detail__list">
+            <li><code>neko config check</code> — validate env against schema without starting the app; exits 1 on failure</li>
+            <li>ESLint rule tightening — flag raw <code>process.env</code> access outside config files</li>
+          </ul>
+        </details>
+        <details class="milestone-detail" style="margin-top: var(--neko-spacing-3);">
+          <summary class="milestone-detail__header">
+            <span class="milestone-detail__ver">v0.3</span>
+            <span class="milestone-detail__title">Schema introspection</span>
+            <span class="milestone-detail__tag">Up next</span>
+          </summary>
+          <ul class="milestone-detail__list">
+            <li><code>configToJsonSchema()</code> — emit a JSON Schema document from the config definition for agent-facing introspection</li>
+            <li><code>configToMarkdown()</code> — generate a human-readable config reference from the same definition</li>
           </ul>
         </details>
       </div>
