@@ -316,8 +316,10 @@
       renderModes();
       applyTheme();
 
+      function v(t) { return t && typeof t === 'object' && 'value' in t ? t.value : t; }
+
       function pickFg(hex) {
-        var h = (hex || '').replace('#', '');
+        var h = (v(hex) || '').replace('#', '');
         if (h.length < 6) return '#000';
         var r = parseInt(h.slice(0, 2), 16),
             g = parseInt(h.slice(2, 4), 16),
@@ -325,10 +327,11 @@
         var L = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
         return L > 0.55 ? '#1e1f29' : '#f8f8f2';
       }
-      function swatch(name, hex, varName) {
+      function swatch(name, tok, varName) {
+        var hex = v(tok);
         return '<div class="swatch" style="background: var(--' + varName + '); color: ' + pickFg(hex) + '">' +
                  '<div class="name">' + name + '</div>' +
-                 '<div class="hex">' + hex + '</div>' +
+                 '<div class="hex">' + (hex || '—') + '</div>' +
                '</div>';
       }
       function activeSemantic() {
@@ -359,27 +362,31 @@
       var sh = tokens.base.color.shadow || {};
       document.getElementById('shadow-row').innerHTML =
         Object.keys(sh).map(function (k) {
-          return '<div class="shadow-box" style="box-shadow: ' + sh[k] + '">shadow-' + k +
-                 '<br><span style="opacity:.6">' + sh[k] + '</span></div>';
+          var sv = v(sh[k]);
+          return '<div class="shadow-box" style="box-shadow: ' + sv + '">shadow-' + k +
+                 '<br><span style="opacity:.6">' + sv + '</span></div>';
         }).join('');
 
       var sp = tokens.base.spacing;
       document.getElementById('spacing-row').innerHTML =
         Object.keys(sp).map(function (k) {
-          return '<div class="box" style="height: ' + sp[k] + '; min-height: ' + sp[k] + ';">' + k + '<br>' + sp[k] + '</div>';
+          var sv = v(sp[k]);
+          return '<div class="box" style="height: ' + sv + '; min-height: ' + sv + ';">' + k + '<br>' + sv + '</div>';
         }).join('');
 
       var rad = tokens.base.radius;
       document.getElementById('radius-row').innerHTML =
         Object.keys(rad).map(function (k) {
-          return '<div class="box" style="border-radius: ' + rad[k] + '; background: var(--neko-color-semantic-primary-soft); border-color: var(--neko-color-semantic-primary);">' + k + '<br>' + rad[k] + '</div>';
+          var rv = v(rad[k]);
+          return '<div class="box" style="border-radius: ' + rv + '; background: var(--neko-color-semantic-primary-soft); border-color: var(--neko-color-semantic-primary);">' + k + '<br>' + rv + '</div>';
         }).join('');
 
       var sizes = tokens.base['font-size'];
       document.getElementById('type-sample').innerHTML =
         Object.keys(sizes).map(function (k) {
-          return '<div class="row-t"><span class="label">' + k + ' · ' + sizes[k] + '</span>' +
-                 '<span style="font-size: ' + sizes[k] + '">The quick brown fox jumps over the lazy dog</span></div>';
+          var fv = v(sizes[k]);
+          return '<div class="row-t"><span class="label">' + k + ' · ' + fv + '</span>' +
+                 '<span style="font-size: ' + fv + '">The quick brown fox jumps over the lazy dog</span></div>';
         }).join('');
 
       // theme-dependent first render
