@@ -1,5 +1,5 @@
 // =============================================================================
-// Public API — @nekostack/schema v0.5
+// Public API — @nekostack/schema v1.0.1
 //
 // Surface is intentionally narrow. Anything not re-exported here is package-
 // internal and may change without a major version bump. See docs/SCOPE.md.

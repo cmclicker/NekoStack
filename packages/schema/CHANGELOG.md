@@ -6,6 +6,45 @@ Published to npm as `@nekostack/schema` (Apache-2.0). Milestone identifiers pair
 
 ---
 
+## schema-v1.0.4 — 2026-06-21
+
+Packaging accuracy patch. No source behavior changes.
+
+### Fixed
+
+- **`GENERATOR_VERSION`** corrected from `@nekostack/schema@1.0.1` → `@nekostack/schema@1.0.4`. The v1.0.2 patch set this to `1.0.1` instead of matching the package version, so every generated artifact header was stamped with the wrong version. `version.ts` comment already says "bumped with the package version" — this makes it true.
+
+---
+
+## schema-v1.0.3 — 2026-06-21
+
+Documentation patch. No source behavior changes.
+
+### Fixed
+
+- **README — "Authoring a schema" quick-start example** used `s.isoDateTime()` in the `createdAt` field — a method that does not exist in v1.0.x and throws `TypeError: s.isoDateTime is not a function`. Replaced with `s.string()` and an inline comment pointing to v1.1. The v1.0.2 "Not yet implemented" callout in the Date types section was correct, but this separate quick-start code block was overlooked.
+
+---
+
+## schema-v1.0.2 — 2026-06-21
+
+Documentation and packaging accuracy patch. No source behavior changes; generated artifact headers now stamp the correct version.
+
+### Fixed
+
+- **`GENERATOR_VERSION`** corrected from `@nekostack/schema@0.8.0` → `@nekostack/schema@1.0.1` in `src/generators/version.ts` and rebuilt dist. Previously every generated artifact header carried a stale `0.8.0` stamp despite the package being at v1.0.x.
+- **`dist/src/index.js` header comment** corrected from `v0.5` → `v1.0.1`.
+- **README — Zod dependency claim** clarified: the runtime validation path (`validate()`, `parse()`, `safeParse()`) performs a top-level Zod import and is inoperable without it. Zod is auto-installed as a peer dep by npm 7+; the prior "no runtime deps" statement was imprecise.
+- **README — unbuilt API sections** each gated with a `> Not yet implemented — planned for v1.1` callout: date types (`s.isoDateTime()` etc.), `.refine()`, `.transform()`, `s.union()` / `s.discriminatedUnion()`, `s.lazy()`, `.coerceFromString()`. The contracts remain as planned-API documentation; the callouts make the implementation status unambiguous.
+- **README — regex flags caveat** added to the Refinement portability section: `s.string().regex(/pattern/i)` (with flags) is rejected by the JSON Schema and OpenAPI generators in v1.0.x.
+- **README — `duplicate_schema_id` behavior** corrected: `buildRegistry()` returns `Result.failure`, it does not throw.
+
+### Test count
+
+- 1294 passing (unchanged)
+
+---
+
 ## schema-v1.0.0 — 2026-06-19
 
 First stable release. **Public API frozen.** No source changes from v0.8.0 — this milestone freezes the exported surface and ships release metadata (Apache-2.0 license; the `nekostack` metapackage).

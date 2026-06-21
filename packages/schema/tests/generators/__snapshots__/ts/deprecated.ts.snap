@@ -4,7 +4,7 @@
  * schemaVersion:    null
  * irHash:           sha256:26645e57fe169ad1bf3c04c8b09c1cc8fe10afd453d92129fadb14f3b4acbc70
  * generator:        typescript
- * generatorVersion: @nekostack/schema@0.8.0
+ * generatorVersion: @nekostack/schema@1.0.4
  *
  * DO NOT EDIT MANUALLY.
  */

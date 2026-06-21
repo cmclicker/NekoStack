@@ -217,7 +217,8 @@ export function formatGeneratePretty(
   if (artifacts.length === 0) return "No artifacts generated.\n";
 
   const schemaIds = new Set(artifacts.map((a) => a.schemaId));
-  const header = `Generated ${pluralize(artifacts.length, "artifact", "artifacts")} (${pluralize(schemaIds.size, "schema", "schemas")} × ${Math.round(artifacts.length / Math.max(schemaIds.size, 1))} kinds):`;
+  const kindCount = new Set(artifacts.map((a) => a.kind)).size;
+  const header = `Generated ${pluralize(artifacts.length, "artifact", "artifacts")} (${pluralize(schemaIds.size, "schema", "schemas")} × ${kindCount} kinds):`;
 
   const idWidth = maxWidth(artifacts.map((a) => a.schemaId));
   const kindWidth = maxWidth(artifacts.map((a) => a.kind));

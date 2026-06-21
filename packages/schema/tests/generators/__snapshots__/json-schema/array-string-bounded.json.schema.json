@@ -9,7 +9,7 @@
   "type": "array",
   "x-nekostack": {
     "generator": "jsonSchema",
-    "generatorVersion": "@nekostack/schema@0.8.0",
+    "generatorVersion": "@nekostack/schema@1.0.4",
     "irHash": "sha256:d37817778d191ac5321c2e9ec899ff835abf68ad06efe093b4ed886a68d8e5a8",
     "schemaId": "com.x.Tags",
     "schemaVersion": "1.0.0"
