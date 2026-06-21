@@ -83,6 +83,8 @@ Each package has its own README documenting purpose, scope, competitors, design 
 
 For the **canonical "which package owns which capability"** map, see [`BOUNDARIES.md`](BOUNDARIES.md). Per-package READMEs restate the relevant rows from BOUNDARIES.md in their own `Boundary` section; if they disagree, BOUNDARIES.md wins.
 
+> **Published on npm (v1.0+):** `@nekostack/schema`, `@nekostack/cli`, `@nekostack/migrate-runner`, `@nekostack/theme`, `@nekostack/ui`, `@nekostack/lint` — plus the `nekostack` metapackage. Everything else in the index below is **planned but not yet published**.
+
 ### Meta / control plane (the layer that organizes the rest)
 - [@nekostack/path](packages/path/README.md) — Portfolio + roadmap + active-work + next-action resolver
 - [@nekostack/governance](packages/governance/README.md) — Policy rules, lifecycle gates, definition-of-done, LLM behavior constraints
