@@ -76,6 +76,22 @@
     .rm-footer { padding-block: var(--neko-spacing-12); text-align: center; color: var(--neko-color-semantic-text-muted); font-size: var(--neko-font-size-sm); border-top: 1px solid var(--neko-color-semantic-border-subtle); }
     .rm-footer a { color: var(--neko-color-semantic-primary); text-decoration: none; }
     .rm-footer a:hover { text-decoration: underline; }
+
+    /* clickable card name button */
+    .hist-card__name { all: unset; font-family: var(--neko-font-mono); font-size: var(--neko-font-size-lg); font-weight: 700; color: var(--neko-color-semantic-primary); cursor: pointer; display: inline-flex; align-items: center; gap: var(--neko-spacing-2); }
+    .hist-card__name:hover { text-decoration: underline; }
+    .hist-card__name-arrow { font-size: var(--neko-font-size-sm); opacity: 0.5; transition: opacity 0.15s; }
+    .hist-card__name:hover .hist-card__name-arrow { opacity: 1; }
+
+    /* package history modal */
+    .pkg-modal { background: var(--neko-color-semantic-bg-raised); border: 1px solid var(--neko-color-semantic-border-base); border-radius: var(--neko-radius-lg); padding: 0; max-width: min(760px, 90vw); width: 100%; max-height: 85vh; overflow: hidden; display: flex; flex-direction: column; color: var(--neko-color-semantic-text-base); }
+    .pkg-modal::backdrop { background: rgba(0,0,0,0.72); backdrop-filter: blur(4px); }
+    .pkg-modal[open] { display: flex; }
+    .pkg-modal__head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--neko-spacing-4); padding: var(--neko-spacing-6) var(--neko-spacing-6) var(--neko-spacing-4); border-bottom: 1px solid var(--neko-color-semantic-border-subtle); flex-shrink: 0; }
+    .pkg-modal__name { font-family: var(--neko-font-mono); font-size: var(--neko-font-size-xl); font-weight: 700; color: var(--neko-color-semantic-primary); margin: 0 0 var(--neko-spacing-1); }
+    .pkg-modal__close { all: unset; cursor: pointer; font-size: var(--neko-font-size-xl); color: var(--neko-color-semantic-text-muted); line-height: 1; padding: var(--neko-spacing-1) var(--neko-spacing-2); border-radius: var(--neko-radius-sm); flex-shrink: 0; }
+    .pkg-modal__close:hover { color: var(--neko-color-semantic-text-base); background: var(--neko-color-semantic-bg-sunken); }
+    .pkg-modal__body { overflow-y: auto; padding: var(--neko-spacing-6); flex: 1; }
   </style>
 </head>
 <body>
@@ -146,7 +162,7 @@
 
       <article class="hist-card">
         <header class="hist-card__head">
-          <h3 class="hist-card__name">@nekostack/migrate-runner</h3>
+          <button class="hist-card__name" data-modal="migrate-runner" aria-haspopup="dialog">@nekostack/migrate-runner<span class="hist-card__name-arrow" aria-hidden="true">↗</span></button>
           <div class="hist-card__meta"><a class="hist-card__latest" href="https://github.com/cmclicker/NekoStack/releases/tag/migrate-runner-v1.0.0" target="_blank" rel="noopener">migrate-runner-v1.0.0</a><span class="hist-card__date">June 19, 2026</span><span class="hist-card__tests">405 tests</span></div>
         </header>
         <div class="hist-card__target"><span class="hist-card__target-label">Active target</span> v0.1.X+ — Optional runner CLI + adapter expansion</div>
@@ -170,7 +186,7 @@
 
       <article class="hist-card">
         <header class="hist-card__head">
-          <h3 class="hist-card__name">@nekostack/schema</h3>
+          <button class="hist-card__name" data-modal="schema" aria-haspopup="dialog">@nekostack/schema<span class="hist-card__name-arrow" aria-hidden="true">↗</span></button>
           <div class="hist-card__meta"><a class="hist-card__latest" href="https://github.com/cmclicker/NekoStack/releases/tag/schema-v1.0.0" target="_blank" rel="noopener">schema-v1.0.0</a><span class="hist-card__date">June 19, 2026</span><span class="hist-card__tests">1294 tests</span></div>
         </header>
         <div class="hist-card__target"><span class="hist-card__target-label">Active target</span> v1.0 — Stable API</div>
@@ -250,7 +266,7 @@
 
       <article class="hist-card">
         <header class="hist-card__head">
-          <h3 class="hist-card__name">@nekostack/cli</h3>
+          <button class="hist-card__name" data-modal="cli" aria-haspopup="dialog">@nekostack/cli<span class="hist-card__name-arrow" aria-hidden="true">↗</span></button>
           <div class="hist-card__meta"><a class="hist-card__latest" href="https://github.com/cmclicker/NekoStack/releases/tag/cli-v1.0.1" target="_blank" rel="noopener">cli-v1.0.1</a><span class="hist-card__date">June 19, 2026</span></div>
         </header>
         <div class="hist-card__target"><span class="hist-card__target-label">Active target</span> v0.8+ — TBD</div>
@@ -274,7 +290,7 @@
 
       <article class="hist-card">
         <header class="hist-card__head">
-          <h3 class="hist-card__name">@nekostack/theme</h3>
+          <button class="hist-card__name" data-modal="theme" aria-haspopup="dialog">@nekostack/theme<span class="hist-card__name-arrow" aria-hidden="true">↗</span></button>
           <div class="hist-card__meta"><a class="hist-card__latest" href="https://github.com/cmclicker/NekoStack/releases/tag/theme-v1.0.0" target="_blank" rel="noopener">theme-v1.0.0</a><span class="hist-card__date">June 19, 2026</span><span class="hist-card__tests">78 tests</span></div>
         </header>
         
@@ -291,7 +307,7 @@
 
       <article class="hist-card">
         <header class="hist-card__head">
-          <h3 class="hist-card__name">@nekostack/ui</h3>
+          <button class="hist-card__name" data-modal="ui" aria-haspopup="dialog">@nekostack/ui<span class="hist-card__name-arrow" aria-hidden="true">↗</span></button>
           <div class="hist-card__meta"><a class="hist-card__latest" href="https://github.com/cmclicker/NekoStack/releases/tag/ui-v1.0.1" target="_blank" rel="noopener">ui-v1.0.1</a><span class="hist-card__date">June 19, 2026</span></div>
         </header>
         
@@ -315,7 +331,7 @@
 
       <article class="hist-card">
         <header class="hist-card__head">
-          <h3 class="hist-card__name">@nekostack/lint</h3>
+          <button class="hist-card__name" data-modal="lint" aria-haspopup="dialog">@nekostack/lint<span class="hist-card__name-arrow" aria-hidden="true">↗</span></button>
           <div class="hist-card__meta"><a class="hist-card__latest" href="https://github.com/cmclicker/NekoStack/releases/tag/lint-v1.0.0" target="_blank" rel="noopener">lint-v1.0.0</a><span class="hist-card__date">June 20, 2026</span></div>
         </header>
         
@@ -360,7 +376,7 @@
 
       <article class="hist-card">
         <header class="hist-card__head">
-          <h3 class="hist-card__name">@nekostack/test</h3>
+          <button class="hist-card__name" data-modal="test" aria-haspopup="dialog">@nekostack/test<span class="hist-card__name-arrow" aria-hidden="true">↗</span></button>
           <div class="hist-card__meta"><a class="hist-card__latest" href="https://github.com/cmclicker/NekoStack/releases/tag/test-v0.1.0" target="_blank" rel="noopener">test-v0.1.0</a><span class="hist-card__date">June 19, 2026</span><span class="hist-card__tests">5 tests</span></div>
         </header>
         
@@ -411,6 +427,279 @@
       Apache-2.0 · Solo dev at part-time cadence
     </p>
   </footer>
+
+  <!-- ===== package history modals ===== -->
+
+  <dialog id="modal-migrate-runner" class="pkg-modal">
+    <div class="pkg-modal__head">
+      <div>
+        <h3 class="pkg-modal__name">@nekostack/migrate-runner</h3>
+        <div class="hist-card__meta" style="margin-top: var(--neko-spacing-2);"><a class="hist-card__latest" href="https://github.com/cmclicker/NekoStack/releases/tag/migrate-runner-v1.0.0" target="_blank" rel="noopener">migrate-runner-v1.0.0</a><span class="hist-card__date">June 19, 2026</span><span class="hist-card__tests">405 tests</span></div>
+      </div>
+      <button class="pkg-modal__close" aria-label="Close">✕</button>
+    </div>
+    <div class="pkg-modal__body">
+      <div class="hist-card__target" style="margin-bottom: var(--neko-spacing-5);"><span class="hist-card__target-label">Active target</span> v0.1.X+ — Optional runner CLI + adapter expansion</div><ol class="hist-timeline">
+          <li class="hist-event">
+            <a class="hist-event__tag" href="https://github.com/cmclicker/NekoStack/releases/tag/migrate-runner-v1.0.0" target="_blank" rel="noopener">migrate-runner-v1.0.0</a>
+            <div class="hist-event__body">
+              <span class="hist-event__date">June 19, 2026</span>
+              <p class="hist-event__summary">Published to npm as <code>@nekostack/migrate-runner</code> (Apache-2.0).</p>
+            </div>
+          </li>
+          <li class="hist-event">
+            <a class="hist-event__tag" href="https://github.com/cmclicker/NekoStack/releases/tag/migrate-runner-v0.1.0" target="_blank" rel="noopener">migrate-runner-v0.1.0</a>
+            <div class="hist-event__body">
+              <span class="hist-event__date">May 21, 2026</span>
+              <p class="hist-event__summary">Schema-data migration runner library — the downstream package that executes authored migrations against real records.</p>
+            </div>
+          </li>
+      </ol>
+    </div>
+  </dialog>
+
+  <dialog id="modal-schema" class="pkg-modal">
+    <div class="pkg-modal__head">
+      <div>
+        <h3 class="pkg-modal__name">@nekostack/schema</h3>
+        <div class="hist-card__meta" style="margin-top: var(--neko-spacing-2);"><a class="hist-card__latest" href="https://github.com/cmclicker/NekoStack/releases/tag/schema-v1.0.0" target="_blank" rel="noopener">schema-v1.0.0</a><span class="hist-card__date">June 19, 2026</span><span class="hist-card__tests">1294 tests</span></div>
+      </div>
+      <button class="pkg-modal__close" aria-label="Close">✕</button>
+    </div>
+    <div class="pkg-modal__body">
+      <div class="hist-card__target" style="margin-bottom: var(--neko-spacing-5);"><span class="hist-card__target-label">Active target</span> v1.0 — Stable API</div><ol class="hist-timeline">
+          <li class="hist-event">
+            <a class="hist-event__tag" href="https://github.com/cmclicker/NekoStack/releases/tag/schema-v1.0.0" target="_blank" rel="noopener">schema-v1.0.0</a>
+            <div class="hist-event__body">
+              <span class="hist-event__date">June 19, 2026</span>
+              <p class="hist-event__summary">First stable release. <strong>Public API frozen.</strong> No source changes from v0.8.0 — this milestone freezes the exported surface and ships release metadata (Apache-2.0 license; the <code>nekostack</code> metapackage).</p>
+            </div>
+          </li>
+          <li class="hist-event">
+            <a class="hist-event__tag" href="https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.8.0" target="_blank" rel="noopener">schema-v0.8.0</a>
+            <div class="hist-event__body">
+              <span class="hist-event__date">May 20, 2026</span>
+              <p class="hist-event__summary">Schema-data migration planning + provenance verification + stub generation.</p>
+            </div>
+          </li>
+          <li class="hist-event">
+            <a class="hist-event__tag" href="https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.7.0" target="_blank" rel="noopener">schema-v0.7.0</a>
+            <div class="hist-event__body">
+              <span class="hist-event__date">May 19, 2026</span>
+              <p class="hist-event__summary">Registry-lite + <code>neko schema *</code>.</p>
+            </div>
+          </li>
+          <li class="hist-event">
+            <a class="hist-event__tag" href="https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.6.0" target="_blank" rel="noopener">schema-v0.6.0</a>
+            <div class="hist-event__body">
+              <span class="hist-event__date">May 18, 2026</span>
+              <p class="hist-event__summary">Runtime validation as a NekoStack-owned workflow on the v0.2 source-generator + v0.5 composition foundation.</p>
+            </div>
+          </li>
+          <li class="hist-event">
+            <a class="hist-event__tag" href="https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.5.0" target="_blank" rel="noopener">schema-v0.5.0</a>
+            <div class="hist-event__body">
+              <span class="hist-event__date">May 17, 2026</span>
+              <p class="hist-event__summary">Composition layer on the v0.1 IR foundation.</p>
+            </div>
+          </li>
+          <li class="hist-event">
+            <a class="hist-event__tag" href="https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.4.0" target="_blank" rel="noopener">schema-v0.4.0</a>
+            <div class="hist-event__body">
+              <span class="hist-event__date">May 17, 2026</span>
+              <p class="hist-event__summary">Fourth generator on the v0.1 IR foundation.</p>
+            </div>
+          </li>
+          <li class="hist-event">
+            <a class="hist-event__tag" href="https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.3.0" target="_blank" rel="noopener">schema-v0.3.0</a>
+            <div class="hist-event__body">
+              <span class="hist-event__date">May 17, 2026</span>
+              <p class="hist-event__summary">Third generator on the v0.1 IR foundation.</p>
+            </div>
+          </li>
+          <li class="hist-event">
+            <a class="hist-event__tag" href="https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.2.1" target="_blank" rel="noopener">schema-v0.2.1</a>
+            <div class="hist-event__body">
+              <span class="hist-event__date">May 16, 2026</span>
+              <p class="hist-event__summary">Patch release on the v0.2 line — proof artifacts + generator output polish from the dogfood pass.</p>
+            </div>
+          </li>
+          <li class="hist-event">
+            <a class="hist-event__tag" href="https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.2.0" target="_blank" rel="noopener">schema-v0.2.0</a>
+            <div class="hist-event__body">
+              <span class="hist-event__date">May 16, 2026</span>
+              <p class="hist-event__summary">—</p>
+            </div>
+          </li>
+          <li class="hist-event">
+            <a class="hist-event__tag" href="https://github.com/cmclicker/NekoStack/releases/tag/schema-v0.1.0" target="_blank" rel="noopener">schema-v0.1.0</a>
+            <div class="hist-event__body">
+              <span class="hist-event__date">May 16, 2026</span>
+              <p class="hist-event__summary">First package phase accepted under [<code>standards/package-development.md</code>](../../standards/package-development.md).</p>
+            </div>
+          </li>
+      </ol>
+    </div>
+  </dialog>
+
+  <dialog id="modal-cli" class="pkg-modal">
+    <div class="pkg-modal__head">
+      <div>
+        <h3 class="pkg-modal__name">@nekostack/cli</h3>
+        <div class="hist-card__meta" style="margin-top: var(--neko-spacing-2);"><a class="hist-card__latest" href="https://github.com/cmclicker/NekoStack/releases/tag/cli-v1.0.1" target="_blank" rel="noopener">cli-v1.0.1</a><span class="hist-card__date">June 19, 2026</span></div>
+      </div>
+      <button class="pkg-modal__close" aria-label="Close">✕</button>
+    </div>
+    <div class="pkg-modal__body">
+      <div class="hist-card__target" style="margin-bottom: var(--neko-spacing-5);"><span class="hist-card__target-label">Active target</span> v0.8+ — TBD</div><ol class="hist-timeline">
+          <li class="hist-event">
+            <a class="hist-event__tag" href="https://github.com/cmclicker/NekoStack/releases/tag/cli-v1.0.1" target="_blank" rel="noopener">cli-v1.0.1</a>
+            <div class="hist-event__body">
+              <span class="hist-event__date">June 19, 2026</span>
+              <p class="hist-event__summary">Patch fix for npm binary registration.</p>
+            </div>
+          </li>
+          <li class="hist-event">
+            <a class="hist-event__tag" href="https://github.com/cmclicker/NekoStack/releases/tag/cli-v1.0.0" target="_blank" rel="noopener">cli-v1.0.0</a>
+            <div class="hist-event__body">
+              <span class="hist-event__date">June 19, 2026</span>
+              <p class="hist-event__summary">First public release.</p>
+            </div>
+          </li>
+      </ol>
+    </div>
+  </dialog>
+
+  <dialog id="modal-theme" class="pkg-modal">
+    <div class="pkg-modal__head">
+      <div>
+        <h3 class="pkg-modal__name">@nekostack/theme</h3>
+        <div class="hist-card__meta" style="margin-top: var(--neko-spacing-2);"><a class="hist-card__latest" href="https://github.com/cmclicker/NekoStack/releases/tag/theme-v1.0.0" target="_blank" rel="noopener">theme-v1.0.0</a><span class="hist-card__date">June 19, 2026</span><span class="hist-card__tests">78 tests</span></div>
+      </div>
+      <button class="pkg-modal__close" aria-label="Close">✕</button>
+    </div>
+    <div class="pkg-modal__body">
+      <ol class="hist-timeline">
+          <li class="hist-event">
+            <a class="hist-event__tag" href="https://github.com/cmclicker/NekoStack/releases/tag/theme-v1.0.0" target="_blank" rel="noopener">theme-v1.0.0</a>
+            <div class="hist-event__body">
+              <span class="hist-event__date">June 19, 2026</span>
+              <p class="hist-event__summary">First public release.</p>
+            </div>
+          </li>
+      </ol>
+    </div>
+  </dialog>
+
+  <dialog id="modal-ui" class="pkg-modal">
+    <div class="pkg-modal__head">
+      <div>
+        <h3 class="pkg-modal__name">@nekostack/ui</h3>
+        <div class="hist-card__meta" style="margin-top: var(--neko-spacing-2);"><a class="hist-card__latest" href="https://github.com/cmclicker/NekoStack/releases/tag/ui-v1.0.1" target="_blank" rel="noopener">ui-v1.0.1</a><span class="hist-card__date">June 19, 2026</span></div>
+      </div>
+      <button class="pkg-modal__close" aria-label="Close">✕</button>
+    </div>
+    <div class="pkg-modal__body">
+      <ol class="hist-timeline">
+          <li class="hist-event">
+            <a class="hist-event__tag" href="https://github.com/cmclicker/NekoStack/releases/tag/ui-v1.0.1" target="_blank" rel="noopener">ui-v1.0.1</a>
+            <div class="hist-event__body">
+              <span class="hist-event__date">June 19, 2026</span>
+              <p class="hist-event__summary">Patch fix for npm publish artifact hygiene.</p>
+            </div>
+          </li>
+          <li class="hist-event">
+            <a class="hist-event__tag" href="https://github.com/cmclicker/NekoStack/releases/tag/ui-v1.0.0" target="_blank" rel="noopener">ui-v1.0.0</a>
+            <div class="hist-event__body">
+              <span class="hist-event__date">June 19, 2026</span>
+              <p class="hist-event__summary">First public release.</p>
+            </div>
+          </li>
+      </ol>
+    </div>
+  </dialog>
+
+  <dialog id="modal-lint" class="pkg-modal">
+    <div class="pkg-modal__head">
+      <div>
+        <h3 class="pkg-modal__name">@nekostack/lint</h3>
+        <div class="hist-card__meta" style="margin-top: var(--neko-spacing-2);"><a class="hist-card__latest" href="https://github.com/cmclicker/NekoStack/releases/tag/lint-v1.0.0" target="_blank" rel="noopener">lint-v1.0.0</a><span class="hist-card__date">June 20, 2026</span></div>
+      </div>
+      <button class="pkg-modal__close" aria-label="Close">✕</button>
+    </div>
+    <div class="pkg-modal__body">
+      <ol class="hist-timeline">
+          <li class="hist-event">
+            <a class="hist-event__tag" href="https://github.com/cmclicker/NekoStack/releases/tag/lint-v1.0.0" target="_blank" rel="noopener">lint-v1.0.0</a>
+            <div class="hist-event__body">
+              <span class="hist-event__date">June 20, 2026</span>
+              <p class="hist-event__summary">PR <a href="https://github.com/cmclicker/NekoStack/pull/89" target="_blank" rel="noopener">#89</a> · Stable rule catalog, full docs, CI integration.</p>
+            </div>
+          </li>
+          <li class="hist-event">
+            <a class="hist-event__tag" href="https://github.com/cmclicker/NekoStack/releases/tag/lint-v0.6.0" target="_blank" rel="noopener">lint-v0.6.0</a>
+            <div class="hist-event__body">
+              <span class="hist-event__date">June 20, 2026</span>
+              <p class="hist-event__summary">PR <a href="https://github.com/cmclicker/NekoStack/pull/88" target="_blank" rel="noopener">#88</a> · merge commit <a href="https://github.com/cmclicker/NekoStack/commit/2a9dd2cda8dcc69e852a25a4d44cdb91cb913a86" target="_blank" rel="noopener"><code>2a9dd2c</code></a>.</p>
+            </div>
+          </li>
+          <li class="hist-event">
+            <a class="hist-event__tag" href="https://github.com/cmclicker/NekoStack/releases/tag/lint-v0.5.0" target="_blank" rel="noopener">lint-v0.5.0</a>
+            <div class="hist-event__body">
+              <span class="hist-event__date">June 20, 2026</span>
+              <p class="hist-event__summary">Module-boundary and quality rules.</p>
+            </div>
+          </li>
+          <li class="hist-event">
+            <a class="hist-event__tag" href="https://github.com/cmclicker/NekoStack/releases/tag/lint-v0.4.0" target="_blank" rel="noopener">lint-v0.4.0</a>
+            <div class="hist-event__body">
+              <span class="hist-event__date">June 19, 2026</span>
+              <p class="hist-event__summary">Security rules + first auto-fixer milestone.</p>
+            </div>
+          </li>
+          <li class="hist-event">
+            <a class="hist-event__tag" href="https://github.com/cmclicker/NekoStack/releases/tag/lint-v0.3.0" target="_blank" rel="noopener">lint-v0.3.0</a>
+            <div class="hist-event__body">
+              <span class="hist-event__date">June 19, 2026</span>
+              <p class="hist-event__summary">Framework configs milestone.</p>
+            </div>
+          </li>
+      </ol>
+    </div>
+  </dialog>
+
+  <dialog id="modal-test" class="pkg-modal">
+    <div class="pkg-modal__head">
+      <div>
+        <h3 class="pkg-modal__name">@nekostack/test</h3>
+        <div class="hist-card__meta" style="margin-top: var(--neko-spacing-2);"><a class="hist-card__latest" href="https://github.com/cmclicker/NekoStack/releases/tag/test-v0.1.0" target="_blank" rel="noopener">test-v0.1.0</a><span class="hist-card__date">June 19, 2026</span><span class="hist-card__tests">5 tests</span></div>
+      </div>
+      <button class="pkg-modal__close" aria-label="Close">✕</button>
+    </div>
+    <div class="pkg-modal__body">
+      <ol class="hist-timeline">
+          <li class="hist-event">
+            <a class="hist-event__tag" href="https://github.com/cmclicker/NekoStack/releases/tag/test-v0.1.0" target="_blank" rel="noopener">test-v0.1.0</a>
+            <div class="hist-event__body">
+              <span class="hist-event__date">June 19, 2026</span>
+              <p class="hist-event__summary">Bootstrap milestone.</p>
+            </div>
+          </li>
+      </ol>
+    </div>
+  </dialog>
+
+  <script>
+    document.querySelectorAll('[data-modal]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        document.getElementById('modal-' + btn.dataset.modal).showModal();
+      });
+    });
+    document.querySelectorAll('.pkg-modal').forEach(function(dlg) {
+      dlg.querySelector('.pkg-modal__close').addEventListener('click', function() { dlg.close(); });
+      dlg.addEventListener('click', function(e) { if (e.target === dlg) dlg.close(); });
+    });
+  </script>
 
 </body>
 </html>

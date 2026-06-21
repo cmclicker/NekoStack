@@ -137,7 +137,27 @@ function buildModel(ssot) {
   };
 }
 
+function pkgSlug(name) {
+  return name.replace("@nekostack/", "").replace(/[^a-z0-9-]/g, "-");
+}
+
+function renderTimelineRows(pkg) {
+  return pkg.milestones
+    .map(
+      (m) => `
+          <li class="hist-event">
+            <a class="hist-event__tag" href="${tagUrl(m.tag)}" target="_blank" rel="noopener">${escapeHtml(m.tag)}</a>
+            <div class="hist-event__body">
+              <span class="hist-event__date">${escapeHtml(fmtDate(m.date))}</span>
+              <p class="hist-event__summary">${renderInline(m.summary) || "—"}</p>
+            </div>
+          </li>`,
+    )
+    .join("");
+}
+
 function renderPackageCard(pkg) {
+  const slug = pkgSlug(pkg.name);
   const meta = [];
   if (pkg.latestRelease) {
     meta.push(
@@ -151,19 +171,6 @@ function renderPackageCard(pkg) {
     meta.push(`<span class="hist-card__tests">${pkg.testCount} tests</span>`);
   }
 
-  const rows = pkg.milestones
-    .map(
-      (m) => `
-          <li class="hist-event">
-            <a class="hist-event__tag" href="${tagUrl(m.tag)}" target="_blank" rel="noopener">${escapeHtml(m.tag)}</a>
-            <div class="hist-event__body">
-              <span class="hist-event__date">${escapeHtml(fmtDate(m.date))}</span>
-              <p class="hist-event__summary">${renderInline(m.summary) || "—"}</p>
-            </div>
-          </li>`,
-    )
-    .join("");
-
   const target = pkg.activeTarget
     ? `<div class="hist-card__target"><span class="hist-card__target-label">Active target</span> ${escapeHtml(pkg.activeTarget)}</div>`
     : "";
@@ -171,13 +178,48 @@ function renderPackageCard(pkg) {
   return `
       <article class="hist-card">
         <header class="hist-card__head">
-          <h3 class="hist-card__name">${escapeHtml(pkg.name)}</h3>
+          <button class="hist-card__name" data-modal="${slug}" aria-haspopup="dialog">${escapeHtml(pkg.name)}<span class="hist-card__name-arrow" aria-hidden="true">↗</span></button>
           <div class="hist-card__meta">${meta.join("")}</div>
         </header>
         ${target}
-        <ol class="hist-timeline">${rows}
+        <ol class="hist-timeline">${renderTimelineRows(pkg)}
         </ol>
       </article>`;
+}
+
+function renderPackageModal(pkg) {
+  const slug = pkgSlug(pkg.name);
+  const meta = [];
+  if (pkg.latestRelease) {
+    meta.push(
+      `<a class="hist-card__latest" href="${tagUrl(pkg.latestRelease)}" target="_blank" rel="noopener">${escapeHtml(pkg.latestRelease)}</a>`,
+    );
+  }
+  if (pkg.latestReleaseDate) {
+    meta.push(`<span class="hist-card__date">${escapeHtml(fmtDate(pkg.latestReleaseDate))}</span>`);
+  }
+  if (pkg.testCount != null) {
+    meta.push(`<span class="hist-card__tests">${pkg.testCount} tests</span>`);
+  }
+
+  const target = pkg.activeTarget
+    ? `<div class="hist-card__target" style="margin-bottom: var(--neko-spacing-5);"><span class="hist-card__target-label">Active target</span> ${escapeHtml(pkg.activeTarget)}</div>`
+    : "";
+
+  return `
+  <dialog id="modal-${slug}" class="pkg-modal">
+    <div class="pkg-modal__head">
+      <div>
+        <h3 class="pkg-modal__name">${escapeHtml(pkg.name)}</h3>
+        <div class="hist-card__meta" style="margin-top: var(--neko-spacing-2);">${meta.join("")}</div>
+      </div>
+      <button class="pkg-modal__close" aria-label="Close">✕</button>
+    </div>
+    <div class="pkg-modal__body">
+      ${target}<ol class="hist-timeline">${renderTimelineRows(pkg)}
+      </ol>
+    </div>
+  </dialog>`;
 }
 
 function renderNextActions(model) {
@@ -197,10 +239,9 @@ ${items}
 }
 
 function renderHistoryHtml(model) {
-  const cards = model.packages
-    .filter((p) => p.milestones.length > 0)
-    .map(renderPackageCard)
-    .join("\n");
+  const pkgsWithHistory = model.packages.filter((p) => p.milestones.length > 0);
+  const cards = pkgsWithHistory.map(renderPackageCard).join("\n");
+  const modals = pkgsWithHistory.map(renderPackageModal).join("\n");
 
   const doctrineNote = model.doctrine?.present
     ? `<a href="../../${escapeHtml(model.doctrine.file)}" target="_blank" rel="noopener">${escapeHtml(model.doctrine.title ?? model.doctrine.file)}</a>`
@@ -284,6 +325,22 @@ function renderHistoryHtml(model) {
     .rm-footer { padding-block: var(--neko-spacing-12); text-align: center; color: var(--neko-color-semantic-text-muted); font-size: var(--neko-font-size-sm); border-top: 1px solid var(--neko-color-semantic-border-subtle); }
     .rm-footer a { color: var(--neko-color-semantic-primary); text-decoration: none; }
     .rm-footer a:hover { text-decoration: underline; }
+
+    /* clickable card name button */
+    .hist-card__name { all: unset; font-family: var(--neko-font-mono); font-size: var(--neko-font-size-lg); font-weight: 700; color: var(--neko-color-semantic-primary); cursor: pointer; display: inline-flex; align-items: center; gap: var(--neko-spacing-2); }
+    .hist-card__name:hover { text-decoration: underline; }
+    .hist-card__name-arrow { font-size: var(--neko-font-size-sm); opacity: 0.5; transition: opacity 0.15s; }
+    .hist-card__name:hover .hist-card__name-arrow { opacity: 1; }
+
+    /* package history modal */
+    .pkg-modal { background: var(--neko-color-semantic-bg-raised); border: 1px solid var(--neko-color-semantic-border-base); border-radius: var(--neko-radius-lg); padding: 0; max-width: min(760px, 90vw); width: 100%; max-height: 85vh; overflow: hidden; display: flex; flex-direction: column; color: var(--neko-color-semantic-text-base); }
+    .pkg-modal::backdrop { background: rgba(0,0,0,0.72); backdrop-filter: blur(4px); }
+    .pkg-modal[open] { display: flex; }
+    .pkg-modal__head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--neko-spacing-4); padding: var(--neko-spacing-6) var(--neko-spacing-6) var(--neko-spacing-4); border-bottom: 1px solid var(--neko-color-semantic-border-subtle); flex-shrink: 0; }
+    .pkg-modal__name { font-family: var(--neko-font-mono); font-size: var(--neko-font-size-xl); font-weight: 700; color: var(--neko-color-semantic-primary); margin: 0 0 var(--neko-spacing-1); }
+    .pkg-modal__close { all: unset; cursor: pointer; font-size: var(--neko-font-size-xl); color: var(--neko-color-semantic-text-muted); line-height: 1; padding: var(--neko-spacing-1) var(--neko-spacing-2); border-radius: var(--neko-radius-sm); flex-shrink: 0; }
+    .pkg-modal__close:hover { color: var(--neko-color-semantic-text-base); background: var(--neko-color-semantic-bg-sunken); }
+    .pkg-modal__body { overflow-y: auto; padding: var(--neko-spacing-6); flex: 1; }
   </style>
 </head>
 <body>
@@ -369,6 +426,21 @@ ${renderNextActions(model)}
       Apache-2.0 · Solo dev at part-time cadence
     </p>
   </footer>
+
+  <!-- ===== package history modals ===== -->
+${modals}
+
+  <script>
+    document.querySelectorAll('[data-modal]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        document.getElementById('modal-' + btn.dataset.modal).showModal();
+      });
+    });
+    document.querySelectorAll('.pkg-modal').forEach(function(dlg) {
+      dlg.querySelector('.pkg-modal__close').addEventListener('click', function() { dlg.close(); });
+      dlg.addEventListener('click', function(e) { if (e.target === dlg) dlg.close(); });
+    });
+  </script>
 
 </body>
 </html>
