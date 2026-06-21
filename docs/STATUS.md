@@ -69,6 +69,13 @@
 |---|---|---|
 | [`test-v0.1.0`](https://github.com/cmclicker/NekoStack/releases/tag/test-v0.1.0) | 2026-06-19 | PR #TBD · Bootstrap milestone. |
 
+### nekostack
+
+| Tag | Date | Summary |
+|---|---|---|
+| [`nekostack-v1.1.1`](https://github.com/cmclicker/NekoStack/releases/tag/nekostack-v1.1.1) | 2026-06-19 | [Tag](https://github.com/cmclicker/NekoStack/releases/tag/nekostack-v1.1.1) · Patch bump to track cli and ui patch releases. |
+| [`nekostack-v1.1.0`](https://github.com/cmclicker/NekoStack/releases/tag/nekostack-v1.1.0) | 2026-06-19 | [Tag](https://github.com/cmclicker/NekoStack/releases/tag/nekostack-v1.1.0) · First public release of the metapackage. |
+
 ## Validation snapshot
 
 Test counts come from each package's most recent CHANGELOG entry. After validating a release, update the package CHANGELOG and run `npm run status:generate`.
@@ -81,6 +88,7 @@ Test counts come from each package's most recent CHANGELOG entry. After validati
 - **@nekostack/lint:** _(no `### Test count` line in latest CHANGELOG entry)_
 - **@nekostack/test:** 5 tests recorded (latest: test-v0.1.0)
 - **@nekostack/config:** _(no `### Test count` line in latest CHANGELOG entry)_
+- **nekostack:** _(no `### Test count` line in latest CHANGELOG entry)_
 
 ## Next actions
 

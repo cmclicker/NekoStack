@@ -18,6 +18,8 @@
     "packages/test/CHANGELOG.md",
     "packages/config/docs/internal/ROADMAP.md",
     "packages/config/CHANGELOG.md",
+    "packages/nekostack/docs/internal/ROADMAP.md",
+    "packages/nekostack/CHANGELOG.md",
     "git tags"
   ],
   "active_workstream": "@nekostack/config",
@@ -220,6 +222,26 @@
       "active_target": "v0.1 — Bootstrap",
       "test_count": null,
       "milestones": []
+    },
+    {
+      "name": "nekostack",
+      "dir": "packages/nekostack",
+      "latest_release": "nekostack-v1.1.1",
+      "latest_release_date": "2026-06-19",
+      "active_target": null,
+      "test_count": null,
+      "milestones": [
+        {
+          "tag": "nekostack-v1.1.1",
+          "date": "2026-06-19",
+          "summary": "[Tag](https://github.com/cmclicker/NekoStack/releases/tag/nekostack-v1.1.1) · Patch bump to track cli and ui patch releases."
+        },
+        {
+          "tag": "nekostack-v1.1.0",
+          "date": "2026-06-19",
+          "summary": "[Tag](https://github.com/cmclicker/NekoStack/releases/tag/nekostack-v1.1.0) · First public release of the metapackage."
+        }
+      ]
     }
   ],
   "next_actions": [

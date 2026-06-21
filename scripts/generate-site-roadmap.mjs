@@ -84,11 +84,17 @@ const status = JSON.parse(
   readFileSync(join(root, 'manifests/workspace-status.json'), 'utf8'),
 );
 
-// Package counts for progress strip
-const shippedPkgs = status.packages.filter(
+// Package counts for progress strip.
+// Only scoped product packages (@nekostack/*) count toward the 108-package
+// roadmap total. The unscoped `nekostack` metapackage is an install-convenience
+// aggregator, not one of the planned phase slots — it ships in the SSOT (so it
+// gets a release-history modal) but must not inflate "shipped" or deflate
+// "planned". See the "Six scoped packages and a metapackage" sub-header.
+const productPkgs = status.packages.filter((p) => p.name.startsWith("@nekostack/"));
+const shippedPkgs = productPkgs.filter(
   (p) => p.latest_release && parseMinorVer(p.latest_release)[0] >= 1,
 );
-const inProgressPkgs = status.packages.filter(
+const inProgressPkgs = productPkgs.filter(
   (p) => p.latest_release && parseMinorVer(p.latest_release)[0] < 1,
 );
 const shippedCount = shippedPkgs.length;

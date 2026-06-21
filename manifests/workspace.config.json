@@ -58,6 +58,13 @@
       "tag_prefix": "config-v",
       "roadmap": "packages/config/docs/internal/ROADMAP.md",
       "changelog": "packages/config/CHANGELOG.md"
+    },
+    {
+      "name": "nekostack",
+      "dir": "packages/nekostack",
+      "tag_prefix": "nekostack-v",
+      "roadmap": "packages/nekostack/docs/internal/ROADMAP.md",
+      "changelog": "packages/nekostack/CHANGELOG.md"
     }
   ],
   "next_actions": [
