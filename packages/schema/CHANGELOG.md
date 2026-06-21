@@ -6,6 +6,16 @@ Published to npm as `@nekostack/schema` (Apache-2.0). Milestone identifiers pair
 
 ---
 
+## schema-v1.0.4 — 2026-06-21
+
+Packaging accuracy patch. No source behavior changes.
+
+### Fixed
+
+- **`GENERATOR_VERSION`** corrected from `@nekostack/schema@1.0.1` → `@nekostack/schema@1.0.4`. The v1.0.2 patch set this to `1.0.1` instead of matching the package version, so every generated artifact header was stamped with the wrong version. `version.ts` comment already says "bumped with the package version" — this makes it true.
+
+---
+
 ## schema-v1.0.3 — 2026-06-21
 
 Documentation patch. No source behavior changes.

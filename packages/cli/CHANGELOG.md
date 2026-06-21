@@ -6,6 +6,16 @@ Published to npm as `@nekostack/cli` (Apache-2.0).
 
 ---
 
+## cli-v1.0.2 — 2026-06-21
+
+Documentation accuracy patch. No behavior changes.
+
+### Fixed
+
+- **`neko schema generate` summary mis-count** — the `× N kinds` figure was computed as `Math.round(totalArtifacts / schemaCount)` (average artifacts per schema), which rounds incorrectly when schema counts are uneven. Now uses `new Set(artifacts.map(a => a.kind)).size` — the actual count of distinct output kinds — so the summary always reads `N schemas × 4 kinds` when all four generators ran.
+
+---
+
 ## cli-v1.0.1 — 2026-06-19
 
 [Tag](https://github.com/cmclicker/NekoStack/releases/tag/cli-v1.0.1) · Patch fix for npm binary registration.

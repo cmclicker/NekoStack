@@ -7,4 +7,4 @@
  * generated artifacts produced by an older version are stale and CI should
  * re-emit them.
  */
-export const GENERATOR_VERSION = "@nekostack/schema@1.0.1" as const;
+export const GENERATOR_VERSION = "@nekostack/schema@1.0.4" as const;
