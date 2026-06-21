@@ -440,6 +440,9 @@ ${modals}
       dlg.querySelector('.pkg-modal__close').addEventListener('click', function() { dlg.close(); });
       dlg.addEventListener('click', function(e) { if (e.target === dlg) dlg.close(); });
     });
+    // Auto-open modal when linked from another page (e.g. roadmap "Release history ↗")
+    var hash = location.hash.slice(1);
+    if (hash) { var dlg = document.getElementById(hash); if (dlg && dlg.tagName === 'DIALOG') dlg.showModal(); }
   </script>
 
 </body>
