@@ -5,7 +5,7 @@
  * irHash:           sha256:62f8ab291e2dfa4b4450138c1dffbac2737de55d62392a162be4ed36afe09cf1
  * sourceHash:       sha256:38e9b0822d65ab548cc0b31ca4eb75a5fa3de694e8f42a1d0a2a00fee8fe420e
  * generator:        typescript
- * generatorVersion: @nekostack/schema@0.8.0
+ * generatorVersion: @nekostack/schema@1.0.4
  *
  * DO NOT EDIT MANUALLY.
  */
