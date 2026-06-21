@@ -488,7 +488,7 @@ export const User = s.object({
   id: s.string().uuid(),
   email: s.string().email(),
   displayName: s.string().min(1).max(50),
-  createdAt: s.isoDateTime(),
+  createdAt: s.string(),  // ISO 8601 string; use s.isoDateTime() when v1.1 ships
 })
   .id("com.nekostack.auth.User")
   .version("1.0.0")

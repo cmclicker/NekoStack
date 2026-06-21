@@ -6,6 +6,16 @@ Published to npm as `@nekostack/schema` (Apache-2.0). Milestone identifiers pair
 
 ---
 
+## schema-v1.0.3 — 2026-06-21
+
+Documentation patch. No source behavior changes.
+
+### Fixed
+
+- **README — "Authoring a schema" quick-start example** used `s.isoDateTime()` in the `createdAt` field — a method that does not exist in v1.0.x and throws `TypeError: s.isoDateTime is not a function`. Replaced with `s.string()` and an inline comment pointing to v1.1. The v1.0.2 "Not yet implemented" callout in the Date types section was correct, but this separate quick-start code block was overlooked.
+
+---
+
 ## schema-v1.0.2 — 2026-06-21
 
 Documentation and packaging accuracy patch. No source behavior changes; generated artifact headers now stamp the correct version.
