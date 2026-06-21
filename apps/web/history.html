@@ -111,6 +111,19 @@
     .pkg-modal__close { all: unset; cursor: pointer; font-size: var(--neko-font-size-xl); color: var(--neko-color-semantic-text-muted); line-height: 1; padding: var(--neko-spacing-1) var(--neko-spacing-2); border-radius: var(--neko-radius-sm); flex-shrink: 0; }
     .pkg-modal__close:hover { color: var(--neko-color-semantic-text-base); background: var(--neko-color-semantic-bg-sunken); }
     .pkg-modal__body { overflow-y: auto; padding: var(--neko-spacing-6); flex: 1; }
+    .pkg-modal__note {
+      margin: 0 0 var(--neko-spacing-5);
+      padding: var(--neko-spacing-3) var(--neko-spacing-4);
+      background: var(--neko-color-semantic-bg-sunken);
+      border-left: 2px solid var(--neko-color-semantic-border-base);
+      border-radius: var(--neko-radius-sm);
+      font-size: var(--neko-font-size-sm);
+      line-height: 1.6;
+      color: var(--neko-color-semantic-text-muted);
+    }
+    .pkg-modal__note strong { color: var(--neko-color-semantic-text-base); font-weight: 600; }
+    .pkg-modal__note code { font-family: var(--neko-font-mono); font-size: 0.9em; color: var(--neko-color-semantic-primary); }
+    .pkg-modal__note a { color: var(--neko-color-semantic-primary); }
   </style>
 </head>
 <body>
@@ -594,7 +607,7 @@
       <button class="pkg-modal__close" aria-label="Close">✕</button>
     </div>
     <div class="pkg-modal__body">
-      <div class="hist-card__target" style="margin-bottom: var(--neko-spacing-5);"><span class="hist-card__target-label">Active target</span> v0.8+ — TBD</div><ol class="hist-timeline">
+      <div class="hist-card__target" style="margin-bottom: var(--neko-spacing-5);"><span class="hist-card__target-label">Active target</span> v0.8+ — TBD</div><p class="pkg-modal__note"><strong>Lineage:</strong> placeholder through v0.1–v0.6, then shipped jointly with <code>@nekostack/schema</code> as the <code>neko schema *</code> phase — tagged <code>schema-v0.7.0</code> (<a href="https://github.com/cmclicker/NekoStack/pull/25" target="_blank" rel="noopener">PR #25</a>, 2026-05-19), not under its own prefix. Its standalone npm line begins at v1.0.0.</p><ol class="hist-timeline">
           <li class="hist-event">
             <a class="hist-event__tag" href="https://github.com/cmclicker/NekoStack/releases/tag/cli-v1.0.1" target="_blank" rel="noopener">cli-v1.0.1</a>
             <div class="hist-event__body">
@@ -622,7 +635,7 @@
       <button class="pkg-modal__close" aria-label="Close">✕</button>
     </div>
     <div class="pkg-modal__body">
-      <ol class="hist-timeline">
+      <p class="pkg-modal__note"><strong>Built to maturity before public release</strong> — shipped directly at v1.0 with no pre-release versions. The token pipeline and theme system were developed against internal consumers, then published as a stable surface.</p><ol class="hist-timeline">
           <li class="hist-event">
             <a class="hist-event__tag" href="https://github.com/cmclicker/NekoStack/releases/tag/theme-v1.0.0" target="_blank" rel="noopener">theme-v1.0.0</a>
             <div class="hist-event__body">
@@ -643,7 +656,7 @@
       <button class="pkg-modal__close" aria-label="Close">✕</button>
     </div>
     <div class="pkg-modal__body">
-      <ol class="hist-timeline">
+      <p class="pkg-modal__note"><strong>Built to maturity before public release</strong> — shipped directly at v1.0 with no pre-release versions. The 92-component vanilla-CSS library was developed against <code>@nekostack/theme</code> tokens, then published as a stable surface.</p><ol class="hist-timeline">
           <li class="hist-event">
             <a class="hist-event__tag" href="https://github.com/cmclicker/NekoStack/releases/tag/ui-v1.0.1" target="_blank" rel="noopener">ui-v1.0.1</a>
             <div class="hist-event__body">

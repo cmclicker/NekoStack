@@ -36,6 +36,7 @@
       "latest_release_date": "2026-06-19",
       "active_target": "v0.1.X+ — Optional runner CLI + adapter expansion",
       "test_count": 405,
+      "note": null,
       "milestones": [
         {
           "tag": "migrate-runner-v1.0.0",
@@ -56,6 +57,7 @@
       "latest_release_date": "2026-06-19",
       "active_target": "v1.0 — Stable API",
       "test_count": 1294,
+      "note": null,
       "milestones": [
         {
           "tag": "schema-v1.0.0",
@@ -116,6 +118,7 @@
       "latest_release_date": "2026-06-19",
       "active_target": "v0.8+ — TBD",
       "test_count": null,
+      "note": "**Lineage:** placeholder through v0.1–v0.6, then shipped jointly with `@nekostack/schema` as the `neko schema *` phase — tagged `schema-v0.7.0` ([PR #25](https://github.com/cmclicker/NekoStack/pull/25), 2026-05-19), not under its own prefix. Its standalone npm line begins at v1.0.0.",
       "milestones": [
         {
           "tag": "cli-v1.0.1",
@@ -136,6 +139,7 @@
       "latest_release_date": "2026-06-19",
       "active_target": null,
       "test_count": 78,
+      "note": "**Built to maturity before public release** — shipped directly at v1.0 with no pre-release versions. The token pipeline and theme system were developed against internal consumers, then published as a stable surface.",
       "milestones": [
         {
           "tag": "theme-v1.0.0",
@@ -151,6 +155,7 @@
       "latest_release_date": "2026-06-19",
       "active_target": null,
       "test_count": null,
+      "note": "**Built to maturity before public release** — shipped directly at v1.0 with no pre-release versions. The 92-component vanilla-CSS library was developed against `@nekostack/theme` tokens, then published as a stable surface.",
       "milestones": [
         {
           "tag": "ui-v1.0.1",
@@ -171,6 +176,7 @@
       "latest_release_date": "2026-06-20",
       "active_target": null,
       "test_count": null,
+      "note": null,
       "milestones": [
         {
           "tag": "lint-v1.0.0",
@@ -206,6 +212,7 @@
       "latest_release_date": "2026-06-19",
       "active_target": null,
       "test_count": 5,
+      "note": null,
       "milestones": [
         {
           "tag": "test-v0.1.0",
@@ -221,6 +228,7 @@
       "latest_release_date": null,
       "active_target": "v0.1 — Bootstrap",
       "test_count": null,
+      "note": null,
       "milestones": []
     },
     {
@@ -230,6 +238,7 @@
       "latest_release_date": "2026-06-19",
       "active_target": null,
       "test_count": null,
+      "note": null,
       "milestones": [
         {
           "tag": "nekostack-v1.1.1",

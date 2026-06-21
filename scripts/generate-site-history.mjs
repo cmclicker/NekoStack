@@ -90,6 +90,7 @@ function buildModel(ssot) {
     latestReleaseDate: pkg.latest_release_date ?? null,
     activeTarget: pkg.active_target ?? null,
     testCount: pkg.test_count ?? null,
+    note: pkg.note ?? null,
     milestones: (pkg.milestones ?? []).map((m) => ({
       tag: m.tag,
       date: m.date ?? null,
@@ -206,6 +207,10 @@ function renderPackageModal(pkg) {
     ? `<div class="hist-card__target" style="margin-bottom: var(--neko-spacing-5);"><span class="hist-card__target-label">Active target</span> ${escapeHtml(pkg.activeTarget)}</div>`
     : "";
 
+  const note = pkg.note
+    ? `<p class="pkg-modal__note">${renderInline(pkg.note)}</p>`
+    : "";
+
   return `
   <dialog id="modal-${slug}" class="pkg-modal">
     <div class="pkg-modal__head">
@@ -216,7 +221,7 @@ function renderPackageModal(pkg) {
       <button class="pkg-modal__close" aria-label="Close">✕</button>
     </div>
     <div class="pkg-modal__body">
-      ${target}<ol class="hist-timeline">${renderTimelineRows(pkg)}
+      ${target}${note}<ol class="hist-timeline">${renderTimelineRows(pkg)}
       </ol>
     </div>
   </dialog>`;
@@ -360,6 +365,19 @@ function renderHistoryHtml(model) {
     .pkg-modal__close { all: unset; cursor: pointer; font-size: var(--neko-font-size-xl); color: var(--neko-color-semantic-text-muted); line-height: 1; padding: var(--neko-spacing-1) var(--neko-spacing-2); border-radius: var(--neko-radius-sm); flex-shrink: 0; }
     .pkg-modal__close:hover { color: var(--neko-color-semantic-text-base); background: var(--neko-color-semantic-bg-sunken); }
     .pkg-modal__body { overflow-y: auto; padding: var(--neko-spacing-6); flex: 1; }
+    .pkg-modal__note {
+      margin: 0 0 var(--neko-spacing-5);
+      padding: var(--neko-spacing-3) var(--neko-spacing-4);
+      background: var(--neko-color-semantic-bg-sunken);
+      border-left: 2px solid var(--neko-color-semantic-border-base);
+      border-radius: var(--neko-radius-sm);
+      font-size: var(--neko-font-size-sm);
+      line-height: 1.6;
+      color: var(--neko-color-semantic-text-muted);
+    }
+    .pkg-modal__note strong { color: var(--neko-color-semantic-text-base); font-weight: 600; }
+    .pkg-modal__note code { font-family: var(--neko-font-mono); font-size: 0.9em; color: var(--neko-color-semantic-primary); }
+    .pkg-modal__note a { color: var(--neko-color-semantic-primary); }
   </style>
 </head>
 <body>

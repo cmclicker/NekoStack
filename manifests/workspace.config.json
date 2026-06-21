@@ -22,21 +22,24 @@
       "dir": "packages/cli",
       "tag_prefix": "cli-v",
       "roadmap": "packages/cli/docs/internal/ROADMAP.md",
-      "changelog": "packages/cli/CHANGELOG.md"
+      "changelog": "packages/cli/CHANGELOG.md",
+      "note": "**Lineage:** placeholder through v0.1–v0.6, then shipped jointly with `@nekostack/schema` as the `neko schema *` phase — tagged `schema-v0.7.0` ([PR #25](https://github.com/cmclicker/NekoStack/pull/25), 2026-05-19), not under its own prefix. Its standalone npm line begins at v1.0.0."
     },
     {
       "name": "@nekostack/theme",
       "dir": "packages/theme",
       "tag_prefix": "theme-v",
       "roadmap": "packages/theme/docs/internal/ROADMAP.md",
-      "changelog": "packages/theme/CHANGELOG.md"
+      "changelog": "packages/theme/CHANGELOG.md",
+      "note": "**Built to maturity before public release** — shipped directly at v1.0 with no pre-release versions. The token pipeline and theme system were developed against internal consumers, then published as a stable surface."
     },
     {
       "name": "@nekostack/ui",
       "dir": "packages/ui",
       "tag_prefix": "ui-v",
       "roadmap": "packages/ui/docs/internal/ROADMAP.md",
-      "changelog": "packages/ui/CHANGELOG.md"
+      "changelog": "packages/ui/CHANGELOG.md",
+      "note": "**Built to maturity before public release** — shipped directly at v1.0 with no pre-release versions. The 92-component vanilla-CSS library was developed against `@nekostack/theme` tokens, then published as a stable surface."
     },
     {
       "name": "@nekostack/lint",
